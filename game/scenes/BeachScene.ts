@@ -26,16 +26,86 @@ export class BeachScene extends BaseChapterScene {
     // Exit triggers at y=18, x=12-15
     this.addNavArrow(13, 17, 'Next chapter');
 
-    // Place the BMW 335i in the driveway (concrete strip near right side of house)
+    // Place the BMW 335i in the driveway
     const carX = 22 * SCALED_TILE + SCALED_TILE / 2;
     const carY = 10 * SCALED_TILE + SCALED_TILE / 2;
     const bmw = this.add.sprite(carX, carY, 'car-bmw335i');
     bmw.setScale(SCALE);
     bmw.setDepth(5);
-    // BMW occupies 3 tiles of collision
     this.collisionTiles.add('21,10');
     this.collisionTiles.add('22,10');
     this.collisionTiles.add('23,10');
+
+    // Hot tub bubble jets — active bubbles rising from the water
+    this.createHotTubBubbles();
+  }
+
+  private createHotTubBubbles() {
+    // Hot tub is at cols 21-25, rows 2-5 in the beachMap
+    const tubCenterX = 23 * SCALED_TILE;
+    const tubCenterY = 3.5 * SCALED_TILE;
+    const tubWidth = 5 * SCALED_TILE;
+    const tubHeight = 4 * SCALED_TILE;
+
+    // Continuous bubble jets
+    this.time.addEvent({
+      delay: 150,
+      loop: true,
+      callback: () => {
+        // Random position within the hot tub area
+        const bx = tubCenterX + (Math.random() - 0.5) * tubWidth * 0.8;
+        const by = tubCenterY + (Math.random() - 0.3) * tubHeight * 0.7;
+        const size = 2 + Math.random() * 4;
+
+        const bubble = this.add.circle(bx, by, size, 0xffffff, 0.4 + Math.random() * 0.3)
+          .setDepth(4);
+
+        // Bubble rises and pops
+        this.tweens.add({
+          targets: bubble,
+          y: by - 15 - Math.random() * 20,
+          x: bx + (Math.random() - 0.5) * 12,
+          alpha: 0,
+          scale: 0.3,
+          duration: 600 + Math.random() * 400,
+          ease: 'Quad.easeOut',
+          onComplete: () => bubble.destroy(),
+        });
+      },
+    });
+
+    // Larger jet bursts every few seconds
+    this.time.addEvent({
+      delay: 2000,
+      loop: true,
+      callback: () => {
+        // Burst of 5-8 bubbles from one spot
+        const jx = tubCenterX + (Math.random() - 0.5) * tubWidth * 0.5;
+        const jy = tubCenterY + Math.random() * tubHeight * 0.3;
+
+        for (let i = 0; i < 6; i++) {
+          this.time.delayedCall(i * 50, () => {
+            const b = this.add.circle(
+              jx + (Math.random() - 0.5) * 8,
+              jy,
+              3 + Math.random() * 5,
+              0xffffff,
+              0.5 + Math.random() * 0.3
+            ).setDepth(4);
+
+            this.tweens.add({
+              targets: b,
+              y: jy - 25 - Math.random() * 15,
+              alpha: 0,
+              scale: 0.2,
+              duration: 500 + Math.random() * 300,
+              ease: 'Quad.easeOut',
+              onComplete: () => b.destroy(),
+            });
+          });
+        }
+      },
+    });
   }
 
   protected getObjectiveHint(): string {
