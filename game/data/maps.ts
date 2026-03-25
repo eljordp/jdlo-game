@@ -201,7 +201,7 @@ export const beachMap: MapData = {
       { id: 'ch1_girl3',  x: 20, y: 5,  sprite: 'npc_bikini1' },
       { id: 'ch1_girl_couch', x: 3, y: 5, sprite: 'npc_bikini2' },
       { id: 'ch1_terrel', x: 13, y: 4, sprite: 'npc_terrel' },
-      { id: 'ch1_volleyball1', x: 10, y: 16, sprite: 'npc_generic' },
+      { id: 'ch1_volleyball1', x: 10, y: 16, sprite: 'npc_surfer' },
       { id: 'ch1_volleyball2', x: 12, y: 16, sprite: 'npc_kid' },
       { id: 'ch1_sunbather',   x: 18, y: 15, sprite: 'npc_bikini1' },
     ],
@@ -284,7 +284,7 @@ export const wrongCrowdMap: MapData = {
       { id: 'ch2_corner_guy', x: 6, y: 18, sprite: 'npc_generic' }, // guy at corner store
       { id: 'ch2_street_kid', x: 10, y: 17, sprite: 'npc_shady' },  // kid on the street
       { id: 'ch2_lookout',    x: 18, y: 20, sprite: 'npc_shady' },   // outside buyer's house
-      { id: 'ch2_buyer',      x: 23, y: 23, sprite: 'npc_generic' }, // inside buyer's house
+      { id: 'ch2_buyer',      x: 23, y: 23, sprite: 'npc_dealer' }, // inside buyer's house
     ],
   },
   triggers: [],  // No scene triggers — only way out is through ch2_sale raid
@@ -504,7 +504,7 @@ export const comeUpMap: MapData = {
       { id: 'ch5_mentor',       x: 13, y: 18, sprite: 'npc_mentor' },
       { id: 'ch5_impressed',    x: 15, y: 8,  sprite: 'npc_biz' },
       { id: 'ch5_dhl',          x: 15, y: 10, sprite: 'npc_dhl_client' },
-      { id: 'ch5_vacaville',    x: 8,  y: 8,  sprite: 'npc_generic' },
+      { id: 'ch5_vacaville',    x: 8,  y: 8,  sprite: 'npc_waitress' },
       { id: 'ch5_fw_wheels',    x: 22, y: 8,  sprite: 'npc_kid' },
     ],
   },
@@ -574,6 +574,7 @@ export const operatorMap: MapData = {
       { id: 'ch6_tony',         x: 12, y: 8,  sprite: 'npc_suit' },
       { id: 'ch6_client2',      x: 24, y: 4,  sprite: 'npc_business' },
       { id: 'ch6_team_member',  x: 19, y: 23, sprite: 'npc_generic' },
+      { id: 'ch6_security',     x: 20, y: 20, sprite: 'npc_security' },
     ],
   },
   triggers: [

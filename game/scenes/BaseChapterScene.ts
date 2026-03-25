@@ -9,6 +9,7 @@ import { ShowcaseFrame } from '../systems/ShowcaseFrame';
 import { MusicSystem } from '../systems/MusicSystem';
 import { SaveSystem } from '../systems/SaveSystem';
 import { SoundEffects } from '../systems/SoundEffects';
+import { Analytics } from '../systems/Analytics';
 import type { MapData } from '../data/maps';
 
 type NPCObject = {
@@ -36,6 +37,8 @@ export abstract class BaseChapterScene extends Phaser.Scene {
   protected mapHeight = 0;
   protected chapterTitle = '';
   protected nextScene = '';
+  protected requiredInteractionId: string = '';
+  protected requiredDone = false;
 
   private navArrows: Phaser.GameObjects.Text[] = [];
   private navArrowTweens: Phaser.Tweens.Tween[] = [];
@@ -64,7 +67,11 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     this.collisionTiles = new Set();
     this.isMoving = false;
     this.frozen = false;
+    this.requiredDone = false;
     this.speechBubbles = new Map();
+
+    // Analytics
+    Analytics.trackChapterStart(this.scene.key);
 
     // Clean up previous nav arrows
     for (const tween of this.navArrowTweens) tween.stop();
@@ -585,6 +592,14 @@ export abstract class BaseChapterScene extends Phaser.Scene {
   }
 
   protected handleInteractable(interactable: { id: string; type: string; consumed?: boolean }) {
+    // Track interaction for analytics
+    Analytics.trackInteraction(interactable.id);
+
+    // Check if this is the required interaction for the chapter
+    if (interactable.id === this.requiredInteractionId) {
+      this.requiredDone = true;
+    }
+
     const chapterDialogue = this.getChapterDialogue();
     const showcaseData = this.getShowcaseData();
 
@@ -647,6 +662,7 @@ export abstract class BaseChapterScene extends Phaser.Scene {
   protected transitionToScene(sceneKey: string) {
     this.frozen = true;
     SoundEffects.playDoorOpen();
+    Analytics.trackChapterComplete(this.scene.key);
 
     // Pokemon-style bars closing in from top and bottom
     const topBar = this.add.rectangle(GAME_WIDTH / 2, -GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000)
@@ -771,7 +787,11 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     for (const trigger of this.triggers) {
       if (trigger.x === tileX && trigger.y === tileY) {
         if (trigger.action === 'scene' && trigger.target) {
-          this.transitionToScene(trigger.target);
+          if (!this.requiredInteractionId || this.requiredDone) {
+            this.transitionToScene(trigger.target);
+          } else {
+            this.dialogue.show([{ text: 'There\'s something you need to do first...' }]);
+          }
         } else if (trigger.action === 'dialogue' && trigger.target) {
           const chapter = this.getChapterDialogue();
           const dialogueLines = chapter.npcs[trigger.target];

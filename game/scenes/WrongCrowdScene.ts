@@ -3,6 +3,7 @@ import { wrongCrowdMap, MapData } from '../data/maps';
 import { wrongCrowdDialogue } from '../data/story';
 import type { DialogueLine } from '../systems/DialogueSystem';
 import { GAME_WIDTH, GAME_HEIGHT, SCALED_TILE, SCALE } from '../config';
+import { Analytics } from '../systems/Analytics';
 
 export class WrongCrowdScene extends BaseChapterScene {
   private raidTriggered = false;
@@ -80,6 +81,7 @@ export class WrongCrowdScene extends BaseChapterScene {
   protected handleInteractable(interactable: { id: string; type: string; consumed?: boolean }) {
     // Car interaction — driving cutscene
     if (interactable.id === 'ch2_car') {
+      Analytics.trackInteraction(interactable.id);
       this.frozen = true;
       this.interactions.consume(interactable.id);
       this.playDrivingCutscene();
@@ -87,6 +89,7 @@ export class WrongCrowdScene extends BaseChapterScene {
     }
 
     if (interactable.id === 'ch2_sale' && !this.raidTriggered) {
+      Analytics.trackInteraction(interactable.id);
       this.raidTriggered = true;
       const lines = this.getChapterDialogue().npcs['ch2_sale'];
       this.dialogue.show(lines, () => {

@@ -926,6 +926,305 @@ function generateAllNPCs(scene: Phaser.Scene) {
     }
   );
 
+  // ── NEW UNIQUE NPC SPRITES ──
+
+  // Surfer — beach bro: blonde, tan, board shorts, shirtless, flip flops
+  makeTexture(scene, 'npc_surfer', TILE_SIZE, TILE_SIZE, (g) => {
+    const skin = 0xd0a060; // tan skin
+    const skinS = 0xb08848;
+    const hair = 0xd0b050; // blonde
+    const shorts = 0x2080c0; // board shorts
+    // Hair
+    px(g, 5, 0, hair, 6, 1);
+    px(g, 4, 1, hair, 8, 1);
+    px(g, 3, 2, hair, 10, 1);
+    px(g, 3, 3, hair, 2, 1);
+    px(g, 11, 3, hair, 2, 1);
+    // Face
+    px(g, 5, 3, skin, 6, 1);
+    px(g, 4, 4, skin, 8, 1);
+    px(g, 4, 5, skin, 8, 1);
+    px(g, 5, 6, skinS, 6, 1);
+    // Eyes
+    px(g, 5, 4, 0xffffff, 2, 1);
+    px(g, 9, 4, 0xffffff, 2, 1);
+    px(g, 6, 4, 0x202020);
+    px(g, 10, 4, 0x202020);
+    // Smile
+    px(g, 7, 5, 0xc07060, 2, 1);
+    // Shirtless torso (skin tone)
+    px(g, 4, 7, skin, 8, 1);
+    px(g, 3, 8, skin, 10, 1);
+    px(g, 3, 9, skinS, 10, 1);
+    px(g, 4, 10, skin, 8, 1);
+    // Neck
+    px(g, 6, 7, skinS, 4, 1);
+    // Arms
+    px(g, 2, 8, skin, 1, 2);
+    px(g, 13, 8, skin, 1, 2);
+    px(g, 2, 10, skinS);
+    px(g, 13, 10, skinS);
+    // Board shorts
+    px(g, 4, 11, shorts, 8, 1);
+    px(g, 4, 12, shorts, 3, 1);
+    px(g, 9, 12, shorts, 3, 1);
+    px(g, 7, 12, 0x000000, 2, 1); // gap
+    // Flip flops
+    px(g, 4, 13, 0xa08060, 3, 1);
+    px(g, 9, 13, 0xa08060, 3, 1);
+    px(g, 5, 14, 0xa08060, 2, 1);
+    px(g, 10, 14, 0xa08060, 2, 1);
+  });
+
+  // Dealer — street dealer: gold chain, black cap, dark clothes, menacing
+  makeTexture(scene, 'npc_dealer', TILE_SIZE, TILE_SIZE, (g) => {
+    const skin = 0xe0b080;
+    const skinS = 0xc09060;
+    const cap = 0x181818;
+    const shirt = 0x202020;
+    const pants = 0x181818;
+    // Cap
+    px(g, 3, 0, cap, 10, 1);
+    px(g, 2, 1, cap, 12, 1);
+    px(g, 2, 2, cap, 12, 1); // brim extends
+    px(g, 1, 2, cap, 1, 1); // brim left
+    px(g, 14, 2, cap, 1, 1); // brim right
+    // Face
+    px(g, 5, 3, skin, 6, 1);
+    px(g, 4, 4, skin, 8, 1);
+    px(g, 4, 5, skin, 8, 1);
+    px(g, 5, 6, skinS, 6, 1);
+    // Narrow eyes (menacing)
+    px(g, 5, 4, 0x101010, 2, 1);
+    px(g, 9, 4, 0x101010, 2, 1);
+    // Frown
+    px(g, 7, 5, 0x904040, 2, 1);
+    // Gold chain on neck
+    px(g, 5, 7, 0xd0b040, 6, 1);
+    px(g, 7, 8, 0xd0b040, 2, 1); // chain dip
+    // Shirt
+    px(g, 4, 7, shirt, 1, 1);
+    px(g, 11, 7, shirt, 1, 1);
+    px(g, 3, 8, shirt, 4, 1);
+    px(g, 9, 8, shirt, 4, 1);
+    px(g, 3, 9, shirt, 10, 1);
+    px(g, 4, 10, shirt, 8, 1);
+    // Arms
+    px(g, 2, 8, skin, 1, 2);
+    px(g, 13, 8, skin, 1, 2);
+    px(g, 2, 10, skin);
+    px(g, 13, 10, skin);
+    // Pants
+    px(g, 4, 11, pants, 8, 1);
+    px(g, 4, 12, pants, 3, 1);
+    px(g, 9, 12, pants, 3, 1);
+    px(g, 7, 12, 0x000000, 2, 1);
+    // Shoes
+    px(g, 4, 13, 0x101010, 3, 1);
+    px(g, 9, 13, 0x101010, 3, 1);
+  });
+
+  // Lawyer — grey hair, glasses, suit, briefcase
+  makeTexture(scene, 'npc_lawyer', TILE_SIZE, TILE_SIZE, (g) => {
+    const skin = 0xf0c090;
+    const skinS = 0xd0a070;
+    const hair = 0x909098;
+    const suit = 0x404050;
+    const suitL = 0x505060;
+    // Hair
+    px(g, 5, 0, hair, 6, 1);
+    px(g, 4, 1, hair, 8, 1);
+    px(g, 3, 2, hair, 10, 1);
+    px(g, 3, 3, hair, 2, 1);
+    px(g, 11, 3, hair, 2, 1);
+    // Face
+    px(g, 5, 3, skin, 6, 1);
+    px(g, 4, 4, skin, 8, 1);
+    px(g, 4, 5, skin, 8, 1);
+    px(g, 5, 6, skinS, 6, 1);
+    // Glasses
+    px(g, 4, 4, 0xc0c0d0, 3, 1);
+    px(g, 9, 4, 0xc0c0d0, 3, 1);
+    px(g, 7, 4, 0xc0c0d0, 2, 1); // bridge
+    // Eyes behind glasses
+    px(g, 5, 4, 0xffffff, 1, 1);
+    px(g, 10, 4, 0xffffff, 1, 1);
+    // Mouth
+    px(g, 7, 5, 0xc07060, 2, 1);
+    // Suit jacket
+    px(g, 4, 7, suit, 8, 1);
+    px(g, 3, 8, suit, 10, 1);
+    px(g, 3, 9, suitL, 10, 1);
+    px(g, 4, 10, suit, 8, 1);
+    // White collar
+    px(g, 6, 7, 0xf0f0f0, 4, 1);
+    // Tie
+    px(g, 7, 8, 0x803030, 2, 1);
+    px(g, 7, 9, 0x803030, 2, 1);
+    // Arms
+    px(g, 2, 8, suit, 1, 2);
+    px(g, 13, 8, suit, 1, 2);
+    px(g, 2, 10, skin);
+    px(g, 13, 10, skin);
+    // Briefcase at hand
+    px(g, 13, 10, 0x805030, 1, 1);
+    px(g, 14, 10, 0x805030, 1, 2);
+    px(g, 14, 11, 0x704020, 1, 1);
+    // Pants
+    px(g, 4, 11, suit, 8, 1);
+    px(g, 4, 12, suitL, 3, 1);
+    px(g, 9, 12, suitL, 3, 1);
+    px(g, 7, 12, 0x000000, 2, 1);
+    // Shoes
+    px(g, 4, 13, 0x302020, 3, 1);
+    px(g, 9, 13, 0x302020, 3, 1);
+  });
+
+  // Judge — black robe, grey hair, stern, drawn higher to look tall
+  makeTexture(scene, 'npc_judge', TILE_SIZE, TILE_SIZE, (g) => {
+    const skin = 0xf0c090;
+    const skinS = 0xd0a070;
+    const hair = 0x808088;
+    const robe = 0x101018;
+    const robeL = 0x1a1a24;
+    // Draw character 1px higher to look tall
+    const oy = -1;
+    // Hair
+    px(g, 5, oy + 1, hair, 6, 1);
+    px(g, 4, oy + 2, hair, 8, 1);
+    px(g, 3, oy + 3, hair, 10, 1);
+    px(g, 3, oy + 4, hair, 2, 1);
+    px(g, 11, oy + 4, hair, 2, 1);
+    // Face
+    px(g, 5, oy + 4, skin, 6, 1);
+    px(g, 4, oy + 5, skin, 8, 1);
+    px(g, 4, oy + 6, skin, 8, 1);
+    px(g, 5, oy + 7, skinS, 6, 1);
+    // Eyes (stern: narrower)
+    px(g, 5, oy + 5, 0x202020, 2, 1);
+    px(g, 9, oy + 5, 0x202020, 2, 1);
+    // Mouth (stern line)
+    px(g, 7, oy + 6, 0x907060, 2, 1);
+    // Robe — flowing, wide
+    px(g, 4, oy + 8, robe, 8, 1);
+    px(g, 2, oy + 9, robe, 12, 1);
+    px(g, 2, oy + 10, robeL, 12, 1);
+    px(g, 2, oy + 11, robe, 12, 1);
+    px(g, 2, oy + 12, robeL, 12, 1);
+    px(g, 3, oy + 13, robe, 10, 1);
+    px(g, 3, oy + 14, robe, 10, 1);
+    // Collar detail (white)
+    px(g, 6, oy + 8, 0xf0f0f0, 4, 1);
+    // Arms hidden in robe
+    px(g, 1, oy + 9, robe, 1, 3);
+    px(g, 14, oy + 9, robe, 1, 3);
+    // Shoes barely visible
+    px(g, 5, 15, 0x202020, 3, 1);
+    px(g, 9, 15, 0x202020, 3, 1);
+  });
+
+  // Waitress — apron over dark top, hair in bun, friendly
+  makeTexture(scene, 'npc_waitress', TILE_SIZE, TILE_SIZE, (g) => {
+    const skin = 0xf0c090;
+    const skinS = 0xd0a070;
+    const hair = 0x503020;
+    const top = 0x303038;
+    const apron = 0xf0f0f0;
+    // Hair with bun on top
+    px(g, 6, -1, hair, 4, 1); // bun
+    px(g, 7, -2, hair, 2, 1); // bun top
+    px(g, 5, 0, hair, 6, 1);
+    px(g, 4, 1, hair, 8, 1);
+    px(g, 3, 2, hair, 10, 1);
+    px(g, 3, 3, hair, 2, 1);
+    px(g, 11, 3, hair, 2, 1);
+    // Face
+    px(g, 5, 3, skin, 6, 1);
+    px(g, 4, 4, skin, 8, 1);
+    px(g, 4, 5, skin, 8, 1);
+    px(g, 5, 6, skinS, 6, 1);
+    // Eyes (friendly, bright)
+    px(g, 5, 4, 0xffffff, 2, 1);
+    px(g, 9, 4, 0xffffff, 2, 1);
+    px(g, 6, 4, 0x304030);
+    px(g, 10, 4, 0x304030);
+    // Smile
+    px(g, 6, 5, 0xd08070, 4, 1);
+    // Dark top
+    px(g, 4, 7, top, 8, 1);
+    px(g, 3, 8, top, 10, 1);
+    px(g, 3, 9, top, 10, 1);
+    px(g, 4, 10, top, 8, 1);
+    // Apron overlay
+    px(g, 5, 8, apron, 6, 1);
+    px(g, 5, 9, apron, 6, 1);
+    px(g, 5, 10, apron, 6, 1);
+    px(g, 5, 11, apron, 6, 1);
+    // Apron strings
+    px(g, 4, 9, 0xe0e0e0, 1, 1);
+    px(g, 11, 9, 0xe0e0e0, 1, 1);
+    // Neck
+    px(g, 6, 7, skinS, 4, 1);
+    // Arms
+    px(g, 2, 8, skin, 1, 2);
+    px(g, 13, 8, skin, 1, 2);
+    // Pants (dark)
+    px(g, 4, 12, 0x303038, 3, 1);
+    px(g, 9, 12, 0x303038, 3, 1);
+    px(g, 7, 12, 0x000000, 2, 1);
+    // Shoes
+    px(g, 4, 13, 0x202020, 3, 1);
+    px(g, 9, 13, 0x202020, 3, 1);
+  });
+
+  // Security — bald, black suit, earpiece, big build
+  makeTexture(scene, 'npc_security', TILE_SIZE, TILE_SIZE, (g) => {
+    const skin = 0xe0b080;
+    const skinS = 0xc09060;
+    const suit = 0x181820;
+    const suitL = 0x202028;
+    // Bald head
+    px(g, 5, 0, skin, 6, 1);
+    px(g, 4, 1, skin, 8, 1);
+    px(g, 3, 2, skin, 10, 1);
+    // Subtle hair shadow on top
+    px(g, 5, 0, 0xc09868, 6, 1);
+    // Face
+    px(g, 5, 3, skin, 6, 1);
+    px(g, 4, 4, skin, 8, 1);
+    px(g, 4, 5, skin, 8, 1);
+    px(g, 5, 6, skinS, 6, 1);
+    // Eyes (serious)
+    px(g, 5, 4, 0x202020, 2, 1);
+    px(g, 9, 4, 0x202020, 2, 1);
+    // Mouth
+    px(g, 7, 5, 0x906060, 2, 1);
+    // Earpiece (flesh dot near right ear)
+    px(g, 12, 4, 0xd0a878, 1, 1);
+    px(g, 12, 5, 0x303030, 1, 1); // wire
+    // Wide suit (big build — extend shoulders)
+    px(g, 4, 7, suit, 8, 1);
+    px(g, 2, 8, suit, 12, 1);
+    px(g, 2, 9, suitL, 12, 1);
+    px(g, 2, 10, suit, 12, 1);
+    // Extra wide shoulders
+    px(g, 1, 8, suit, 1, 2);
+    px(g, 14, 8, suit, 1, 2);
+    // Neck
+    px(g, 6, 7, skinS, 4, 1);
+    // Hands
+    px(g, 1, 10, skin);
+    px(g, 14, 10, skin);
+    // Pants
+    px(g, 4, 11, suit, 8, 1);
+    px(g, 4, 12, suitL, 3, 1);
+    px(g, 9, 12, suitL, 3, 1);
+    px(g, 7, 12, 0x000000, 2, 1);
+    // Shoes
+    px(g, 4, 13, 0x101010, 3, 1);
+    px(g, 9, 13, 0x101010, 3, 1);
+  });
+
   // Sister — young girl, smaller, long dark hair, pink top
   makeTexture(scene, 'npc_sister', TILE_SIZE, TILE_SIZE, (g) => {
     // Shift everything down 2px to appear shorter

@@ -2,13 +2,15 @@ import { BaseChapterScene } from './BaseChapterScene';
 import { homeMap, MapData } from '../data/maps';
 import { homeDialogue } from '../data/story';
 import type { DialogueLine } from '../systems/DialogueSystem';
-import { SCALED_TILE, SCALE } from '../config';
+import { SCALED_TILE, SCALE, GAME_WIDTH, GAME_HEIGHT } from '../config';
+import { Analytics } from '../systems/Analytics';
 
 export class HomeScene extends BaseChapterScene {
   constructor() {
     super({ key: 'HomeScene' });
     this.chapterTitle = 'Chapter 1: Home';
     this.nextScene = 'BeachScene';
+    this.requiredInteractionId = 'ch0_nolan_call';
   }
 
   protected getPlayerTexture(): string {
@@ -36,14 +38,76 @@ export class HomeScene extends BaseChapterScene {
     return homeDialogue;
   }
 
-  // Override to add Frenchie fetch interaction
+  // Override to add Frenchie fetch + goodbye cutscene
   protected handleInteractable(interactable: { id: string; type: string; consumed?: boolean }) {
     if (interactable.id === 'ch0_frenchie_ball') {
+      Analytics.trackInteraction(interactable.id);
       this.playFetch();
       this.interactions.consume(interactable.id);
       return;
     }
+    if (interactable.id === 'ch0_goodbye') {
+      Analytics.trackInteraction(interactable.id);
+      this.playGoodbyeCutscene();
+      this.interactions.consume(interactable.id);
+      return;
+    }
     super.handleInteractable(interactable);
+  }
+
+  private playGoodbyeCutscene() {
+    this.frozen = true;
+
+    // Step 1: JP looks around
+    this.dialogue.show([
+      { speaker: 'Narrator', text: 'JP looks around his room one last time.' },
+    ], () => {
+      // Step 2: Walk automatically toward the door (south a couple tiles)
+      const doorY = this.player.y + SCALED_TILE * 2;
+      this.tweens.add({
+        targets: this.player,
+        y: doorY,
+        duration: 800,
+        ease: 'Linear',
+        onComplete: () => {
+          // Step 3: Screen dims slightly
+          const dim = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000)
+            .setScrollFactor(0).setDepth(50).setAlpha(0);
+          this.tweens.add({
+            targets: dim,
+            alpha: 0.3,
+            duration: 400,
+            onComplete: () => {
+              // Step 4: Emotional dialogue
+              this.dialogue.show([
+                { speaker: 'Narrator', text: 'He grabs his bag. Hugs his sister. Daps up Pops.' },
+                { speaker: 'Narrator', text: 'Ivy whines at the door. She knows.' },
+              ], () => {
+                // Step 5: Walk south toward exit
+                this.tweens.add({
+                  targets: this.player,
+                  y: this.player.y + SCALED_TILE * 2,
+                  duration: 1000,
+                  ease: 'Linear',
+                  onComplete: () => {
+                    // Fade dim back out, unfreeze, trigger transition
+                    this.tweens.add({
+                      targets: dim,
+                      alpha: 0,
+                      duration: 300,
+                      onComplete: () => {
+                        dim.destroy();
+                        this.frozen = false;
+                      },
+                    });
+                  },
+                });
+              });
+            },
+          });
+        },
+      });
+    });
   }
 
   private playFetch() {

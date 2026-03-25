@@ -8,6 +8,7 @@ export class OperatorScene extends BaseChapterScene {
     super({ key: 'OperatorScene' });
     this.chapterTitle = 'Chapter 7: Operator Mode';
     this.nextScene = 'EndScene';
+    this.requiredInteractionId = 'ch6_equal_moment';
   }
 
   protected getPlayerTexture(): string {

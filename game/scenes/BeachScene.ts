@@ -9,6 +9,7 @@ export class BeachScene extends BaseChapterScene {
     super({ key: 'BeachScene' });
     this.chapterTitle = 'Chapter 2: Santa Barbara';
     this.nextScene = 'WrongCrowdScene';
+    this.requiredInteractionId = 'ch1_smoke';
   }
 
   protected getPlayerTexture(): string {

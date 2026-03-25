@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '../config';
 import { MusicSystem } from '../systems/MusicSystem';
+import { Analytics } from '../systems/Analytics';
 
 export class EndScene extends Phaser.Scene {
   constructor() {
@@ -9,6 +10,7 @@ export class EndScene extends Phaser.Scene {
 
   create() {
     MusicSystem.stop();
+    Analytics.trackGameComplete();
     this.cameras.main.fadeIn(1500, 0, 0, 0);
 
     this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x0a0a1a);
@@ -90,9 +92,38 @@ export class EndScene extends Phaser.Scene {
       yPos += 35;
     });
 
+    // Callback to the beginning — reflective moment
+    const callbackDelay = 2400 + stats.length * 500 + 600;
+
+    const callbackLine1 = this.add.text(GAME_WIDTH / 2, 510, 'The kid who stared at the ceiling in his bedroom...', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '9px',
+      color: '#aaaacc',
+    }).setOrigin(0.5).setAlpha(0);
+
+    this.tweens.add({
+      targets: callbackLine1,
+      alpha: 1,
+      duration: 1200,
+      delay: callbackDelay,
+    });
+
+    const callbackLine2 = this.add.text(GAME_WIDTH / 2, 540, '...now runs operations from an LA highrise.', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '9px',
+      color: '#aaaacc',
+    }).setOrigin(0.5).setAlpha(0);
+
+    this.tweens.add({
+      targets: callbackLine2,
+      alpha: 1,
+      duration: 1200,
+      delay: callbackDelay + 1500,
+    });
+
     // Three clear CTAs
-    const ctaY = 540;
-    const ctaDelay = 4500;
+    const ctaY = 590;
+    const ctaDelay = callbackDelay + 3000;
 
     const keepUp = this.add.text(GAME_WIDTH / 2, ctaY, 'Keep up with the story', {
       fontFamily: '"Press Start 2P", monospace',

@@ -1245,6 +1245,12 @@ const ch6Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'A guy doing $400K a month just asked JP to build his AI system.' },
     { speaker: 'JP\'s Mind', text: 'Not as a favor. As a client. Because JP is that good.' },
   ],
+  ch6_security: [
+    { speaker: 'Security', text: 'JP.' },
+    { speaker: 'JP', text: 'How\'s it going?' },
+    { speaker: 'Security', text: 'All clear. Your 2 o\'clock is here.' },
+    { speaker: 'JP', text: 'Send them in.' },
+  ],
 };
 
 // ─── Build bridge exports ──────────────────────────────────────────────

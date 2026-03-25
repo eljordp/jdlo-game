@@ -8,6 +8,7 @@ export class JailScene extends BaseChapterScene {
     super({ key: 'JailScene' });
     this.chapterTitle = 'Chapter 4: Locked Up';
     this.nextScene = 'TractorScene';
+    this.requiredInteractionId = 'ch3_pushups';
   }
 
   protected getPlayerTexture(): string {
