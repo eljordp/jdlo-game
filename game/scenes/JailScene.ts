@@ -51,6 +51,12 @@ export class JailScene extends BaseChapterScene {
       return;
     }
 
+    if (interactable.id === 'ch3_dice_watch') {
+      this.playDiceMinigame();
+      this.interactions.consume(interactable.id);
+      return;
+    }
+
     super.handleInteractable(interactable);
   }
 
@@ -187,6 +193,186 @@ export class JailScene extends BaseChapterScene {
         }
       },
     });
+  }
+
+  private playDiceMinigame() {
+    this.frozen = true;
+    const objects: Phaser.GameObjects.GameObject[] = [];
+    let roundNum = 0;
+    let wins = 0;
+    const maxRounds = 3;
+
+    // Dark overlay
+    const overlay = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.7)
+      .setScrollFactor(0).setDepth(300);
+    objects.push(overlay);
+
+    // Title
+    const title = this.add.text(GAME_WIDTH / 2, 80, 'YARD DICE', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '24px',
+      color: '#f0c040',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+    objects.push(title);
+
+    // Round info
+    const roundText = this.add.text(GAME_WIDTH / 2, 130, 'Round 1/3', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '12px',
+      color: '#aaaacc',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+    objects.push(roundText);
+
+    // Two dice (white squares)
+    const diceSize = 60;
+    const die1Bg = this.add.rectangle(GAME_WIDTH / 2 - 60, GAME_HEIGHT / 2, diceSize, diceSize, 0xffffff)
+      .setScrollFactor(0).setDepth(301).setStrokeStyle(3, 0x333333);
+    const die2Bg = this.add.rectangle(GAME_WIDTH / 2 + 60, GAME_HEIGHT / 2, diceSize, diceSize, 0xffffff)
+      .setScrollFactor(0).setDepth(301).setStrokeStyle(3, 0x333333);
+    objects.push(die1Bg, die2Bg);
+
+    // Dice value text (shown as number for simplicity, with dot patterns)
+    const die1Text = this.add.text(GAME_WIDTH / 2 - 60, GAME_HEIGHT / 2, '?', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '28px',
+      color: '#111111',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(302);
+    const die2Text = this.add.text(GAME_WIDTH / 2 + 60, GAME_HEIGHT / 2, '?', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '28px',
+      color: '#111111',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(302);
+    objects.push(die1Text, die2Text);
+
+    // Instructions
+    const instr = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 100, 'Press SPACE to roll', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '12px',
+      color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+    objects.push(instr);
+
+    // Result text
+    const resultText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 160, '', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '14px',
+      color: '#ffffff',
+      align: 'center',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+    objects.push(resultText);
+
+    // Win counter
+    const winText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 210, '', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '10px',
+      color: '#aaaacc',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+    objects.push(winText);
+
+    let rolling = false;
+    let canRoll = true;
+
+    const rollDice = () => {
+      if (!canRoll || rolling) return;
+      rolling = true;
+      canRoll = false;
+      resultText.setText('');
+      instr.setText('Rolling...');
+
+      // Rapid random cycling for 1 second
+      let rollCount = 0;
+      const rollEvent = this.time.addEvent({
+        delay: 60,
+        repeat: 15,
+        callback: () => {
+          rollCount++;
+          die1Text.setText(String(Phaser.Math.Between(1, 6)));
+          die2Text.setText(String(Phaser.Math.Between(1, 6)));
+
+          // Shake dice
+          die1Bg.setAngle(Phaser.Math.Between(-10, 10));
+          die2Bg.setAngle(Phaser.Math.Between(-10, 10));
+        },
+      });
+
+      // Land on final values after rolling
+      this.time.delayedCall(1100, () => {
+        rolling = false;
+        const val1 = Phaser.Math.Between(1, 6);
+        const val2 = Phaser.Math.Between(1, 6);
+        const total = val1 + val2;
+
+        die1Text.setText(String(val1));
+        die2Text.setText(String(val2));
+        die1Bg.setAngle(0);
+        die2Bg.setAngle(0);
+
+        // Bounce tween on dice
+        this.tweens.add({
+          targets: [die1Bg, die1Text],
+          scaleY: 1.2,
+          duration: 100,
+          yoyo: true,
+        });
+        this.tweens.add({
+          targets: [die2Bg, die2Text],
+          scaleY: 1.2,
+          duration: 100,
+          yoyo: true,
+          delay: 50,
+        });
+
+        roundNum++;
+
+        if (total >= 7) {
+          wins++;
+          resultText.setText(`${total}! You win! +1 soup from commissary`);
+          resultText.setColor('#40c040');
+        } else {
+          resultText.setText(`${total}. You lose. Better luck next time.`);
+          resultText.setColor('#ff4444');
+        }
+
+        winText.setText(`Wins: ${wins} / ${roundNum}`);
+
+        if (roundNum < maxRounds) {
+          roundText.setText(`Round ${roundNum + 1}/${maxRounds}`);
+          instr.setText('Press SPACE to roll');
+          this.time.delayedCall(1200, () => {
+            canRoll = true;
+          });
+        } else {
+          // Game over
+          instr.setText('');
+          roundText.setText('');
+
+          const finalMsg = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 260,
+            "JP walks away. This isn't his game anymore.", {
+            fontFamily: '"Press Start 2P", monospace',
+            fontSize: '10px',
+            color: '#aaaacc',
+            align: 'center',
+          }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+          objects.push(finalMsg);
+
+          // Clean up after 3 seconds
+          this.time.delayedCall(3000, () => {
+            spaceKey.off('down', rollListener);
+            this.input.off('pointerdown', rollListener);
+            for (const obj of objects) {
+              if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
+            }
+            this.frozen = false;
+          });
+        }
+      });
+    };
+
+    // Input
+    const spaceKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    const rollListener = () => rollDice();
+    spaceKey.on('down', rollListener);
+    this.input.on('pointerdown', rollListener);
   }
 
   private playTimeSkip() {

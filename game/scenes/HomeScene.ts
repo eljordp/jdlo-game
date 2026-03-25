@@ -111,86 +111,239 @@ export class HomeScene extends BaseChapterScene {
   }
 
   private playFetch() {
-    // Find the Frenchie NPC sprite
-    const frenchie = this.npcs.find(n => n.id === 'ch0_frenchie');
-    if (!frenchie) return;
-
     this.frozen = true;
-    const frenchieSprite = frenchie.sprite;
-    const startX = frenchieSprite.x;
-    const startY = frenchieSprite.y;
+    const objects: Phaser.GameObjects.GameObject[] = [];
+    let score = 0;
+    let round = 0;
+    const totalRounds = 3;
 
-    // Show "JP throws the ball!" text
-    this.dialogue.show([
-      { speaker: 'Narrator', text: 'JP picks up a tennis ball and throws it across the yard.' },
-    ], () => {
-      // Create a ball
-      const ball = this.add.circle(
-        this.player.x, this.player.y - 20,
-        6, 0xc0d030
-      ).setDepth(15);
+    // Dark overlay
+    const overlay = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.6)
+      .setScrollFactor(0).setDepth(300);
+    objects.push(overlay);
 
-      // Ball flies across yard
-      const targetX = startX + 200;
-      const targetY = startY - 40;
+    // Green yard background
+    const yard = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 100, GAME_WIDTH - 160, 500, 0x4a8c3f)
+      .setScrollFactor(0).setDepth(300);
+    objects.push(yard);
 
+    // Title
+    const title = this.add.text(GAME_WIDTH / 2, 70, 'FETCH WITH IVY!', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '20px',
+      color: '#f0c040',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+    objects.push(title);
+
+    // Score display
+    const scoreText = this.add.text(GAME_WIDTH - 100, 70, 'Score: 0/3', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '11px',
+      color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+    objects.push(scoreText);
+
+    // JP position (left side)
+    const jpSprite = this.add.sprite(200, GAME_HEIGHT / 2 + 100, this.getPlayerTexture(), 6)
+      .setScale(5).setScrollFactor(0).setDepth(302);
+    objects.push(jpSprite);
+
+    // Ivy sprite (near JP)
+    const frenchie = this.npcs.find(n => n.id === 'ch0_frenchie');
+    const ivyTexture = frenchie ? 'npc_frenchie' : this.getPlayerTexture();
+    const ivy = this.add.sprite(260, GAME_HEIGHT / 2 + 140, ivyTexture, 0)
+      .setScale(4).setScrollFactor(0).setDepth(302);
+    objects.push(ivy);
+
+    // Aim line (oscillating angle indicator)
+    const aimLine = this.add.line(0, 0, 200, GAME_HEIGHT / 2 + 80, 500, GAME_HEIGHT / 2 - 100, 0xffffff, 0.6)
+      .setScrollFactor(0).setDepth(301).setLineWidth(2);
+    objects.push(aimLine);
+
+    // Instruction
+    const instr = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 60, 'SPACE to throw!', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '11px',
+      color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+    objects.push(instr);
+
+    // Obstacles — trees/walls on edges of yard
+    const wallZones = [
+      { x: 100, y: 300, w: 40, h: 500 },  // left wall
+      { x: GAME_WIDTH - 100, y: 300, w: 40, h: 500 },  // right wall
+      { x: GAME_WIDTH / 2, y: 150, w: 800, h: 40 },  // top wall
+    ];
+
+    // Aim angle oscillation
+    let aimAngle = 0;
+    let aimDir = 1;
+    let aiming = true;
+    const aimSpeed = 0.03;
+
+    const startRound = () => {
+      aiming = true;
+      aimAngle = 0;
+      aimDir = 1;
+      aimLine.setVisible(true);
+      instr.setText(`Round ${round + 1}/${totalRounds} — SPACE to throw!`);
+      ivy.setPosition(260, GAME_HEIGHT / 2 + 140);
+    };
+
+    // Update aim line
+    const updateHandler = () => {
+      if (!aiming) return;
+      aimAngle += aimSpeed * aimDir;
+      if (aimAngle > 1.2) aimDir = -1;
+      if (aimAngle < -1.2) aimDir = 1;
+
+      // Update line end point based on angle
+      const throwDist = 500;
+      const endX = 200 + Math.cos(-0.3 + aimAngle * 0.8) * throwDist;
+      const endY = (GAME_HEIGHT / 2 + 80) + Math.sin(-0.3 + aimAngle * 0.8) * throwDist;
+      aimLine.setTo(200, GAME_HEIGHT / 2 + 80, endX, endY);
+    };
+
+    this.events.on('update', updateHandler);
+
+    // Throw handler
+    const throwBall = () => {
+      if (!aiming) return;
+      aiming = false;
+      aimLine.setVisible(false);
+
+      // Calculate throw direction
+      const throwDist = 500;
+      const endX = 200 + Math.cos(-0.3 + aimAngle * 0.8) * throwDist;
+      const endY = (GAME_HEIGHT / 2 + 80) + Math.sin(-0.3 + aimAngle * 0.8) * throwDist;
+
+      // Create ball
+      const ball = this.add.circle(200, GAME_HEIGHT / 2 + 80, 8, 0xc0d030)
+        .setScrollFactor(0).setDepth(303);
+      objects.push(ball);
+
+      // Fly ball
       this.tweens.add({
         targets: ball,
-        x: targetX,
-        y: targetY,
+        x: endX,
+        y: endY,
         duration: 600,
         ease: 'Quad.easeOut',
         onComplete: () => {
-          // Ball bounces
-          this.tweens.add({
-            targets: ball,
-            y: targetY + 20,
-            duration: 200,
-            yoyo: true,
-          });
+          // Check if ball landed in yard (not hitting walls)
+          const inYard = endX > 140 && endX < GAME_WIDTH - 140 &&
+                         endY > 180 && endY < GAME_HEIGHT - 80;
 
-          // Frenchie chases the ball
-          this.tweens.add({
-            targets: frenchieSprite,
-            x: targetX,
-            y: targetY + 20,
-            duration: 800,
-            ease: 'Quad.easeInOut',
-            onComplete: () => {
-              // Frenchie got the ball!
+          if (inYard) {
+            // Ivy chases ball
+            this.tweens.add({
+              targets: ivy,
+              x: endX,
+              y: endY,
+              duration: 700,
+              ease: 'Quad.easeInOut',
+              onComplete: () => {
+                ball.destroy();
+                score++;
+                scoreText.setText(`Score: ${score}/${totalRounds}`);
+
+                // Good girl text
+                const good = this.add.text(ivy.x, ivy.y - 40, 'Good girl Ivy!', {
+                  fontFamily: '"Press Start 2P", monospace',
+                  fontSize: '10px',
+                  color: '#40c040',
+                }).setOrigin(0.5).setScrollFactor(0).setDepth(303);
+                objects.push(good);
+
+                // Wiggle
+                this.tweens.add({
+                  targets: ivy,
+                  angle: 8,
+                  duration: 100,
+                  yoyo: true,
+                  repeat: 3,
+                  onComplete: () => {
+                    ivy.setAngle(0);
+                    this.tweens.add({
+                      targets: good,
+                      alpha: 0,
+                      duration: 500,
+                      onComplete: () => {
+                        good.destroy();
+                        round++;
+                        if (round < totalRounds) {
+                          startRound();
+                        } else {
+                          finishGame();
+                        }
+                      },
+                    });
+                  },
+                });
+              },
+            });
+          } else {
+            // Missed — ball hit a wall
+            ball.setFillStyle(0xff4444);
+            const miss = this.add.text(endX, endY - 30, 'Out of bounds!', {
+              fontFamily: '"Press Start 2P", monospace',
+              fontSize: '10px',
+              color: '#ff4444',
+            }).setOrigin(0.5).setScrollFactor(0).setDepth(303);
+            objects.push(miss);
+
+            this.time.delayedCall(1000, () => {
               ball.destroy();
-
-              // Frenchie runs back with a happy wobble
-              this.tweens.add({
-                targets: frenchieSprite,
-                x: startX,
-                y: startY,
-                duration: 1000,
-                ease: 'Quad.easeInOut',
-                onComplete: () => {
-                  // Frenchie wiggles
-                  this.tweens.add({
-                    targets: frenchieSprite,
-                    angle: 8,
-                    duration: 150,
-                    yoyo: true,
-                    repeat: 4,
-                    onComplete: () => {
-                      frenchieSprite.setAngle(0);
-                      this.dialogue.show([
-                        { speaker: 'Narrator', text: 'The Frenchie drops the ball at JP\'s feet and wags his whole body. Again. Again. Again.' },
-                        { speaker: 'JP\'s Mind', text: 'This dog is the only one who never asks me what I\'m doing with my life.' },
-                      ], () => {
-                        this.frozen = false;
-                      });
-                    },
-                  });
-                },
-              });
-            },
-          });
+              miss.destroy();
+              round++;
+              if (round < totalRounds) {
+                startRound();
+              } else {
+                finishGame();
+              }
+            });
+          }
         },
       });
-    });
+    };
+
+    const finishGame = () => {
+      this.events.off('update', updateHandler);
+      spaceKey.off('down', throwListener);
+      this.input.off('pointerdown', throwListener);
+
+      instr.setText(`Ivy fetched ${score}/${totalRounds} balls!`);
+      title.setText(score === totalRounds ? 'PERFECT!' : score > 0 ? 'GOOD BOY JP!' : 'TRY AGAIN...');
+
+      const resultMsg = score === totalRounds
+        ? 'Ivy is the happiest dog alive.'
+        : score > 0
+        ? 'Ivy had fun. She always does.'
+        : 'Ivy tilts her head. She still loves JP.';
+
+      const result = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 250, resultMsg, {
+        fontFamily: '"Press Start 2P", monospace',
+        fontSize: '11px',
+        color: '#aaaacc',
+        align: 'center',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+      objects.push(result);
+
+      this.time.delayedCall(3000, () => {
+        for (const obj of objects) {
+          if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
+        }
+        this.frozen = false;
+      });
+    };
+
+    // Input
+    const spaceKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    const throwListener = () => throwBall();
+    spaceKey.on('down', throwListener);
+    this.input.on('pointerdown', throwListener);
+
+    // Start first round
+    startRound();
   }
 }
