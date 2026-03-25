@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT, SCALE } from '../config';
+import { GAME_WIDTH, GAME_HEIGHT, SCALE, CHAR_SCALE } from '../config';
 import { MusicSystem } from '../systems/MusicSystem';
 
 /**
@@ -294,7 +294,7 @@ export class LAScene extends Phaser.Scene {
         // 4 characters sitting around the table
         // JP at left (ch5 = come-up outfit)
         this.addObj(
-          this.add.sprite(cx - 140, tableY - 70, 'player-ch5', 0).setScale(SCALE)
+          this.add.sprite(cx - 140, tableY - 70, 'player-ch5', 0).setScale(CHAR_SCALE)
         );
         // Friends
         this.addObj(
@@ -434,12 +434,12 @@ export class LAScene extends Phaser.Scene {
 
         // JP standing at window, facing up (looking out, back to camera)
         this.addObj(
-          this.add.sprite(cx, winY + 100, 'player-ch5', 2).setScale(SCALE)
+          this.add.sprite(cx, winY + 100, 'player-ch5', 2).setScale(CHAR_SCALE)
         );
 
         // Reflection in window glass — semi-transparent, flipped, with wave distortion
         const reflection = this.addObj(
-          this.add.sprite(cx, winY + 180, 'player-ch5', 0).setScale(SCALE).setAlpha(0.15).setFlipY(true)
+          this.add.sprite(cx, winY + 180, 'player-ch5', 0).setScale(CHAR_SCALE).setAlpha(0.15).setFlipY(true)
         );
         // Slow alpha breathing (glass shimmer)
         this.addTween({

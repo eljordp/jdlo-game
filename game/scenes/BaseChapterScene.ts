@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { virtualInput } from '../../components/GameCanvas';
-import { GAME_WIDTH, GAME_HEIGHT, SCALED_TILE, SCALE } from '../config';
+import { GAME_WIDTH, GAME_HEIGHT, SCALED_TILE, SCALE, CHAR_SCALE } from '../config';
 import { DialogueSystem, DialogueLine } from '../systems/DialogueSystem';
 import { MapBuilder } from '../systems/MapBuilder';
 import { InteractionSystem } from '../systems/InteractionSystem';
@@ -135,7 +135,7 @@ export abstract class BaseChapterScene extends Phaser.Scene {
       spawn.x * SCALED_TILE + SCALED_TILE / 2,
       spawn.y * SCALED_TILE + SCALED_TILE / 2,
       playerTexture, 0
-    ).setScale(SCALE).setDepth(10);
+    ).setScale(CHAR_SCALE).setDepth(10);
 
     // Create NPCs
     const chapterDialogue = this.getChapterDialogue();
@@ -144,7 +144,7 @@ export abstract class BaseChapterScene extends Phaser.Scene {
         npcData.x * SCALED_TILE + SCALED_TILE / 2,
         npcData.y * SCALED_TILE + SCALED_TILE / 2,
         npcData.sprite, 0
-      ).setScale(SCALE).setDepth(9);
+      ).setScale(CHAR_SCALE).setDepth(9);
 
       // NPCs block movement
       this.collisionTiles.add(`${npcData.x},${npcData.y}`);
@@ -306,7 +306,7 @@ export abstract class BaseChapterScene extends Phaser.Scene {
       this.tweens.add({
         targets: sprite,
         y: baseY + 8,
-        scaleY: SCALE * 0.7,
+        scaleY: CHAR_SCALE * 0.7,
         duration: 600,
         yoyo: true,
         repeat: -1,
@@ -321,7 +321,7 @@ export abstract class BaseChapterScene extends Phaser.Scene {
         this.tweens.add({
           targets: sprite,
           y: baseY - 18,
-          scaleY: SCALE * 0.85,
+          scaleY: CHAR_SCALE * 0.85,
           duration: 600,
           ease: 'Quad.easeOut',
           onComplete: () => {
@@ -329,7 +329,7 @@ export abstract class BaseChapterScene extends Phaser.Scene {
               this.tweens.add({
                 targets: sprite,
                 y: baseY,
-                scaleY: SCALE,
+                scaleY: CHAR_SCALE,
                 duration: 400,
                 ease: 'Quad.easeIn',
                 onComplete: () => {
@@ -445,8 +445,8 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     if (id.includes('girl') && (id.includes('1') || id.includes('couch'))) {
       this.tweens.add({
         targets: sprite,
-        scaleX: SCALE * 1.03,
-        scaleY: SCALE * 0.97,
+        scaleX: CHAR_SCALE * 1.03,
+        scaleY: CHAR_SCALE * 0.97,
         duration: 1500,
         yoyo: true,
         repeat: -1,
@@ -540,7 +540,7 @@ export abstract class BaseChapterScene extends Phaser.Scene {
 
     // JP sprite sitting at the computer
     const jp = this.add.sprite(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 110, this.getPlayerTexture(), 2)
-      .setScale(SCALE + 1).setScrollFactor(0).setDepth(502);
+      .setScale(CHAR_SCALE + 1).setScrollFactor(0).setDepth(502);
     objects.push(jp);
 
     // Text lines appearing on the "screen" — like JP is actually browsing
@@ -828,8 +828,8 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     // Walking bounce — subtle squash-and-stretch for lively movement
     this.tweens.add({
       targets: this.player,
-      scaleY: SCALE * 1.05,
-      scaleX: SCALE * 0.95,
+      scaleY: CHAR_SCALE * 1.05,
+      scaleX: CHAR_SCALE * 0.95,
       duration: 100,
       yoyo: true,
     });

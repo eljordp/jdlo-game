@@ -1,4 +1,4 @@
-import { TILE_SIZE, COLORS, GAME_WIDTH } from '../config';
+import { TILE_SIZE, COLORS, GAME_WIDTH, CHAR_SIZE } from '../config';
 
 // Convert hex number to CSS color string
 function hexToCSS(color: number): string {
@@ -203,13 +203,209 @@ function drawPlayerFrame(
   }
 }
 
+// ─── 32x32 PLAYER SPRITE (HIGH DETAIL) ─────────────────────────────
+// 4x more pixels than 16x16 — visible hair strands, eyes with whites/pupils,
+// collar/sleeve detail, actual shoe shapes, real walking animation
+
+function drawPlayerFrame32(
+  g: DrawContext | CanvasRenderingContext2D,
+  offsetX: number,
+  direction: 'down' | 'up' | 'left' | 'right',
+  stepping: boolean,
+  outfit?: OutfitColors
+) {
+  const ox = offsetX;
+  const skin = COLORS.skinTone;
+  const skinS = COLORS.skinShadow;
+  const skinH = 0xf8d0a0;
+  const hair = COLORS.hairDark;
+  const hairH = 0x483030;
+  const shirt = outfit?.shirt ?? COLORS.shirtBlue;
+  const shirtLight = outfit?.shirtLight ?? 0x5070d0;
+  const pants = outfit?.pants ?? COLORS.pantsGrey;
+  const pantsLight = outfit?.pantsLight ?? 0x606878;
+  const shoe = outfit?.shoe ?? COLORS.shoeDark;
+  const shoeH = 0x484848;
+  const eyeWhite = 0xffffff;
+  const eyeBlack = 0x202020;
+  const eyebrow = 0x281818;
+  const mouth = 0xc07060;
+  const noseShadow = 0xd8a878;
+  const belt = 0x403830;
+  const beltBuckle = 0x908070;
+
+  // ── HAIR (rows 0-5) ──
+  px(g, ox + 10, 0, hair, 12, 1);
+  px(g, ox + 8, 1, hair, 16, 1);
+  px(g, ox + 7, 2, hair, 18, 1);
+  px(g, ox + 6, 3, hair, 20, 1);
+  px(g, ox + 6, 4, hair, 20, 1);
+  px(g, ox + 6, 5, hair, 20, 1);
+  // Hair highlights
+  px(g, ox + 12, 1, hairH, 3, 1);
+  px(g, ox + 10, 2, hairH, 2, 1);
+  px(g, ox + 15, 3, hairH, 2, 1);
+  px(g, ox + 11, 4, hairH, 1, 1);
+  px(g, ox + 18, 2, hairH, 2, 1);
+  // Forehead highlight
+  px(g, ox + 11, 5, skinH, 10, 1);
+
+  // ── FACE (rows 5-12) ──
+  px(g, ox + 6, 6, hair, 3, 3);  // side hair left
+  px(g, ox + 23, 6, hair, 3, 3); // side hair right
+  px(g, ox + 9, 5, skin, 14, 1);
+  px(g, ox + 8, 6, skin, 16, 1);
+  px(g, ox + 8, 7, skin, 16, 1);
+  px(g, ox + 8, 8, skin, 16, 1);
+  px(g, ox + 8, 9, skin, 16, 1);
+  px(g, ox + 9, 10, skin, 14, 1);
+  px(g, ox + 10, 11, skinS, 12, 1);
+  px(g, ox + 11, 12, skinS, 10, 1);
+
+  if (direction === 'down') {
+    px(g, ox + 10, 6, eyebrow, 4, 1);
+    px(g, ox + 18, 6, eyebrow, 4, 1);
+    px(g, ox + 10, 7, eyeWhite, 4, 2);
+    px(g, ox + 18, 7, eyeWhite, 4, 2);
+    px(g, ox + 12, 7, eyeBlack, 2, 2);
+    px(g, ox + 20, 7, eyeBlack, 2, 2);
+    px(g, ox + 15, 9, noseShadow, 2, 1);
+    px(g, ox + 14, 10, mouth, 4, 1);
+    px(g, ox + 7, 7, skin, 1, 2);
+    px(g, ox + 24, 7, skin, 1, 2);
+    px(g, ox + 7, 8, skinS, 1, 1);
+    px(g, ox + 24, 8, skinS, 1, 1);
+  } else if (direction === 'up') {
+    px(g, ox + 8, 6, hair, 16, 1);
+    px(g, ox + 8, 7, hair, 16, 1);
+    px(g, ox + 8, 8, hair, 16, 1);
+    px(g, ox + 8, 9, hair, 16, 1);
+    px(g, ox + 9, 10, hair, 14, 1);
+    px(g, ox + 10, 11, hair, 12, 1);
+    px(g, ox + 10, 7, hairH, 2, 1);
+    px(g, ox + 16, 8, hairH, 3, 1);
+    px(g, ox + 12, 9, hairH, 2, 1);
+    px(g, ox + 7, 7, skin, 1, 2);
+    px(g, ox + 24, 7, skin, 1, 2);
+  } else if (direction === 'left') {
+    px(g, ox + 16, 6, hair, 10, 1);
+    px(g, ox + 18, 7, hair, 6, 1);
+    px(g, ox + 20, 8, hair, 4, 1);
+    px(g, ox + 10, 6, eyebrow, 4, 1);
+    px(g, ox + 10, 7, eyeWhite, 4, 2);
+    px(g, ox + 10, 7, eyeBlack, 2, 2);
+    px(g, ox + 8, 9, noseShadow, 2, 1);
+    px(g, ox + 9, 10, mouth, 3, 1);
+    px(g, ox + 24, 7, skin, 1, 2);
+  } else {
+    px(g, ox + 6, 6, hair, 10, 1);
+    px(g, ox + 8, 7, hair, 6, 1);
+    px(g, ox + 8, 8, hair, 4, 1);
+    px(g, ox + 18, 6, eyebrow, 4, 1);
+    px(g, ox + 18, 7, eyeWhite, 4, 2);
+    px(g, ox + 20, 7, eyeBlack, 2, 2);
+    px(g, ox + 22, 9, noseShadow, 2, 1);
+    px(g, ox + 20, 10, mouth, 3, 1);
+    px(g, ox + 7, 7, skin, 1, 2);
+  }
+
+  // ── NECK (row 12-13) ──
+  px(g, ox + 13, 12, skinS, 6, 1);
+  px(g, ox + 13, 13, skinS, 6, 1);
+
+  // ── SHIRT (rows 13-21) ──
+  px(g, ox + 11, 13, 0xf0f0f0, 2, 1);
+  px(g, ox + 19, 13, 0xf0f0f0, 2, 1);
+  px(g, ox + 8, 14, shirt, 16, 1);
+  px(g, ox + 7, 15, shirt, 18, 1);
+  px(g, ox + 6, 16, shirt, 20, 1);
+  px(g, ox + 6, 17, shirt, 20, 1);
+  px(g, ox + 6, 18, shirtLight, 20, 1);
+  px(g, ox + 6, 19, shirt, 20, 1);
+  px(g, ox + 7, 20, shirtLight, 18, 1);
+  px(g, ox + 8, 21, shirt, 16, 1);
+  px(g, ox + 13, 16, shirtLight, 4, 2);
+
+  if (direction === 'left' || direction === 'right') {
+    px(g, ox + 4, 16, shirt, 2, 2);
+    px(g, ox + 26, 16, shirt, 2, 2);
+    px(g, ox + 4, 18, skin, 2, 3);
+    px(g, ox + 26, 18, skin, 2, 3);
+    px(g, ox + 4, 21, skinS, 2, 1);
+    px(g, ox + 26, 21, skinS, 2, 1);
+  } else {
+    px(g, ox + 4, 16, shirt, 2, 3);
+    px(g, ox + 26, 16, shirt, 2, 3);
+    px(g, ox + 4, 19, skin, 2, 2);
+    px(g, ox + 26, 19, skin, 2, 2);
+    px(g, ox + 4, 21, skinS, 2, 1);
+    px(g, ox + 26, 21, skinS, 2, 1);
+  }
+
+  // ── BELT (row 22) ──
+  px(g, ox + 8, 22, belt, 16, 1);
+  px(g, ox + 15, 22, beltBuckle, 2, 1);
+
+  // ── PANTS (rows 23-27) ──
+  px(g, ox + 8, 23, pants, 16, 1);
+  px(g, ox + 8, 24, pants, 16, 1);
+  px(g, ox + 8, 25, pantsLight, 7, 1);
+  px(g, ox + 17, 25, pantsLight, 7, 1);
+  px(g, ox + 15, 25, 0x000000, 2, 1);
+  px(g, ox + 9, 26, pants, 6, 1);
+  px(g, ox + 17, 26, pants, 6, 1);
+  px(g, ox + 15, 26, 0x000000, 2, 1);
+
+  // ── SHOES (rows 27-31) ──
+  if (stepping) {
+    if (direction === 'down' || direction === 'up') {
+      px(g, ox + 6, 27, pants, 6, 1);
+      px(g, ox + 20, 27, pants, 6, 1);
+      px(g, ox + 5, 28, shoe, 7, 1);
+      px(g, ox + 20, 28, shoe, 7, 1);
+      px(g, ox + 5, 29, shoe, 7, 1);
+      px(g, ox + 21, 29, shoe, 6, 1);
+      px(g, ox + 5, 30, shoeH, 7, 1);
+      px(g, ox + 21, 30, shoeH, 6, 1);
+      px(g, ox + 6, 29, shoeH, 2, 1);
+      px(g, ox + 22, 29, shoeH, 2, 1);
+    } else if (direction === 'left') {
+      px(g, ox + 5, 27, pants, 7, 1);
+      px(g, ox + 18, 27, pants, 5, 1);
+      px(g, ox + 4, 28, shoe, 8, 1);
+      px(g, ox + 18, 28, shoe, 6, 1);
+      px(g, ox + 3, 29, shoe, 8, 1);
+      px(g, ox + 19, 29, shoe, 5, 1);
+      px(g, ox + 3, 30, shoeH, 8, 1);
+    } else {
+      px(g, ox + 9, 27, pants, 5, 1);
+      px(g, ox + 20, 27, pants, 7, 1);
+      px(g, ox + 8, 28, shoe, 6, 1);
+      px(g, ox + 20, 28, shoe, 8, 1);
+      px(g, ox + 8, 29, shoe, 5, 1);
+      px(g, ox + 21, 29, shoe, 8, 1);
+      px(g, ox + 21, 30, shoeH, 8, 1);
+    }
+  } else {
+    px(g, ox + 8, 27, pants, 6, 1);
+    px(g, ox + 18, 27, pants, 6, 1);
+    px(g, ox + 7, 28, shoe, 7, 1);
+    px(g, ox + 18, 28, shoe, 7, 1);
+    px(g, ox + 7, 29, shoe, 7, 1);
+    px(g, ox + 18, 29, shoe, 7, 1);
+    px(g, ox + 7, 30, shoeH, 7, 1);
+    px(g, ox + 18, 30, shoeH, 7, 1);
+    px(g, ox + 8, 30, 0x404040, 5, 1);
+    px(g, ox + 19, 30, 0x404040, 5, 1);
+  }
+}
+
 function generatePlayer(scene: Phaser.Scene) {
-  const frameW = TILE_SIZE;
-  const frameH = TILE_SIZE;
+  const frameW = CHAR_SIZE;
+  const frameH = CHAR_SIZE;
   const sheetW = frameW * 8;
   const sheetH = frameH;
 
-  // Create raw canvas for transparency
   const canvas = document.createElement('canvas');
   canvas.width = sheetW;
   canvas.height = sheetH;
@@ -217,31 +413,23 @@ function generatePlayer(scene: Phaser.Scene) {
   rawCtx.clearRect(0, 0, sheetW, sheetH);
   const dc = new DrawContext(rawCtx);
 
-  const directions: Array<'down' | 'up' | 'left' | 'right'> = [
-    'down',
-    'up',
-    'left',
-    'right',
-  ];
+  const directions: Array<'down' | 'up' | 'left' | 'right'> = ['down', 'up', 'left', 'right'];
 
   let frameIndex = 0;
   for (const dir of directions) {
-    drawPlayerFrame(dc, frameIndex * frameW, dir, false);
+    drawPlayerFrame32(dc, frameIndex * frameW, dir, false);
     frameIndex++;
-    drawPlayerFrame(dc, frameIndex * frameW, dir, true);
+    drawPlayerFrame32(dc, frameIndex * frameW, dir, true);
     frameIndex++;
   }
 
   scene.textures.addCanvas('player', canvas);
 
-  // Add spritesheet frame data
   const texture = scene.textures.get('player');
   for (let i = 0; i < 8; i++) {
     texture.add(i, 0, i * frameW, 0, frameW, frameH);
   }
 
-  // Create animations
-  // Frame layout: 0=down-idle, 1=down-step, 2=up-idle, 3=up-step, 4=left-idle, 5=left-step, 6=right-idle, 7=right-step
   const dirs = ['down', 'up', 'left', 'right'];
   for (let i = 0; i < dirs.length; i++) {
     const base = i * 2;
@@ -377,6 +565,173 @@ function generateNPC(
   });
 }
 
+// ─── 32x32 NPC SPRITE (HIGH DETAIL) ────────────────────────────────
+// Same concept as drawNPCBase but with 4x more detail
+
+function drawNPCBase32(
+  g: DrawContext | CanvasRenderingContext2D,
+  hairColor: number,
+  hairStyle: 'short' | 'bald' | 'long' | 'hat',
+  shirtColor: number,
+  shirtAccent: number,
+  pantsColor: number,
+  skinColor: number,
+  skinShadow: number,
+  extras?: (g: DrawContext | CanvasRenderingContext2D) => void
+) {
+  const skinH = ((skinColor >> 16) + 8 > 255 ? 255 : ((skinColor >> 16) + 8)) << 16 |
+                (((skinColor >> 8) & 0xff) + 8 > 255 ? 255 : (((skinColor >> 8) & 0xff) + 8)) << 8 |
+                ((skinColor & 0xff) + 8 > 255 ? 255 : ((skinColor & 0xff) + 8));
+  const hairH = ((hairColor >> 16) + 0x18 > 255 ? 255 : ((hairColor >> 16) + 0x18)) << 16 |
+                (((hairColor >> 8) & 0xff) + 0x10 > 255 ? 255 : (((hairColor >> 8) & 0xff) + 0x10)) << 8 |
+                ((hairColor & 0xff) + 0x10 > 255 ? 255 : ((hairColor & 0xff) + 0x10));
+
+  // ── HAIR (rows 0-5) ──
+  if (hairStyle === 'short') {
+    px(g, 10, 0, hairColor, 12, 1);
+    px(g, 8, 1, hairColor, 16, 1);
+    px(g, 7, 2, hairColor, 18, 1);
+    px(g, 6, 3, hairColor, 20, 1);
+    px(g, 6, 4, hairColor, 20, 1);
+    px(g, 6, 5, hairColor, 4, 1);
+    px(g, 22, 5, hairColor, 4, 1);
+    // Hair highlights
+    px(g, 12, 1, hairH, 3, 1);
+    px(g, 10, 2, hairH, 2, 1);
+    px(g, 18, 2, hairH, 2, 1);
+  } else if (hairStyle === 'long') {
+    px(g, 10, 0, hairColor, 12, 1);
+    px(g, 8, 1, hairColor, 16, 1);
+    px(g, 7, 2, hairColor, 18, 1);
+    px(g, 6, 3, hairColor, 20, 1);
+    px(g, 6, 4, hairColor, 20, 1);
+    px(g, 6, 5, hairColor, 4, 1);
+    px(g, 22, 5, hairColor, 4, 1);
+    // Long sides flowing down
+    px(g, 4, 6, hairColor, 4, 6);
+    px(g, 24, 6, hairColor, 4, 6);
+    px(g, 5, 12, hairColor, 3, 2);
+    px(g, 24, 12, hairColor, 3, 2);
+    px(g, 12, 1, hairH, 3, 1);
+  } else if (hairStyle === 'bald') {
+    px(g, 10, 1, skinColor, 12, 1);
+    px(g, 8, 2, skinColor, 16, 1);
+    px(g, 7, 3, skinColor, 18, 1);
+    px(g, 10, 1, skinShadow, 12, 1); // subtle shadow on scalp
+  } else if (hairStyle === 'hat') {
+    px(g, 6, 0, hairColor, 20, 1);
+    px(g, 4, 1, hairColor, 24, 1);
+    px(g, 4, 2, hairColor, 24, 1);
+    px(g, 6, 3, hairColor, 20, 1);
+    px(g, 6, 4, hairColor, 20, 1);
+    px(g, 6, 5, hairColor, 4, 1);
+    px(g, 22, 5, hairColor, 4, 1);
+    // Hat brim extends
+    px(g, 2, 2, hairColor, 2, 1);
+    px(g, 28, 2, hairColor, 2, 1);
+  }
+
+  // ── FACE (rows 5-12) ──
+  px(g, 10, 5, skinColor, 12, 1);
+  px(g, 8, 6, skinColor, 16, 1);
+  px(g, 8, 7, skinColor, 16, 1);
+  px(g, 8, 8, skinColor, 16, 1);
+  px(g, 8, 9, skinColor, 16, 1);
+  px(g, 9, 10, skinColor, 14, 1);
+  px(g, 10, 11, skinShadow, 12, 1);
+  px(g, 11, 12, skinShadow, 10, 1);
+  // Forehead highlight
+  px(g, 12, 5, skinH, 8, 1);
+
+  // Eyebrows
+  px(g, 10, 6, 0x282020, 4, 1);
+  px(g, 18, 6, 0x282020, 4, 1);
+  // Eyes — white with pupil
+  px(g, 10, 7, 0xffffff, 4, 2);
+  px(g, 18, 7, 0xffffff, 4, 2);
+  px(g, 12, 7, 0x202020, 2, 2);
+  px(g, 20, 7, 0x202020, 2, 2);
+  // Nose shadow
+  px(g, 15, 9, skinShadow, 2, 1);
+  // Mouth
+  px(g, 14, 10, 0xc07060, 4, 1);
+  // Ears
+  px(g, 7, 7, skinColor, 1, 2);
+  px(g, 24, 7, skinColor, 1, 2);
+  px(g, 7, 8, skinShadow, 1, 1);
+  px(g, 24, 8, skinShadow, 1, 1);
+
+  // ── NECK (row 12-13) ──
+  px(g, 13, 12, skinShadow, 6, 1);
+  px(g, 13, 13, skinShadow, 6, 1);
+
+  // ── SHIRT (rows 13-21) ──
+  px(g, 12, 13, shirtColor, 2, 1);
+  px(g, 18, 13, shirtColor, 2, 1);
+  px(g, 8, 14, shirtColor, 16, 1);
+  px(g, 7, 15, shirtColor, 18, 1);
+  px(g, 6, 16, shirtColor, 20, 1);
+  px(g, 6, 17, shirtColor, 20, 1);
+  px(g, 6, 18, shirtAccent, 20, 1);
+  px(g, 6, 19, shirtColor, 20, 1);
+  px(g, 7, 20, shirtAccent, 18, 1);
+  px(g, 8, 21, shirtColor, 16, 1);
+  // Collar / neck detail
+  px(g, 12, 13, 0xf0f0f0, 2, 1);
+  px(g, 18, 13, 0xf0f0f0, 2, 1);
+
+  // Arms
+  px(g, 4, 16, shirtColor, 2, 3);
+  px(g, 26, 16, shirtColor, 2, 3);
+  px(g, 4, 19, skinColor, 2, 2);
+  px(g, 26, 19, skinColor, 2, 2);
+  // Hands
+  px(g, 4, 21, skinShadow, 2, 1);
+  px(g, 26, 21, skinShadow, 2, 1);
+
+  // ── BELT (row 22) ──
+  px(g, 8, 22, 0x403830, 16, 1);
+
+  // ── PANTS (rows 23-27) ──
+  px(g, 8, 23, pantsColor, 16, 1);
+  px(g, 8, 24, pantsColor, 16, 1);
+  px(g, 8, 25, pantsColor, 7, 1);
+  px(g, 17, 25, pantsColor, 7, 1);
+  px(g, 15, 25, 0x000000, 2, 1);
+  px(g, 9, 26, pantsColor, 6, 1);
+  px(g, 17, 26, pantsColor, 6, 1);
+  px(g, 15, 26, 0x000000, 2, 1);
+
+  // ── SHOES (rows 27-30) ──
+  px(g, 8, 27, pantsColor, 6, 1);
+  px(g, 18, 27, pantsColor, 6, 1);
+  px(g, 7, 28, 0x303030, 7, 1);
+  px(g, 18, 28, 0x303030, 7, 1);
+  px(g, 7, 29, 0x303030, 7, 1);
+  px(g, 18, 29, 0x303030, 7, 1);
+  px(g, 7, 30, 0x404040, 7, 1);
+  px(g, 18, 30, 0x404040, 7, 1);
+
+  if (extras) extras(g);
+}
+
+function generateNPC32(
+  scene: Phaser.Scene,
+  key: string,
+  hairColor: number,
+  hairStyle: 'short' | 'bald' | 'long' | 'hat',
+  shirtColor: number,
+  shirtAccent: number,
+  pantsColor: number,
+  skinColor: number,
+  skinShadow: number,
+  extras?: (g: DrawContext | CanvasRenderingContext2D) => void
+) {
+  makeTexture(scene, key, CHAR_SIZE, CHAR_SIZE, (g) => {
+    drawNPCBase32(g, hairColor, hairStyle, shirtColor, shirtAccent, pantsColor, skinColor, skinShadow, extras);
+  });
+}
+
 function generateAllNPCs(scene: Phaser.Scene) {
   // Friend — warm colors, friendly
   generateNPC(
@@ -488,8 +843,8 @@ function generateAllNPCs(scene: Phaser.Scene) {
 
   // ── Story-specific NPCs (aliases + unique characters) ──
 
-  // Female NPC (Mom)
-  generateNPC(
+  // Female NPC (Mom) — 32x32
+  generateNPC32(
     scene,
     'npc_female',
     0x402020, // dark hair
@@ -498,11 +853,18 @@ function generateAllNPCs(scene: Phaser.Scene) {
     0x9050b0,
     0x404060, // dark pants
     0xf0c090,
-    0xd0a070
+    0xd0a070,
+    (g) => {
+      // Lipstick
+      px(g, 14, 10, 0xc05060, 4, 1);
+      // Earrings
+      px(g, 7, 9, 0xd0b040, 1, 1);
+      px(g, 24, 9, 0xd0b040, 1, 1);
+    }
   );
 
-  // Pops — older, warm, strong
-  generateNPC(
+  // Pops — older, warm, strong — 32x32
+  generateNPC32(
     scene,
     'npc_pops',
     0x504030, // dark brown hair
@@ -511,7 +873,16 @@ function generateAllNPCs(scene: Phaser.Scene) {
     0x907050,
     0x405060, // dark jeans
     0xe0b080,
-    0xc09060
+    0xc09060,
+    (g) => {
+      // Slight stubble / five o'clock shadow
+      px(g, 12, 10, 0x907868, 2, 1);
+      px(g, 18, 10, 0x907868, 2, 1);
+      px(g, 13, 11, 0x907868, 6, 1);
+      // Wider shoulders (strong build)
+      px(g, 3, 16, 0x806040, 1, 2);
+      px(g, 28, 16, 0x806040, 1, 2);
+    }
   );
 
   // Kid — young, casual
@@ -527,8 +898,8 @@ function generateAllNPCs(scene: Phaser.Scene) {
     0xd0a070
   );
 
-  // Shady (underscore alias)
-  generateNPC(
+  // Shady (underscore alias) — 32x32
+  generateNPC32(
     scene,
     'npc_shady',
     0x202020,
@@ -539,9 +910,12 @@ function generateAllNPCs(scene: Phaser.Scene) {
     0xe0b080,
     0xc09060,
     (g) => {
-      px(g, 5, 4, 0x101010, 2, 1);
-      px(g, 9, 4, 0x101010, 2, 1);
-      px(g, 7, 4, 0x101010, 2, 1);
+      // Dark sunglasses — wider at 32x32
+      px(g, 10, 7, 0x101010, 4, 2);
+      px(g, 18, 7, 0x101010, 4, 2);
+      px(g, 14, 7, 0x101010, 4, 1); // bridge
+      // Scar or stubble
+      px(g, 12, 10, 0xb09068, 2, 1);
     }
   );
 
@@ -558,8 +932,8 @@ function generateAllNPCs(scene: Phaser.Scene) {
     0xd0a070
   );
 
-  // Inmate — orange jumpsuit
-  generateNPC(
+  // Inmate — orange jumpsuit — 32x32
+  generateNPC32(
     scene,
     'npc_inmate',
     0x303030,
@@ -568,7 +942,14 @@ function generateAllNPCs(scene: Phaser.Scene) {
     0xc06018,
     0xd07020, // matching pants
     0xe0b080,
-    0xc09060
+    0xc09060,
+    (g) => {
+      // ID number on chest
+      px(g, 12, 16, 0x181818, 1, 2);
+      px(g, 14, 16, 0x181818, 1, 2);
+      px(g, 16, 16, 0x181818, 1, 2);
+      px(g, 18, 16, 0x181818, 1, 2);
+    }
   );
 
   // Inmate 2 — tatted, bald
@@ -647,8 +1028,8 @@ function generateAllNPCs(scene: Phaser.Scene) {
     }
   );
 
-  // Guard (underscore alias)
-  generateNPC(
+  // Guard (underscore alias) — 32x32
+  generateNPC32(
     scene,
     'npc_guard',
     0x404040,
@@ -659,8 +1040,15 @@ function generateAllNPCs(scene: Phaser.Scene) {
     0xf0c090,
     0xd0a070,
     (g) => {
-      px(g, 5, 8, 0xd0c030, 2, 2);
-      px(g, 2, 2, 0x2050a0, 12, 1);
+      // Badge — gold, detailed
+      px(g, 10, 16, 0xd0c030, 4, 3);
+      px(g, 11, 17, 0xe0d040, 2, 1);
+      // Hat brim — wide
+      px(g, 4, 4, 0x2050a0, 24, 1);
+      px(g, 5, 3, 0x2050a0, 22, 1);
+      // Belt with tools
+      px(g, 8, 22, 0x303030, 16, 1);
+      px(g, 20, 22, 0x404040, 2, 1); // radio
     }
   );
 
@@ -741,76 +1129,88 @@ function generateAllNPCs(scene: Phaser.Scene) {
     }
   );
 
-  // Sticker Smith — Indian with beard, green brand shirt (new key)
-  generateNPC(
+  // Sticker Smith — Indian with beard, green brand shirt — 32x32
+  generateNPC32(
     scene,
     'npc_sticker_smith',
-    0x181818, // dark hair
+    0x181818,
     'short',
-    0x209020, // green brand shirt
+    0x209020,
     0x30a030,
     0x303840,
-    0x8a6a40, // brown skin
-    0x705030, // shadow
+    0x8a6a40,
+    0x705030,
     (g) => {
-      // Black beard — fill chin/jaw area rows 5-7
-      px(g, 5, 5, 0x202020, 6, 1); // upper beard across lower face
-      px(g, 5, 6, 0x202020, 6, 1); // mid beard
-      px(g, 6, 7, 0x202020, 4, 1); // lower chin beard
-      px(g, 4, 5, 0x202020, 1, 2); // left jaw
-      px(g, 11, 5, 0x202020, 1, 2); // right jaw
+      // Full thick beard — 32x32 detail: covers jaw, chin, cheeks
+      px(g, 9, 9, 0x202020, 14, 1);   // upper beard across lower face
+      px(g, 8, 10, 0x202020, 16, 1);  // mid beard
+      px(g, 9, 11, 0x1a1a1a, 14, 1);  // lower beard
+      px(g, 10, 12, 0x202020, 12, 1); // chin beard
+      px(g, 11, 13, 0x1a1a1a, 10, 1); // bottom chin
+      px(g, 7, 8, 0x202020, 2, 3);    // left jaw beard
+      px(g, 23, 8, 0x202020, 2, 3);   // right jaw beard
+      // Beard texture
+      px(g, 12, 10, 0x2a2a2a, 2, 1);
+      px(g, 18, 11, 0x2a2a2a, 2, 1);
     }
   );
 
-  // Nolan — JP's homie, white skin, brown hair, green shirt, jeans
-  generateNPC(
+  // Nolan — JP's homie — 32x32
+  generateNPC32(
     scene,
     'npc_nolan',
-    0x604830, // brown hair
+    0x604830,
     'short',
-    0x40a050, // green shirt
+    0x40a050,
     0x50b060,
-    0x4060a0, // jeans
-    0xf0c890, // light skin
+    0x4060a0,
+    0xf0c890,
     0xd0a870
   );
 
-  // David — JP's homie, light brown skin, dark curly hair, red shirt
-  generateNPC(
+  // David — JP's homie — 32x32
+  generateNPC32(
     scene,
     'npc_david',
-    0x302020, // dark curly hair
+    0x302020,
     'short',
-    0xc04040, // red shirt
+    0xc04040,
     0xd05050,
-    0x383840, // dark pants
-    0xe0b080, // light brown skin
-    0xc09060
+    0x383840,
+    0xe0b080,
+    0xc09060,
+    (g) => {
+      // Curly hair texture — extra dots on top
+      px(g, 9, 1, 0x383028, 2, 1);
+      px(g, 14, 0, 0x383028, 2, 1);
+      px(g, 19, 1, 0x383028, 2, 1);
+      px(g, 11, 0, 0x383028, 1, 1);
+    }
   );
 
-  // Cooper — JP's homie, white skin, blonde hair, blue shirt, khakis
-  generateNPC(
+  // Cooper — JP's homie — 32x32
+  generateNPC32(
     scene,
     'npc_cooper',
-    0xc0a050, // blonde hair
+    0xc0a050,
     'short',
-    0x4060c0, // blue shirt
+    0x4060c0,
     0x5070d0,
-    0xa09060, // khaki pants
-    0xf0c890, // white skin
+    0xa09060,
+    0xf0c890,
     0xd0a870
   );
 
-  // Terrel — chill frat homie, dark skin, white tee, dark jeans
-  generateNPC(
+  // Terrel — chill frat homie — 32x32
+  generateNPC32(
     scene,
-    'npc_terrel',
-    0x181818, // short dark hair
+    'npc_terrell',
+    0x181818,
     'short',
-    0xf0f0f0, // white t-shirt
+    0xf0f0f0,
     0xe0e0e0,
-    0x303840, // dark jeans
-    0xa07848, // dark skin
+    0x303840,
+    0xa07848,
     0x806030
   );
 
@@ -862,29 +1262,39 @@ function generateAllNPCs(scene: Phaser.Scene) {
     }
   );
 
-  // Malachi — business partner, man bun + glasses + navy suit
-  generateNPC(
+  // Malachi — business partner, man bun + glasses + navy suit — 32x32
+  generateNPC32(
     scene,
     'npc_malachi',
     0x201818,
     'short',
-    0x1a2040, // dark navy suit jacket
+    0x1a2040,
     0x222850,
-    0x1a1a2a, // dark suit pants
+    0x1a1a2a,
     0xc09060,
     0xa07848,
     (g) => {
-      // Man bun — extra hair stacked on top of head
-      px(g, 6, -1, 0x201818, 4, 1);
-      px(g, 7, -2, 0x201818, 2, 1);
-      // Glasses frames over eyes
-      px(g, 4, 4, 0xc0c0d0, 3, 1); // left lens frame
-      px(g, 9, 4, 0xc0c0d0, 3, 1); // right lens frame
-      px(g, 7, 4, 0xc0c0d0, 2, 1); // bridge
-      px(g, 4, 3, 0xc0c0d0, 1, 1); // left top corner
-      px(g, 11, 3, 0xc0c0d0, 1, 1); // right top corner
+      // Man bun — prominent on top of head
+      px(g, 12, -2, 0x201818, 8, 1);
+      px(g, 13, -3, 0x201818, 6, 1);
+      px(g, 14, -4, 0x201818, 4, 1);
+      // Hair tie
+      px(g, 12, -1, 0x404040, 8, 1);
+      // Glasses frames — full rectangle frames, visible
+      px(g, 9, 6, 0xc0c0d0, 6, 1);   // left lens top
+      px(g, 9, 8, 0xc0c0d0, 6, 1);   // left lens bottom
+      px(g, 9, 7, 0xc0c0d0, 1, 1);   // left frame left
+      px(g, 14, 7, 0xc0c0d0, 1, 1);  // left frame right
+      px(g, 17, 6, 0xc0c0d0, 6, 1);  // right lens top
+      px(g, 17, 8, 0xc0c0d0, 6, 1);  // right lens bottom
+      px(g, 17, 7, 0xc0c0d0, 1, 1);  // right frame left
+      px(g, 22, 7, 0xc0c0d0, 1, 1);  // right frame right
+      px(g, 15, 7, 0xc0c0d0, 2, 1);  // bridge
+      // Lens tint (subtle)
+      px(g, 10, 7, 0xd0d8e0, 4, 1);
+      px(g, 18, 7, 0xd0d8e0, 4, 1);
       // White collar detail
-      px(g, 6, 7, 0xf0f0f0, 4, 1);
+      px(g, 12, 13, 0xf0f0f0, 8, 1);
     }
   );
 
@@ -976,53 +1386,34 @@ function generateAllNPCs(scene: Phaser.Scene) {
     px(g, 10, 14, 0xa08060, 2, 1);
   });
 
-  // Dealer — street dealer: gold chain, black cap, dark clothes, menacing
-  makeTexture(scene, 'npc_dealer', TILE_SIZE, TILE_SIZE, (g) => {
-    const skin = 0xe0b080;
-    const skinS = 0xc09060;
-    const cap = 0x181818;
-    const shirt = 0x202020;
-    const pants = 0x181818;
-    // Cap
-    px(g, 3, 0, cap, 10, 1);
-    px(g, 2, 1, cap, 12, 1);
-    px(g, 2, 2, cap, 12, 1); // brim extends
-    px(g, 1, 2, cap, 1, 1); // brim left
-    px(g, 14, 2, cap, 1, 1); // brim right
-    // Face
-    px(g, 5, 3, skin, 6, 1);
-    px(g, 4, 4, skin, 8, 1);
-    px(g, 4, 5, skin, 8, 1);
-    px(g, 5, 6, skinS, 6, 1);
-    // Narrow eyes (menacing)
-    px(g, 5, 4, 0x101010, 2, 1);
-    px(g, 9, 4, 0x101010, 2, 1);
-    // Frown
-    px(g, 7, 5, 0x904040, 2, 1);
-    // Gold chain on neck
-    px(g, 5, 7, 0xd0b040, 6, 1);
-    px(g, 7, 8, 0xd0b040, 2, 1); // chain dip
-    // Shirt
-    px(g, 4, 7, shirt, 1, 1);
-    px(g, 11, 7, shirt, 1, 1);
-    px(g, 3, 8, shirt, 4, 1);
-    px(g, 9, 8, shirt, 4, 1);
-    px(g, 3, 9, shirt, 10, 1);
-    px(g, 4, 10, shirt, 8, 1);
-    // Arms
-    px(g, 2, 8, skin, 1, 2);
-    px(g, 13, 8, skin, 1, 2);
-    px(g, 2, 10, skin);
-    px(g, 13, 10, skin);
-    // Pants
-    px(g, 4, 11, pants, 8, 1);
-    px(g, 4, 12, pants, 3, 1);
-    px(g, 9, 12, pants, 3, 1);
-    px(g, 7, 12, 0x000000, 2, 1);
-    // Shoes
-    px(g, 4, 13, 0x101010, 3, 1);
-    px(g, 9, 13, 0x101010, 3, 1);
-  });
+  // Dealer — street dealer: gold chain, black cap, dark clothes — 32x32
+  generateNPC32(
+    scene,
+    'npc_dealer',
+    0x181818, // cap color used as hair
+    'hat',
+    0x202020,
+    0x181818,
+    0x181818,
+    0xe0b080,
+    0xc09060,
+    (g) => {
+      // Override eyes with narrow menacing slits
+      px(g, 10, 7, 0x101010, 4, 1);
+      px(g, 18, 7, 0x101010, 4, 1);
+      // Frown
+      px(g, 14, 10, 0x904040, 4, 1);
+      // Gold chain — thick, prominent
+      px(g, 10, 12, 0xd0b040, 12, 1);
+      px(g, 12, 13, 0xd0b040, 8, 1);
+      px(g, 14, 14, 0xc0a030, 4, 1); // chain pendant
+      // Override shoes to dark
+      px(g, 7, 28, 0x101010, 7, 1);
+      px(g, 18, 28, 0x101010, 7, 1);
+      px(g, 7, 29, 0x101010, 7, 1);
+      px(g, 18, 29, 0x101010, 7, 1);
+    }
+  );
 
   // Lawyer — grey hair, glasses, suit, briefcase
   makeTexture(scene, 'npc_lawyer', TILE_SIZE, TILE_SIZE, (g) => {
@@ -1225,118 +1616,141 @@ function generateAllNPCs(scene: Phaser.Scene) {
     px(g, 9, 13, 0x101010, 3, 1);
   });
 
-  // Sister — young girl, smaller, long dark hair, pink top
-  makeTexture(scene, 'npc_sister', TILE_SIZE, TILE_SIZE, (g) => {
-    // Shift everything down 2px to appear shorter
-    const oy = 2;
-    // Hair — long dark
-    px(g, 5, oy + 0, 0x302020, 6, 1);
-    px(g, 4, oy + 1, 0x302020, 8, 1);
-    px(g, 3, oy + 2, 0x302020, 10, 1);
-    px(g, 3, oy + 3, 0x302020, 2, 1);
-    px(g, 11, oy + 3, 0x302020, 2, 1);
-    // Long sides
-    px(g, 2, oy + 4, 0x302020, 2, 3);
-    px(g, 12, oy + 4, 0x302020, 2, 3);
-    // Face
-    px(g, 5, oy + 3, 0xf0c090, 6, 1);
-    px(g, 4, oy + 4, 0xf0c090, 8, 1);
-    px(g, 4, oy + 5, 0xf0c090, 8, 1);
-    px(g, 5, oy + 6, 0xd0a070, 6, 1);
-    // Eyes
-    px(g, 5, oy + 4, 0xffffff, 2, 1);
-    px(g, 9, oy + 4, 0xffffff, 2, 1);
-    px(g, 6, oy + 4, 0x202020);
-    px(g, 10, oy + 4, 0x202020);
-    // Mouth — smile
-    px(g, 7, oy + 5, 0xc07060, 2, 1);
-    // Pink/purple top
-    px(g, 4, oy + 7, 0xc060a0, 8, 1);
-    px(g, 3, oy + 8, 0xc060a0, 10, 1);
-    px(g, 3, oy + 9, 0xd070b0, 10, 1);
-    // Shorts
-    px(g, 4, oy + 10, 0x505060, 8, 1);
-    px(g, 4, oy + 11, 0x505060, 3, 1);
-    px(g, 9, oy + 11, 0x505060, 3, 1);
-    // Shoes
-    px(g, 4, oy + 12, 0xf08080, 3, 1);
-    px(g, 9, oy + 12, 0xf08080, 3, 1);
-  });
+  // Sister — young girl, smaller, long dark hair, pink top — 32x32
+  generateNPC32(
+    scene,
+    'npc_sister',
+    0x302020,
+    'long',
+    0xc060a0, // pink/purple top
+    0xd070b0,
+    0x505060, // shorts
+    0xf0c090,
+    0xd0a070,
+    (g) => {
+      // Shift shorter — draw additional shorter legs/shoes detail
+      // Pink sneakers
+      px(g, 7, 28, 0xf08080, 7, 1);
+      px(g, 18, 28, 0xf08080, 7, 1);
+      px(g, 7, 29, 0xf08080, 7, 1);
+      px(g, 18, 29, 0xf08080, 7, 1);
+      px(g, 7, 30, 0xe07070, 7, 1);
+      px(g, 18, 30, 0xe07070, 7, 1);
+      // Smile — override mouth wider
+      px(g, 13, 10, 0xd08070, 6, 1);
+    }
+  );
 
-  // Frenchie — tan French Bulldog (top-down/front view)
-  makeTexture(scene, 'npc_frenchie', TILE_SIZE, TILE_SIZE, (g) => {
-    const body = 0xc8a070;   // main tan/fawn
-    const bodyDk = 0xb08858; // darker back
-    const bodyLt = 0xd8b880; // lighter belly
+  // Frenchie — tan French Bulldog (top-down/front view) — 32x32
+  makeTexture(scene, 'npc_frenchie', CHAR_SIZE, CHAR_SIZE, (g) => {
+    const body = 0xc8a070;
+    const bodyDk = 0xb08858;
+    const bodyLt = 0xd8b880;
+    const bodyVLt = 0xe0c898;
     const earPink = 0xd8a0a0;
     const nose = 0x101010;
     const eye = 0x181818;
     const eyeShine = 0x606080;
 
-    // ── Big bat ears (rows 0-4) — THE signature Frenchie feature ──
-    // Left ear — tall triangle pointing up-left
-    px(g, 2, 0, body, 1, 1);       // tip
-    px(g, 1, 1, body, 2, 1);       // widen
-    px(g, 1, 2, body, 3, 1);       // widen
-    px(g, 2, 3, body, 3, 1);       // base connects to head
+    // ── Big bat ears (rows 0-7) — THE signature Frenchie feature ──
+    // Left ear — tall triangle
+    px(g, 3, 0, body, 2, 1);
+    px(g, 2, 1, body, 3, 1);
+    px(g, 1, 2, body, 5, 1);
+    px(g, 1, 3, body, 6, 1);
+    px(g, 2, 4, body, 6, 1);
+    px(g, 3, 5, body, 5, 1);
+    px(g, 4, 6, body, 4, 1);
     // Left ear inner pink
-    px(g, 2, 1, earPink, 1, 1);
-    px(g, 2, 2, earPink, 2, 1);
+    px(g, 3, 1, earPink, 2, 1);
+    px(g, 3, 2, earPink, 3, 1);
+    px(g, 3, 3, earPink, 4, 1);
+    px(g, 4, 4, earPink, 3, 1);
 
-    // Right ear — tall triangle pointing up-right
-    px(g, 13, 0, body, 1, 1);      // tip
-    px(g, 13, 1, body, 2, 1);      // widen
-    px(g, 12, 2, body, 3, 1);      // widen
-    px(g, 11, 3, body, 3, 1);      // base connects to head
+    // Right ear — tall triangle
+    px(g, 27, 0, body, 2, 1);
+    px(g, 27, 1, body, 3, 1);
+    px(g, 26, 2, body, 5, 1);
+    px(g, 25, 3, body, 6, 1);
+    px(g, 24, 4, body, 6, 1);
+    px(g, 23, 5, body, 5, 1);
+    px(g, 24, 6, body, 4, 1);
     // Right ear inner pink
-    px(g, 13, 1, earPink, 1, 1);
-    px(g, 12, 2, earPink, 2, 1);
+    px(g, 27, 1, earPink, 2, 1);
+    px(g, 26, 2, earPink, 3, 1);
+    px(g, 25, 3, earPink, 4, 1);
+    px(g, 25, 4, earPink, 3, 1);
 
-    // ── Wide flat head (rows 3-6) ──
-    px(g, 3, 3, body, 10, 1);      // top of skull
-    px(g, 3, 4, body, 10, 1);      // forehead
-    px(g, 3, 5, bodyLt, 10, 1);    // face — lighter muzzle area
-    px(g, 4, 6, bodyLt, 8, 1);     // lower face / jowls
+    // ── Wide flat head (rows 6-13) ──
+    px(g, 6, 6, body, 20, 1);
+    px(g, 6, 7, body, 20, 1);
+    px(g, 6, 8, body, 20, 1);
+    px(g, 6, 9, bodyLt, 20, 1);
+    px(g, 7, 10, bodyLt, 18, 1);
+    px(g, 8, 11, bodyLt, 16, 1);
+    px(g, 9, 12, bodyLt, 14, 1);
 
-    // Brow ridge — slightly darker line above eyes
-    px(g, 4, 4, bodyDk, 2, 1);
-    px(g, 10, 4, bodyDk, 2, 1);
+    // Brow ridge
+    px(g, 8, 8, bodyDk, 4, 1);
+    px(g, 20, 8, bodyDk, 4, 1);
+    // Forehead wrinkle
+    px(g, 12, 7, bodyDk, 8, 1);
 
-    // Big round dark eyes (row 4-5) — spaced apart
-    px(g, 5, 4, eye, 2, 2);        // left eye
-    px(g, 9, 4, eye, 2, 2);        // right eye
+    // Big round dark eyes (spaced apart)
+    px(g, 9, 8, eye, 4, 3);
+    px(g, 19, 8, eye, 4, 3);
     // Eye shine
-    px(g, 5, 4, eyeShine, 1, 1);
-    px(g, 9, 4, eyeShine, 1, 1);
+    px(g, 9, 8, eyeShine, 2, 2);
+    px(g, 19, 8, eyeShine, 2, 2);
 
-    // Short flat snout + black nose (row 5-6)
-    px(g, 7, 5, nose, 2, 1);       // nose
-    // Mouth line
-    px(g, 7, 6, bodyDk, 1, 1);
-    px(g, 8, 6, bodyDk, 1, 1);
+    // Short flat snout + big black nose
+    px(g, 14, 10, nose, 4, 2);
+    // Nostrils
+    px(g, 14, 10, 0x303030, 1, 1);
+    px(g, 17, 10, 0x303030, 1, 1);
+    // Mouth line / jowls
+    px(g, 14, 12, bodyDk, 2, 1);
+    px(g, 16, 12, bodyDk, 2, 1);
+    px(g, 15, 12, 0x806060, 2, 1); // tongue hint
 
-    // ── Stocky wide body (rows 7-11) ──
-    px(g, 3, 7, body, 10, 1);      // shoulders — widest
-    px(g, 3, 8, body, 10, 1);      // chest
-    px(g, 3, 9, bodyDk, 10, 1);    // back (darker)
-    px(g, 4, 10, body, 8, 1);      // lower body
-    px(g, 4, 11, body, 8, 1);      // rump
+    // ── Stocky wide body (rows 13-23) ──
+    px(g, 6, 13, body, 20, 1);
+    px(g, 5, 14, body, 22, 1);
+    px(g, 5, 15, body, 22, 1);
+    px(g, 5, 16, body, 22, 1);
+    px(g, 5, 17, bodyDk, 22, 1);
+    px(g, 6, 18, body, 20, 1);
+    px(g, 7, 19, body, 18, 1);
+    px(g, 7, 20, body, 18, 1);
+    px(g, 8, 21, body, 16, 1);
+    px(g, 8, 22, body, 16, 1);
 
-    // Belly highlight (center lighter)
-    px(g, 6, 8, bodyLt, 4, 1);
-    px(g, 6, 9, bodyLt, 4, 1);
+    // Belly highlight
+    px(g, 12, 15, bodyVLt, 8, 1);
+    px(g, 12, 16, bodyVLt, 8, 1);
+    px(g, 11, 17, bodyLt, 10, 1);
+    px(g, 12, 18, bodyLt, 8, 1);
 
-    // ── Short stubby legs (rows 12-13) ──
-    px(g, 3, 12, bodyDk, 2, 2);    // front-left leg
-    px(g, 11, 12, bodyDk, 2, 2);   // front-right leg
-    px(g, 5, 12, bodyDk, 2, 1);    // back-left leg
-    px(g, 9, 12, bodyDk, 2, 1);    // back-right leg
-    // Tiny paws
-    px(g, 3, 14, 0xa07848, 2, 1);
-    px(g, 11, 14, 0xa07848, 2, 1);
+    // Collar (red)
+    px(g, 8, 13, 0xc03030, 16, 1);
+    px(g, 15, 14, 0xd0b040, 2, 1); // collar tag
 
-    // No tail — Frenchies have a tiny nub (just 1px hint)
-    px(g, 8, 12, bodyDk, 1, 1);
+    // ── Short stubby legs (rows 23-28) ──
+    px(g, 6, 23, bodyDk, 4, 3);     // front-left
+    px(g, 22, 23, bodyDk, 4, 3);    // front-right
+    px(g, 10, 23, bodyDk, 3, 2);    // back-left
+    px(g, 19, 23, bodyDk, 3, 2);    // back-right
+    // Paws
+    px(g, 5, 26, 0xa07848, 5, 2);
+    px(g, 22, 26, 0xa07848, 5, 2);
+    px(g, 10, 25, 0xa07848, 3, 1);
+    px(g, 19, 25, 0xa07848, 3, 1);
+    // Paw pads
+    px(g, 7, 27, 0x906838, 2, 1);
+    px(g, 23, 27, 0x906838, 2, 1);
+
+    // Tail nub
+    px(g, 16, 22, bodyDk, 2, 1);
   });
 
   // Bikini Girl 1 — light blue bikini, long brown hair, lounging/sleeping
@@ -1459,59 +1873,78 @@ function generateAllNPCs(scene: Phaser.Scene) {
     }
   );
 
-  // Manza — creative/visual artist, dark skin, short dreads, camera vibe
-  generateNPC(
+  // Manza — creative/visual artist, dark skin, short dreads — 32x32
+  generateNPC32(
     scene,
     'npc_manza',
-    0x201818, // dark textured hair
+    0x201818,
     'short',
-    0x181820, // black tee
+    0x181820,
     0x202028,
-    0x282830, // dark jeans
-    0xa07848, // dark skin
+    0x282830,
+    0xa07848,
     0x806030,
     (g) => {
-      // Short dreads texture — extra pixels on top of head
-      px(g, 4, 0, 0x201818, 2, 1);
-      px(g, 7, 0, 0x201818, 1, 1);
-      px(g, 10, 0, 0x201818, 2, 1);
-      px(g, 5, 1, 0x181010, 1, 1);
+      // Short dreads texture — extra pixels sticking up
+      px(g, 7, 0, 0x201818, 3, 1);
+      px(g, 13, 0, 0x201818, 2, 1);
+      px(g, 19, 0, 0x201818, 3, 1);
+      px(g, 10, 0, 0x181010, 2, 1);
+      px(g, 16, 0, 0x181010, 2, 1);
       px(g, 9, 1, 0x181010, 1, 1);
-      // Chain detail on neck
-      px(g, 7, 6, 0xd0b040, 2, 1);
-      px(g, 8, 7, 0xd0b040, 1, 1);
+      px(g, 15, 1, 0x181010, 1, 1);
+      px(g, 21, 1, 0x181010, 1, 1);
+      // Chain detail on neck — bigger
+      px(g, 13, 12, 0xd0b040, 6, 1);
+      px(g, 14, 13, 0xd0b040, 4, 1);
+      px(g, 15, 14, 0xc0a030, 2, 1); // pendant
+      // Camera strap diagonal hint
+      px(g, 22, 14, 0x404040, 2, 1);
+      px(g, 23, 15, 0x404040, 2, 1);
+      px(g, 24, 16, 0x404040, 2, 1);
     }
   );
 
-  // Zay — JP's boy, ride or die. Waves/low fade, designer fit, gold chain
-  generateNPC(
+  // Zay — JP's boy, ride or die. Waves/low fade, designer fit, gold chain — 32x32
+  generateNPC32(
     scene,
     'npc_zay',
-    0x181010, // waves/low fade
+    0x181010,
     'short',
-    0x1a1a28, // dark designer hoodie
+    0x1a1a28,
     0x222230,
-    0x1a1a20, // dark designer pants
-    0x905838, // dark skin
+    0x1a1a20,
+    0x905838,
     0x704828,
     (g) => {
-      // Waves texture on hair
-      px(g, 5, 1, 0x201818, 1, 1);
-      px(g, 8, 1, 0x201818, 1, 1);
-      px(g, 10, 1, 0x201818, 1, 1);
-      // Gold chain
-      px(g, 7, 6, 0xd0b040, 2, 1);
-      px(g, 6, 7, 0xd0b040, 1, 1);
-      px(g, 9, 7, 0xd0b040, 1, 1);
-      px(g, 7, 7, 0xc0a030, 2, 1);
-      // Subtle brand detail on hoodie (small logo)
-      px(g, 6, 8, 0x303040, 1, 1);
-      px(g, 7, 8, 0x303040, 1, 1);
-      // Clean white shoes
-      px(g, 4, 13, 0xf0f0f0, 3, 1);
-      px(g, 9, 13, 0xf0f0f0, 3, 1);
-      px(g, 4, 14, 0xf0f0f0, 3, 1);
-      px(g, 9, 14, 0xf0f0f0, 3, 1);
+      // Waves texture on hair — visible wave pattern at 32x32
+      px(g, 9, 1, 0x241818, 2, 1);
+      px(g, 13, 2, 0x241818, 2, 1);
+      px(g, 17, 1, 0x241818, 2, 1);
+      px(g, 21, 2, 0x241818, 2, 1);
+      px(g, 11, 3, 0x241818, 2, 1);
+      px(g, 15, 3, 0x241818, 2, 1);
+      px(g, 19, 3, 0x241818, 2, 1);
+      // Gold chain — thick, prominent, pendant
+      px(g, 12, 12, 0xd0b040, 8, 1);
+      px(g, 11, 13, 0xd0b040, 2, 1);
+      px(g, 19, 13, 0xd0b040, 2, 1);
+      px(g, 13, 13, 0xc0a030, 6, 1); // lower chain
+      px(g, 14, 14, 0xd0b040, 4, 1); // pendant
+      px(g, 15, 15, 0xe0c050, 2, 1); // pendant center (shiny)
+      // Brand logo on hoodie
+      px(g, 12, 17, 0x303040, 3, 2);
+      px(g, 13, 18, 0x404050, 1, 1);
+      // Clean white shoes — override dark ones
+      px(g, 7, 28, 0xf0f0f0, 7, 1);
+      px(g, 18, 28, 0xf0f0f0, 7, 1);
+      px(g, 7, 29, 0xf0f0f0, 7, 1);
+      px(g, 18, 29, 0xf0f0f0, 7, 1);
+      px(g, 7, 30, 0xe8e8e8, 7, 1);
+      px(g, 18, 30, 0xe8e8e8, 7, 1);
+      // Nike swoosh hint
+      px(g, 9, 29, 0xc0c0c0, 3, 1);
+      px(g, 20, 29, 0xc0c0c0, 3, 1);
     }
   );
 }
@@ -1946,8 +2379,8 @@ function generateUI(scene: Phaser.Scene) {
 // ─── CHAPTER PLAYER OUTFITS ─────────────────────────────────────────
 
 function generateChapterOutfits(scene: Phaser.Scene) {
-  const frameW = TILE_SIZE;
-  const frameH = TILE_SIZE;
+  const frameW = CHAR_SIZE;
+  const frameH = CHAR_SIZE;
   const sheetW = frameW * 8;
 
   const outfits: { key: string; colors: OutfitColors }[] = [
@@ -1993,9 +2426,9 @@ function generateChapterOutfits(scene: Phaser.Scene) {
 
     let frameIndex = 0;
     for (const dir of directions) {
-      drawPlayerFrame(dc, frameIndex * frameW, dir, false, colors);
+      drawPlayerFrame32(dc, frameIndex * frameW, dir, false, colors);
       frameIndex++;
-      drawPlayerFrame(dc, frameIndex * frameW, dir, true, colors);
+      drawPlayerFrame32(dc, frameIndex * frameW, dir, true, colors);
       frameIndex++;
     }
 
@@ -2012,7 +2445,7 @@ function generateChapterOutfits(scene: Phaser.Scene) {
 function generateTiredPlayer(scene: Phaser.Scene) {
   if (scene.textures.exists('player-ch3-tired')) return;
 
-  const frameW = TILE_SIZE;
+  const frameW = CHAR_SIZE;
   const sheetW = frameW * 8;
   const sheetH = frameW;
   const canvas = document.createElement('canvas');
@@ -2022,7 +2455,7 @@ function generateTiredPlayer(scene: Phaser.Scene) {
   rawCtx.clearRect(0, 0, sheetW, sheetH);
   const dc = new DrawContext(rawCtx);
 
-  // Draw base ch2 outfit frames (black hoodie)
+  // Draw base ch2 outfit frames (black hoodie) at 32x32
   const outfit: OutfitColors = {
     shirt: 0x202028, shirtLight: 0x2a2a32,
     pants: 0x1a1a20, pantsLight: 0x242428,
@@ -2031,46 +2464,45 @@ function generateTiredPlayer(scene: Phaser.Scene) {
   const directions: Array<'down' | 'up' | 'left' | 'right'> = ['down', 'up', 'left', 'right'];
   let fi = 0;
   for (const dir of directions) {
-    drawPlayerFrame(dc, fi * frameW, dir, false, outfit);
+    drawPlayerFrame32(dc, fi * frameW, dir, false, outfit);
     fi++;
-    drawPlayerFrame(dc, fi * frameW, dir, true, outfit);
+    drawPlayerFrame32(dc, fi * frameW, dir, true, outfit);
     fi++;
   }
 
   const hair = 0x302020;
-  const bagColor = 0x604850; // dark circles
+  const bagColor = 0x604850;
 
-  // Overlay messy hair + tired eyes on each frame
+  // Overlay messy hair + tired eyes on each frame (scaled to 32x32 positions)
   for (let f = 0; f < 8; f++) {
     const ox = f * frameW;
     const dir = (['down', 'down', 'up', 'up', 'left', 'left', 'right', 'right'] as const)[f];
 
-    // Extra shaggy hair — bangs hanging lower over forehead
-    px(dc, ox + 4, 3, hair, 2, 1);  // left bangs extending down
-    px(dc, ox + 10, 3, hair, 2, 1); // right bangs extending down
-    px(dc, ox + 5, 3, hair, 1, 1);  // center-left messy strand
-    px(dc, ox + 6, 2, hair, 4, 1);  // thick messy top layer
-    // Stray strands hanging further down
-    px(dc, ox + 3, 4, hair, 1, 1);  // far left strand
-    px(dc, ox + 12, 4, hair, 1, 1); // far right strand
+    // Extra shaggy hair — bangs hanging lower, longer strands at 32px
+    px(dc, ox + 7, 5, hair, 4, 1);   // left bangs extending down
+    px(dc, ox + 21, 5, hair, 4, 1);  // right bangs extending down
+    px(dc, ox + 10, 5, hair, 2, 1);  // center-left messy strand
+    px(dc, ox + 9, 4, hair, 8, 1);   // thick messy top layer
+    // Stray strands hanging further
+    px(dc, ox + 5, 6, hair, 2, 1);   // far left strand
+    px(dc, ox + 25, 6, hair, 2, 1);  // far right strand
+    px(dc, ox + 8, 3, hair, 4, 1);   // extra messy top
+    px(dc, ox + 18, 3, hair, 3, 1);  // extra messy top right
 
     if (dir === 'down') {
-      // Dark circles under eyes (row 5, under the eye positions at row 4)
-      px(dc, ox + 5, 5, bagColor, 2, 1); // under left eye
-      px(dc, ox + 9, 5, bagColor, 2, 1); // under right eye
-      // Slightly droopy eye effect — darken outer corners
-      px(dc, ox + 5, 4, 0x181818, 1, 1); // droopy left outer
-      px(dc, ox + 10, 4, 0x181818, 1, 1); // droopy right outer
+      // Dark circles under eyes (row 9, under the eye positions at row 7-8)
+      px(dc, ox + 10, 9, bagColor, 4, 1); // under left eye
+      px(dc, ox + 18, 9, bagColor, 4, 1); // under right eye
+      // Droopy eye effect
+      px(dc, ox + 10, 7, 0x181818, 1, 1); // droopy left outer
+      px(dc, ox + 21, 7, 0x181818, 1, 1); // droopy right outer
     } else if (dir === 'left') {
-      // Dark circle under visible eye
-      px(dc, ox + 5, 5, bagColor, 2, 1);
-      px(dc, ox + 5, 4, 0x181818, 1, 1);
+      px(dc, ox + 10, 9, bagColor, 4, 1);
+      px(dc, ox + 10, 7, 0x181818, 1, 1);
     } else if (dir === 'right') {
-      // Dark circle under visible eye
-      px(dc, ox + 9, 5, bagColor, 2, 1);
-      px(dc, ox + 10, 4, 0x181818, 1, 1);
+      px(dc, ox + 18, 9, bagColor, 4, 1);
+      px(dc, ox + 21, 7, 0x181818, 1, 1);
     }
-    // 'up' direction — just extra messy hair on back, no eye changes needed
   }
 
   scene.textures.addCanvas('player-ch3-tired', canvas);

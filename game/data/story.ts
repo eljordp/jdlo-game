@@ -215,16 +215,16 @@ export const chapter1NPCs: NPCData[] = [
     ],
   },
   {
-    id: 'ch1_terrel',
+    id: 'ch1_terrell',
     x: 13,
     y: 4,
-    sprite: 'npc_terrel',
+    sprite: 'npc_terrell',
     dialogue: [
-      { speaker: 'Terrel', text: 'Bro you been up since noon?' },
+      { speaker: 'Terrell', text: 'Bro you been up since noon?' },
       { speaker: 'JP', text: 'I been up since 8. Working on something.' },
-      { speaker: 'Terrel', text: 'Working on what? We don\'t have jobs.' },
+      { speaker: 'Terrell', text: 'Working on what? We don\'t have jobs.' },
       { speaker: 'JP', text: 'Exactly. That\'s the problem.' },
-      { speaker: 'Terrel', text: '...that\'s deep for a Tuesday morning.' },
+      { speaker: 'Terrell', text: '...that\'s deep for a Tuesday morning.' },
     ],
   },
 ];

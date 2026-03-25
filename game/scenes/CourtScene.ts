@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT, SCALE } from '../config';
+import { GAME_WIDTH, GAME_HEIGHT, SCALE, CHAR_SCALE } from '../config';
 import { MusicSystem } from '../systems/MusicSystem';
 
 /**
@@ -202,7 +202,7 @@ export class CourtScene extends Phaser.Scene {
 
         // JP in center (black hoodie = ch2)
         const jp = this.addObj(
-          this.add.sprite(cx - 60, cy + 40, 'player-ch2', 0).setScale(SCALE)
+          this.add.sprite(cx - 60, cy + 40, 'player-ch2', 0).setScale(CHAR_SCALE)
         );
 
         // Buyer nearby
@@ -287,7 +287,7 @@ export class CourtScene extends Phaser.Scene {
 
         // JP facing up (hands up simulation) — frame 2 = up-idle
         const jp = this.addObj(
-          this.add.sprite(cx, cy + 40, 'player-ch2', 2).setScale(SCALE)
+          this.add.sprite(cx, cy + 40, 'player-ch2', 2).setScale(CHAR_SCALE)
         );
 
         // Two cops entering from sides
@@ -338,7 +338,7 @@ export class CourtScene extends Phaser.Scene {
 
         // JP sprite center, facing down (head down)
         const jp = this.addObj(
-          this.add.sprite(cx, cy + 20, 'player-ch2', 0).setScale(SCALE)
+          this.add.sprite(cx, cy + 20, 'player-ch2', 0).setScale(CHAR_SCALE)
         );
         // Slight slow bob to simulate riding in car
         this.addTween({
@@ -380,7 +380,7 @@ export class CourtScene extends Phaser.Scene {
 
           // JP in center-bottom area, small and alone
           this.addObj(
-            this.add.sprite(cx - 40, cy + 120, 'player-ch2', 2).setScale(SCALE) // facing up toward judge
+            this.add.sprite(cx - 40, cy + 120, 'player-ch2', 2).setScale(CHAR_SCALE) // facing up toward judge
           );
 
           // Lawyer next to JP
@@ -472,7 +472,7 @@ export class CourtScene extends Phaser.Scene {
 
         // JP facing down (looking at floor)
         const jp = this.addObj(
-          this.add.sprite(cx - 40, cy + 120, 'player-ch2', 0).setScale(SCALE)
+          this.add.sprite(cx - 40, cy + 120, 'player-ch2', 0).setScale(CHAR_SCALE)
         );
 
         // Lawyer — starts further away, moves toward JP
@@ -522,7 +522,7 @@ export class CourtScene extends Phaser.Scene {
 
         // JP and lawyer
         this.addObj(
-          this.add.sprite(cx - 40, cy + 120, 'player-ch2', 2).setScale(SCALE)
+          this.add.sprite(cx - 40, cy + 120, 'player-ch2', 2).setScale(CHAR_SCALE)
         );
         this.addObj(
           this.add.sprite(cx + 70, cy + 120, 'npc-narrator', 0).setScale(SCALE)
@@ -642,7 +642,7 @@ export class CourtScene extends Phaser.Scene {
 
         // JP sprite centered, alone
         const jp = this.addObj(
-          this.add.sprite(cx, cy + 20, 'player-ch2', 0).setScale(SCALE)
+          this.add.sprite(cx, cy + 20, 'player-ch2', 0).setScale(CHAR_SCALE)
         );
         // Slow breathing pulse
         this.addTween({

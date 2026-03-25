@@ -4,6 +4,10 @@ export const TILE_SIZE = 16;
 export const SCALE = 4;
 export const SCALED_TILE = TILE_SIZE * SCALE; // 64px per tile on screen
 
+// Character sprites: 32x32 at scale 2 = 64px on screen (same as 16x16 at scale 4, but 4x detail)
+export const CHAR_SIZE = 32;
+export const CHAR_SCALE = 2;
+
 export const GAME_WIDTH = 1280;
 export const GAME_HEIGHT = 960;
 

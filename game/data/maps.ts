@@ -201,7 +201,7 @@ export const beachMap: MapData = {
       { id: 'ch1_girl2',  x: 26, y: 3,  sprite: 'npc_bikini2' },
       { id: 'ch1_girl3',  x: 20, y: 5,  sprite: 'npc_bikini1' },
       { id: 'ch1_girl_couch', x: 3, y: 5, sprite: 'npc_bikini2' },
-      { id: 'ch1_terrel', x: 13, y: 4, sprite: 'npc_terrel' },
+      { id: 'ch1_terrell', x: 13, y: 4, sprite: 'npc_terrell' },
       { id: 'ch1_volleyball1', x: 10, y: 16, sprite: 'npc_surfer' },
       { id: 'ch1_volleyball2', x: 12, y: 16, sprite: 'npc_kid' },
       { id: 'ch1_sunbather',   x: 18, y: 15, sprite: 'npc_bikini1' },
