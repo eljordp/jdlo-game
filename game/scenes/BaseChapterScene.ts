@@ -110,6 +110,9 @@ export abstract class BaseChapterScene extends Phaser.Scene {
       // NPCs block movement
       this.collisionTiles.add(`${npcData.x},${npcData.y}`);
 
+      // Animate NPC based on their ID
+      this.animateNPC(sprite, npcData.id);
+
       this.npcs.push({
         sprite,
         id: npcData.id,
@@ -246,6 +249,203 @@ export abstract class BaseChapterScene extends Phaser.Scene {
         text.destroy();
       },
     });
+  }
+
+  private animateNPC(sprite: Phaser.GameObjects.Sprite, id: string) {
+    const baseY = sprite.y;
+    const baseX = sprite.x;
+
+    // Pushups — bouncing up and down
+    if (id.includes('pushup')) {
+      this.tweens.add({
+        targets: sprite,
+        y: baseY + 8,
+        scaleY: SCALE * 0.7,
+        duration: 600,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+      });
+      return;
+    }
+
+    // Pull-ups — moving up and down
+    if (id.includes('pullup')) {
+      this.tweens.add({
+        targets: sprite,
+        y: baseY - 12,
+        duration: 800,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Power2',
+      });
+      return;
+    }
+
+    // Fighters — lunging side to side, shaking
+    if (id.includes('fighter')) {
+      this.tweens.add({
+        targets: sprite,
+        x: baseX + (id.includes('1') ? 10 : -10),
+        duration: 400,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Power1',
+      });
+      // Slight bounce
+      this.tweens.add({
+        targets: sprite,
+        y: baseY - 4,
+        duration: 300,
+        yoyo: true,
+        repeat: -1,
+        delay: 150,
+      });
+      return;
+    }
+
+    // Dice — rocking side to side (rolling motion)
+    if (id.includes('dice')) {
+      this.tweens.add({
+        targets: sprite,
+        angle: id.includes('1') ? 8 : -8,
+        duration: 500,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+      });
+      // Crouching bob
+      this.tweens.add({
+        targets: sprite,
+        y: baseY + 4,
+        duration: 700,
+        yoyo: true,
+        repeat: -1,
+      });
+      return;
+    }
+
+    // Smoker — subtle sway + smoke particles
+    if (id.includes('smoker') || id.includes('smoke')) {
+      this.tweens.add({
+        targets: sprite,
+        x: baseX + 3,
+        duration: 2000,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+      });
+      // Smoke puff rising
+      this.time.addEvent({
+        delay: 2000,
+        loop: true,
+        callback: () => {
+          const smoke = this.add.text(
+            sprite.x + 8, sprite.y - 20, '~',
+            { fontFamily: 'monospace', fontSize: '12px', color: '#999999' }
+          ).setDepth(20).setAlpha(0.6);
+          this.tweens.add({
+            targets: smoke,
+            y: smoke.y - 30,
+            alpha: 0,
+            duration: 1500,
+            onComplete: () => smoke.destroy(),
+          });
+        },
+      });
+      return;
+    }
+
+    // Tattoo — arm moving (drawing motion)
+    if (id.includes('tattoo')) {
+      this.tweens.add({
+        targets: sprite,
+        x: baseX + 3,
+        y: baseY + 2,
+        duration: 300,
+        yoyo: true,
+        repeat: -1,
+      });
+      return;
+    }
+
+    // Sleeping — slow breathing (scale pulse)
+    if (id.includes('girl') && (id.includes('1') || id.includes('couch'))) {
+      this.tweens.add({
+        targets: sprite,
+        scaleX: SCALE * 1.03,
+        scaleY: SCALE * 0.97,
+        duration: 1500,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+      });
+      // Zzz
+      this.time.addEvent({
+        delay: 3000,
+        loop: true,
+        callback: () => {
+          const zzz = this.add.text(
+            sprite.x + 15, sprite.y - 20, 'z',
+            { fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#8888aa' }
+          ).setDepth(20).setAlpha(0.7);
+          this.tweens.add({
+            targets: zzz,
+            y: zzz.y - 20,
+            alpha: 0,
+            duration: 2000,
+            onComplete: () => zzz.destroy(),
+          });
+        },
+      });
+      return;
+    }
+
+    // Hot tub girls — bobbing in water
+    if (id.includes('girl') && !id.includes('couch')) {
+      this.tweens.add({
+        targets: sprite,
+        y: baseY + 4,
+        duration: 1200,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+      });
+      return;
+    }
+
+    // Dog/Frenchie — tail wag (wobble)
+    if (id.includes('frenchie') || id.includes('dog')) {
+      this.tweens.add({
+        targets: sprite,
+        angle: 5,
+        duration: 300,
+        yoyo: true,
+        repeat: -1,
+      });
+      this.tweens.add({
+        targets: sprite,
+        y: baseY + 2,
+        duration: 500,
+        yoyo: true,
+        repeat: -1,
+        delay: 100,
+      });
+      return;
+    }
+
+    // Homies — subtle idle sway (everyone else who's just chilling)
+    if (id.includes('homie')) {
+      this.tweens.add({
+        targets: sprite,
+        x: baseX + 2,
+        duration: 2500,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+      });
+      return;
+    }
   }
 
   protected handleInteract() {
