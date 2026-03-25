@@ -107,7 +107,8 @@ export abstract class BaseChapterScene extends Phaser.Scene {
         npcData.sprite, 0
       ).setScale(SCALE).setDepth(9);
 
-      // NPCs are walkable — maps too tight for solid NPCs
+      // NPCs block movement
+      this.collisionTiles.add(`${npcData.x},${npcData.y}`);
 
       this.npcs.push({
         sprite,

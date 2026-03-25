@@ -336,22 +336,22 @@ export const jailMap: MapData = {
     player: { x: 3, y: 7 }, // JP's cell (cell3)
     npcs: [
       // --- Existing NPCs ---
-      { id: 'ch3_cellmate', x: 4, y: 6,  sprite: 'npc_inmate' },   // in JP's cell
-      { id: 'ch3_guard',    x: 16, y: 13, sprite: 'npc_guard' },    // guard station desk
-      { id: 'ch3_inmate1',  x: 3, y: 2,  sprite: 'npc_inmate' },   // cell 1
-      { id: 'ch3_inmate2',  x: 8, y: 3,  sprite: 'npc_inmate2' },  // cell 2
-      { id: 'ch3_inmate3',  x: 8, y: 7,  sprite: 'npc_inmate3' },  // cell 4
-      { id: 'ch3_inmate4',  x: 3, y: 10, sprite: 'npc_inmate4' },  // cell 5
-      { id: 'ch3_mind',     x: 13, y: 11, sprite: 'npc_mirror' },   // hallway — introspection
+      { id: 'ch3_cellmate', x: 2, y: 7,  sprite: 'npc_inmate' },   // in JP's cell (corner, not blocking door)
+      { id: 'ch3_guard',    x: 17, y: 12, sprite: 'npc_guard' },    // guard station (right side, not blocking)
+      { id: 'ch3_inmate1',  x: 4, y: 2,  sprite: 'npc_inmate' },   // cell 1 (back of cell)
+      { id: 'ch3_inmate2',  x: 7, y: 3,  sprite: 'npc_inmate2' },  // cell 2 (back of cell)
+      { id: 'ch3_inmate3',  x: 7, y: 7,  sprite: 'npc_inmate3' },  // cell 4 (back of cell)
+      { id: 'ch3_inmate4',  x: 4, y: 10, sprite: 'npc_inmate4' },  // cell 5 (back of cell)
+      { id: 'ch3_mind',     x: 14, y: 14, sprite: 'npc_mirror' },   // bottom of hallway (wide open space)
 
       // --- New NPCs ---
-      { id: 'ch3_fighter1', x: 22, y: 3,  sprite: 'npc_inmate3' },  // common area
-      { id: 'ch3_fighter2', x: 24, y: 3,  sprite: 'npc_inmate2' },  // near fighter1
-      { id: 'ch3_dice1',    x: 30, y: 8,  sprite: 'npc_inmate' },   // dice corner
-      { id: 'ch3_dice2',    x: 31, y: 9,  sprite: 'npc_inmate4' },  // with dice1
-      { id: 'ch3_tattoo',   x: 26, y: 5,  sprite: 'npc_inmate2' },  // common area
-      { id: 'ch3_smoker',   x: 4, y: 21,  sprite: 'npc_inmate4' },  // yard corner
-      { id: 'ch3_pullups',  x: 7, y: 17,  sprite: 'npc_inmate3' },  // near pull-up bars
+      { id: 'ch3_fighter1', x: 22, y: 4,  sprite: 'npc_inmate3' },  // common area (not on main path)
+      { id: 'ch3_fighter2', x: 23, y: 5,  sprite: 'npc_inmate2' },  // near fighter1
+      { id: 'ch3_dice1',    x: 30, y: 7,  sprite: 'npc_inmate' },   // dice corner (right side)
+      { id: 'ch3_dice2',    x: 32, y: 8,  sprite: 'npc_inmate4' },  // with dice1
+      { id: 'ch3_tattoo',   x: 27, y: 3,  sprite: 'npc_inmate2' },  // common area corner
+      { id: 'ch3_smoker',   x: 4, y: 20,  sprite: 'npc_inmate4' },  // yard corner
+      { id: 'ch3_pullups',  x: 8, y: 17,  sprite: 'npc_inmate3' },  // near pull-up bars
     ],
   },
   triggers: [
