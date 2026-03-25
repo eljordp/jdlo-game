@@ -13,7 +13,7 @@ function px(
   g.fillRect(x, y, w, h);
 }
 
-// Helper: create texture from graphics
+// Helper: create texture from graphics with transparency support
 function makeTexture(
   scene: Phaser.Scene,
   key: string,
@@ -21,10 +21,14 @@ function makeTexture(
   height: number,
   draw: (g: Phaser.GameObjects.Graphics) => void
 ) {
+  // Use RenderTexture for proper alpha/transparency
+  const rt = scene.add.renderTexture(0, 0, width, height).setVisible(false);
   const g = scene.add.graphics();
   draw(g);
-  g.generateTexture(key, width, height);
+  rt.draw(g);
+  rt.saveTexture(key);
   g.destroy();
+  rt.destroy();
 }
 
 // ─── PLAYER SPRITE SHEET ────────────────────────────────────────────
@@ -174,8 +178,12 @@ function generatePlayer(scene: Phaser.Scene) {
     frameIndex++;
   }
 
-  g.generateTexture('player', sheetW, sheetH);
+  // Use RenderTexture for transparency
+  const rt = scene.add.renderTexture(0, 0, sheetW, sheetH).setVisible(false);
+  rt.draw(g);
+  rt.saveTexture('player');
   g.destroy();
+  rt.destroy();
 
   // Create animations
   // Frame layout: 0=down-idle, 1=down-step, 2=up-idle, 3=up-step, 4=left-idle, 5=left-step, 6=right-idle, 7=right-step
