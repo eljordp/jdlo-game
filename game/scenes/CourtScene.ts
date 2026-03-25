@@ -357,7 +357,7 @@ export class CourtScene extends Phaser.Scene {
         this.addObj(this.add.rectangle(cx, cy - 110, 300, 4, 0x2a2a3e));
 
         this.showText('Everyone in the house got taken in.', cy - 200, { color: '#888899' });
-        this.showText('JP was charged with possession\nwith intent to distribute.', cy + 160, { delay: 800 });
+        this.showText('Charged with attempted murder.', cy + 160, { delay: 800 });
 
         this.showContinue(2500);
         break;

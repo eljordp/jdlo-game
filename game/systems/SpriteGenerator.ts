@@ -739,7 +739,7 @@ function generateNPC32(
 
 function generateAllNPCs(scene: Phaser.Scene) {
   // Friend — warm colors, friendly
-  generateNPC(
+  generateNPC32(
     scene,
     'npc-friend',
     0x604020, // brown hair
@@ -752,7 +752,7 @@ function generateAllNPCs(scene: Phaser.Scene) {
   );
 
   // Shady — dark colors
-  generateNPC(
+  generateNPC32(
     scene,
     'npc-shady',
     0x202020,
@@ -763,15 +763,15 @@ function generateAllNPCs(scene: Phaser.Scene) {
     0xe0b080,
     0xc09060,
     (g) => {
-      // Sunglasses
-      px(g, 5, 4, 0x101010, 2, 1);
-      px(g, 9, 4, 0x101010, 2, 1);
-      px(g, 7, 4, 0x101010, 2, 1);
+      // Dark sunglasses
+      px(g, 10, 7, 0x101010, 4, 2);
+      px(g, 18, 7, 0x101010, 4, 2);
+      px(g, 14, 7, 0x101010, 4, 1);
     }
   );
 
   // Guard — uniform
-  generateNPC(
+  generateNPC32(
     scene,
     'npc-guard',
     0x404040,
@@ -783,14 +783,14 @@ function generateAllNPCs(scene: Phaser.Scene) {
     0xd0a070,
     (g) => {
       // Badge
-      px(g, 5, 8, 0xd0c030, 2, 2);
+      px(g, 10, 16, 0xd0c030, 3, 3);
       // Hat brim
-      px(g, 2, 2, 0x2050a0, 12, 1);
+      px(g, 6, 3, 0x2050a0, 20, 2);
     }
   );
 
   // Farmer — overalls + hat
-  generateNPC(
+  generateNPC32(
     scene,
     'npc-farmer',
     0xc09040, // straw hat
@@ -802,13 +802,13 @@ function generateAllNPCs(scene: Phaser.Scene) {
     0xc89858,
     (g) => {
       // Overall straps
-      px(g, 5, 8, 0x6080c0, 1, 3);
-      px(g, 10, 8, 0x6080c0, 1, 3);
+      px(g, 10, 16, 0x6080c0, 2, 4);
+      px(g, 20, 16, 0x6080c0, 2, 4);
     }
   );
 
   // Tech — casual hoodie look
-  generateNPC(
+  generateNPC32(
     scene,
     'npc-tech',
     0x503828,
@@ -820,12 +820,12 @@ function generateAllNPCs(scene: Phaser.Scene) {
     0xd0a070,
     (g) => {
       // Hoodie detail / laptop
-      px(g, 6, 9, 0x80c0f0, 4, 1); // blue accent stripe
+      px(g, 12, 18, 0x80c0f0, 8, 1); // blue accent stripe
     }
   );
 
   // Business — suit
-  generateNPC(
+  generateNPC32(
     scene,
     'npc-business',
     0x302828,
@@ -837,12 +837,12 @@ function generateAllNPCs(scene: Phaser.Scene) {
     0xd0a070,
     (g) => {
       // Tie
-      px(g, 7, 7, 0xc03030, 2, 1);
-      px(g, 7, 8, 0xc03030, 2, 1);
-      px(g, 7, 9, 0xa02828, 2, 1);
+      px(g, 15, 14, 0xc03030, 2, 2);
+      px(g, 15, 16, 0xc03030, 2, 2);
+      px(g, 15, 18, 0xa02828, 2, 2);
       // White collar
-      px(g, 6, 7, 0xf0f0f0, 1, 1);
-      px(g, 9, 7, 0xf0f0f0, 1, 1);
+      px(g, 12, 14, 0xf0f0f0, 2, 1);
+      px(g, 18, 14, 0xf0f0f0, 2, 1);
     }
   );
 
@@ -891,7 +891,7 @@ function generateAllNPCs(scene: Phaser.Scene) {
   );
 
   // Kid — young, casual
-  generateNPC(
+  generateNPC32(
     scene,
     'npc_kid',
     0x604020,
@@ -925,7 +925,7 @@ function generateAllNPCs(scene: Phaser.Scene) {
   );
 
   // Generic NPC
-  generateNPC(
+  generateNPC32(
     scene,
     'npc_generic',
     0x505050,
