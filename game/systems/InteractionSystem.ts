@@ -40,7 +40,7 @@ export class InteractionSystem {
         const worldY = obj.y * SCALED_TILE + SCALED_TILE / 2;
 
         const sprite = this.scene.add.sprite(worldX, worldY, obj.sprite);
-        sprite.setScale(SCALE);
+        sprite.setScale(SCALE * 0.5); // Items are half player size — proportional
         sprite.setDepth(5); // above ground tiles, below player/NPCs
 
         this.sprites.set(obj.id, sprite);

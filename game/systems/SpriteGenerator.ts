@@ -2415,6 +2415,32 @@ function generateItems(scene: Phaser.Scene) {
     px(g, 11, 7, 0x1a1a1a, 1, 1);
     px(g, 12, 8, 0x1a1a1a, 1, 1);
   });
+
+  // --- item-gun ---
+  makeTexture(scene, 'item-gun', TILE_SIZE, TILE_SIZE, (g) => {
+    // Handgun — side view, dark steel
+    // Slide (top)
+    px(g, 3, 5, 0x303038, 10, 3); // main slide
+    px(g, 12, 5, 0x404048, 2, 2); // front sight
+    px(g, 3, 5, 0x404048, 1, 1); // rear sight
+    // Barrel
+    px(g, 13, 6, 0x252530, 2, 1);
+    // Frame
+    px(g, 4, 8, 0x383840, 8, 2); // frame body
+    // Trigger guard
+    px(g, 7, 10, 0x303038, 3, 2);
+    px(g, 7, 11, 0x303038, 1, 1);
+    // Trigger
+    px(g, 8, 10, 0x505058, 1, 2);
+    // Grip
+    px(g, 3, 8, 0x2a2a30, 3, 5); // grip body
+    px(g, 3, 8, 0x353540, 1, 5); // grip texture
+    px(g, 4, 9, 0x202028, 1, 3); // grip shadow
+    // Magazine base
+    px(g, 3, 13, 0x404048, 3, 1);
+    // Highlight on slide
+    px(g, 5, 5, 0x505060, 6, 1);
+  });
 }
 
 function generateMoreItems(scene: Phaser.Scene) {

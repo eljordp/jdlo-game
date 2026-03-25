@@ -105,9 +105,9 @@ export const chapter0NPCs: NPCData[] = [
     y: 18,
     sprite: 'npc_frenchie',
     dialogue: [
-      { speaker: 'Narrator', text: 'The Frenchie wags his whole body when he sees JP.' },
-      { speaker: 'Narrator', text: 'He doesn\'t care about your problems. He just wants belly rubs.' },
-      { speaker: 'JP', text: 'At least you\'re happy to see me.' },
+      { speaker: 'Narrator', text: 'Ivy wags her whole body when she sees JP. Tan Frenchie energy.' },
+      { speaker: 'Narrator', text: 'She doesn\'t care about your problems. She just wants belly rubs.' },
+      { speaker: 'JP', text: 'Hey Ivy. At least you\'re happy to see me.' },
       { speaker: 'Narrator', text: 'Sometimes the dog is the only one who gets it.' },
     ],
   },
@@ -694,6 +694,17 @@ const ch0Extras: Record<string, DialogueLine[]> = {
     { speaker: 'Narrator', text: 'A motivational poster JP put up ironically.' },
     { speaker: 'Narrator', text: 'But he reads it every morning anyway.' },
   ],
+  ch0_nolan_call: [
+    { speaker: 'Narrator', text: 'JP\'s phone rings. It\'s Nolan.' },
+    { speaker: 'Nolan', text: 'Yo JP. You still stuck at home doing nothing?' },
+    { speaker: 'JP', text: 'Basically.' },
+    { speaker: 'Nolan', text: 'Bro come down to Santa Barbara. Me and the boys got a spot by the beach.' },
+    { speaker: 'Nolan', text: 'It\'s a good opportunity man. Lots of money to be made down here.' },
+    { speaker: 'JP', text: 'What kind of money?' },
+    { speaker: 'Nolan', text: 'The kind you don\'t put on a resume. You in or not?' },
+    { speaker: 'JP', text: '...yeah. I\'m in.' },
+    { speaker: 'JP\'s Mind', text: 'JP didn\'t ask any more questions. He just wanted out.' },
+  ],
   ch0_hidden_stash: [
     { speaker: 'Narrator', text: 'A small bag of weed tucked behind the bookshelf.' },
     { speaker: 'Narrator', text: 'The habit started before Santa Barbara.' },
@@ -749,7 +760,7 @@ const ch0Extras: Record<string, DialogueLine[]> = {
     { speaker: 'Narrator', text: 'Mom doesn\'t say much. Just watches him from the kitchen doorway.' },
     { speaker: 'Sister', text: 'You\'re coming back right?' },
     { speaker: 'JP', text: 'Always.' },
-    { speaker: 'Narrator', text: 'The Frenchie whines at the door. He knows.' },
+    { speaker: 'Narrator', text: 'Ivy whines at the door. She knows.' },
   ],
 };
 
@@ -864,6 +875,11 @@ const ch2Extras: Record<string, DialogueLine[]> = {
   ch2_phone: [
     { speaker: 'JP\'s Mind', text: '12 missed calls from Pops. I\'ll call him back. Tomorrow.' },
     { speaker: 'JP\'s Mind', text: 'He knows. He always knows. And I keep dodging because I don\'t want to hear the truth.' },
+  ],
+  ch2_gun: [
+    { speaker: 'JP\'s Mind', text: 'Glock on the dresser. Right next to the weed.' },
+    { speaker: 'JP\'s Mind', text: 'Never fired it. Never plan to. But in this life, you don\'t get to choose.' },
+    { speaker: 'JP\'s Mind', text: 'The fact that it\'s there means something went wrong a long time ago.' },
   ],
   ch2_graffiti: [
     { speaker: 'JP\'s Mind', text: 'Someone tagged \'NO WAY OUT\' on the wall. Felt that.' },
