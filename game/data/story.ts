@@ -295,16 +295,18 @@ export const chapter2NPCs: NPCData[] = [
 
 export const chapter2OutroText: string[] = [
   'Just another drop. Until it wasn\'t.',
-  'The consequences came fast.',
+  'Attempted murder. 13 years.',
+  'JP didn\'t attempt to hurt anyone. Didn\'t matter.',
+  'The system had already decided.',
 ];
 
 // ─── Chapter 3: Jail ───────────────────────────────────────────────────
 
 export const chapter3IntroText: string[] = [
-  'Chapter 4 — Locked Up',
-  '9 months. Behind bars.',
-  '365 days. A bed, a toilet, and time.',
-  'What you do with it is on you.',
+  'Locked Up',
+  '13 years. That\'s what they gave him.',
+  'A bed. A toilet. And time.',
+  'Nothing but time.',
 ];
 
 export const chapter3NPCs: NPCData[] = [
@@ -359,6 +361,9 @@ export const chapter3NPCs: NPCData[] = [
 ];
 
 export const chapter3OutroText: string[] = [
+  'I knew it.',
+  'God showed.',
+  'The truth always prevails.',
   'The doors opened. JP walked out a different person.',
   'Not because jail changed him. Because he changed himself.',
 ];
@@ -1278,7 +1283,11 @@ const ch3Extras: Record<string, DialogueLine[]> = {
   ],
   ch3_bed: [
     { speaker: 'JP\'s Mind', text: 'Hard mattress. Thin blanket. JP lies down and closes his eyes.' },
-    { speaker: 'JP\'s Mind', text: 'The days start to blur together...' },
+    { speaker: 'JP\'s Mind', text: 'Most people don\'t make it out of this situation.' },
+    { speaker: 'JP\'s Mind', text: 'I don\'t know anyone that did.' },
+    { speaker: 'JP\'s Mind', text: 'I need to rededicate my life to having faith. That\'s all I got right now.' },
+    { speaker: 'JP\'s Mind', text: 'God knows I never attempted to cause harm to anyone.' },
+    { speaker: 'JP\'s Mind', text: 'He knows that.' },
   ],
   ch3_toilet: [
     { speaker: 'JP\'s Mind', text: 'Prison toilet. Rock bottom looks like this.' },
