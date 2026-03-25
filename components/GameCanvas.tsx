@@ -95,10 +95,10 @@ export default function GameCanvas() {
   }, [speedIndex]);
 
   return (
-    <div className="relative w-screen h-screen bg-black">
+    <div className="relative w-screen h-screen bg-black overflow-hidden">
       <div
         ref={containerRef}
-        className="w-full h-full flex items-center justify-center"
+        className="absolute inset-0 flex items-center justify-center"
       />
 
       {/* Speed control + help overlay */}
