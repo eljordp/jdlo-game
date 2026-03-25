@@ -1012,7 +1012,15 @@ const ch1Extras: Record<string, DialogueLine[]> = {
     { speaker: 'Girl', text: 'JP! Get in the hot tub!' },
     { speaker: 'JP', text: 'Maybe later.' },
     { speaker: 'Girl', text: 'You always say that. You\'re so boring.' },
-    { speaker: 'JP\'s Mind', text: 'She doesn\'t know what I do for a living. None of them do.' },
+    { speaker: 'JP', text: '', choices: [
+      { text: '"I got stuff to do."', next: [
+        { speaker: 'Girl', text: 'Stuff? Like what? Sitting in your room with all those bags?' },
+        { speaker: 'JP', text: '...mind your business.' },
+      ]},
+      { text: '"Alright alright, I\'m coming."', next: [
+        { speaker: 'Girl', text: 'Finally! Someone get this man a drink.' },
+      ]},
+    ]},
   ],
   ch1_girl_couch: [
     { speaker: 'Narrator', text: 'She\'s passed out on the couch in a bikini. It\'s 2 PM.' },

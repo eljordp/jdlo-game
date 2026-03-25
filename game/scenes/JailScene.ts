@@ -1,3 +1,4 @@
+import Phaser from 'phaser';
 import { BaseChapterScene } from './BaseChapterScene';
 import { jailMap, MapData } from '../data/maps';
 import { jailDialogue } from '../data/story';
@@ -53,6 +54,12 @@ export class JailScene extends BaseChapterScene {
 
     if (interactable.id === 'ch3_dice_watch') {
       this.playDiceMinigame();
+      this.interactions.consume(interactable.id);
+      return;
+    }
+
+    if (interactable.id === 'ch3_fight_watch') {
+      this.playBattleScene();
       this.interactions.consume(interactable.id);
       return;
     }
@@ -373,6 +380,634 @@ export class JailScene extends BaseChapterScene {
     const rollListener = () => rollDice();
     spaceKey.on('down', rollListener);
     this.input.on('pointerdown', rollListener);
+  }
+
+  private playBattleScene() {
+    this.frozen = true;
+    const objects: Phaser.GameObjects.GameObject[] = [];
+    const DEPTH = 400;
+    const FONT = '"Press Start 2P", monospace';
+
+    // === STATE ===
+    type BattleState = 'intro' | 'menu' | 'player-action' | 'enemy-action' | 'text' | 'end';
+    let state: BattleState = 'intro';
+    let jpHP = 100;
+    let enemyHP = 80;
+    const jpMaxHP = 100;
+    const enemyMaxHP = 80;
+    let menuIndex = 0; // 0=SWING, 1=DODGE, 2=TALK, 3=WALK AWAY
+    let dodgeActive = false;
+    let talkDebuff = false; // reduces enemy attack by 5
+    let inputEnabled = false;
+
+    // === INTRO: Pokemon swipe transition ===
+    const introTop = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 4, GAME_WIDTH, GAME_HEIGHT / 2, 0x000000)
+      .setScrollFactor(0).setDepth(DEPTH + 50);
+    const introBottom = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT * 3 / 4, GAME_WIDTH, GAME_HEIGHT / 2, 0x000000)
+      .setScrollFactor(0).setDepth(DEPTH + 50);
+
+    // Bars close in
+    this.tweens.add({ targets: introTop, y: GAME_HEIGHT / 4, duration: 1 }); // already in place
+    this.tweens.add({ targets: introBottom, y: GAME_HEIGHT * 3 / 4, duration: 1 });
+
+    // Flash text "FIGHT!"
+    const fightText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'FIGHT!', {
+      fontFamily: FONT, fontSize: '36px', color: '#ff4444',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(DEPTH + 51).setAlpha(0);
+    objects.push(fightText);
+
+    this.tweens.add({
+      targets: fightText,
+      alpha: 1,
+      duration: 300,
+      delay: 300,
+      hold: 600,
+      yoyo: true,
+      onComplete: () => {
+        fightText.destroy();
+        // Open the bars to reveal the battle
+        this.tweens.add({
+          targets: introTop,
+          y: -GAME_HEIGHT / 4,
+          duration: 500,
+          ease: 'Quad.easeOut',
+          onComplete: () => introTop.destroy(),
+        });
+        this.tweens.add({
+          targets: introBottom,
+          y: GAME_HEIGHT + GAME_HEIGHT / 4,
+          duration: 500,
+          ease: 'Quad.easeOut',
+          onComplete: () => {
+            introBottom.destroy();
+            state = 'menu';
+            inputEnabled = true;
+          },
+        });
+      },
+    });
+
+    // === BACKGROUND ===
+    // Dark concrete background
+    const bg = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x252530)
+      .setScrollFactor(0).setDepth(DEPTH);
+    objects.push(bg);
+
+    // Concrete wall texture lines (horizontal)
+    for (let i = 0; i < 8; i++) {
+      const y = 60 + i * 70;
+      const line = this.add.rectangle(GAME_WIDTH / 2, y, GAME_WIDTH, 2, 0x1a1a22)
+        .setScrollFactor(0).setDepth(DEPTH + 1);
+      objects.push(line);
+    }
+    // Vertical cracks
+    for (let i = 0; i < 5; i++) {
+      const x = 100 + i * 280;
+      const crack = this.add.rectangle(x, GAME_HEIGHT / 3, 1, 120 + Math.random() * 80, 0x1a1a22)
+        .setScrollFactor(0).setDepth(DEPTH + 1).setAlpha(0.5);
+      objects.push(crack);
+    }
+
+    // === ENEMY PLATFORM (top-left) ===
+    const enemyPlatX = 340;
+    const enemyPlatY = 250;
+    const enemyPlatform = this.add.ellipse(enemyPlatX, enemyPlatY + 60, 260, 40, 0x3a3a48)
+      .setScrollFactor(0).setDepth(DEPTH + 2);
+    objects.push(enemyPlatform);
+
+    // Enemy sprite
+    const enemySprite = this.add.sprite(enemyPlatX, enemyPlatY, 'npc_inmate3', 0)
+      .setScale(6).setScrollFactor(0).setDepth(DEPTH + 3);
+    objects.push(enemySprite);
+    const enemySpriteBaseX = enemyPlatX;
+    const enemySpriteBaseY = enemyPlatY;
+
+    // Enemy name + HP
+    const enemyNameBg = this.add.rectangle(280, 80, 340, 70, 0x1a1a24, 0.85)
+      .setScrollFactor(0).setDepth(DEPTH + 4).setStrokeStyle(3, 0x505068);
+    objects.push(enemyNameBg);
+
+    const enemyName = this.add.text(130, 58, 'INMATE', {
+      fontFamily: FONT, fontSize: '16px', color: '#ffffff',
+    }).setScrollFactor(0).setDepth(DEPTH + 5);
+    objects.push(enemyName);
+
+    const enemyHPLabel = this.add.text(130, 82, 'HP', {
+      fontFamily: FONT, fontSize: '10px', color: '#f0c040',
+    }).setScrollFactor(0).setDepth(DEPTH + 5);
+    objects.push(enemyHPLabel);
+
+    // HP bar background
+    const enemyHPBgBar = this.add.rectangle(310, 87, 200, 12, 0x303040)
+      .setScrollFactor(0).setDepth(DEPTH + 5).setOrigin(0, 0.5);
+    objects.push(enemyHPBgBar);
+
+    // HP bar fill
+    const enemyHPBar = this.add.rectangle(310, 87, 200, 12, 0x40c040)
+      .setScrollFactor(0).setDepth(DEPTH + 6).setOrigin(0, 0.5);
+    objects.push(enemyHPBar);
+
+    // === JP PLATFORM (bottom-right) ===
+    const jpPlatX = 940;
+    const jpPlatY = 560;
+    const jpPlatform = this.add.ellipse(jpPlatX, jpPlatY + 60, 260, 40, 0x3a3a48)
+      .setScrollFactor(0).setDepth(DEPTH + 2);
+    objects.push(jpPlatform);
+
+    // JP sprite (facing up — frame 2)
+    const jpSprite = this.add.sprite(jpPlatX, jpPlatY, this.getPlayerTexture(), 2)
+      .setScale(6).setScrollFactor(0).setDepth(DEPTH + 3);
+    objects.push(jpSprite);
+    const jpSpriteBaseX = jpPlatX;
+    const jpSpriteBaseY = jpPlatY;
+
+    // JP name + HP
+    const jpNameBg = this.add.rectangle(1000, 470, 340, 70, 0x1a1a24, 0.85)
+      .setScrollFactor(0).setDepth(DEPTH + 4).setStrokeStyle(3, 0x505068);
+    objects.push(jpNameBg);
+
+    const jpName = this.add.text(850, 448, 'JP', {
+      fontFamily: FONT, fontSize: '16px', color: '#ffffff',
+    }).setScrollFactor(0).setDepth(DEPTH + 5);
+    objects.push(jpName);
+
+    const jpHPLabel = this.add.text(850, 472, 'HP', {
+      fontFamily: FONT, fontSize: '10px', color: '#f0c040',
+    }).setScrollFactor(0).setDepth(DEPTH + 5);
+    objects.push(jpHPLabel);
+
+    const jpHPText = this.add.text(1120, 472, `${jpHP}/${jpMaxHP}`, {
+      fontFamily: FONT, fontSize: '10px', color: '#aaaacc',
+    }).setOrigin(1, 0).setScrollFactor(0).setDepth(DEPTH + 5);
+    objects.push(jpHPText);
+
+    const jpHPBgBar = this.add.rectangle(900, 477, 200, 12, 0x303040)
+      .setScrollFactor(0).setDepth(DEPTH + 5).setOrigin(0, 0.5);
+    objects.push(jpHPBgBar);
+
+    const jpHPBar = this.add.rectangle(900, 477, 200, 12, 0x40c040)
+      .setScrollFactor(0).setDepth(DEPTH + 6).setOrigin(0, 0.5);
+    objects.push(jpHPBar);
+
+    // === BATTLE MENU BOX (bottom, Pokemon-style) ===
+    const menuY = 720;
+    const menuBoxHeight = 240;
+
+    // Text area (left side)
+    const textBoxBg = this.add.rectangle(GAME_WIDTH / 4, menuY + menuBoxHeight / 2, GAME_WIDTH / 2 - 10, menuBoxHeight, 0x1a1a28)
+      .setScrollFactor(0).setDepth(DEPTH + 10).setStrokeStyle(4, 0x606080);
+    objects.push(textBoxBg);
+
+    // Inner white border for Pokemon look
+    const textBoxInner = this.add.rectangle(GAME_WIDTH / 4, menuY + menuBoxHeight / 2, GAME_WIDTH / 2 - 30, menuBoxHeight - 20, 0x101018)
+      .setScrollFactor(0).setDepth(DEPTH + 10).setStrokeStyle(2, 0x404058);
+    objects.push(textBoxInner);
+
+    const battleText = this.add.text(40, menuY + 30, 'An inmate steps to JP.\n"You think you\'re tough?"', {
+      fontFamily: FONT, fontSize: '13px', color: '#ffffff',
+      wordWrap: { width: GAME_WIDTH / 2 - 80 }, lineSpacing: 8,
+    }).setScrollFactor(0).setDepth(DEPTH + 11);
+    objects.push(battleText);
+
+    // Menu area (right side)
+    const menuBoxBg = this.add.rectangle(GAME_WIDTH * 3 / 4 + 5, menuY + menuBoxHeight / 2, GAME_WIDTH / 2 - 10, menuBoxHeight, 0x1a1a28)
+      .setScrollFactor(0).setDepth(DEPTH + 10).setStrokeStyle(4, 0x606080);
+    objects.push(menuBoxBg);
+
+    const menuBoxInner = this.add.rectangle(GAME_WIDTH * 3 / 4 + 5, menuY + menuBoxHeight / 2, GAME_WIDTH / 2 - 30, menuBoxHeight - 20, 0x101018)
+      .setScrollFactor(0).setDepth(DEPTH + 10).setStrokeStyle(2, 0x404058);
+    objects.push(menuBoxInner);
+
+    // Menu options in 2x2 grid
+    const menuOptions = ['SWING', 'DODGE', 'TALK', 'WALK AWAY'];
+    const menuBaseX = GAME_WIDTH / 2 + 60;
+    const menuBaseY = menuY + 50;
+    const menuColGap = 260;
+    const menuRowGap = 70;
+
+    const menuTexts: Phaser.GameObjects.Text[] = [];
+    const menuCursors: Phaser.GameObjects.Text[] = [];
+
+    for (let i = 0; i < 4; i++) {
+      const col = i % 2;
+      const row = Math.floor(i / 2);
+      const x = menuBaseX + col * menuColGap;
+      const y = menuBaseY + row * menuRowGap;
+
+      // Selection arrow
+      const cursor = this.add.text(x - 5, y, '\u25b6', {
+        fontFamily: FONT, fontSize: '14px', color: '#f0c040',
+      }).setOrigin(1, 0).setScrollFactor(0).setDepth(DEPTH + 12).setAlpha(i === 0 ? 1 : 0);
+      objects.push(cursor);
+      menuCursors.push(cursor);
+
+      const text = this.add.text(x, y, menuOptions[i], {
+        fontFamily: FONT, fontSize: '14px', color: i === 0 ? '#f0c040' : '#aaaacc',
+      }).setScrollFactor(0).setDepth(DEPTH + 12);
+      objects.push(text);
+      menuTexts.push(text);
+    }
+
+    // === HP BAR HELPERS ===
+    const getHPColor = (ratio: number): number => {
+      if (ratio > 0.5) return 0x40c040; // green
+      if (ratio > 0.25) return 0xc0c040; // yellow
+      return 0xc04040; // red
+    };
+
+    const updateEnemyHP = () => {
+      const ratio = Math.max(0, enemyHP / enemyMaxHP);
+      const targetWidth = 200 * ratio;
+      const color = getHPColor(ratio);
+      this.tweens.add({
+        targets: enemyHPBar,
+        displayWidth: targetWidth,
+        duration: 400,
+        ease: 'Quad.easeOut',
+        onUpdate: () => {
+          enemyHPBar.setFillStyle(color);
+        },
+      });
+    };
+
+    const updateJPHP = () => {
+      const ratio = Math.max(0, jpHP / jpMaxHP);
+      const targetWidth = 200 * ratio;
+      const color = getHPColor(ratio);
+      this.tweens.add({
+        targets: jpHPBar,
+        displayWidth: targetWidth,
+        duration: 400,
+        ease: 'Quad.easeOut',
+        onUpdate: () => {
+          jpHPBar.setFillStyle(color);
+        },
+      });
+      jpHPText.setText(`${Math.max(0, jpHP)}/${jpMaxHP}`);
+    };
+
+    // === MENU UPDATE ===
+    const updateMenu = () => {
+      for (let i = 0; i < 4; i++) {
+        menuTexts[i].setColor(i === menuIndex ? '#f0c040' : '#aaaacc');
+        menuCursors[i].setAlpha(i === menuIndex ? 1 : 0);
+      }
+    };
+
+    // === WHITE FLASH ON HIT ===
+    const flashSprite = (target: Phaser.GameObjects.Sprite) => {
+      target.setTint(0xffffff);
+      this.time.delayedCall(60, () => target.setTint(0xff4444));
+      this.time.delayedCall(120, () => target.setTint(0xffffff));
+      this.time.delayedCall(180, () => target.clearTint());
+    };
+
+    // === SCREEN SHAKE ===
+    const screenShake = () => {
+      this.cameras.main.shake(200, 0.015);
+    };
+
+    // === SHOW BATTLE TEXT ===
+    const showText = (text: string, callback?: () => void) => {
+      state = 'text';
+      inputEnabled = false;
+      battleText.setText(text);
+      this.time.delayedCall(1400, () => {
+        if (callback) callback();
+      });
+    };
+
+    // === SHOW MULTI-LINE TEXT SEQUENCE ===
+    const showTextSequence = (lines: string[], callback?: () => void) => {
+      let idx = 0;
+      const showNext = () => {
+        if (idx >= lines.length) {
+          if (callback) callback();
+          return;
+        }
+        battleText.setText(lines[idx]);
+        idx++;
+        this.time.delayedCall(1800, showNext);
+      };
+      showNext();
+    };
+
+    // === ENEMY TURN ===
+    const enemyTurn = () => {
+      state = 'enemy-action';
+      inputEnabled = false;
+
+      if (dodgeActive) {
+        // Inmate swings and misses
+        this.tweens.add({
+          targets: enemySprite,
+          x: enemySpriteBaseX + 120,
+          duration: 200,
+          yoyo: true,
+          ease: 'Quad.easeOut',
+        });
+        dodgeActive = false;
+        showText('Inmate swings... and misses!', () => {
+          if (enemyHP <= 0) { endBattle(true); return; }
+          state = 'menu';
+          inputEnabled = true;
+          battleText.setText('What will JP do?');
+        });
+        return;
+      }
+
+      // Inmate attacks
+      let damage = Phaser.Math.Between(10, 20);
+      if (talkDebuff) {
+        damage = Math.max(5, damage - 5);
+      }
+
+      // Enemy lunge animation
+      this.tweens.add({
+        targets: enemySprite,
+        x: enemySpriteBaseX + 180,
+        y: enemySpriteBaseY + 80,
+        duration: 250,
+        ease: 'Quad.easeIn',
+        onComplete: () => {
+          // Hit JP
+          flashSprite(jpSprite);
+          screenShake();
+          jpHP -= damage;
+          updateJPHP();
+
+          // Enemy returns
+          this.tweens.add({
+            targets: enemySprite,
+            x: enemySpriteBaseX,
+            y: enemySpriteBaseY,
+            duration: 300,
+            ease: 'Quad.easeOut',
+          });
+
+          showText(`Inmate swings! JP takes ${damage} damage!`, () => {
+            if (jpHP <= 0) { endBattle(false); return; }
+            state = 'menu';
+            inputEnabled = true;
+            battleText.setText('What will JP do?');
+          });
+        },
+      });
+    };
+
+    // === PLAYER ACTIONS ===
+    const doSwing = () => {
+      state = 'player-action';
+      inputEnabled = false;
+      dodgeActive = false;
+
+      const damage = Phaser.Math.Between(15, 25);
+
+      // JP lunge animation
+      this.tweens.add({
+        targets: jpSprite,
+        x: jpSpriteBaseX - 180,
+        y: jpSpriteBaseY - 80,
+        duration: 250,
+        ease: 'Quad.easeIn',
+        onComplete: () => {
+          flashSprite(enemySprite);
+          screenShake();
+          enemyHP -= damage;
+          updateEnemyHP();
+
+          // JP returns
+          this.tweens.add({
+            targets: jpSprite,
+            x: jpSpriteBaseX,
+            y: jpSpriteBaseY,
+            duration: 300,
+            ease: 'Quad.easeOut',
+          });
+
+          showText(`JP swings! Hit for ${damage} damage!`, () => {
+            if (enemyHP <= 0) { endBattle(true); return; }
+            enemyTurn();
+          });
+        },
+      });
+    };
+
+    const doDodge = () => {
+      state = 'player-action';
+      inputEnabled = false;
+      dodgeActive = true;
+
+      // JP shifts sideways
+      this.tweens.add({
+        targets: jpSprite,
+        x: jpSpriteBaseX + 50,
+        duration: 200,
+        yoyo: true,
+        ease: 'Sine.easeInOut',
+      });
+
+      showText('JP braces and dodges!', () => {
+        enemyTurn();
+      });
+    };
+
+    const doTalk = () => {
+      state = 'player-action';
+      inputEnabled = false;
+      dodgeActive = false;
+
+      const success = Math.random() < 0.5;
+      if (success) {
+        talkDebuff = true;
+        showText('JP talks the inmate down.\nEnemy attack weakened.', () => {
+          enemyTurn();
+        });
+      } else {
+        showText("The inmate doesn't want to hear it.", () => {
+          enemyTurn();
+        });
+      }
+    };
+
+    const doWalkAway = () => {
+      state = 'player-action';
+      inputEnabled = false;
+      dodgeActive = false;
+
+      if (enemyHP > 50) {
+        showText("The inmate blocks the way.\nYou can't leave yet.", () => {
+          state = 'menu';
+          inputEnabled = true;
+          battleText.setText('What will JP do?');
+        });
+      } else {
+        showText('JP walks away. Not worth it.', () => {
+          endBattle(true);
+        });
+      }
+    };
+
+    // === END BATTLE ===
+    const endBattle = (jpWon: boolean) => {
+      state = 'end';
+      inputEnabled = false;
+
+      // Hide menu
+      for (const t of menuTexts) t.setAlpha(0);
+      for (const c of menuCursors) c.setAlpha(0);
+
+      if (jpWon && enemyHP <= 0) {
+        // Enemy falls
+        this.tweens.add({
+          targets: enemySprite,
+          y: enemySpriteBaseY + 80,
+          alpha: 0.3,
+          angle: 90,
+          duration: 600,
+          ease: 'Quad.easeIn',
+        });
+
+        showTextSequence([
+          'The inmate hits the ground.',
+          'Guard: "BREAK IT UP! Both of you, against the wall!"',
+          'JP: "He started it."',
+          'Guard: "I don\'t care who started it. You want more time?"',
+          "JP's Mind: Not worth it. Never again.",
+          'The yard goes quiet. Everyone saw that.',
+        ], () => {
+          cleanupBattle();
+        });
+      } else if (jpWon) {
+        // Walked away
+        showTextSequence([
+          'JP turns his back and walks.',
+          "JP's Mind: That's the smart play.",
+          'The yard goes quiet. Everyone saw that.',
+        ], () => {
+          cleanupBattle();
+        });
+      } else {
+        // JP lost
+        this.tweens.add({
+          targets: jpSprite,
+          y: jpSpriteBaseY + 80,
+          alpha: 0.3,
+          angle: -90,
+          duration: 600,
+          ease: 'Quad.easeIn',
+        });
+
+        showTextSequence([
+          'JP hits the ground.',
+          'Guard: "BREAK IT UP!"',
+          'Guard: "Both of you. Against the wall. Now."',
+          "JP's Mind: That's the last time I fight in here.",
+        ], () => {
+          cleanupBattle();
+        });
+      }
+    };
+
+    // === CLEANUP ===
+    const cleanupBattle = () => {
+      // Pokemon bars closing transition
+      const closeTop = this.add.rectangle(GAME_WIDTH / 2, -GAME_HEIGHT / 4, GAME_WIDTH, GAME_HEIGHT / 2, 0x000000)
+        .setScrollFactor(0).setDepth(DEPTH + 50);
+      const closeBottom = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT + GAME_HEIGHT / 4, GAME_WIDTH, GAME_HEIGHT / 2, 0x000000)
+        .setScrollFactor(0).setDepth(DEPTH + 50);
+
+      this.tweens.add({
+        targets: closeTop,
+        y: GAME_HEIGHT / 4,
+        duration: 500,
+        ease: 'Quad.easeIn',
+      });
+      this.tweens.add({
+        targets: closeBottom,
+        y: GAME_HEIGHT * 3 / 4,
+        duration: 500,
+        ease: 'Quad.easeIn',
+        onComplete: () => {
+          // Destroy all battle objects
+          upKey.off('down', onKeyDown);
+          downKey.off('down', onKeyDown);
+          leftKey.off('down', onKeyDown);
+          rightKey.off('down', onKeyDown);
+          spaceKey.off('down', onConfirm);
+
+          for (const obj of objects) {
+            if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
+          }
+
+          // Open bars back to gameplay
+          const openTop2 = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 4, GAME_WIDTH, GAME_HEIGHT / 2, 0x000000)
+            .setScrollFactor(0).setDepth(DEPTH + 50);
+          const openBottom2 = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT * 3 / 4, GAME_WIDTH, GAME_HEIGHT / 2, 0x000000)
+            .setScrollFactor(0).setDepth(DEPTH + 50);
+          this.tweens.add({
+            targets: openTop2,
+            y: -GAME_HEIGHT / 4,
+            duration: 600,
+            ease: 'Quad.easeOut',
+            onComplete: () => { openTop2.destroy(); closeTop.destroy(); },
+          });
+          this.tweens.add({
+            targets: openBottom2,
+            y: GAME_HEIGHT + GAME_HEIGHT / 4,
+            duration: 600,
+            ease: 'Quad.easeOut',
+            onComplete: () => {
+              openBottom2.destroy();
+              closeBottom.destroy();
+              this.frozen = false;
+            },
+          });
+        },
+      });
+    };
+
+    // === INPUT ===
+    const upKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
+    const downKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
+    const leftKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
+    const rightKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
+    const spaceKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
+    const onKeyDown = (event: { keyCode: number }) => {
+      if (!inputEnabled || state !== 'menu') return;
+
+      const col = menuIndex % 2;
+      const row = Math.floor(menuIndex / 2);
+
+      if (event.keyCode === Phaser.Input.Keyboard.KeyCodes.UP && row > 0) {
+        menuIndex -= 2;
+      } else if (event.keyCode === Phaser.Input.Keyboard.KeyCodes.DOWN && row < 1) {
+        menuIndex += 2;
+      } else if (event.keyCode === Phaser.Input.Keyboard.KeyCodes.LEFT && col > 0) {
+        menuIndex -= 1;
+      } else if (event.keyCode === Phaser.Input.Keyboard.KeyCodes.RIGHT && col < 1) {
+        menuIndex += 1;
+      }
+      updateMenu();
+    };
+
+    const onConfirm = () => {
+      if (!inputEnabled || state !== 'menu') return;
+
+      switch (menuIndex) {
+        case 0: doSwing(); break;
+        case 1: doDodge(); break;
+        case 2: doTalk(); break;
+        case 3: doWalkAway(); break;
+      }
+    };
+
+    upKey.on('down', onKeyDown);
+    downKey.on('down', onKeyDown);
+    leftKey.on('down', onKeyDown);
+    rightKey.on('down', onKeyDown);
+    spaceKey.on('down', onConfirm);
   }
 
   private playTimeSkip() {
