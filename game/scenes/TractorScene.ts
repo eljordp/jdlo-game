@@ -53,24 +53,10 @@ export class TractorScene extends BaseChapterScene {
       return;
     }
 
-    if (interactable.id === 'ch4_ai_discovery' && interactable.type === 'evolve') {
+    if (interactable.id === 'ch4_ai_discovery') {
       Analytics.trackInteraction(interactable.id);
-      this.frozen = true;
-      const chapterDialogue = this.getChapterDialogue();
-      const discoveryLines = chapterDialogue.npcs[interactable.id];
-      if (discoveryLines) {
-        this.dialogue.show(discoveryLines, () => {
-          EvolutionAnimation.play(
-            this,
-            ['ChatGPT', 'Wix', 'Webflow', 'Lovable', 'Claude Code'],
-            () => {
-              // Post-evolution mini-cutscene
-              this.playAIDiscoveryCutscene();
-              this.interactions.consume(interactable.id);
-            }
-          );
-        });
-      }
+      // Let the base class handle it — it now uses the grounded discovery scene
+      super.handleInteractable(interactable);
       return;
     }
     super.handleInteractable(interactable);

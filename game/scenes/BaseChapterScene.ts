@@ -520,6 +520,99 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     }
   }
 
+  private playDiscoveryScene(onComplete: () => void) {
+    const objects: Phaser.GameObjects.GameObject[] = [];
+
+    // Dark overlay — like a late night screen glow
+    const bg = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x050510, 0.9)
+      .setScrollFactor(0).setDepth(500);
+    objects.push(bg);
+
+    // Computer screen glow in center
+    const screenGlow = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 40, 320, 200, 0x101830)
+      .setScrollFactor(0).setDepth(501).setStrokeStyle(2, 0x304060);
+    objects.push(screenGlow);
+
+    // Screen light on JP's face
+    const faceGlow = this.add.circle(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 100, 60, 0x203050, 0.15)
+      .setScrollFactor(0).setDepth(501);
+    objects.push(faceGlow);
+
+    // JP sprite sitting at the computer
+    const jp = this.add.sprite(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 110, this.getPlayerTexture(), 2)
+      .setScale(SCALE + 1).setScrollFactor(0).setDepth(502);
+    objects.push(jp);
+
+    // Text lines appearing on the "screen" — like JP is actually browsing
+    const lines = [
+      { text: '> what is chatgpt', delay: 800, color: '#608090' },
+      { text: '> how to build a website', delay: 2000, color: '#608090' },
+      { text: '> wix tutorial beginner', delay: 3200, color: '#608090' },
+      { text: '> webflow vs wix', delay: 4400, color: '#7090a0' },
+      { text: '> how to make money online for real', delay: 5600, color: '#7090a0' },
+      { text: '> lovable ai website builder', delay: 6800, color: '#80a0b0' },
+      { text: '> claude ai coding assistant', delay: 8000, color: '#a0c0d0' },
+    ];
+
+    let yPos = GAME_HEIGHT / 2 - 110;
+    for (const line of lines) {
+      const t = this.add.text(GAME_WIDTH / 2 - 140, yPos, '', {
+        fontFamily: 'monospace',
+        fontSize: '11px',
+        color: line.color,
+      }).setScrollFactor(0).setDepth(502).setAlpha(0);
+      objects.push(t);
+
+      // Typewriter effect for each line
+      this.time.delayedCall(line.delay, () => {
+        t.setAlpha(1);
+        let charIdx = 0;
+        const typeTimer = this.time.addEvent({
+          delay: 40,
+          repeat: line.text.length - 1,
+          callback: () => {
+            charIdx++;
+            t.setText(line.text.substring(0, charIdx));
+          },
+        });
+      });
+
+      yPos += 22;
+    }
+
+    // After all lines, show the realization
+    this.time.delayedCall(9500, () => {
+      // Screen brightens slightly
+      this.tweens.add({
+        targets: screenGlow,
+        fillColor: 0x182040,
+        duration: 800,
+      });
+
+      const realization = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 200, 'This changes everything.', {
+        fontFamily: '"Press Start 2P", monospace',
+        fontSize: '14px',
+        color: '#f0c040',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(503).setAlpha(0);
+      objects.push(realization);
+
+      this.tweens.add({
+        targets: realization,
+        alpha: 1,
+        duration: 1000,
+        hold: 2000,
+        yoyo: true,
+        onComplete: () => {
+          // Clean up
+          for (const obj of objects) {
+            if (obj && obj.active) obj.destroy();
+          }
+          onComplete();
+        },
+      });
+    });
+  }
+
   protected playSmokingAnimation() {
     // Create smoke particles above player for 3 seconds
     const emitSmoke = () => {
@@ -618,20 +711,15 @@ export abstract class BaseChapterScene extends Phaser.Scene {
       }
 
       case 'evolve': {
-        // Tech evolution animation (Chapter 4)
+        // AI discovery — grounded, real moment
         this.frozen = true;
-        // Show the discovery dialogue first
         const discoveryLines = chapterDialogue.npcs[interactable.id];
         if (discoveryLines) {
           this.dialogue.show(discoveryLines, () => {
-            EvolutionAnimation.play(
-              this,
-              ['ChatGPT', 'Wix', 'Webflow', 'Lovable', 'Claude Code'],
-              () => {
-                this.frozen = false;
-                this.interactions.consume(interactable.id);
-              }
-            );
+            this.playDiscoveryScene(() => {
+              this.frozen = false;
+              this.interactions.consume(interactable.id);
+            });
           });
         }
         break;
