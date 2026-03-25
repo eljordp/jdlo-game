@@ -17,6 +17,10 @@ export class WrongCrowdScene extends BaseChapterScene {
     return 'player-ch2';
   }
 
+  protected getMusicTrack(): string {
+    return 'wrong-crowd';
+  }
+
   create() {
     super.create();
     this.raidTriggered = false;

@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '../config';
 import { introDialogue } from '../data/story';
+import { MusicSystem } from '../systems/MusicSystem';
 
 export class IntroScene extends Phaser.Scene {
   private currentLine = 0;
@@ -22,6 +23,7 @@ export class IntroScene extends Phaser.Scene {
   create() {
     this.currentLine = 0;
     this.phase = 'black';
+    MusicSystem.stop();
 
     // Full black screen
     this.overlay = this.add.rectangle(

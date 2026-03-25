@@ -14,6 +14,10 @@ export class ComeUpScene extends BaseChapterScene {
     return 'player-ch5';
   }
 
+  protected getMusicTrack(): string {
+    return 'come-up';
+  }
+
   create() {
     super.create();
     // Client showcases

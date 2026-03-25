@@ -6,6 +6,7 @@ import { MapBuilder } from '../systems/MapBuilder';
 import { InteractionSystem } from '../systems/InteractionSystem';
 import { EvolutionAnimation } from '../systems/EvolutionAnimation';
 import { ShowcaseFrame } from '../systems/ShowcaseFrame';
+import { MusicSystem } from '../systems/MusicSystem';
 import type { MapData } from '../data/maps';
 
 type NPCObject = {
@@ -43,6 +44,11 @@ export abstract class BaseChapterScene extends Phaser.Scene {
   // Override in subclasses to use chapter-specific player outfit
   protected getPlayerTexture(): string {
     return 'player';
+  }
+
+  // Override in subclasses to set background music track
+  protected getMusicTrack(): string {
+    return '';
   }
 
   // Override in subclasses to provide showcase data
@@ -142,6 +148,10 @@ export abstract class BaseChapterScene extends Phaser.Scene {
 
     // Show objective hint
     this.showObjectiveHint();
+
+    // Start background music
+    const track = this.getMusicTrack();
+    if (track) MusicSystem.play(track);
   }
 
   private showChapterTitle() {

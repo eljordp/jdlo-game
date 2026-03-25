@@ -427,6 +427,26 @@ export const chapter5NPCs: NPCData[] = [
       { speaker: 'JP', text: 'Enterprise problems, enterprise solutions.' },
     ],
   },
+  {
+    id: 'ch5_vacaville',
+    x: 8,
+    y: 8,
+    sprite: 'npc_generic',
+    dialogue: [
+      { speaker: 'Vacaville Appliance', text: 'You fixed our website and now we\'re getting 3x the calls. How much for the Google Ads setup?' },
+      { speaker: 'JP', text: 'I\'ll send you a proposal tonight.' },
+    ],
+  },
+  {
+    id: 'ch5_fw_wheels',
+    x: 22,
+    y: 8,
+    sprite: 'npc_kid',
+    dialogue: [
+      { speaker: 'fw.wheels', text: 'The wheel fitment calculator you built is sick. Customers love it.' },
+      { speaker: 'JP', text: 'That was a fun one. Custom tool, no template.' },
+    ],
+  },
 ];
 
 export const chapter5OutroText: string[] = [
@@ -481,6 +501,51 @@ export const chapter6NPCs: NPCData[] = [
       { speaker: 'JP', text: 'Let me show you what else we can automate.' },
       { speaker: 'Big Player', text: 'This is why I keep you close, man. You see the system before anyone explains it.' },
       { speaker: 'JP', text: 'Pattern recognition. That\'s the edge.' },
+    ],
+  },
+  {
+    id: 'ch6_office_kult',
+    x: 6,
+    y: 4,
+    sprite: 'npc_tech',
+    dialogue: [
+      { speaker: 'Office Kult Rep', text: 'Office Kult wants you on the creative team.' },
+      { speaker: 'JP', text: 'I\'m already running three systems for them.' },
+      { speaker: 'Office Kult Rep', text: 'Exactly. That\'s why they want you full-time.' },
+      { speaker: 'JP', text: 'Tell them I\'m an operator, not an employee.' },
+    ],
+  },
+  {
+    id: 'ch6_tony',
+    x: 12,
+    y: 8,
+    sprite: 'npc_suit',
+    dialogue: [
+      { speaker: 'Tony', text: 'JP, I got connections at Flamingo and Caesars. They need a promoter bot.' },
+      { speaker: 'JP', text: 'Send me the specs. I\'ll have a demo by Friday.' },
+      { speaker: 'Tony', text: 'This is why I keep calling you, man.' },
+    ],
+  },
+  {
+    id: 'ch6_client2',
+    x: 24,
+    y: 4,
+    sprite: 'npc_business',
+    dialogue: [
+      { speaker: 'New Client', text: 'We need the full stack. Website, CRM, AI receptionist, booking system.' },
+      { speaker: 'JP', text: 'End of week.' },
+      { speaker: 'New Client', text: 'Our last vendor quoted eight weeks.' },
+      { speaker: 'JP', text: 'I\'m not your last vendor.' },
+    ],
+  },
+  {
+    id: 'ch6_team_member',
+    x: 19,
+    y: 23,
+    sprite: 'npc_generic',
+    dialogue: [
+      { speaker: 'Team Member', text: 'JP, the dashboard you built is saving us 10 hours a week minimum.' },
+      { speaker: 'JP', text: 'That\'s the point. Automate the boring stuff so you can focus on closing.' },
     ],
   },
 ];
@@ -1010,6 +1075,27 @@ const ch5Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'Enterprise client. The kind of project that changes how people see you.' },
     { speaker: 'JP\'s Mind', text: 'Their dev team couldn\'t crack it. I did it in a week.' },
   ],
+  ch5_first_site: [
+    { speaker: 'JP\'s Mind', text: 'JP\'s first website. $300. Took him a week.' },
+    { speaker: 'JP\'s Mind', text: 'Looking back, it was ugly as hell. But it WORKED. And the client paid.' },
+  ],
+  ch5_3am: [
+    { speaker: 'JP\'s Mind', text: '3:47 AM. Red Bull empty. Eyes burning.' },
+    { speaker: 'JP\'s Mind', text: 'But the client site is deploying. JP watches the Vercel build logs scroll.' },
+    { speaker: 'JP\'s Mind', text: 'Green checkmark. It\'s live.' },
+  ],
+  ch5_pricing: [
+    { speaker: 'JP\'s Mind', text: '$300... $500... $1,000... $3,000... $5,000.' },
+    { speaker: 'JP\'s Mind', text: 'The prices kept going up because the work kept getting better.' },
+  ],
+  ch5_github: [
+    { speaker: 'JP\'s Mind', text: '32 repos on GitHub. Some abandoned. Some shipped.' },
+    { speaker: 'JP\'s Mind', text: 'Every one taught JP something.' },
+  ],
+  ch5_stack: [
+    { speaker: 'JP\'s Mind', text: 'Next.js. React. Tailwind. Supabase. Vercel. Claude.' },
+    { speaker: 'JP\'s Mind', text: 'The stack that changed everything.' },
+  ],
 };
 
 // ─── Chapter 6 extras ──────────────────────────────────────────────────
@@ -1046,6 +1132,30 @@ const ch6Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'Dashboard, team workflows, client pipeline — all running. All built by one person with a laptop.' },
     { speaker: 'JP\'s Mind', text: 'Malachi had the vision. I built the machine that makes it real.' },
     { speaker: 'JP\'s Mind', text: 'COO at 22. No degree. No connections. Just work.' },
+  ],
+  ch6_vegas_memory: [
+    { speaker: 'JP\'s Mind', text: 'Flew to Vegas for a meeting with Malachi. Sat across from people closing million-dollar deals.' },
+    { speaker: 'JP\'s Mind', text: 'They asked JP for advice. Six months ago he was on a tractor.' },
+  ],
+  ch6_slack: [
+    { speaker: 'JP\'s Mind', text: 'Team Slack is blowing up. Three clients need updates. Two proposals due. A new lead from Instagram.' },
+    { speaker: 'JP\'s Mind', text: 'JP handles all of it before lunch.' },
+  ],
+  ch6_revenue: [
+    { speaker: 'JP\'s Mind', text: 'Revenue tracker: $2,550 collected. Pomaika\'i retainer pending. More coming.' },
+    { speaker: 'JP\'s Mind', text: 'The snowball is rolling.' },
+  ],
+  ch6_instagram: [
+    { speaker: 'JP\'s Mind', text: '@jdlo. The page JP kept deleting posts from. Not anymore.' },
+    { speaker: 'JP\'s Mind', text: 'Every post is proof. Every build is a receipt.' },
+  ],
+  ch6_future: [
+    { speaker: 'JP\'s Mind', text: 'LLC paperwork on the desk. Contracts drafted. Invoicing system ready.' },
+    { speaker: 'JP\'s Mind', text: 'This isn\'t freelancing anymore. This is a business.' },
+  ],
+  ch6_equal_moment: [
+    { speaker: 'JP\'s Mind', text: 'A guy doing $400K a month just asked JP to build his AI system.' },
+    { speaker: 'JP\'s Mind', text: 'Not as a favor. As a client. Because JP is that good.' },
   ],
 };
 

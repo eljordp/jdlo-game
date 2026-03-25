@@ -14,6 +14,10 @@ export class BeachScene extends BaseChapterScene {
     return 'player-ch1';
   }
 
+  protected getMusicTrack(): string {
+    return 'santa-barbara';
+  }
+
   create() {
     super.create();
     // Exit triggers at y=18, x=12-15

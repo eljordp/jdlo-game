@@ -14,6 +14,10 @@ export class OperatorScene extends BaseChapterScene {
     return 'player-ch6';
   }
 
+  protected getMusicTrack(): string {
+    return 'operator';
+  }
+
   create() {
     super.create();
     // Exit at 14,24

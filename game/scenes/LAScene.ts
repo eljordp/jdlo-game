@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, SCALE } from '../config';
+import { MusicSystem } from '../systems/MusicSystem';
 
 /**
  * Cinematic LA scene with pixel art animations.
@@ -23,6 +24,7 @@ export class LAScene extends Phaser.Scene {
     this.sceneObjects = [];
     this.activeTweens = [];
 
+    MusicSystem.stop();
     this.cameras.main.fadeIn(1000, 0, 0, 0);
 
     this.input.keyboard!.on('keydown-SPACE', () => this.advance());

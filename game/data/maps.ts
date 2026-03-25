@@ -483,6 +483,8 @@ export const comeUpMap: MapData = {
       { id: 'ch5_mentor',       x: 13, y: 18, sprite: 'npc_mentor' },
       { id: 'ch5_impressed',    x: 15, y: 8,  sprite: 'npc_biz' },
       { id: 'ch5_dhl',          x: 15, y: 10, sprite: 'npc_dhl_client' },
+      { id: 'ch5_vacaville',    x: 8,  y: 8,  sprite: 'npc_generic' },
+      { id: 'ch5_fw_wheels',    x: 22, y: 8,  sprite: 'npc_kid' },
     ],
   },
   triggers: [
@@ -497,6 +499,11 @@ export const comeUpMap: MapData = {
     { id: 'ch5_review', x: 24, y: 9, type: 'examine', glow: true, sprite: 'item-phone' },
     { id: 'ch5_print_shop', x: 11, y: 21, type: 'examine', glow: true },
     { id: 'ch5_dhl_building', x: 20, y: 21, type: 'examine', glow: true },
+    { id: 'ch5_first_site', x: 6, y: 4, type: 'examine', glow: true, sprite: 'item-tablet' },
+    { id: 'ch5_3am', x: 8, y: 4, type: 'examine', glow: true },
+    { id: 'ch5_pricing', x: 7, y: 2, type: 'examine', glow: true, sprite: 'item-money' },
+    { id: 'ch5_github', x: 5, y: 3, type: 'examine', glow: true, sprite: 'item-tablet' },
+    { id: 'ch5_stack', x: 6, y: 2, type: 'examine', glow: true },
   ],
 };
 
@@ -539,9 +546,13 @@ export const operatorMap: MapData = {
   spawns: {
     player: { x: 14, y: 1 },
     npcs: [
-      { id: 'ch6_malachi',    x: 7,  y: 15, sprite: 'npc_malachi' },
-      { id: 'ch6_big_client', x: 22, y: 5,  sprite: 'npc_suit' },
-      { id: 'ch6_equal', x: 21, y: 15, sprite: 'npc_whale' },
+      { id: 'ch6_malachi',      x: 7,  y: 15, sprite: 'npc_malachi' },
+      { id: 'ch6_big_client',   x: 22, y: 5,  sprite: 'npc_suit' },
+      { id: 'ch6_equal',        x: 21, y: 15, sprite: 'npc_whale' },
+      { id: 'ch6_office_kult',  x: 6,  y: 4,  sprite: 'npc_tech' },
+      { id: 'ch6_tony',         x: 12, y: 8,  sprite: 'npc_suit' },
+      { id: 'ch6_client2',      x: 24, y: 4,  sprite: 'npc_business' },
+      { id: 'ch6_team_member',  x: 19, y: 23, sprite: 'npc_generic' },
     ],
   },
   triggers: [
@@ -554,6 +565,12 @@ export const operatorMap: MapData = {
     { id: 'ch6_team', x: 11, y: 14, type: 'examine', glow: true, sprite: 'item-phone' },
     { id: 'ch6_mirror', x: 5, y: 22, type: 'examine', glow: true },
     { id: 'ch6_pomaikai_office', x: 21, y: 23, type: 'examine', glow: true },
+    { id: 'ch6_vegas_memory', x: 10, y: 8, type: 'examine', glow: true },
+    { id: 'ch6_slack', x: 3, y: 8, type: 'examine', glow: true, sprite: 'item-phone' },
+    { id: 'ch6_revenue', x: 25, y: 8, type: 'examine', glow: true, sprite: 'item-money' },
+    { id: 'ch6_instagram', x: 16, y: 11, type: 'examine', glow: true, sprite: 'item-phone' },
+    { id: 'ch6_future', x: 7, y: 19, type: 'examine', glow: true },
+    { id: 'ch6_equal_moment', x: 22, y: 11, type: 'examine', glow: true },
   ],
 };
 

@@ -14,6 +14,10 @@ export class JailScene extends BaseChapterScene {
     return 'player-ch3';
   }
 
+  protected getMusicTrack(): string {
+    return 'jail';
+  }
+
   create() {
     super.create();
     // Exit triggers at y=25, x=17-18

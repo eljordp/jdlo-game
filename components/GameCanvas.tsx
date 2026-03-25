@@ -15,6 +15,7 @@ import { LAScene } from "@/game/scenes/LAScene";
 import { OperatorScene } from "@/game/scenes/OperatorScene";
 import { EndScene } from "@/game/scenes/EndScene";
 import { GAME_WIDTH, GAME_HEIGHT } from "@/game/config";
+import { MusicSystem } from "@/game/systems/MusicSystem";
 
 const SPEEDS = [
   { label: "1x", value: 1 },
@@ -40,6 +41,7 @@ export default function GameCanvas() {
   const [speedIndex, setSpeedIndex] = useState(0);
   const [showControls, setShowControls] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
 
   useEffect(() => {
     // Detect mobile/touch device
@@ -108,6 +110,11 @@ export default function GameCanvas() {
     };
   }, []);
 
+  const toggleMute = useCallback(() => {
+    const muted = MusicSystem.toggleMute();
+    setIsMuted(muted);
+  }, []);
+
   const cycleSpeed = useCallback(() => {
     const next = (speedIndex + 1) % SPEEDS.length;
     setSpeedIndex(next);
@@ -146,8 +153,15 @@ export default function GameCanvas() {
         className="w-full h-full"
       />
 
-      {/* Speed control — always visible */}
-      <div className="absolute top-3 right-3 z-20">
+      {/* Speed + mute controls — always visible */}
+      <div className="absolute top-3 right-3 z-20 flex gap-2">
+        <button
+          onClick={toggleMute}
+          className="px-3 py-1.5 bg-black/70 border border-white/20 rounded text-white text-xs font-mono hover:bg-white/10 transition-colors cursor-pointer"
+          title={isMuted ? "Unmute" : "Mute"}
+        >
+          {isMuted ? "OFF" : "SND"}
+        </button>
         <button
           onClick={cycleSpeed}
           className="px-3 py-1.5 bg-black/70 border border-white/20 rounded text-white text-xs font-mono hover:bg-white/10 transition-colors cursor-pointer"

@@ -14,6 +14,10 @@ export class TractorScene extends BaseChapterScene {
     return 'player-ch4';
   }
 
+  protected getMusicTrack(): string {
+    return 'caymus';
+  }
+
   create() {
     super.create();
     // Tractor at 13,5

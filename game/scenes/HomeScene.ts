@@ -14,6 +14,10 @@ export class HomeScene extends BaseChapterScene {
     return 'player-ch0';
   }
 
+  protected getMusicTrack(): string {
+    return 'home';
+  }
+
   create() {
     super.create();
     // Exit triggers at y=24, x=9-12

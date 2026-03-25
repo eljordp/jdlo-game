@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '../config';
+import { MusicSystem } from '../systems/MusicSystem';
 
 export class EndScene extends Phaser.Scene {
   constructor() {
@@ -7,6 +8,7 @@ export class EndScene extends Phaser.Scene {
   }
 
   create() {
+    MusicSystem.stop();
     this.cameras.main.fadeIn(1500, 0, 0, 0);
 
     this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x0a0a1a);
