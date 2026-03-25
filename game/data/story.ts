@@ -295,8 +295,7 @@ export const chapter2NPCs: NPCData[] = [
 
 export const chapter2OutroText: string[] = [
   'Just another drop. Until it wasn\'t.',
-  'Doors kicked in. Flashlights. Shouting.',
-  'Face down on the floor.',
+  'The consequences came fast.',
 ];
 
 // ─── Chapter 3: Jail ───────────────────────────────────────────────────
