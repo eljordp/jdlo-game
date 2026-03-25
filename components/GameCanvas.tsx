@@ -167,71 +167,68 @@ export default function GameCanvas() {
         </div>
       )}
 
-      {/* Mobile controls */}
+      {/* Mobile: portrait rotation prompt */}
       {isMobile && (
-        <>
-          {/* D-Pad — bottom left */}
-          <div className="absolute bottom-6 left-6 z-30">
-            <div className="relative w-36 h-36">
-              {/* Up */}
+        <div className="absolute inset-0 z-50 bg-black flex flex-col items-center justify-center gap-6 portrait:flex landscape:hidden">
+          <div className="text-4xl animate-bounce">📱</div>
+          <p className="text-white font-mono text-sm text-center px-8">
+            Rotate your phone for the best experience
+          </p>
+          <p className="text-white/40 font-mono text-xs">Landscape mode</p>
+        </div>
+      )}
+
+      {/* Mobile controls — landscape overlay ON the game */}
+      {isMobile && (
+        <div className="portrait:hidden landscape:block">
+          {/* D-Pad — bottom left, overlaid on game */}
+          <div className="absolute bottom-3 left-3 z-30">
+            <div className="relative w-28 h-28">
               <button
-                className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-12 bg-white/15 rounded-lg active:bg-white/30 flex items-center justify-center border border-white/10"
+                className="absolute top-0 left-1/2 -translate-x-1/2 w-10 h-10 bg-white/10 rounded-lg active:bg-white/30 flex items-center justify-center"
                 onTouchStart={(e) => { e.preventDefault(); pressDir("up"); }}
                 onTouchEnd={() => releaseDir("up")}
                 onTouchCancel={() => releaseDir("up")}
               >
-                <span className="text-white/60 text-lg">▲</span>
+                <span className="text-white/50 text-sm">▲</span>
               </button>
-              {/* Down */}
               <button
-                className="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-12 bg-white/15 rounded-lg active:bg-white/30 flex items-center justify-center border border-white/10"
+                className="absolute bottom-0 left-1/2 -translate-x-1/2 w-10 h-10 bg-white/10 rounded-lg active:bg-white/30 flex items-center justify-center"
                 onTouchStart={(e) => { e.preventDefault(); pressDir("down"); }}
                 onTouchEnd={() => releaseDir("down")}
                 onTouchCancel={() => releaseDir("down")}
               >
-                <span className="text-white/60 text-lg">▼</span>
+                <span className="text-white/50 text-sm">▼</span>
               </button>
-              {/* Left */}
               <button
-                className="absolute left-0 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/15 rounded-lg active:bg-white/30 flex items-center justify-center border border-white/10"
+                className="absolute left-0 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/10 rounded-lg active:bg-white/30 flex items-center justify-center"
                 onTouchStart={(e) => { e.preventDefault(); pressDir("left"); }}
                 onTouchEnd={() => releaseDir("left")}
                 onTouchCancel={() => releaseDir("left")}
               >
-                <span className="text-white/60 text-lg">◀</span>
+                <span className="text-white/50 text-sm">◀</span>
               </button>
-              {/* Right */}
               <button
-                className="absolute right-0 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/15 rounded-lg active:bg-white/30 flex items-center justify-center border border-white/10"
+                className="absolute right-0 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/10 rounded-lg active:bg-white/30 flex items-center justify-center"
                 onTouchStart={(e) => { e.preventDefault(); pressDir("right"); }}
                 onTouchEnd={() => releaseDir("right")}
                 onTouchCancel={() => releaseDir("right")}
               >
-                <span className="text-white/60 text-lg">▶</span>
+                <span className="text-white/50 text-sm">▶</span>
               </button>
-              {/* Center dot */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 bg-white/5 rounded-full" />
             </div>
           </div>
 
           {/* Action button — bottom right */}
           <button
-            className="absolute bottom-10 right-10 z-30 w-16 h-16 bg-white/15 rounded-full active:bg-white/30 flex items-center justify-center border-2 border-white/20"
+            className="absolute bottom-5 right-5 z-30 w-14 h-14 bg-white/10 rounded-full active:bg-white/30 flex items-center justify-center border border-white/15"
             onTouchStart={(e) => { e.preventDefault(); pressAction(); }}
             onTouchEnd={() => releaseAction()}
             onTouchCancel={() => releaseAction()}
           >
-            <span className="text-white/70 text-xs font-mono font-bold">A</span>
+            <span className="text-white/60 text-xs font-mono font-bold">A</span>
           </button>
-
-          {/* Speed button — top right, bigger for mobile */}
-          <button
-            className="absolute top-4 right-4 z-30 px-4 py-2 bg-black/70 border border-white/20 rounded-lg text-white text-sm font-mono active:bg-white/10"
-            onClick={cycleSpeed}
-          >
-            {SPEEDS[speedIndex].label}
-          </button>
-        </>
+        </div>
       )}
     </div>
   );

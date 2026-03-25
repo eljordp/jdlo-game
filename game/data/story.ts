@@ -50,43 +50,43 @@ export const introDialogue: DialogueLine[] = [
 // ─── Chapter 0: Home ─────────────────────────────────────────────────
 
 export const chapter0IntroText: string[] = [
-  'Before the streets. Before the hustle. Before everything.',
-  'Just a kid at home trying to figure it out.',
+  'Home',
+  'Before the hustle. Before the streets.',
+  'Just a kid with a computer and too many ideas.',
 ];
 
 export const chapter0NPCs: NPCData[] = [
   {
     id: 'ch0_pops',
-    x: 12,
-    y: 9,
+    x: 8,
+    y: 10,
     sprite: 'npc_pops',
     dialogue: [
-      { speaker: 'Pops', text: 'You been in your room all day.' },
-      { speaker: 'JP', text: 'Just thinking.' },
-      { speaker: 'Pops', text: 'I know you\'re trying to figure things out. That\'s okay.' },
-      { speaker: 'Pops', text: 'I didn\'t have it figured out at your age either. Nobody does.' },
-      { speaker: 'Pops', text: 'Just don\'t sit still too long. Life doesn\'t wait.' },
-      { speaker: 'JP', text: 'I know, Pops.' },
-      { speaker: 'Pops', text: 'I\'m not going anywhere. But the world is. Get moving, son.' },
+      { speaker: 'Pops', text: 'You been on that computer all day.' },
+      { speaker: 'JP', text: 'I\'m looking at crypto.' },
+      { speaker: 'Pops', text: 'Crypto? Just don\'t lose your shirt.' },
+      { speaker: 'JP', text: 'I won\'t.' },
+      { speaker: 'Pops', text: 'Whatever you do, just do it all the way. Don\'t half-ass it.' },
     ],
   },
   {
     id: 'ch0_mom',
-    x: 6,
-    y: 5,
+    x: 18,
+    y: 10,
     sprite: 'npc_female',
     dialogue: [
-      { speaker: 'Mom', text: 'Dinner\'s at six.' },
-      { speaker: 'JP', text: 'Okay.' },
-      { speaker: 'Mom', text: 'You need to start thinking about what you\'re gonna do.' },
-      { speaker: 'JP', text: 'I am thinking about it.' },
-      { speaker: 'Mom', text: 'Thinking and doing are two different things.' },
+      { speaker: 'Mom', text: 'Those college letters are still on the counter.' },
+      { speaker: 'JP', text: 'I\'m not going, Mom.' },
+      { speaker: 'Mom', text: 'You got accepted to three schools, Jordan.' },
+      { speaker: 'JP', text: 'I know. But I\'m not spending forty thousand a year for something I can learn myself.' },
+      { speaker: 'Mom', text: '...' },
+      { speaker: 'Narrator', text: 'She walks away. She doesn\'t agree but she\'s done arguing.' },
     ],
   },
   {
     id: 'ch0_sister',
-    x: 6,
-    y: 6,
+    x: 12,
+    y: 2,
     sprite: 'npc_sister',
     dialogue: [
       { speaker: 'Sister', text: 'JP! Come play with me!' },
@@ -101,8 +101,8 @@ export const chapter0NPCs: NPCData[] = [
   },
   {
     id: 'ch0_frenchie',
-    x: 14,
-    y: 11,
+    x: 15,
+    y: 18,
     sprite: 'npc_frenchie',
     dialogue: [
       { speaker: 'Narrator', text: 'The Frenchie wags his whole body when he sees JP.' },
@@ -114,8 +114,8 @@ export const chapter0NPCs: NPCData[] = [
 ];
 
 export const chapter0OutroText: string[] = [
-  'JP packed a bag. Hugged his sister. Dapped up Pops.',
-  'Didn\'t look back.',
+  'JP packed a bag. Left the acceptance letters on the counter. Kissed his sister. Dapped up Pops.',
+  'Santa Barbara was calling.',
 ];
 
 // ─── Chapter 1: Santa Barbara ──────────────────────────────────────────
@@ -569,21 +569,74 @@ function buildChapterDialogue(
 // ─── Chapter 0 extras ──────────────────────────────────────────────────
 
 const ch0Extras: Record<string, DialogueLine[]> = {
+  // --- JP's Room ---
+  ch0_computer: [
+    { speaker: 'Narrator', text: 'Crypto charts open. Coinbase tab. Discord servers.' },
+    { speaker: 'Narrator', text: 'A folder called \'Ideas\' with 47 files in it.' },
+    { speaker: 'Narrator', text: 'Half-finished projects everywhere. This kid is trying everything.' },
+  ],
+  ch0_crypto: [
+    { speaker: 'Narrator', text: 'Bitcoin at $40K. JP bought in at $35K.' },
+    { speaker: 'Narrator', text: 'Not life-changing money, but proof he\'s paying attention to where the world is going.' },
+  ],
+  ch0_college: [
+    { speaker: 'Narrator', text: 'Oregon. Hawaii. Arizona State. All accepted. All collecting dust.' },
+    { speaker: 'JP\'s Mind', text: 'JP did the math — $40K/year to learn what YouTube teaches for free.' },
+    { speaker: 'JP\'s Mind', text: 'He chose Santa Barbara and the network instead.' },
+  ],
   ch0_bed: [
-    { speaker: 'JP\'s Mind', text: 'Another night staring at the ceiling. What am I doing with my life?' },
-    { speaker: 'JP\'s Mind', text: 'Everyone I grew up with is either working or locked up. And I\'m just... here.' },
+    { speaker: 'JP\'s Mind', text: 'Another night staring at the ceiling.' },
+    { speaker: 'JP\'s Mind', text: 'Everyone else seems to know what they\'re doing.' },
   ],
-  ch0_window: [
-    { speaker: 'JP\'s Mind', text: 'Everyone else seems to have it figured out.' },
-    { speaker: 'JP\'s Mind', text: 'Same neighborhood. Same view. Same nothing changing.' },
+  ch0_poster: [
+    { speaker: 'Narrator', text: 'A motivational poster JP put up ironically.' },
+    { speaker: 'Narrator', text: 'But he reads it every morning anyway.' },
   ],
-  ch0_fridge: [
-    { speaker: 'JP\'s Mind', text: 'Nothing in the fridge. Story of my life.' },
-    { speaker: 'JP\'s Mind', text: 'Mom\'s been working doubles. Pops picks up what he can. And I\'m just eating their food.' },
+  ch0_hidden_stash: [
+    { speaker: 'Narrator', text: 'A small bag of weed tucked behind the bookshelf.' },
+    { speaker: 'Narrator', text: 'The habit started before Santa Barbara.' },
   ],
+  ch0_journal: [
+    { speaker: 'Narrator', text: 'A journal with one entry:' },
+    { speaker: 'Narrator', text: '\'I\'m going to be somebody. I just don\'t know how yet.\'' },
+    { speaker: 'Narrator', text: 'Dated six months ago.' },
+  ],
+  // --- Sister's Room ---
+  ch0_sister_toys: [
+    { speaker: 'Narrator', text: 'His sister\'s drawings are all over the walls.' },
+    { speaker: 'Narrator', text: 'One of them is JP with a cape. He didn\'t ask for that but it hits different.' },
+  ],
+  // --- Parents' Room ---
+  ch0_family_photo: [
+    { speaker: 'Narrator', text: 'Family photo from when JP was 12.' },
+    { speaker: 'Narrator', text: 'Everyone\'s smiling. Simpler times.' },
+  ],
+  // --- Bathroom ---
+  ch0_mirror: [
+    { speaker: 'JP\'s Mind', text: 'JP looks at himself in the mirror.' },
+    { speaker: 'JP', text: 'What are you doing, bro?' },
+    { speaker: 'Narrator', text: 'No answer.' },
+  ],
+  // --- Living Room ---
   ch0_tv: [
-    { speaker: 'JP\'s Mind', text: 'Same shows. Same couch. Same nothing.' },
-    { speaker: 'JP\'s Mind', text: 'I could sit here forever and nobody would notice. That\'s the scary part.' },
+    { speaker: 'Narrator', text: 'ESPN on mute. Dad\'s been watching the same game for three hours.' },
+  ],
+  ch0_couch: [
+    { speaker: 'Narrator', text: 'This couch has seen every family argument and every movie night.' },
+    { speaker: 'Narrator', text: 'Same fabric.' },
+  ],
+  // --- Kitchen ---
+  ch0_fridge: [
+    { speaker: 'Narrator', text: 'Fridge is stocked. Mom keeps it right even when everything else is tense.' },
+  ],
+  ch0_mail: [
+    { speaker: 'Narrator', text: 'Stack of mail on the counter. Bills, coupons, and JP\'s college acceptance letters.' },
+    { speaker: 'Narrator', text: 'Mom keeps moving them to the top of the pile.' },
+  ],
+  // --- Yard ---
+  ch0_bbq: [
+    { speaker: 'Narrator', text: 'Pops\' BBQ grill.' },
+    { speaker: 'Narrator', text: 'Summer Sundays used to be the best day of the week.' },
   ],
   ch0_goodbye: [
     { speaker: 'Pops', text: 'You sure about this?' },

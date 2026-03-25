@@ -68,54 +68,84 @@ const STANDARD_COLLISIONS = [
 ];
 
 // ---------------------------------------------------------------------------
-// 0. HOME MAP — Suburban House + Yard  (20 wide x 18 tall)
+// 0. HOME MAP — Suburban House + Yard  (30 wide x 25 tall)
 // ---------------------------------------------------------------------------
-// JP's childhood home. Small house with rooms, a yard with grass and a path,
-// fence around the yard, a tree or two. Before everything else.
+// JP's childhood home before everything changes. Proper suburban house with
+// JP's room, sister's room, parents' room, living room, kitchen, bathroom.
+// Yard with grass and the Frenchie. Street at bottom exits to BeachScene.
 // ---------------------------------------------------------------------------
 export const homeMap: MapData = {
   tiles: [
-    //0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19
-    [ T, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, T ], // 0
-    [ G, G, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, G, G ], // 1
-    [ G, G, E, G, G, G, G, G, G, G, G, G, G, G, G, G, G, E, G, G ], // 2
-    [ G, G, E, G, B, B, B, B, B, B, B, B, B, B, G, G, G, E, G, G ], // 3
-    [ G, G, E, G, B, F, F, F, B, F, F, M, F, B, G, T, G, E, G, G ], // 4
-    [ G, G, E, G, B, F, F, F, B, F, F, F, F, B, G, G, G, E, G, G ], // 5
-    [ G, G, E, G, B, F, F, F, O, F, F, F, F, B, G, G, G, E, G, G ], // 6
-    [ G, G, E, G, B, B, B, B, B, B, O, B, B, B, G, G, G, E, G, G ], // 7
-    [ G, G, E, G, G, G, G, G, P, G, P, G, G, G, G, G, G, E, G, G ], // 8
-    [ G, G, E, G, G, G, G, G, P, P, P, G, G, G, G, G, G, E, G, G ], // 9
-    [ G, G, E, G, G, T, G, G, P, G, G, G, G, G, G, G, G, E, G, G ], // 10
-    [ G, G, E, G, G, G, G, G, P, G, G, G, G, G, G, G, G, E, G, G ], // 11
-    [ G, G, E, G, G, G, G, G, P, G, G, G, G, G, T, G, G, E, G, G ], // 12
-    [ G, G, E, E, E, E, E, E, P, E, E, E, E, E, E, E, E, E, G, G ], // 13
-    [ G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G ], // 14
-    [ G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G ], // 15
-    [ G, G, G, G, G, G, G, P, P, P, G, G, G, G, G, G, G, G, G, G ], // 16
-    [ G, G, G, G, G, G, G, P, P, P, G, G, G, G, G, G, G, G, G, G ], // 17
+    //0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29
+    [ T, G, G, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, G, G, T ], // 0  roof line
+    [ G, G, G, B, F, F, F, F, F, B, F, F, F, F, B, F, F, F, F, F, F, B, F, F, F, F, B, G, G, G ], // 1  JP room | sister | parents room | bathroom
+    [ G, G, G, B, F, M, F, F, F, B, F, F, F, F, B, F, F, F, F, F, F, B, F, F, F, F, B, G, G, G ], // 2  M=computer in JP room
+    [ G, G, G, B, F, F, F, F, F, B, F, F, F, F, B, F, F, F, F, F, F, B, F, F, F, F, B, G, G, G ], // 3
+    [ G, G, G, B, F, F, F, F, F, B, F, F, F, F, B, F, F, F, F, F, F, B, F, F, F, F, B, G, G, G ], // 4
+    [ G, G, G, B, B, B, B, O, B, B, B, B, O, B, B, B, B, O, B, B, B, B, B, O, B, B, B, G, G, G ], // 5  doors to hallway
+    [ G, G, G, B, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, B, G, G, G ], // 6  hallway
+    [ G, G, G, B, B, B, O, B, B, B, B, B, B, B, B, B, B, B, O, B, B, B, B, B, B, B, B, G, G, G ], // 7  doors to living room + kitchen
+    [ G, G, G, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, F, B, G, G, G ], // 8  living room | kitchen
+    [ G, G, G, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, F, B, G, G, G ], // 9
+    [ G, G, G, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, F, B, G, G, G ], // 10
+    [ G, G, G, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, F, B, G, G, G ], // 11
+    [ G, G, G, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, F, B, G, G, G ], // 12
+    [ G, G, G, B, B, B, B, B, B, B, O, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, G, G, G ], // 13 front door
+    [ G, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 14 yard
+    [ G, G, E, E, E, E, E, E, E, E, P, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, G, G ], // 15 fence top
+    [ G, G, E, G, G, T, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, T, G, G, E, G, G ], // 16 yard interior
+    [ G, G, E, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, E, G, G ], // 17
+    [ G, G, E, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, E, G, G ], // 18
+    [ G, G, E, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, E, G, G ], // 19
+    [ G, G, E, E, E, E, E, E, E, E, P, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, G, G ], // 20 fence bottom
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 21 street
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 22 street
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 23 street
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 24 street exit
   ],
   collisions: STANDARD_COLLISIONS,
   spawns: {
-    player: { x: 8, y: 8 },
+    player: { x: 6, y: 3 },  // JP starts in his room
     npcs: [
-      { id: 'ch0_pops',    x: 12, y: 9,  sprite: 'npc_pops' },
-      { id: 'ch0_mom',     x: 6,  y: 5,  sprite: 'npc_female' },
-      { id: 'ch0_sister',  x: 6,  y: 6,  sprite: 'npc_sister' },
-      { id: 'ch0_frenchie', x: 14, y: 11, sprite: 'npc_frenchie' },
+      { id: 'ch0_pops',    x: 8,  y: 10, sprite: 'npc_pops' },    // living room
+      { id: 'ch0_mom',     x: 18, y: 10, sprite: 'npc_female' },   // kitchen
+      { id: 'ch0_sister',  x: 12, y: 2,  sprite: 'npc_sister' },   // sister's room
+      { id: 'ch0_frenchie', x: 15, y: 18, sprite: 'npc_frenchie' }, // yard
     ],
   },
   triggers: [
-    { x: 7,  y: 17, action: 'scene', target: 'BeachScene' },
-    { x: 8,  y: 17, action: 'scene', target: 'BeachScene' },
-    { x: 9,  y: 17, action: 'scene', target: 'BeachScene' },
+    // Street exit at bottom edge → BeachScene
+    { x: 9,  y: 24, action: 'scene', target: 'BeachScene' },
+    { x: 10, y: 24, action: 'scene', target: 'BeachScene' },
+    { x: 11, y: 24, action: 'scene', target: 'BeachScene' },
+    { x: 12, y: 24, action: 'scene', target: 'BeachScene' },
+    { x: 13, y: 24, action: 'scene', target: 'BeachScene' },
+    { x: 14, y: 24, action: 'scene', target: 'BeachScene' },
   ],
   interactables: [
-    { id: 'ch0_bed',     x: 11, y: 5,  type: 'examine', glow: true },
-    { id: 'ch0_window',  x: 5,  y: 4,  type: 'examine', glow: true },
-    { id: 'ch0_fridge',  x: 5,  y: 5,  type: 'examine', glow: true },
-    { id: 'ch0_tv',      x: 10, y: 6,  type: 'examine', glow: true },
-    { id: 'ch0_goodbye', x: 8,  y: 16, type: 'examine', glow: true },
+    // JP's Room
+    { id: 'ch0_computer',      x: 5,  y: 1,  type: 'examine', glow: true },  // next to M tile
+    { id: 'ch0_crypto',        x: 7,  y: 1,  type: 'examine', glow: true },
+    { id: 'ch0_college',       x: 8,  y: 2,  type: 'examine', glow: true },
+    { id: 'ch0_bed',           x: 4,  y: 4,  type: 'examine', glow: true },
+    { id: 'ch0_poster',        x: 8,  y: 4,  type: 'examine', glow: true },
+    { id: 'ch0_hidden_stash',  x: 4,  y: 1,  type: 'examine', glow: true },
+    { id: 'ch0_journal',       x: 6,  y: 4,  type: 'examine', glow: true },
+    // Sister's Room
+    { id: 'ch0_sister_toys',   x: 11, y: 4,  type: 'examine', glow: true },
+    // Parents' Room
+    { id: 'ch0_family_photo',  x: 16, y: 1,  type: 'examine', glow: true },
+    // Bathroom
+    { id: 'ch0_mirror',        x: 24, y: 1,  type: 'examine', glow: true },
+    // Living Room
+    { id: 'ch0_tv',            x: 5,  y: 8,  type: 'examine', glow: true },
+    { id: 'ch0_couch',         x: 10, y: 9,  type: 'examine', glow: true },
+    // Kitchen
+    { id: 'ch0_fridge',        x: 16, y: 8,  type: 'examine', glow: true },
+    { id: 'ch0_mail',          x: 20, y: 9,  type: 'examine', glow: true },
+    // Yard
+    { id: 'ch0_bbq',           x: 6,  y: 17, type: 'examine', glow: true },
+    { id: 'ch0_goodbye',       x: 10, y: 20, type: 'examine', glow: true },
   ],
 };
 

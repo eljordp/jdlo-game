@@ -98,7 +98,9 @@ export abstract class BaseChapterScene extends Phaser.Scene {
         npcData.sprite, 0
       ).setScale(SCALE).setDepth(9);
 
-      // NPCs don't block movement — player can walk past them
+      // NPCs block movement
+      this.collisionTiles.add(`${npcData.x},${npcData.y}`);
+
       this.npcs.push({
         sprite,
         id: npcData.id,
