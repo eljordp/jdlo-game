@@ -35,7 +35,7 @@ export class IntroScene extends Phaser.Scene {
       fontFamily: '"Press Start 2P", monospace',
       fontSize: '14px',
       color: '#ffffff',
-      wordWrap: { width: 600 },
+      wordWrap: { width: GAME_WIDTH - 200 },
       lineSpacing: 10,
       align: 'center',
     }).setOrigin(0.5).setDepth(2).setAlpha(0);
@@ -144,7 +144,7 @@ export class IntroScene extends Phaser.Scene {
               this.phase = 'shrink';
               this.tweens.add({
                 targets: playerSprite,
-                scale: 3,
+                scale: 4,
                 duration: 1000,
                 ease: 'Power2',
               });

@@ -141,7 +141,7 @@ export default function GameCanvas() {
     <div className="relative w-screen h-screen bg-black overflow-hidden select-none touch-none">
       <div
         ref={containerRef}
-        className="absolute inset-0 flex items-center justify-center"
+        className="w-full h-full"
       />
 
       {/* Speed control */}
