@@ -1,7 +1,59 @@
 import { TILE_SIZE, COLORS, GAME_WIDTH } from '../config';
 
-// Helper: draw a single pixel (or small rect) on a Graphics object
+// Convert hex number to CSS color string
+function hexToCSS(color: number): string {
+  return '#' + color.toString(16).padStart(6, '0');
+}
+
+// Helper: draw a single pixel — works with DrawContext or raw CanvasRenderingContext2D
 function px(
+  g: DrawContext | CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  color: number,
+  w = 1,
+  h = 1
+) {
+  if (g instanceof DrawContext) {
+    g.ctx.fillStyle = hexToCSS(color);
+    g.ctx.fillRect(x, y, w, h);
+  } else {
+    g.fillStyle = hexToCSS(color);
+    g.fillRect(x, y, w, h);
+  }
+}
+
+// DrawContext wraps CanvasRenderingContext2D to mimic Phaser Graphics API
+// so existing draw callbacks work unchanged
+class DrawContext {
+  ctx: CanvasRenderingContext2D;
+  constructor(ctx: CanvasRenderingContext2D) { this.ctx = ctx; }
+  fillStyle(color: number, _alpha = 1) {
+    this.ctx.fillStyle = hexToCSS(color);
+  }
+  fillRect(x: number, y: number, w: number, h: number) {
+    this.ctx.fillRect(x, y, w, h);
+  }
+}
+
+// Helper: create texture from canvas drawing with proper transparency
+function makeTexture(
+  scene: Phaser.Scene,
+  key: string,
+  width: number,
+  height: number,
+  draw: (ctx: DrawContext) => void
+) {
+  const canvasTexture = scene.textures.createCanvas(key, width, height)!;
+  const rawCtx = canvasTexture.getContext();
+  rawCtx.clearRect(0, 0, width, height);
+  const dc = new DrawContext(rawCtx);
+  draw(dc);
+  canvasTexture.refresh();
+}
+
+// LEGACY: Phaser Graphics px helper — only used where we still need Graphics API
+function pxG(
   g: Phaser.GameObjects.Graphics,
   x: number,
   y: number,
@@ -13,30 +65,12 @@ function px(
   g.fillRect(x, y, w, h);
 }
 
-// Helper: create texture from graphics with transparency support
-function makeTexture(
-  scene: Phaser.Scene,
-  key: string,
-  width: number,
-  height: number,
-  draw: (g: Phaser.GameObjects.Graphics) => void
-) {
-  // Use RenderTexture for proper alpha/transparency
-  const rt = scene.add.renderTexture(0, 0, width, height).setVisible(false);
-  const g = scene.add.graphics();
-  draw(g);
-  rt.draw(g);
-  rt.saveTexture(key);
-  g.destroy();
-  rt.destroy();
-}
-
 // ─── PLAYER SPRITE SHEET ────────────────────────────────────────────
 // 8 frames: down-idle, down-step, up-idle, up-step, left-idle, left-step, right-idle, right-step
 // Each frame is 16x16, sheet is 128x16
 
 function drawPlayerFrame(
-  g: Phaser.GameObjects.Graphics,
+  g: DrawContext | CanvasRenderingContext2D,
   offsetX: number,
   direction: 'down' | 'up' | 'left' | 'right',
   stepping: boolean
@@ -161,7 +195,11 @@ function generatePlayer(scene: Phaser.Scene) {
   const sheetW = frameW * 8;
   const sheetH = frameH;
 
-  const g = scene.add.graphics();
+  // Create canvas texture with transparency
+  const canvasTexture = scene.textures.createCanvas('player', sheetW, sheetH)!;
+  const rawCtx = canvasTexture.getContext();
+  rawCtx.clearRect(0, 0, sheetW, sheetH);
+  const dc = new DrawContext(rawCtx);
 
   const directions: Array<'down' | 'up' | 'left' | 'right'> = [
     'down',
@@ -172,26 +210,18 @@ function generatePlayer(scene: Phaser.Scene) {
 
   let frameIndex = 0;
   for (const dir of directions) {
-    drawPlayerFrame(g, frameIndex * frameW, dir, false);
+    drawPlayerFrame(dc, frameIndex * frameW, dir, false);
     frameIndex++;
-    drawPlayerFrame(g, frameIndex * frameW, dir, true);
+    drawPlayerFrame(dc, frameIndex * frameW, dir, true);
     frameIndex++;
   }
 
-  // Use RenderTexture for transparency
-  const rt = scene.add.renderTexture(0, 0, sheetW, sheetH).setVisible(false);
-  rt.draw(g);
-  rt.saveTexture('player');
-  g.destroy();
-  rt.destroy();
+  canvasTexture.refresh();
 
-  // Add spritesheet frame data so Phaser knows how to slice the texture
-  const playerTexture = scene.textures.get('player');
-  const source = playerTexture.source[0];
-  // Remove the default __BASE frame and add individual frames
-  playerTexture.add('__BASE', 0, 0, 0, sheetW, sheetH);
+  // Add spritesheet frame data
+  const texture = scene.textures.get('player');
   for (let i = 0; i < 8; i++) {
-    playerTexture.add(i, 0, i * frameW, 0, frameW, frameH);
+    texture.add(i, 0, i * frameW, 0, frameW, frameH);
   }
 
   // Create animations
@@ -220,7 +250,7 @@ function generatePlayer(scene: Phaser.Scene) {
 // ─── NPC SPRITES ────────────────────────────────────────────────────
 
 function drawNPCBase(
-  g: Phaser.GameObjects.Graphics,
+  g: DrawContext | CanvasRenderingContext2D,
   hairColor: number,
   hairStyle: 'short' | 'bald' | 'long' | 'hat',
   shirtColor: number,
@@ -228,7 +258,7 @@ function drawNPCBase(
   pantsColor: number,
   skinColor: number,
   skinShadow: number,
-  extras?: (g: Phaser.GameObjects.Graphics) => void
+  extras?: (g: DrawContext | CanvasRenderingContext2D) => void
 ) {
   // Hair
   if (hairStyle === 'short') {
@@ -314,7 +344,7 @@ function generateNPC(
   pantsColor: number,
   skinColor: number,
   skinShadow: number,
-  extras?: (g: Phaser.GameObjects.Graphics) => void
+  extras?: (g: DrawContext | CanvasRenderingContext2D) => void
 ) {
   makeTexture(scene, key, TILE_SIZE, TILE_SIZE, (g) => {
     drawNPCBase(
