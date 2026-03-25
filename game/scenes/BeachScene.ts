@@ -37,7 +37,7 @@ export class BeachScene extends BaseChapterScene {
   }
 
   protected getObjectiveHint(): string {
-    return 'Check out the frat house. Head south to leave.';
+    return 'Check out the townhouse. Head south to leave.';
   }
 
   getMapData(): MapData {

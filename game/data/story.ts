@@ -122,7 +122,7 @@ export const chapter0OutroText: string[] = [
 
 export const chapter1IntroText: string[] = [
   'Santa Barbara',
-  'Frat house by the beach. Hot tub. Weed. Girls.',
+  'Townhouse by the beach. Hot tub. Weed. Girls.',
   'Looks like paradise. Feels like a trap.',
 ];
 

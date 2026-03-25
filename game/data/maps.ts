@@ -237,7 +237,7 @@ export const wrongCrowdMap: MapData = {
     [ X, X, B, B, B, B, O, B, B, X, X, B, B, B, O, B, B, B, B, B, X, X, X, X, X, X, X, X, X, X ], // 5  doors out of rooms
     [ X, X, X, X, X, X, F, X, X, X, X, X, X, X, F, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 6  narrow hallway
     [ X, X, X, X, X, X, F, F, F, F, F, F, F, F, F, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 7  hallway connecting rooms to front
-    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, O, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 8  front door of frat house
+    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, O, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 8  front door of townhouse
 
     // --- FRONT YARD + PARKING (rows 9-12) ---
     [ X, X, G, G, G, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, X, X ], // 9   front yard, path from door
