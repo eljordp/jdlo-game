@@ -233,7 +233,7 @@ export const wrongCrowdMap: MapData = {
     // --- FRONT YARD + PARKING (rows 9-12) ---
     [ X, X, G, G, G, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, X, X ], // 9   front yard, path from door
     [ X, X, G, G, G, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, X, X ], // 10  yard
-    [ X, X, G, G, G, G, G, G, E, E, E, E, G, G, P, G, G, G, T, G, G, G, T, G, G, G, G, G, X, X ], // 11  BMW 335i (FENCE = car shape) | trees
+    [ X, X, G, G, G, G, G, G, G, G, G, G, G, G, P, G, G, G, T, G, G, G, T, G, G, G, G, G, X, X ], // 11  BMW 335i parked here (sprite overlay) | trees
     [ X, X, G, G, G, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, X, X ], // 12  yard to street
 
     // --- STREET (rows 13-16) ---

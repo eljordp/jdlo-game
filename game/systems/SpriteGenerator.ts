@@ -1451,10 +1451,140 @@ function generateChapterOutfits(scene: Phaser.Scene) {
 
 // ─── MAIN EXPORT ────────────────────────────────────────────────────
 
+// ─── BMW 335i SPRITE ─────────────────────────────────────────────────
+// Top-down view, 48x32 pixels (3 tiles wide, 2 tiles tall)
+// Black E90 335i — N54 twin turbo, catless downpipes, low stance
+
+function generateBMW(scene: Phaser.Scene) {
+  const w = 48;
+  const h = 32;
+  const canvas = document.createElement('canvas');
+  canvas.width = w;
+  canvas.height = h;
+  const g = canvas.getContext('2d')!;
+  g.clearRect(0, 0, w, h);
+
+  const black = '#1a1a1e';
+  const darkGrey = '#282830';
+  const bodyShine = '#303038';
+  const chrome = '#a0a0b0';
+  const chromeDark = '#707080';
+  const headlight = '#d0e8ff';
+  const taillight = '#ff2020';
+  const taillightDark = '#a01010';
+  const window_ = '#1a2040';
+  const windowShine = '#2a3050';
+  const grille = '#0a0a0e';
+  const grilleChrome = '#808090';
+  const tire = '#181818';
+  const rim = '#606068';
+  const indicator = '#f0a020';
+
+  // === BODY SHELL (top-down, facing right) ===
+  // Main body — rounded rectangle
+  g.fillStyle = black;
+  g.fillRect(4, 6, 40, 20);  // main body
+
+  // Front bumper (right side)
+  g.fillRect(42, 8, 4, 16);
+  g.fillStyle = darkGrey;
+  g.fillRect(44, 9, 2, 14);
+
+  // Rear bumper (left side)
+  g.fillStyle = black;
+  g.fillRect(1, 8, 4, 16);
+  g.fillStyle = darkGrey;
+  g.fillRect(1, 9, 2, 14);
+
+  // Body shine lines
+  g.fillStyle = bodyShine;
+  g.fillRect(10, 7, 28, 1);  // top shine
+  g.fillRect(10, 24, 28, 1); // bottom shine
+  g.fillRect(6, 10, 1, 12);  // side shine
+
+  // === ROOF / WINDOWS ===
+  g.fillStyle = window_;
+  g.fillRect(14, 10, 18, 12); // window area
+  g.fillStyle = windowShine;
+  g.fillRect(15, 11, 8, 1);  // windshield glare
+  g.fillRect(15, 14, 6, 1);  // side window glare
+
+  // Window pillars
+  g.fillStyle = black;
+  g.fillRect(13, 10, 1, 12); // A-pillar
+  g.fillRect(22, 10, 1, 12); // B-pillar
+  g.fillRect(32, 10, 1, 12); // C-pillar
+
+  // === BMW KIDNEY GRILLES (front, right side) ===
+  g.fillStyle = grille;
+  g.fillRect(43, 11, 3, 4); // left kidney
+  g.fillRect(43, 17, 3, 4); // right kidney
+  g.fillStyle = grilleChrome;
+  g.fillRect(43, 11, 3, 1); // chrome surround top
+  g.fillRect(43, 14, 3, 1);
+  g.fillRect(43, 17, 3, 1);
+  g.fillRect(43, 20, 3, 1);
+
+  // === HEADLIGHTS (angel eyes) ===
+  g.fillStyle = headlight;
+  g.fillRect(44, 8, 2, 3);   // top headlight
+  g.fillRect(44, 21, 2, 3);  // bottom headlight
+  // Angel eye rings
+  g.fillStyle = '#ffffff';
+  g.fillRect(45, 9, 1, 1);
+  g.fillRect(45, 22, 1, 1);
+
+  // === TAILLIGHTS ===
+  g.fillStyle = taillight;
+  g.fillRect(2, 8, 2, 3);    // top taillight
+  g.fillRect(2, 21, 2, 3);   // bottom taillight
+  g.fillStyle = taillightDark;
+  g.fillRect(2, 9, 1, 1);
+  g.fillRect(2, 22, 1, 1);
+
+  // === DUAL EXHAUST TIPS (catless downpipes baby) ===
+  g.fillStyle = chrome;
+  g.fillRect(0, 10, 2, 2);   // left exhaust
+  g.fillRect(0, 20, 2, 2);   // right exhaust
+  g.fillStyle = '#404040';
+  g.fillRect(0, 11, 1, 1);   // exhaust opening
+  g.fillRect(0, 21, 1, 1);
+
+  // === TIRES + RIMS ===
+  // Front tires
+  g.fillStyle = tire;
+  g.fillRect(36, 5, 6, 3);   // front-top tire
+  g.fillRect(36, 24, 6, 3);  // front-bottom tire
+  g.fillStyle = rim;
+  g.fillRect(38, 5, 2, 3);   // front-top rim
+  g.fillRect(38, 24, 2, 3);  // front-bottom rim
+
+  // Rear tires (slightly wider — that low stance)
+  g.fillStyle = tire;
+  g.fillRect(6, 4, 7, 3);    // rear-top tire
+  g.fillRect(6, 25, 7, 3);   // rear-bottom tire
+  g.fillStyle = rim;
+  g.fillRect(8, 4, 3, 3);    // rear-top rim
+  g.fillRect(8, 25, 3, 3);   // rear-bottom rim
+
+  // === SIDE INDICATORS ===
+  g.fillStyle = indicator;
+  g.fillRect(35, 7, 2, 1);
+  g.fillRect(35, 24, 2, 1);
+
+  // === SIDE MIRRORS ===
+  g.fillStyle = black;
+  g.fillRect(20, 5, 2, 2);
+  g.fillRect(20, 25, 2, 2);
+
+  scene.textures.addCanvas('car-bmw335i', canvas);
+}
+
 export function generateAllSprites(scene: Phaser.Scene): void {
   generatePlayer(scene);
   generateChapterOutfits(scene);
   generateAllNPCs(scene);
   generateTiles(scene);
   generateUI(scene);
+  generateBMW(scene);
 }

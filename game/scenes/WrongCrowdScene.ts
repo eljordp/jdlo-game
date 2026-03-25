@@ -2,7 +2,7 @@ import { BaseChapterScene } from './BaseChapterScene';
 import { wrongCrowdMap, MapData } from '../data/maps';
 import { wrongCrowdDialogue } from '../data/story';
 import type { DialogueLine } from '../systems/DialogueSystem';
-import { GAME_WIDTH, GAME_HEIGHT } from '../config';
+import { GAME_WIDTH, GAME_HEIGHT, SCALED_TILE, SCALE } from '../config';
 
 export class WrongCrowdScene extends BaseChapterScene {
   constructor() {
@@ -13,6 +13,22 @@ export class WrongCrowdScene extends BaseChapterScene {
 
   protected getPlayerTexture(): string {
     return 'player-ch2';
+  }
+
+  create() {
+    super.create();
+
+    // Place the BMW 335i sprite on the map (3 tiles wide at row 11, cols 8-10)
+    const carX = 9 * SCALED_TILE + SCALED_TILE / 2;
+    const carY = 11 * SCALED_TILE + SCALED_TILE / 2;
+    const bmw = this.add.sprite(carX, carY, 'car-bmw335i');
+    bmw.setScale(SCALE);
+    bmw.setDepth(5);
+
+    // Make the car tiles solid (can't walk through the beamer)
+    this.collisionTiles.add('8,11');
+    this.collisionTiles.add('9,11');
+    this.collisionTiles.add('10,11');
   }
 
   getMapData(): MapData {
