@@ -823,7 +823,7 @@ export class JailScene extends BaseChapterScene {
           // Enemy gets a FREE hit — bitch slap
           const slapDmg = 20;
           jpHP = Math.max(0, jpHP - slapDmg);
-          updateHPBars();
+          updateJPHP();
 
           // Slap animation
           this.cameras.main.shake(300, 0.015);
@@ -838,7 +838,7 @@ export class JailScene extends BaseChapterScene {
 
           showText(`Inmate slaps JP! ${slapDmg} damage!\n"I SAID DON'T TALK TO ME."`, () => {
             if (jpHP <= 0) {
-              endBattle('lose');
+              endBattle(false);
             } else {
               enemyTurn();
             }

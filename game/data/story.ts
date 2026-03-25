@@ -1065,7 +1065,8 @@ const ch1Extras: Record<string, DialogueLine[]> = {
 
 const ch2Extras: Record<string, DialogueLine[]> = {
   ch2_grab_weed: [
-    { speaker: 'JP\'s Mind', text: 'JP grabs two zips off the desk. Stuffs them in his jacket.' },
+    { speaker: 'Narrator', text: 'JP grabs a duffel bag. Fills it with product.' },
+    { speaker: 'JP\'s Mind', text: 'Bags on bags. More than anyone needs for a Tuesday night.' },
     { speaker: 'JP\'s Mind', text: 'Same routine. Didn\'t even think about it anymore.' },
   ],
   ch2_car: [
@@ -1091,6 +1092,30 @@ const ch2Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'Glock on the dresser. Right next to the weed.' },
     { speaker: 'JP\'s Mind', text: 'Never fired it. Never plan to. But in this life, you don\'t get to choose.' },
     { speaker: 'JP\'s Mind', text: 'The fact that it\'s there means something went wrong a long time ago.' },
+  ],
+  ch2_computer: [
+    { speaker: 'Narrator', text: 'JP opens his laptop. The spreadsheet loads.' },
+    { speaker: 'Narrator', text: '━━━━━━━━━━━━━━━━━━━━━━━━━━' },
+    { speaker: 'Narrator', text: 'INVENTORY: 83 lbs in rotation' },
+    { speaker: 'Narrator', text: 'CASH COLLECTED: $247,000 YTD' },
+    { speaker: 'Narrator', text: 'MONTHLY AVG: $31,200' },
+    { speaker: 'Narrator', text: 'ACTIVE CUSTOMERS: 142' },
+    { speaker: 'Narrator', text: '35% UCSB students' },
+    { speaker: 'Narrator', text: '40% spend $100+ per visit' },
+    { speaker: 'Narrator', text: 'REPEAT RATE: 78%' },
+    { speaker: 'Narrator', text: '━━━━━━━━━━━━━━━━━━━━━━━━━━' },
+    { speaker: 'JP\'s Mind', text: 'Real business metrics. Real customers. Real money.' },
+    { speaker: 'JP\'s Mind', text: 'I built a whole operation. Inventory, logistics, customer retention.' },
+    { speaker: 'JP\'s Mind', text: 'If I put this energy into something legal... something that builds...' },
+    { speaker: 'JP\'s Mind', text: 'But who\'s gonna help me? Nobody here thinks like this.' },
+    { speaker: 'JP\'s Mind', text: 'Nolan wants to party. David\'s chilling. Cooper doesn\'t care.' },
+    { speaker: 'JP\'s Mind', text: 'I\'m surrounded by people and I\'ve never felt more alone.' },
+    { speaker: 'JP\'s Mind', text: 'I know I can build something real. I just need the right path.' },
+  ],
+  ch2_bed: [
+    { speaker: 'JP\'s Mind', text: 'Bags under the bed. Bags in the closet. Bags on the desk.' },
+    { speaker: 'JP\'s Mind', text: 'This room smells like money and bad decisions.' },
+    { speaker: 'JP\'s Mind', text: 'Can\'t sleep. Keep thinking about what happens if I get caught.' },
   ],
   ch2_graffiti: [
     { speaker: 'JP\'s Mind', text: 'Someone tagged \'NO WAY OUT\' on the wall. Felt that.' },

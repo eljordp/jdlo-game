@@ -293,6 +293,8 @@ export const wrongCrowdMap: MapData = {
   interactables: [
     { id: 'ch2_grab_weed', x: 6, y: 2, type: 'examine', glow: true, sprite: 'item-weed-bag' },   // desk in JP's room
     { id: 'ch2_gun',       x: 4, y: 2, type: 'examine', glow: true, sprite: 'item-gun' },       // gun on the dresser
+    { id: 'ch2_computer',  x: 5, y: 3, type: 'examine', glow: true },                            // trap dashboard on computer
+    { id: 'ch2_bed',       x: 7, y: 4, type: 'examine', glow: true, sprite: 'item-bed' },       // JP's bed
     { id: 'ch2_car',       x: 9, y: 11, type: 'examine', glow: true, sprite: 'item-keys' },   // BMW on the curb
     { id: 'ch2_mirror',    x: 10, y: 11, type: 'examine', glow: false },  // car mirror
     { id: 'ch2_buyer_house', x: 19, y: 22, type: 'examine', glow: true }, // approaching buyer's door
