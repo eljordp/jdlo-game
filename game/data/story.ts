@@ -114,7 +114,7 @@ export const chapter0NPCs: NPCData[] = [
         { text: '"Of course. I promise."', next: [
           { speaker: 'Sister', text: 'Pinky promise?' },
           { speaker: 'JP', text: 'Pinky promise.' },
-          { speaker: 'JP\'s Mind', text: 'He meant it. But life doesn\'t always let you keep promises.' },
+          { speaker: 'JP\'s Mind', text: 'Jordi meant it. But life doesn\'t always let you keep promises.' },
         ]},
         { text: '"I\'ll try my best."', next: [
           { speaker: 'Sister', text: '...okay.' },
@@ -129,7 +129,7 @@ export const chapter0NPCs: NPCData[] = [
     y: 18,
     sprite: 'npc_frenchie',
     dialogue: [
-      { speaker: 'Narrator', text: 'Ivy wags her whole body when she sees JP. Tan Frenchie energy.' },
+      { speaker: 'Narrator', text: 'Ivy wags her whole body when she sees Jordi. Tan Frenchie energy.' },
       { speaker: 'Narrator', text: 'She doesn\'t care about your problems. She just wants belly rubs.' },
       { speaker: 'JP', text: 'Hey Ivy. At least you\'re happy to see me.' },
       { speaker: 'Narrator', text: 'Sometimes the dog is the only one who gets it.' },
@@ -138,7 +138,7 @@ export const chapter0NPCs: NPCData[] = [
 ];
 
 export const chapter0OutroText: string[] = [
-  'JP packed a bag. Left the acceptance letters on the counter. Kissed his sister. Dapped up Pops.',
+  'Jordi packed a bag. Left the acceptance letters on the counter. Kissed his sister. Dapped up Pops.',
   'Santa Barbara was calling.',
 ];
 
@@ -240,14 +240,14 @@ export const chapter1NPCs: NPCData[] = [
 
 export const chapter1OutroText: string[] = [
   'Same house. Same people. Same bags. Same nothing.',
-  'But JP didn\'t see it yet.',
+  'But Jordi didn\'t see it yet.',
 ];
 
 // ─── Chapter 2: Wrong Crowd ────────────────────────────────────────────
 
 export const chapter2IntroText: string[] = [
   'Wrong Crowd',
-  '3:33 AM. The house is quiet. JP is not.',
+  '3:33 AM. The house is quiet. Jordi is not.',
   'Something feels off. But the money doesn\'t wait.',
 ];
 
@@ -295,13 +295,15 @@ export const chapter2NPCs: NPCData[] = [
 
 export const chapter2OutroText: string[] = [
   'Just another drop. Until it wasn\'t.',
-  'The consequences came fast.',
+  'Doors kicked in. Flashlights. Shouting.',
+  'Face down on the floor.',
 ];
 
 // ─── Chapter 3: Jail ───────────────────────────────────────────────────
 
 export const chapter3IntroText: string[] = [
   'Locked Up',
+  '"Jordan Lopez. Attempted murder. 13 years."',
   'A bed. A toilet. And time.',
   'Nothing but time.',
 ];
@@ -361,7 +363,7 @@ export const chapter3OutroText: string[] = [
   'I knew it.',
   'God showed.',
   'The truth always prevails.',
-  'The doors opened. JP walked out a different person.',
+  'The doors opened. Jordi walked out a different person.',
   'Not because jail changed him. Because he changed himself.',
 ];
 
