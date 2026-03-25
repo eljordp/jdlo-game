@@ -303,10 +303,8 @@ export const chapter2OutroText: string[] = [
 
 export const chapter3IntroText: string[] = [
   'Locked Up',
-  'Attempted murder. 13 years.',
-  'JP didn\'t attempt to hurt anyone. Didn\'t matter.',
-  'The system had already decided.',
   'A bed. A toilet. And time.',
+  'Nothing but time.',
 ];
 
 export const chapter3NPCs: NPCData[] = [
