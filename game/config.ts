@@ -47,6 +47,14 @@ export const COLORS = {
   treeTrunk: 0x6a5030,
   treeGreen: 0x308030,
   treeDark: 0x206020,
+  houseWall: 0xe8e0d4,      // warm cream drywall
+  houseWallDark: 0xc8c0b4,  // shadow/trim
+  houseWallLight: 0xf0e8dc,  // highlight
+  hardwood: 0x8a6840,        // warm oak
+  hardwoodLight: 0xa07850,   // highlight grain
+  hardwoodDark: 0x705530,    // shadow grain
+  counter: 0x404048,         // dark granite counter
+  counterLight: 0x505058,    // granite highlight
 
   // Character — JP is tan with black hair, brown eyes
   skinTone: 0xd4a870,
@@ -92,4 +100,7 @@ export const TILE_IDS = {
   BUILDING_WALL: 16,
   HOT_TUB: 17,
   VINE: 18,
+  HOUSE_WALL: 19,
+  HARDWOOD: 20,
+  COUNTER: 21,
 } as const;

@@ -23,6 +23,9 @@ export const TILES = {
   BUILDING_WALL: 16,
   HOT_TUB: 17,
   VINE: 18,
+  HOUSE_WALL: 19,
+  HARDWOOD: 20,
+  COUNTER: 21,
 } as const;
 
 export type InteractableType = 'examine' | 'item' | 'evolve' | 'showcase' | 'scratch';
@@ -58,6 +61,9 @@ const R = TILES.TRACTOR;
 const B = TILES.BUILDING_WALL;
 const H = TILES.HOT_TUB;
 const V = TILES.VINE;
+const K = TILES.HOUSE_WALL;
+const J = TILES.HARDWOOD;
+const N = TILES.COUNTER;
 
 // Collision tiles shared across most maps
 const STANDARD_COLLISIONS = [
@@ -71,6 +77,8 @@ const STANDARD_COLLISIONS = [
   TILES.BUILDING_WALL,
   TILES.HOT_TUB,
   TILES.VINE,
+  TILES.HOUSE_WALL,
+  TILES.COUNTER,
 ];
 
 // ---------------------------------------------------------------------------
@@ -83,44 +91,43 @@ const STANDARD_COLLISIONS = [
 export const homeMap: MapData = {
   tiles: [
     //0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29
-    [ T, G, G, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, G, G, T ], // 0  roof line
-    [ G, G, G, B, F, F, F, F, F, B, F, F, F, F, B, F, F, F, F, F, F, B, F, F, F, F, B, G, G, G ], // 1  JP room | sister | parents room | bathroom
-    [ G, G, G, B, F, M, F, F, F, B, F, F, F, F, B, F, M, F, F, F, F, B, F, F, F, F, B, G, G, G ], // 2  M=computer in JP room, M=TV in parents room
-    [ G, G, G, B, F, F, F, F, F, B, F, M, F, F, B, F, F, F, F, F, F, B, F, F, F, F, B, G, G, G ], // 3  M=toy/TV in sister room
-    [ G, G, G, B, F, F, F, F, F, B, F, F, F, F, B, F, F, F, F, F, F, B, F, F, F, F, B, G, G, G ], // 4
-    [ G, G, G, B, B, B, B, O, B, B, B, B, O, B, B, B, B, O, B, B, B, B, B, O, B, B, B, G, G, G ], // 5  doors to hallway
-    [ G, G, G, B, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, B, G, G, G ], // 6  hallway
-    [ G, G, G, B, B, B, O, B, B, B, B, B, B, B, B, B, B, B, O, B, B, B, B, B, B, B, B, G, G, G ], // 7  doors to living room + kitchen
-    [ G, G, G, B, F, M, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, F, B, G, G, G ], // 8  living room (M=TV) | kitchen
-    [ G, G, G, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, F, B, G, G, G ], // 9
-    [ G, G, G, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, F, B, G, G, G ], // 10
-    [ G, G, G, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, F, B, G, G, G ], // 11
-    [ G, G, G, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, F, B, G, G, G ], // 12
-    [ G, G, G, B, B, B, B, B, B, B, O, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, G, G, G ], // 13 front door
+    [ T, G, G, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, G, G, T ], // 0  roof
+    [ G, G, G, K, J, J, J, J, J, K, J, J, J, J, K, J, J, J, J, J, J, K, F, F, F, F, K, G, G, G ], // 1  rooms
+    [ G, G, G, K, J, M, J, J, J, K, J, J, J, J, K, J, M, J, J, J, J, K, F, F, F, F, K, G, G, G ], // 2  JP room (M=computer) | sister | parents (M=TV) | bathroom
+    [ G, G, G, K, J, J, J, J, J, K, J, M, J, J, K, J, J, J, J, J, J, K, F, F, F, F, K, G, G, G ], // 3
+    [ G, G, G, K, J, J, J, J, J, K, J, J, J, J, K, J, J, J, J, J, J, K, F, F, F, F, K, G, G, G ], // 4
+    [ G, G, G, K, K, K, K, O, K, K, K, K, O, K, K, K, K, O, K, K, K, K, K, O, K, K, K, G, G, G ], // 5  doors
+    [ G, G, G, K, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, K, G, G, G ], // 6  hallway
+    [ G, G, G, K, K, K, O, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, G, G, G ], // 7  door to living area
+    [ G, G, G, K, J, J, J, J, J, J, J, J, J, J, J, J, J, N, N, N, J, J, J, J, J, J, K, G, G, G ], // 8  open concept: living + kitchen (N=counter island)
+    [ G, G, G, K, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, K, G, G, G ], // 9
+    [ G, G, G, K, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, N, N, N, K, G, G, G ], // 10  wall counters on right
+    [ G, G, G, K, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, K, G, G, G ], // 11
+    [ G, G, G, K, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, K, G, G, G ], // 12
+    [ G, G, G, K, K, K, K, K, K, K, O, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, G, G, G ], // 13 front door
     [ G, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 14 yard
     [ G, G, E, E, E, E, E, E, E, E, P, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, G, G ], // 15 fence top
-    [ G, G, E, G, G, T, G, G, G, G, P, G, G, G, G, G, T, G, G, G, G, G, G, G, T, G, G, E, G, G ], // 16 yard interior + trees
-    [ G, G, E, G, G, G, G, G, G, G, P, G, G, L, G, G, G, G, G, G, W, W, W, G, G, G, G, E, G, G ], // 17 palm + pond
-    [ G, G, E, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, T, W, W, W, G, G, G, G, E, G, G ], // 18 tree + pond
-    [ G, G, E, T, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, L, G, G, G, G, E, G, G ], // 19 tree + palm
+    [ G, G, E, G, G, T, G, G, G, G, P, G, G, G, G, G, T, G, G, G, G, G, G, G, T, G, G, E, G, G ], // 16
+    [ G, G, E, G, G, G, G, G, G, G, P, G, G, L, G, G, G, G, G, G, W, W, W, G, G, G, G, E, G, G ], // 17
+    [ G, G, E, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, T, W, W, W, G, G, G, G, E, G, G ], // 18
+    [ G, G, E, T, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, L, G, G, G, G, E, G, G ], // 19
     [ G, G, E, E, E, E, E, E, E, E, P, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, G, G ], // 20 fence bottom
-    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 21 street
-    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 22 street
-    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 23 street
-    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 24 street exit
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 21
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 22
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 23
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 24
   ],
-  collisions: STANDARD_COLLISIONS,
+  collisions: [...STANDARD_COLLISIONS],
   spawns: {
-    player: { x: 6, y: 3 },  // JP starts in his room
+    player: { x: 6, y: 3 },
     npcs: [
-      { id: 'ch0_pops',    x: 8,  y: 10, sprite: 'npc_pops' },    // living room
-      { id: 'ch0_mom',     x: 18, y: 10, sprite: 'npc_female' },   // kitchen
-      { id: 'ch0_sister',  x: 12, y: 2,  sprite: 'npc_sister' },   // sister's room
-      { id: 'ch0_frenchie', x: 15, y: 18, sprite: 'npc_frenchie' }, // yard
+      { id: 'ch0_pops',    x: 8,  y: 10, sprite: 'npc_pops' },
+      { id: 'ch0_mom',     x: 20, y: 9,  sprite: 'npc_female' },
+      { id: 'ch0_sister',  x: 12, y: 2,  sprite: 'npc_sister' },
+      { id: 'ch0_frenchie', x: 15, y: 18, sprite: 'npc_frenchie' },
     ],
   },
   triggers: [
-    // Street exit at bottom edge → TransitionScene → BeachScene
     { x: 9,  y: 24, action: 'scene', target: 'TransitionScene', data: { text: 'Three weeks later...', nextScene: 'BeachScene' } },
     { x: 10, y: 24, action: 'scene', target: 'TransitionScene', data: { text: 'Three weeks later...', nextScene: 'BeachScene' } },
     { x: 11, y: 24, action: 'scene', target: 'TransitionScene', data: { text: 'Three weeks later...', nextScene: 'BeachScene' } },
@@ -130,7 +137,7 @@ export const homeMap: MapData = {
   ],
   interactables: [
     // JP's Room
-    { id: 'ch0_computer',      x: 5,  y: 1,  type: 'examine', glow: true, sprite: 'item-tablet' },  // next to M tile
+    { id: 'ch0_computer',      x: 5,  y: 1,  type: 'examine', glow: true, sprite: 'item-tablet' },
     { id: 'ch0_crypto',        x: 7,  y: 1,  type: 'examine', glow: true, sprite: 'item-phone' },
     { id: 'ch0_college',       x: 8,  y: 2,  type: 'examine', glow: true, sprite: 'item-letter' },
     { id: 'ch0_bed',           x: 4,  y: 4,  type: 'examine', glow: true, sprite: 'item-bed' },
@@ -147,8 +154,8 @@ export const homeMap: MapData = {
     { id: 'ch0_tv',            x: 5,  y: 8,  type: 'examine', glow: true, sprite: 'item-tv' },
     { id: 'ch0_couch',         x: 10, y: 9,  type: 'examine', glow: true, sprite: 'item-couch' },
     // Kitchen
-    { id: 'ch0_fridge',        x: 16, y: 8,  type: 'examine', glow: true, sprite: 'item-fridge' },
-    { id: 'ch0_mail',          x: 20, y: 9,  type: 'examine', glow: true, sprite: 'item-letter' },
+    { id: 'ch0_fridge',        x: 25, y: 8,  type: 'examine', glow: true, sprite: 'item-fridge' },
+    { id: 'ch0_mail',          x: 20, y: 11, type: 'examine', glow: true, sprite: 'item-letter' },
     // Yard
     { id: 'ch0_bbq',           x: 6,  y: 17, type: 'examine', glow: true, sprite: 'item-bbq' },
     { id: 'ch0_nolan_call',    x: 7,  y: 4,  type: 'examine', glow: true, sprite: 'item-phone' },

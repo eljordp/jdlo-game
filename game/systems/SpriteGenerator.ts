@@ -2058,63 +2058,66 @@ function generateTiles(scene: Phaser.Scene) {
 
   // -- Grass (32x32) --
   makeTexture(scene, 'tile-grass', S, S, (g) => {
-    // Base green fill
-    g.fillStyle(COLORS.grassGreen);
+    // Base green fill — warmer, richer green
+    g.fillStyle(0x4e9442);
     g.fillRect(0, 0, S, S);
 
-    // Shade zones — 4 natural variation areas
-    px(g, 0, 0, 0x458a3a, 14, 10);    // top-left slightly darker zone
-    px(g, 18, 16, 0x4e9244, 14, 16);  // bottom-right slightly lighter zone
-    px(g, 6, 20, 0x478e3c, 10, 8);    // mid-bottom patch
+    // Large natural variation patches (no grid pattern)
+    px(g, 0, 0, 0x478a3c, 18, 14);
+    px(g, 14, 12, 0x529848, 18, 20);
+    px(g, 0, 18, 0x4a8e40, 12, 14);
+    px(g, 20, 0, 0x509244, 12, 10);
 
-    // Lighter grass patches
-    px(g, 4, 5, COLORS.grassLight, 4, 1);
-    px(g, 16, 2, COLORS.grassLight, 5, 1);
-    px(g, 10, 14, COLORS.grassLight, 3, 1);
-    px(g, 24, 20, COLORS.grassLight, 4, 1);
-    px(g, 2, 24, COLORS.grassLight, 3, 1);
-    px(g, 20, 8, COLORS.grassLight, 3, 2);
-    px(g, 8, 28, COLORS.grassLight, 4, 1);
-    px(g, 28, 12, COLORS.grassLight, 3, 1);
+    // Grass blade clusters (irregular, not on a grid)
+    // Cluster 1 — top left
+    px(g, 2, 1, 0x3c7832, 1, 3);
+    px(g, 4, 2, 0x3c7832, 1, 2);
+    px(g, 2, 0, 0x5ca04e, 1, 1); // tip highlight
 
-    // Individual grass blade strokes (darker green)
-    px(g, 3, 3, COLORS.grassDark, 1, 2);
-    px(g, 7, 1, COLORS.grassDark, 1, 2);
-    px(g, 12, 6, COLORS.grassDark, 1, 3);
-    px(g, 18, 4, COLORS.grassDark, 1, 2);
-    px(g, 22, 10, COLORS.grassDark, 1, 2);
-    px(g, 26, 6, COLORS.grassDark, 1, 3);
-    px(g, 5, 16, COLORS.grassDark, 1, 2);
-    px(g, 15, 22, COLORS.grassDark, 1, 2);
-    px(g, 28, 18, COLORS.grassDark, 1, 3);
-    px(g, 9, 10, COLORS.grassDark, 1, 2);
-    px(g, 20, 26, COLORS.grassDark, 1, 2);
-    px(g, 2, 30, COLORS.grassDark, 1, 2);
-    px(g, 30, 28, COLORS.grassDark, 1, 2);
+    // Cluster 2 — mid
+    px(g, 11, 5, 0x3c7832, 1, 3);
+    px(g, 13, 4, 0x3c7832, 1, 2);
+    px(g, 11, 4, 0x5ca04e, 1, 1);
 
-    // Even lighter blade tips
-    px(g, 3, 2, 0x60a855, 1, 1);
-    px(g, 12, 5, 0x60a855, 1, 1);
-    px(g, 22, 9, 0x60a855, 1, 1);
-    px(g, 26, 5, 0x60a855, 1, 1);
-    px(g, 15, 21, 0x60a855, 1, 1);
-    px(g, 28, 17, 0x60a855, 1, 1);
+    // Cluster 3 — right
+    px(g, 24, 3, 0x3c7832, 1, 3);
+    px(g, 26, 2, 0x3c7832, 1, 2);
+    px(g, 24, 2, 0x5ca04e, 1, 1);
 
-    // Soil specks (brown)
-    px(g, 10, 3, 0x6a5a30, 1, 1);
-    px(g, 24, 15, 0x6a5a30, 1, 1);
-    px(g, 6, 22, 0x6a5a30, 1, 1);
-    px(g, 18, 29, 0x6a5a30, 1, 1);
-    px(g, 30, 4, 0x6a5a30, 1, 1);
+    // Cluster 4 — bottom left
+    px(g, 5, 20, 0x3c7832, 1, 3);
+    px(g, 7, 19, 0x3c7832, 1, 2);
+    px(g, 5, 19, 0x5ca04e, 1, 1);
 
-    // Flower accents (yellow and white dots)
-    px(g, 6, 8, 0xf0e060, 2, 2);
-    px(g, 7, 8, 0xf8f0a0, 1, 1);  // highlight
-    px(g, 26, 24, 0xf0e060, 2, 2);
-    px(g, 27, 24, 0xf8f0a0, 1, 1);
-    px(g, 14, 18, 0xffffff, 1, 1); // white flower
-    px(g, 3, 28, 0xffffff, 1, 1);
-    px(g, 22, 3, 0xf0e060, 1, 1);
+    // Cluster 5 — center bottom
+    px(g, 16, 22, 0x3c7832, 1, 3);
+    px(g, 18, 23, 0x3c7832, 1, 2);
+    px(g, 16, 21, 0x5ca04e, 1, 1);
+
+    // Cluster 6 — bottom right
+    px(g, 27, 18, 0x3c7832, 1, 3);
+    px(g, 29, 17, 0x3c7832, 1, 2);
+    px(g, 27, 17, 0x5ca04e, 1, 1);
+
+    // Scattered single blades
+    px(g, 8, 10, 0x3a7430, 1, 2);
+    px(g, 19, 8, 0x3a7430, 1, 2);
+    px(g, 30, 12, 0x3a7430, 1, 2);
+    px(g, 1, 28, 0x3a7430, 1, 2);
+    px(g, 22, 28, 0x3a7430, 1, 2);
+    px(g, 14, 14, 0x3a7430, 1, 2);
+
+    // Lighter patches (sun-touched areas)
+    px(g, 6, 6, 0x5aa04c, 5, 3);
+    px(g, 20, 14, 0x5aa04c, 4, 4);
+    px(g, 10, 26, 0x5aa04c, 6, 3);
+
+    // Soil specks (very few, natural)
+    px(g, 15, 9, 0x6a5a30, 1, 1);
+    px(g, 28, 25, 0x6a5a30, 1, 1);
+    px(g, 3, 15, 0x6a5a30, 1, 1);
+
+    // NO flowers — keep it clean suburban lawn
   });
 
   // -- Sand (32x32) --
@@ -2325,6 +2328,107 @@ function generateTiles(scene: Phaser.Scene) {
     // Left edge shadow
     g.fillStyle(0xb0a080);
     g.fillRect(0, 0, 1, S);
+  });
+
+  // -- House Wall (32x32) — warm cream drywall --
+  makeTexture(scene, 'tile-house-wall', S, S, (g) => {
+    // Warm cream drywall base
+    g.fillStyle(COLORS.houseWall);
+    g.fillRect(0, 0, S, S);
+
+    // Subtle texture variation
+    px(g, 0, 0, 0xe4dcd0, 16, 16);
+    px(g, 16, 16, 0xece4d8, 16, 16);
+
+    // Baseboard trim at bottom
+    g.fillStyle(COLORS.houseWallDark);
+    g.fillRect(0, 28, S, 4);
+    px(g, 0, 27, 0xd0c8bc, S, 1); // top edge of baseboard
+
+    // Crown molding at top
+    px(g, 0, 0, COLORS.houseWallLight, S, 2);
+    px(g, 0, 2, COLORS.houseWallDark, S, 1);
+
+    // Very subtle wall texture
+    px(g, 8, 10, 0xe0d8cc, 3, 1);
+    px(g, 20, 16, 0xe0d8cc, 4, 1);
+    px(g, 4, 22, 0xe0d8cc, 5, 1);
+    px(g, 14, 8, 0xece4d8, 2, 1);
+    px(g, 24, 20, 0xece4d8, 3, 1);
+  });
+
+  // -- Hardwood (32x32) — warm oak planks --
+  makeTexture(scene, 'tile-hardwood', S, S, (g) => {
+    // Rich warm oak base
+    g.fillStyle(COLORS.hardwood);
+    g.fillRect(0, 0, S, S);
+
+    // Plank divisions (horizontal gaps)
+    g.fillStyle(COLORS.hardwoodDark);
+    g.fillRect(0, 7, S, 1);
+    g.fillRect(0, 15, S, 1);
+    g.fillRect(0, 23, S, 1);
+    g.fillRect(0, 31, S, 1);
+
+    // Staggered vertical seams (plank ends)
+    px(g, 10, 0, COLORS.hardwoodDark, 1, 7);
+    px(g, 22, 8, COLORS.hardwoodDark, 1, 7);
+    px(g, 6, 16, COLORS.hardwoodDark, 1, 7);
+    px(g, 18, 24, COLORS.hardwoodDark, 1, 7);
+
+    // Wood grain (warm light streaks)
+    px(g, 2, 2, COLORS.hardwoodLight, 6, 1);
+    px(g, 14, 3, COLORS.hardwoodLight, 5, 1);
+    px(g, 24, 10, COLORS.hardwoodLight, 4, 1);
+    px(g, 8, 11, COLORS.hardwoodLight, 8, 1);
+    px(g, 2, 18, COLORS.hardwoodLight, 3, 1);
+    px(g, 12, 19, COLORS.hardwoodLight, 6, 1);
+    px(g, 20, 26, COLORS.hardwoodLight, 5, 1);
+    px(g, 4, 27, COLORS.hardwoodLight, 4, 1);
+
+    // Darker grain accents
+    px(g, 4, 4, 0x7a5830, 8, 1);
+    px(g, 16, 12, 0x7a5830, 6, 1);
+    px(g, 8, 20, 0x7a5830, 10, 1);
+    px(g, 24, 28, 0x7a5830, 5, 1);
+
+    // Knot detail
+    px(g, 16, 4, 0x705030, 2, 2);
+    px(g, 17, 5, 0x685028, 1, 1);
+    px(g, 4, 26, 0x705030, 2, 2);
+
+    // Subtle color variation per plank
+    px(g, 12, 0, 0x907048, 8, 7);
+    px(g, 0, 16, 0x866440, 6, 7);
+  });
+
+  // -- Counter (32x32) — dark granite --
+  makeTexture(scene, 'tile-counter', S, S, (g) => {
+    // Dark granite base
+    g.fillStyle(COLORS.counter);
+    g.fillRect(0, 0, S, S);
+
+    // Front face (lower half darker)
+    px(g, 0, 16, 0x383840, S, 16);
+
+    // Countertop surface specks (granite pattern)
+    px(g, 3, 3, COLORS.counterLight, 2, 1);
+    px(g, 10, 5, COLORS.counterLight, 1, 1);
+    px(g, 18, 2, COLORS.counterLight, 2, 1);
+    px(g, 26, 6, COLORS.counterLight, 1, 1);
+    px(g, 8, 8, COLORS.counterLight, 1, 1);
+    px(g, 22, 10, COLORS.counterLight, 2, 1);
+    px(g, 14, 12, COLORS.counterLight, 1, 1);
+
+    // White/light flecks
+    px(g, 6, 4, 0x606068, 1, 1);
+    px(g, 20, 8, 0x606068, 1, 1);
+    px(g, 12, 2, 0x585860, 1, 1);
+    px(g, 28, 10, 0x585860, 1, 1);
+
+    // Edge highlight
+    px(g, 0, 14, 0x484850, S, 1);
+    px(g, 0, 15, 0x303038, S, 1);
   });
 
   // -- Dark Floor (32x32) — concrete/stone --
