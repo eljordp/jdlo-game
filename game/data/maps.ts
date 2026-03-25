@@ -21,6 +21,7 @@ export const TILES = {
   COMPUTER: 14,
   TRACTOR: 15,
   BUILDING_WALL: 16,
+  HOT_TUB: 17,
 } as const;
 
 export type InteractableType = 'examine' | 'item' | 'evolve' | 'showcase' | 'scratch';
@@ -54,6 +55,7 @@ const E = TILES.FENCE;
 const M = TILES.COMPUTER;
 const R = TILES.TRACTOR;
 const B = TILES.BUILDING_WALL;
+const H = TILES.HOT_TUB;
 
 // Collision tiles shared across most maps
 const STANDARD_COLLISIONS = [
@@ -65,6 +67,7 @@ const STANDARD_COLLISIONS = [
   TILES.COMPUTER,
   TILES.TRACTOR,
   TILES.BUILDING_WALL,
+  TILES.HOT_TUB,
 ];
 
 // ---------------------------------------------------------------------------
@@ -160,10 +163,10 @@ export const beachMap: MapData = {
     //0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
     [ B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B ], // 0  house top wall
     [ B, F, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, B, C, C, C, C, C, C, C, B ], // 1  living room | JP room | kitchen | hot tub patio
-    [ B, F, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, B, C, W, W, W, W, W, C, B ], // 2  bigger hot tub
-    [ B, F, F, F, F, F, F, F, B, F, F, F, M, F, B, F, F, F, F, B, C, W, W, W, W, W, C, B ], // 3  computer in JP room
-    [ B, F, F, F, F, F, F, F, O, F, F, F, F, F, O, F, F, F, F, B, C, W, W, W, W, W, C, B ], // 4  doors between rooms
-    [ B, F, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, B, C, W, W, W, W, W, C, B ], // 5
+    [ B, F, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, B, C, H, H, H, H, H, C, B ], // 2  hot tub (bubbly)
+    [ B, F, F, F, F, F, F, F, B, F, F, F, M, F, B, F, F, F, F, B, C, H, H, H, H, H, C, B ], // 3  computer in JP room
+    [ B, F, F, F, F, F, F, F, O, F, F, F, F, F, O, F, F, F, F, B, C, H, H, H, H, H, C, B ], // 4  doors between rooms
+    [ B, F, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, B, C, H, H, H, H, H, C, B ], // 5
     [ B, F, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, B, C, C, C, C, C, C, C, B ], // 6
     [ B, B, B, B, O, B, B, B, B, B, B, O, B, B, B, B, O, B, B, B, B, B, B, O, B, B, B, B ], // 7  house bottom wall with doors
     [ G, G, G, G, P, G, G, G, G, G, G, P, G, G, G, G, P, G, G, G, G, G, G, P, G, G, G, G ], // 8  paths from house doors
@@ -261,7 +264,7 @@ export const wrongCrowdMap: MapData = {
   spawns: {
     player: { x: 5, y: 3 },  // JP starts in his room
     npcs: [
-      { id: 'ch2_homie_door', x: 12, y: 7, sprite: 'npc_kid' },     // homie in frat hallway
+      { id: 'ch2_homie_door', x: 13, y: 9, sprite: 'npc_kid' },     // homie by front door outside
       { id: 'ch2_lookout',    x: 18, y: 20, sprite: 'npc_shady' },   // outside buyer's house
       { id: 'ch2_buyer',      x: 23, y: 23, sprite: 'npc_generic' }, // inside buyer's house
     ],

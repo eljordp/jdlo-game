@@ -39,7 +39,7 @@ export const COLORS = {
   floorBeige: 0xc8b898,
   darkFloor: 0x484050,
   dirtBrown: 0x9a7a50,
-  concrete: 0xb0b0b8,
+  concrete: 0x505058,
   treeTrunk: 0x6a5030,
   treeGreen: 0x308030,
   treeDark: 0x206020,
@@ -86,4 +86,5 @@ export const TILE_IDS = {
   COMPUTER: 14,
   TRACTOR: 15,
   BUILDING_WALL: 16,
+  HOT_TUB: 17,
 } as const;

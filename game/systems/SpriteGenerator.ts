@@ -1153,17 +1153,21 @@ function generateTiles(scene: Phaser.Scene) {
     g.fillRect(0, 11, S, 1);
   });
 
-  // -- Concrete --
+  // -- Concrete / Road (dark asphalt) --
   makeTexture(scene, 'tile-concrete', S, S, (g) => {
-    g.fillStyle(COLORS.concrete);
+    // Dark asphalt base
+    g.fillStyle(0x404048);
     g.fillRect(0, 0, S, S);
-    // Crack lines
-    px(g, 3, 4, 0x989898, 1, 3);
-    px(g, 4, 6, 0x989898, 2, 1);
-    px(g, 10, 2, 0x989898, 1, 2);
-    // Light spots
-    px(g, 7, 8, 0xc0c0c8, 3, 2);
-    px(g, 1, 13, 0xc0c0c8, 2, 1);
+    // Texture variation
+    px(g, 2, 3, 0x484850, 3, 2);
+    px(g, 9, 8, 0x484850, 4, 2);
+    px(g, 1, 12, 0x484850, 2, 1);
+    // Darker patches (wear marks)
+    px(g, 6, 1, 0x383840, 2, 1);
+    px(g, 11, 6, 0x383840, 2, 2);
+    px(g, 3, 10, 0x383840, 1, 2);
+    // Subtle crack
+    px(g, 5, 5, 0x353538, 1, 3);
   });
 
   // -- Door --
@@ -1451,6 +1455,47 @@ function generateChapterOutfits(scene: Phaser.Scene) {
 
 // ─── MAIN EXPORT ────────────────────────────────────────────────────
 
+// ─── HOT TUB TILE ────────────────────────────────────────────────────
+// Bubbly warm water, not ocean waves
+
+function generateHotTub(scene: Phaser.Scene) {
+  const S = TILE_SIZE;
+  // Create a static bubbly tile
+  makeTexture(scene, 'tile-hottub', S, S, (g) => {
+    // Warm blue base
+    g.fillStyle(0x4098d0);
+    g.fillRect(0, 0, S, S);
+
+    // Lighter warm water patches
+    px(g, 2, 2, 0x50a8e0, 3, 2);
+    px(g, 8, 6, 0x50a8e0, 4, 2);
+    px(g, 1, 10, 0x50a8e0, 3, 2);
+    px(g, 10, 12, 0x50a8e0, 3, 2);
+
+    // Bubbles — white/light circles scattered
+    px(g, 3, 3, 0xd0e8ff, 2, 2);
+    px(g, 10, 2, 0xd0e8ff, 2, 2);
+    px(g, 6, 7, 0xe0f0ff, 2, 2);
+    px(g, 13, 8, 0xd0e8ff, 2, 2);
+    px(g, 2, 12, 0xe0f0ff, 2, 2);
+    px(g, 8, 13, 0xd0e8ff, 2, 2);
+    px(g, 14, 14, 0xe0f0ff, 1, 1);
+
+    // Bubble highlights (bright white dots)
+    px(g, 3, 3, 0xffffff, 1, 1);
+    px(g, 10, 2, 0xffffff, 1, 1);
+    px(g, 6, 7, 0xffffff, 1, 1);
+    px(g, 13, 8, 0xffffff, 1, 1);
+    px(g, 2, 12, 0xffffff, 1, 1);
+    px(g, 8, 13, 0xffffff, 1, 1);
+
+    // Steam wisps (very light)
+    px(g, 4, 0, 0xc0d8f0, 2, 1);
+    px(g, 11, 1, 0xc0d8f0, 2, 1);
+    px(g, 7, 0, 0xb0d0e8, 1, 1);
+  });
+}
+
 // ─── BMW 335i SPRITE ─────────────────────────────────────────────────
 // Top-down view, 48x32 pixels (3 tiles wide, 2 tiles tall)
 // Black E90 335i — N54 twin turbo, catless downpipes, low stance
@@ -1586,5 +1631,6 @@ export function generateAllSprites(scene: Phaser.Scene): void {
   generateAllNPCs(scene);
   generateTiles(scene);
   generateUI(scene);
+  generateHotTub(scene);
   generateBMW(scene);
 }

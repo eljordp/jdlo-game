@@ -19,6 +19,7 @@ const TILE_TEXTURE_MAP: Record<number, string> = {
   [TILE_IDS.COMPUTER]: 'tile-computer',
   [TILE_IDS.TRACTOR]: 'tile-tractor',
   [TILE_IDS.BUILDING_WALL]: 'tile-building-wall',
+  [TILE_IDS.HOT_TUB]: 'tile-hottub',
 };
 
 // Detail tiles that need a ground tile rendered underneath
