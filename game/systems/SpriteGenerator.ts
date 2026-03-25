@@ -2060,79 +2060,33 @@ function generateTiles(scene: Phaser.Scene) {
     px(g, 22, 28, 0xb8a080, 2, 1);
   });
 
-  // -- Water (32x32, 2-frame animation — 64x32 sheet) --
-  makeTexture(scene, 'tile-water', S * 2, S, (g) => {
-    // --- Frame 1 ---
-    g.fillStyle(COLORS.waterBlue);
+  // -- Water (32x32, static — no animation to avoid black spots) --
+  makeTexture(scene, 'tile-water', S, S, (g) => {
+    // Deep blue base
+    g.fillStyle(0x2870b0);
     g.fillRect(0, 0, S, S);
 
-    // Depth variation — darker edges
-    px(g, 0, 0, COLORS.waterDark, S, 3);
-    px(g, 0, 29, COLORS.waterDark, S, 3);
-    px(g, 0, 0, COLORS.waterDark, 3, S);
-    px(g, 29, 0, COLORS.waterDark, 3, S);
+    // Lighter center
+    px(g, 4, 4, 0x3080c0, 24, 24);
+    px(g, 6, 6, 0x3888c8, 20, 20);
 
-    // Ripple pattern — curved light lines
-    px(g, 4, 6, COLORS.waterLight, 8, 1);
-    px(g, 3, 7, COLORS.waterLight, 2, 1);
-    px(g, 12, 7, COLORS.waterLight, 2, 1);
-    px(g, 18, 14, COLORS.waterLight, 7, 1);
-    px(g, 17, 15, COLORS.waterLight, 2, 1);
-    px(g, 25, 15, COLORS.waterLight, 2, 1);
-    px(g, 6, 22, COLORS.waterLight, 10, 1);
-    px(g, 5, 23, COLORS.waterLight, 2, 1);
-    px(g, 16, 23, COLORS.waterLight, 2, 1);
+    // Gentle ripple curves
+    px(g, 5, 8, 0x48a0e0, 10, 1);
+    px(g, 4, 9, 0x48a0e0, 2, 1);
+    px(g, 15, 9, 0x48a0e0, 2, 1);
+    px(g, 14, 16, 0x48a0e0, 12, 1);
+    px(g, 13, 17, 0x48a0e0, 2, 1);
+    px(g, 26, 17, 0x48a0e0, 2, 1);
+    px(g, 8, 24, 0x48a0e0, 14, 1);
+    px(g, 7, 25, 0x48a0e0, 2, 1);
+    px(g, 22, 25, 0x48a0e0, 2, 1);
 
-    // Dark wave troughs
-    px(g, 8, 3, COLORS.waterDark, 6, 1);
-    px(g, 22, 10, COLORS.waterDark, 5, 1);
-    px(g, 2, 18, COLORS.waterDark, 8, 1);
-    px(g, 20, 26, COLORS.waterDark, 6, 1);
-
-    // Light reflection highlights (white/light blue sparkles)
-    px(g, 10, 5, 0x80d0ff, 2, 1);
-    px(g, 11, 4, 0xa0e0ff, 1, 1);
-    px(g, 24, 13, 0x80d0ff, 2, 1);
-    px(g, 25, 12, 0xa0e0ff, 1, 1);
-    px(g, 12, 21, 0x80d0ff, 2, 1);
-    px(g, 13, 20, 0xa0e0ff, 1, 1);
-    px(g, 4, 28, 0x80d0ff, 1, 1);
-
-    // --- Frame 2 — shifted ripples ---
-    g.fillStyle(COLORS.waterBlue);
-    g.fillRect(S, 0, S, S);
-
-    // Depth variation
-    px(g, S, 0, COLORS.waterDark, S, 3);
-    px(g, S, 29, COLORS.waterDark, S, 3);
-    px(g, S, 0, COLORS.waterDark, 3, S);
-    px(g, S + 29, 0, COLORS.waterDark, 3, S);
-
-    // Shifted ripple pattern
-    px(g, S + 8, 8, COLORS.waterLight, 8, 1);
-    px(g, S + 7, 9, COLORS.waterLight, 2, 1);
-    px(g, S + 16, 9, COLORS.waterLight, 2, 1);
-    px(g, S + 2, 16, COLORS.waterLight, 7, 1);
-    px(g, S + 1, 17, COLORS.waterLight, 2, 1);
-    px(g, S + 9, 17, COLORS.waterLight, 2, 1);
-    px(g, S + 14, 24, COLORS.waterLight, 10, 1);
-    px(g, S + 13, 25, COLORS.waterLight, 2, 1);
-    px(g, S + 24, 25, COLORS.waterLight, 2, 1);
-
-    // Dark wave troughs shifted
-    px(g, S + 14, 5, COLORS.waterDark, 6, 1);
-    px(g, S + 4, 12, COLORS.waterDark, 5, 1);
-    px(g, S + 18, 20, COLORS.waterDark, 8, 1);
-    px(g, S + 6, 28, COLORS.waterDark, 6, 1);
-
-    // Shifted sparkles
-    px(g, S + 16, 7, 0x80d0ff, 2, 1);
-    px(g, S + 17, 6, 0xa0e0ff, 1, 1);
-    px(g, S + 6, 15, 0x80d0ff, 2, 1);
-    px(g, S + 7, 14, 0xa0e0ff, 1, 1);
-    px(g, S + 22, 23, 0x80d0ff, 2, 1);
-    px(g, S + 23, 22, 0xa0e0ff, 1, 1);
-    px(g, S + 10, 28, 0x80d0ff, 1, 1);
+    // Subtle sparkle highlights
+    px(g, 10, 6, 0x90d0ff, 2, 1);
+    px(g, 11, 5, 0xb0e0ff, 1, 1);
+    px(g, 22, 14, 0x90d0ff, 2, 1);
+    px(g, 14, 22, 0x90d0ff, 2, 1);
+    px(g, 6, 28, 0xb0e0ff, 1, 1);
   });
 
   // -- Path (32x32) --

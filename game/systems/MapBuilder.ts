@@ -90,11 +90,11 @@ export class MapBuilder {
         }
 
         if (tileId === TILE_IDS.WATER) {
+          // Water is now a static tile — no animation, no crop
           const sprite = this.scene.add.sprite(pixelX, pixelY, textureKey);
           sprite.setScale(SCALE);
           sprite.setDepth(0);
           sprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
-          sprite.setCrop(0, 0, TILE_SIZE, TILE_SIZE);
           waterSprites.push(sprite);
         } else {
           const sprite = this.scene.add.sprite(pixelX, pixelY, textureKey);
