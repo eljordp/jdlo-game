@@ -82,13 +82,13 @@ export const homeMap: MapData = {
     //0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29
     [ T, G, G, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, G, G, T ], // 0  roof line
     [ G, G, G, B, F, F, F, F, F, B, F, F, F, F, B, F, F, F, F, F, F, B, F, F, F, F, B, G, G, G ], // 1  JP room | sister | parents room | bathroom
-    [ G, G, G, B, F, M, F, F, F, B, F, F, F, F, B, F, F, F, F, F, F, B, F, F, F, F, B, G, G, G ], // 2  M=computer in JP room
-    [ G, G, G, B, F, F, F, F, F, B, F, F, F, F, B, F, F, F, F, F, F, B, F, F, F, F, B, G, G, G ], // 3
+    [ G, G, G, B, F, M, F, F, F, B, F, F, F, F, B, F, M, F, F, F, F, B, F, F, F, F, B, G, G, G ], // 2  M=computer in JP room, M=TV in parents room
+    [ G, G, G, B, F, F, F, F, F, B, F, M, F, F, B, F, F, F, F, F, F, B, F, F, F, F, B, G, G, G ], // 3  M=toy/TV in sister room
     [ G, G, G, B, F, F, F, F, F, B, F, F, F, F, B, F, F, F, F, F, F, B, F, F, F, F, B, G, G, G ], // 4
     [ G, G, G, B, B, B, B, O, B, B, B, B, O, B, B, B, B, O, B, B, B, B, B, O, B, B, B, G, G, G ], // 5  doors to hallway
     [ G, G, G, B, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, B, G, G, G ], // 6  hallway
     [ G, G, G, B, B, B, O, B, B, B, B, B, B, B, B, B, B, B, O, B, B, B, B, B, B, B, B, G, G, G ], // 7  doors to living room + kitchen
-    [ G, G, G, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, F, B, G, G, G ], // 8  living room | kitchen
+    [ G, G, G, B, F, M, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, F, B, G, G, G ], // 8  living room (M=TV) | kitchen
     [ G, G, G, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, F, B, G, G, G ], // 9
     [ G, G, G, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, F, B, G, G, G ], // 10
     [ G, G, G, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, F, B, G, G, G ], // 11
@@ -148,6 +148,7 @@ export const homeMap: MapData = {
     { id: 'ch0_mail',          x: 20, y: 9,  type: 'examine', glow: true, sprite: 'item-letter' },
     // Yard
     { id: 'ch0_bbq',           x: 6,  y: 17, type: 'examine', glow: true, sprite: 'item-bbq' },
+    { id: 'ch0_frenchie_ball', x: 16, y: 17, type: 'examine', glow: true },
     { id: 'ch0_goodbye',       x: 10, y: 20, type: 'examine', glow: true },
   ],
 };
@@ -195,6 +196,7 @@ export const beachMap: MapData = {
       { id: 'ch1_girl2',  x: 26, y: 3,  sprite: 'npc_bikini2' },
       { id: 'ch1_girl3',  x: 20, y: 5,  sprite: 'npc_bikini1' },
       { id: 'ch1_girl_couch', x: 3, y: 5, sprite: 'npc_bikini2' },
+      { id: 'ch1_terrel', x: 13, y: 4, sprite: 'npc_terrel' },
     ],
   },
   triggers: [

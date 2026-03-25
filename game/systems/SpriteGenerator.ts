@@ -801,6 +801,19 @@ function generateAllNPCs(scene: Phaser.Scene) {
     0xd0a870
   );
 
+  // Terrel — chill frat homie, dark skin, white tee, dark jeans
+  generateNPC(
+    scene,
+    'npc_terrel',
+    0x181818, // short dark hair
+    'short',
+    0xf0f0f0, // white t-shirt
+    0xe0e0e0,
+    0x303840, // dark jeans
+    0xa07848, // dark skin
+    0x806030
+  );
+
   // DHL Client — professional, dark skin, DHL-ish yellow shirt
   generateNPC(
     scene,

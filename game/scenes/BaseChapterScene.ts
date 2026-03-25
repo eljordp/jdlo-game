@@ -617,6 +617,15 @@ export abstract class BaseChapterScene extends Phaser.Scene {
         this.checkTriggers(targetTileX, targetTileY);
       },
     });
+
+    // Walking bounce — subtle squash-and-stretch for lively movement
+    this.tweens.add({
+      targets: this.player,
+      scaleY: SCALE * 1.05,
+      scaleX: SCALE * 0.95,
+      duration: 100,
+      yoyo: true,
+    });
   }
 
   private checkTriggers(tileX: number, tileY: number) {

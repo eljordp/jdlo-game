@@ -184,6 +184,19 @@ export const chapter1NPCs: NPCData[] = [
       { speaker: 'JP', text: 'For now.' },
     ],
   },
+  {
+    id: 'ch1_terrel',
+    x: 13,
+    y: 4,
+    sprite: 'npc_terrel',
+    dialogue: [
+      { speaker: 'Terrel', text: 'Bro you been up since noon?' },
+      { speaker: 'JP', text: 'I been up since 8. Working on something.' },
+      { speaker: 'Terrel', text: 'Working on what? We don\'t have jobs.' },
+      { speaker: 'JP', text: 'Exactly. That\'s the problem.' },
+      { speaker: 'Terrel', text: '...that\'s deep for a Tuesday morning.' },
+    ],
+  },
 ];
 
 export const chapter1OutroText: string[] = [
