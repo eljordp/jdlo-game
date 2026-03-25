@@ -1,4 +1,4 @@
-import { SCALED_TILE } from '../config';
+import { SCALED_TILE, SCALE } from '../config';
 import { DialogueLine } from '../systems/DialogueSystem';
 
 export type InteractableType = 'examine' | 'item' | 'evolve' | 'showcase' | 'scratch';
@@ -40,7 +40,7 @@ export class InteractionSystem {
         const worldY = obj.y * SCALED_TILE + SCALED_TILE / 2;
 
         const sprite = this.scene.add.sprite(worldX, worldY, obj.sprite);
-        sprite.setScale(3);
+        sprite.setScale(SCALE);
         sprite.setDepth(5); // above ground tiles, below player/NPCs
 
         this.sprites.set(obj.id, sprite);

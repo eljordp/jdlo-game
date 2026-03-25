@@ -128,16 +128,16 @@ export const homeMap: MapData = {
   interactables: [
     // JP's Room
     { id: 'ch0_computer',      x: 5,  y: 1,  type: 'examine', glow: true },  // next to M tile
-    { id: 'ch0_crypto',        x: 7,  y: 1,  type: 'examine', glow: true },
-    { id: 'ch0_college',       x: 8,  y: 2,  type: 'examine', glow: true },
+    { id: 'ch0_crypto',        x: 7,  y: 1,  type: 'examine', glow: true, sprite: 'item-phone' },
+    { id: 'ch0_college',       x: 8,  y: 2,  type: 'examine', glow: true, sprite: 'item-letter' },
     { id: 'ch0_bed',           x: 4,  y: 4,  type: 'examine', glow: true },
     { id: 'ch0_poster',        x: 8,  y: 4,  type: 'examine', glow: true },
-    { id: 'ch0_hidden_stash',  x: 4,  y: 1,  type: 'examine', glow: true },
-    { id: 'ch0_journal',       x: 6,  y: 4,  type: 'examine', glow: true },
+    { id: 'ch0_hidden_stash',  x: 4,  y: 1,  type: 'examine', glow: true, sprite: 'item-weed-bag' },
+    { id: 'ch0_journal',       x: 6,  y: 4,  type: 'examine', glow: true, sprite: 'item-book' },
     // Sister's Room
     { id: 'ch0_sister_toys',   x: 11, y: 4,  type: 'examine', glow: true },
     // Parents' Room
-    { id: 'ch0_family_photo',  x: 16, y: 1,  type: 'examine', glow: true },
+    { id: 'ch0_family_photo',  x: 16, y: 1,  type: 'examine', glow: true, sprite: 'item-photo' },
     // Bathroom
     { id: 'ch0_mirror',        x: 24, y: 1,  type: 'examine', glow: true },
     // Living Room
@@ -145,9 +145,9 @@ export const homeMap: MapData = {
     { id: 'ch0_couch',         x: 10, y: 9,  type: 'examine', glow: true },
     // Kitchen
     { id: 'ch0_fridge',        x: 16, y: 8,  type: 'examine', glow: true },
-    { id: 'ch0_mail',          x: 20, y: 9,  type: 'examine', glow: true },
+    { id: 'ch0_mail',          x: 20, y: 9,  type: 'examine', glow: true, sprite: 'item-letter' },
     // Yard
-    { id: 'ch0_bbq',           x: 6,  y: 17, type: 'examine', glow: true },
+    { id: 'ch0_bbq',           x: 6,  y: 17, type: 'examine', glow: true, sprite: 'item-bbq' },
     { id: 'ch0_goodbye',       x: 10, y: 20, type: 'examine', glow: true },
   ],
 };
@@ -203,10 +203,10 @@ export const beachMap: MapData = {
     { x: 15, y: 18, action: 'scene', target: 'WrongCrowdScene' },
   ],
   interactables: [
-    { id: 'ch1_weed1',   x: 12, y: 3,  type: 'examine', glow: true },
-    { id: 'ch1_weed2',   x: 10, y: 5,  type: 'examine', glow: true },
-    { id: 'ch1_weed3',   x: 4,  y: 2,  type: 'examine', glow: true },
-    { id: 'ch1_bottles', x: 16, y: 2,  type: 'examine', glow: true },
+    { id: 'ch1_weed1',   x: 12, y: 3,  type: 'examine', glow: true, sprite: 'item-weed-bag' },
+    { id: 'ch1_weed2',   x: 10, y: 5,  type: 'examine', glow: true, sprite: 'item-weed-bag' },
+    { id: 'ch1_weed3',   x: 4,  y: 2,  type: 'examine', glow: true, sprite: 'item-weed-bag' },
+    { id: 'ch1_bottles', x: 16, y: 2,  type: 'examine', glow: true, sprite: 'item-bottle' },
     { id: 'ch1_hottub',  x: 23, y: 4,  type: 'examine', glow: true },
     { id: 'ch1_mess',    x: 2,  y: 6,  type: 'examine', glow: true },
     { id: 'ch1_view',    x: 14, y: 16, type: 'examine', glow: true },
@@ -271,13 +271,13 @@ export const wrongCrowdMap: MapData = {
   },
   triggers: [],  // No scene triggers — only way out is through ch2_sale raid
   interactables: [
-    { id: 'ch2_grab_weed', x: 6, y: 2, type: 'examine', glow: true },   // desk in JP's room
-    { id: 'ch2_car',       x: 9, y: 11, type: 'examine', glow: true },   // BMW on the curb
+    { id: 'ch2_grab_weed', x: 6, y: 2, type: 'examine', glow: true, sprite: 'item-weed-bag' },   // desk in JP's room
+    { id: 'ch2_car',       x: 9, y: 11, type: 'examine', glow: true, sprite: 'item-keys' },   // BMW on the curb
     { id: 'ch2_mirror',    x: 10, y: 11, type: 'examine', glow: false },  // car mirror
     { id: 'ch2_buyer_house', x: 19, y: 22, type: 'examine', glow: true }, // approaching buyer's door
-    { id: 'ch2_sale',      x: 23, y: 24, type: 'examine', glow: true },   // THE TRIGGER — sale spot
+    { id: 'ch2_sale',      x: 23, y: 24, type: 'examine', glow: true, sprite: 'item-weed-bag' },   // THE TRIGGER — sale spot
     { id: 'ch2_alley',     x: 7, y: 15, type: 'examine', glow: true },    // kept from original
-    { id: 'ch2_phone',     x: 4, y: 4, type: 'examine', glow: true },     // in JP's room
+    { id: 'ch2_phone',     x: 4, y: 4, type: 'examine', glow: true, sprite: 'item-phone' },     // in JP's room
     { id: 'ch2_graffiti',  x: 6, y: 17, type: 'examine', glow: true },    // buyer's block
   ],
 };
@@ -364,17 +364,17 @@ export const jailMap: MapData = {
     { id: 'ch3_wall_2',  x: 2, y: 8,  type: 'scratch', glow: true },   // JP's cell wall
     { id: 'ch3_wall_3',  x: 14, y: 12, type: 'scratch', glow: true },  // guard station
     { id: 'ch3_wall_4',  x: 5, y: 11, type: 'scratch', glow: true },   // hallway wall
-    { id: 'ch3_book',    x: 4, y: 8,  type: 'examine', glow: true },   // JP's cell
+    { id: 'ch3_book',    x: 4, y: 8,  type: 'examine', glow: true, sprite: 'item-book' },   // JP's cell
     { id: 'ch3_pushups', x: 10, y: 17, type: 'examine', glow: true },  // yard
 
     // --- New interactables ---
-    { id: 'ch3_phone',       x: 9, y: 11,  type: 'examine', glow: true },  // hallway phone
-    { id: 'ch3_tablet',      x: 30, y: 18, type: 'examine', glow: true },  // study corner
-    { id: 'ch3_music',       x: 30, y: 19, type: 'examine', glow: true },  // study corner
+    { id: 'ch3_phone',       x: 9, y: 11,  type: 'examine', glow: true, sprite: 'item-phone' },  // hallway phone
+    { id: 'ch3_tablet',      x: 30, y: 18, type: 'examine', glow: true, sprite: 'item-tablet' },  // study corner
+    { id: 'ch3_music',       x: 30, y: 19, type: 'examine', glow: true, sprite: 'item-headphones' },  // study corner
     { id: 'ch3_bed',         x: 3, y: 8,   type: 'examine', glow: true },  // JP's bunk
     { id: 'ch3_toilet',      x: 2, y: 6,   type: 'examine', glow: true },  // JP's cell
     { id: 'ch3_window',      x: 13, y: 14, type: 'examine', glow: true },  // small window in hallway
-    { id: 'ch3_dice_watch',  x: 29, y: 8,  type: 'examine', glow: true },  // watching dice
+    { id: 'ch3_dice_watch',  x: 29, y: 8,  type: 'examine', glow: true, sprite: 'item-dice' },  // watching dice
     { id: 'ch3_fight_watch', x: 20, y: 3,  type: 'examine', glow: true },  // watching fight
   ],
 };
@@ -425,11 +425,11 @@ export const tractorMap: MapData = {
   interactables: [
     { id: 'ch4_tractor', x: 13, y: 5, type: 'examine', glow: true },
     { id: 'ch4_vines', x: 18, y: 8, type: 'examine', glow: true },
-    { id: 'ch4_phone', x: 6, y: 8, type: 'examine', glow: true },
+    { id: 'ch4_phone', x: 6, y: 8, type: 'examine', glow: true, sprite: 'item-phone' },
     { id: 'ch4_ai_discovery', x: 5, y: 4, type: 'evolve', glow: true },
     { id: 'ch4_sunrise', x: 24, y: 1, type: 'examine', glow: true },
     { id: 'ch4_lunch', x: 2, y: 7, type: 'examine', glow: true },
-    { id: 'ch4_paycheck', x: 24, y: 11, type: 'examine', glow: true },
+    { id: 'ch4_paycheck', x: 24, y: 11, type: 'examine', glow: true, sprite: 'item-money' },
     { id: 'ch4_d8_seat', x: 15, y: 5, type: 'examine', glow: true },
     { id: 'ch4_crash', x: 17, y: 5, type: 'examine', glow: true },
   ],
@@ -483,12 +483,12 @@ export const comeUpMap: MapData = {
     { x: 27, y: 23, action: 'scene', target: 'LAScene' },
   ],
   interactables: [
-    { id: 'ch5_wct_showcase', x: 3, y: 14, type: 'showcase', glow: true },
-    { id: 'ch5_sticker_showcase', x: 19, y: 14, type: 'showcase', glow: true },
-    { id: 'ch5_dhl_showcase', x: 13, y: 17, type: 'showcase', glow: true },
-    { id: 'ch5_first_dollar', x: 6, y: 3, type: 'examine', glow: true },
+    { id: 'ch5_wct_showcase', x: 3, y: 14, type: 'showcase', glow: true, sprite: 'item-money' },
+    { id: 'ch5_sticker_showcase', x: 19, y: 14, type: 'showcase', glow: true, sprite: 'item-money' },
+    { id: 'ch5_dhl_showcase', x: 13, y: 17, type: 'showcase', glow: true, sprite: 'item-tablet' },
+    { id: 'ch5_first_dollar', x: 6, y: 3, type: 'examine', glow: true, sprite: 'item-money' },
     { id: 'ch5_late_night', x: 7, y: 3, type: 'examine', glow: true },
-    { id: 'ch5_review', x: 24, y: 9, type: 'examine', glow: true },
+    { id: 'ch5_review', x: 24, y: 9, type: 'examine', glow: true, sprite: 'item-phone' },
   ],
 };
 
@@ -541,9 +541,9 @@ export const operatorMap: MapData = {
   ],
   interactables: [
     { id: 'ch6_dashboard', x: 8, y: 5, type: 'examine', glow: true },
-    { id: 'ch6_portfolio', x: 14, y: 10, type: 'examine', glow: true },
+    { id: 'ch6_portfolio', x: 14, y: 10, type: 'examine', glow: true, sprite: 'item-tablet' },
     { id: 'ch6_vegas', x: 5, y: 8, type: 'examine', glow: true },
-    { id: 'ch6_team', x: 11, y: 14, type: 'examine', glow: true },
+    { id: 'ch6_team', x: 11, y: 14, type: 'examine', glow: true, sprite: 'item-phone' },
     { id: 'ch6_mirror', x: 5, y: 22, type: 'examine', glow: true },
   ],
 };

@@ -1625,6 +1625,359 @@ function generateBMW(scene: Phaser.Scene) {
   scene.textures.addCanvas('car-bmw335i', canvas);
 }
 
+// ─── ITEM SPRITES ─────────────────────────────────────────────────────
+// 16x16 pixel art items placed on interactable tiles so players can see
+// what they're about to interact with.
+
+function generateItems(scene: Phaser.Scene) {
+
+  // --- item-weed-bag ---
+  makeTexture(scene, 'item-weed-bag', TILE_SIZE, TILE_SIZE, (g) => {
+    // Shadow
+    px(g, 5, 12, 0x2a3a20, 7, 2);
+    // Bag body
+    px(g, 5, 5, 0x4a7a30, 6, 7);
+    px(g, 6, 4, 0x4a7a30, 4, 1);
+    // Darker green depth
+    px(g, 6, 8, 0x3a6020, 4, 3);
+    px(g, 5, 10, 0x3a6020, 6, 1);
+    // Bag tie/knot at top
+    px(g, 7, 3, 0x6a5030, 2, 2);
+    px(g, 7, 2, 0x6a5030, 2, 1);
+    // Leaf detail
+    px(g, 8, 6, 0x80c050, 2, 1);
+    px(g, 9, 7, 0x80c050, 1, 2);
+    px(g, 7, 7, 0x70b040, 1, 1);
+    // Highlight
+    px(g, 6, 5, 0x60a040, 2, 1);
+    px(g, 5, 6, 0x60a040, 1, 2);
+  });
+
+  // --- item-phone ---
+  makeTexture(scene, 'item-phone', TILE_SIZE, TILE_SIZE, (g) => {
+    // Phone body (black rectangle)
+    px(g, 5, 2, 0x1a1a1a, 6, 12);
+    // Rounded corners - slightly darker border
+    px(g, 6, 2, 0x2a2a2a, 4, 1);
+    px(g, 5, 3, 0x2a2a2a, 1, 10);
+    px(g, 10, 3, 0x2a2a2a, 1, 10);
+    px(g, 6, 13, 0x2a2a2a, 4, 1);
+    // Screen (blue-white glow)
+    px(g, 6, 4, 0x4080d0, 4, 7);
+    px(g, 7, 4, 0x60a0e0, 2, 5);
+    px(g, 6, 5, 0x80c0f0, 3, 2);  // bright area
+    // Screen reflection
+    px(g, 6, 4, 0xa0d0ff, 1, 1);
+    // Home button
+    px(g, 7, 12, 0x404040, 2, 1);
+    // Speaker at top
+    px(g, 7, 3, 0x303030, 2, 1);
+    // Shadow
+    px(g, 6, 14, 0x101010, 5, 1);
+  });
+
+  // --- item-book ---
+  makeTexture(scene, 'item-book', TILE_SIZE, TILE_SIZE, (g) => {
+    // Shadow
+    px(g, 4, 12, 0x3a2010, 9, 1);
+    // Book cover (red-brown)
+    px(g, 3, 5, 0x8a3030, 9, 7);
+    px(g, 4, 4, 0x8a3030, 7, 1);
+    // Cover depth / spine
+    px(g, 3, 5, 0x6a2020, 1, 7);
+    px(g, 3, 11, 0x6a2020, 9, 1);
+    // Pages visible on right side
+    px(g, 11, 5, 0xf0e8d0, 2, 7);
+    px(g, 12, 6, 0xe0d8c0, 1, 5);
+    // Page lines
+    px(g, 11, 6, 0xd0c8b0, 1, 1);
+    px(g, 11, 8, 0xd0c8b0, 1, 1);
+    px(g, 11, 10, 0xd0c8b0, 1, 1);
+    // Cover highlight
+    px(g, 5, 5, 0xa04040, 5, 1);
+    // Title lines on cover
+    px(g, 5, 7, 0xd0a030, 4, 1);
+    px(g, 5, 9, 0xd0a030, 3, 1);
+  });
+
+  // --- item-bottle ---
+  makeTexture(scene, 'item-bottle', TILE_SIZE, TILE_SIZE, (g) => {
+    // Shadow
+    px(g, 6, 14, 0x3a2010, 5, 1);
+    // Bottle body (brown glass)
+    px(g, 6, 5, 0x6a4820, 4, 9);
+    // Bottle neck
+    px(g, 7, 2, 0x6a4820, 2, 3);
+    // Cap
+    px(g, 7, 1, 0xc0c0c0, 2, 2);
+    px(g, 7, 1, 0xe0e0e0, 1, 1);
+    // Label area
+    px(g, 6, 7, 0xe0d0a0, 4, 3);
+    px(g, 7, 8, 0xc0b080, 2, 1);
+    // Glass highlight
+    px(g, 6, 5, 0x8a6830, 1, 4);
+    px(g, 9, 6, 0x503010, 1, 7);
+    // Bottle bottom
+    px(g, 6, 13, 0x503010, 4, 1);
+  });
+
+  // --- item-money ---
+  makeTexture(scene, 'item-money', TILE_SIZE, TILE_SIZE, (g) => {
+    // Shadow
+    px(g, 3, 13, 0x1a3010, 10, 1);
+    // Bottom bill
+    px(g, 4, 9, 0x2a6a20, 9, 4);
+    px(g, 4, 9, 0x3a7a30, 9, 1);
+    // Middle bill (offset)
+    px(g, 3, 7, 0x3a8a30, 9, 3);
+    px(g, 3, 7, 0x4a9a40, 9, 1);
+    // Top bill
+    px(g, 4, 5, 0x4aaa40, 9, 3);
+    px(g, 4, 5, 0x60c060, 9, 1);
+    // Bill details
+    px(g, 7, 6, 0x80d070, 3, 1);
+    px(g, 6, 8, 0x60b050, 2, 1);
+    px(g, 8, 10, 0x409030, 3, 1);
+    // Dollar sign on top bill
+    px(g, 8, 5, 0x206010, 1, 2);
+    px(g, 7, 5, 0x206010, 1, 1);
+    px(g, 9, 6, 0x206010, 1, 1);
+    // Band around stack
+    px(g, 5, 8, 0xd0b060, 7, 1);
+  });
+
+  // --- item-joint ---
+  makeTexture(scene, 'item-joint', TILE_SIZE, TILE_SIZE, (g) => {
+    // Shadow
+    px(g, 3, 10, 0x404030, 10, 1);
+    // Joint body (white/tan paper)
+    px(g, 3, 7, 0xe8dcc0, 10, 2);
+    px(g, 3, 7, 0xf0e8d0, 8, 1);
+    // Twisted end (left)
+    px(g, 2, 7, 0xd0c8b0, 1, 2);
+    px(g, 1, 8, 0xc0b8a0, 1, 1);
+    // Orange lit tip (right)
+    px(g, 13, 7, 0xff6020, 1, 2);
+    px(g, 12, 7, 0xe05010, 1, 2);
+    px(g, 14, 7, 0xff8040, 1, 1);
+    // Ember glow
+    px(g, 13, 6, 0xff9040, 1, 1);
+    // Smoke wisps
+    px(g, 14, 5, 0xc0c0c0, 1, 1);
+    px(g, 13, 4, 0xa0a0a0, 1, 1);
+    px(g, 14, 3, 0x808080, 1, 1);
+    px(g, 15, 2, 0x606060, 1, 1);
+    // Paper crease
+    px(g, 6, 8, 0xd0c8b0, 1, 1);
+    px(g, 9, 8, 0xd0c8b0, 1, 1);
+  });
+
+  // --- item-letter ---
+  makeTexture(scene, 'item-letter', TILE_SIZE, TILE_SIZE, (g) => {
+    // Shadow
+    px(g, 4, 13, 0x808080, 9, 1);
+    // Paper body (white)
+    px(g, 3, 4, 0xf0ece0, 10, 9);
+    // Paper edge shadow
+    px(g, 12, 5, 0xd0c8b8, 1, 8);
+    px(g, 3, 12, 0xd0c8b8, 10, 1);
+    // Curled corner (bottom-right)
+    px(g, 11, 12, 0xe0d8c8, 1, 1);
+    px(g, 12, 11, 0xc0b8a0, 1, 1);
+    // Text lines
+    px(g, 5, 6, 0x808890, 6, 1);
+    px(g, 5, 8, 0x909098, 5, 1);
+    px(g, 5, 10, 0x808890, 4, 1);
+    // Header line (bolder)
+    px(g, 5, 5, 0x404050, 5, 1);
+  });
+
+  // --- item-photo ---
+  makeTexture(scene, 'item-photo', TILE_SIZE, TILE_SIZE, (g) => {
+    // Shadow
+    px(g, 4, 14, 0x3a2a18, 10, 1);
+    // Frame (brown wood)
+    px(g, 3, 3, 0x8a6030, 10, 11);
+    // Frame highlight (top + left)
+    px(g, 3, 3, 0xa07040, 10, 1);
+    px(g, 3, 3, 0xa07040, 1, 11);
+    // Frame shadow (bottom + right)
+    px(g, 3, 13, 0x604020, 10, 1);
+    px(g, 12, 3, 0x604020, 1, 11);
+    // Photo inside (lighter area)
+    px(g, 5, 5, 0xd0c0a0, 6, 7);
+    // Family silhouettes (simple shapes)
+    px(g, 6, 7, 0x806050, 1, 3);  // person 1
+    px(g, 8, 7, 0x806050, 1, 3);  // person 2
+    px(g, 10, 8, 0x806050, 1, 2); // person 3 (shorter)
+    px(g, 6, 6, 0x906858, 1, 1);  // head 1
+    px(g, 8, 6, 0x906858, 1, 1);  // head 2
+    px(g, 10, 7, 0x906858, 1, 1); // head 3
+    // Blue sky background in photo
+    px(g, 5, 5, 0x90c0e0, 6, 2);
+  });
+
+  // --- item-tablet ---
+  makeTexture(scene, 'item-tablet', TILE_SIZE, TILE_SIZE, (g) => {
+    // Shadow
+    px(g, 3, 13, 0x101010, 11, 1);
+    // Tablet body (black)
+    px(g, 2, 4, 0x1a1a1a, 12, 9);
+    // Bezel
+    px(g, 2, 4, 0x2a2a2a, 12, 1);
+    px(g, 2, 12, 0x2a2a2a, 12, 1);
+    px(g, 2, 4, 0x2a2a2a, 1, 9);
+    px(g, 13, 4, 0x2a2a2a, 1, 9);
+    // Screen (bright blue-white)
+    px(g, 4, 5, 0x4888d0, 8, 7);
+    // Screen content - lines of code / text
+    px(g, 5, 6, 0x70b0f0, 5, 1);
+    px(g, 5, 8, 0x80c0ff, 4, 1);
+    px(g, 5, 10, 0x60a0e0, 6, 1);
+    // Screen highlight
+    px(g, 4, 5, 0xa0d0ff, 2, 1);
+    // Camera dot
+    px(g, 7, 4, 0x404040, 1, 1);
+  });
+
+  // --- item-keys ---
+  makeTexture(scene, 'item-keys', TILE_SIZE, TILE_SIZE, (g) => {
+    // Shadow
+    px(g, 5, 13, 0x303030, 7, 1);
+    // Key fob body (BMW style, rounded rectangle)
+    px(g, 5, 4, 0x2a2a2a, 6, 6);
+    px(g, 6, 3, 0x2a2a2a, 4, 1);
+    px(g, 6, 10, 0x2a2a2a, 4, 1);
+    // Chrome ring on fob
+    px(g, 7, 5, 0xc0c8d0, 2, 2);
+    px(g, 7, 5, 0xe0e8f0, 1, 1);
+    // BMW logo hint (blue/white quarters)
+    px(g, 7, 5, 0x3060c0, 1, 1);
+    px(g, 8, 6, 0x3060c0, 1, 1);
+    // Buttons on fob
+    px(g, 6, 8, 0x404040, 1, 1);
+    px(g, 8, 8, 0x404040, 1, 1);
+    px(g, 9, 8, 0x404040, 1, 1);
+    // Key blade sticking out
+    px(g, 5, 11, 0xb0b8c0, 1, 3);
+    px(g, 4, 12, 0xa0a8b0, 2, 1);
+    // Key teeth
+    px(g, 4, 13, 0xc0c8d0, 1, 1);
+    px(g, 4, 11, 0xc0c8d0, 1, 1);
+    // Key ring
+    px(g, 10, 3, 0xc0c0c0, 2, 2);
+    px(g, 11, 3, 0xa0a0a0, 1, 1);
+    px(g, 10, 4, 0xa0a0a0, 1, 1);
+  });
+
+  // --- item-pencil ---
+  makeTexture(scene, 'item-pencil', TILE_SIZE, TILE_SIZE, (g) => {
+    // Shadow
+    px(g, 3, 10, 0x808030, 11, 1);
+    // Pencil body (yellow)
+    px(g, 4, 7, 0xe8c830, 9, 2);
+    // Darker yellow band
+    px(g, 4, 8, 0xd0b020, 9, 1);
+    // Metal ferrule
+    px(g, 2, 7, 0xc0c0b0, 2, 2);
+    px(g, 2, 7, 0xd0d0c0, 1, 1);
+    // Eraser (pink)
+    px(g, 1, 7, 0xe07080, 1, 2);
+    px(g, 1, 7, 0xf08090, 1, 1);
+    // Wood + graphite point
+    px(g, 13, 7, 0xc09858, 1, 2);
+    px(g, 14, 7, 0x404040, 1, 1);
+    px(g, 14, 8, 0x505050, 1, 1);
+    // Highlight line
+    px(g, 5, 7, 0xf0d840, 6, 1);
+  });
+
+  // --- item-headphones ---
+  makeTexture(scene, 'item-headphones', TILE_SIZE, TILE_SIZE, (g) => {
+    // Shadow
+    px(g, 3, 14, 0x101010, 10, 1);
+    // Headband arc (top)
+    px(g, 5, 2, 0x2a2a2a, 6, 1);
+    px(g, 4, 3, 0x2a2a2a, 1, 1);
+    px(g, 11, 3, 0x2a2a2a, 1, 1);
+    px(g, 3, 4, 0x2a2a2a, 1, 2);
+    px(g, 12, 4, 0x2a2a2a, 1, 2);
+    // Headband highlight
+    px(g, 6, 2, 0x404040, 4, 1);
+    // Headband padding
+    px(g, 6, 3, 0x505050, 4, 1);
+    // Left ear cup
+    px(g, 2, 6, 0x1a1a1a, 4, 5);
+    px(g, 2, 6, 0x303030, 4, 1);
+    px(g, 2, 6, 0x303030, 1, 5);
+    // Left cushion
+    px(g, 3, 7, 0x404040, 2, 3);
+    // Right ear cup
+    px(g, 10, 6, 0x1a1a1a, 4, 5);
+    px(g, 10, 6, 0x303030, 4, 1);
+    px(g, 13, 6, 0x303030, 1, 5);
+    // Right cushion
+    px(g, 11, 7, 0x404040, 2, 3);
+    // Side arms
+    px(g, 3, 5, 0x2a2a2a, 1, 2);
+    px(g, 12, 5, 0x2a2a2a, 1, 2);
+  });
+
+  // --- item-bbq ---
+  makeTexture(scene, 'item-bbq', TILE_SIZE, TILE_SIZE, (g) => {
+    // Legs
+    px(g, 4, 12, 0x606060, 1, 3);
+    px(g, 11, 12, 0x606060, 1, 3);
+    // Cross bar between legs
+    px(g, 5, 13, 0x505050, 6, 1);
+    // Grill body (black)
+    px(g, 3, 5, 0x2a2a2a, 10, 7);
+    // Body highlight
+    px(g, 3, 5, 0x404040, 10, 1);
+    px(g, 3, 5, 0x383838, 1, 7);
+    // Red grill lines
+    px(g, 4, 7, 0xc04030, 8, 1);
+    px(g, 4, 9, 0xc04030, 8, 1);
+    // Grill grate detail
+    px(g, 5, 6, 0x505050, 1, 5);
+    px(g, 8, 6, 0x505050, 1, 5);
+    px(g, 11, 6, 0x505050, 1, 5);
+    // Lid handle
+    px(g, 7, 3, 0x606060, 2, 2);
+    px(g, 7, 3, 0x808080, 2, 1);
+    // Smoke wisps
+    px(g, 6, 2, 0xa0a0a0, 1, 1);
+    px(g, 9, 1, 0x808080, 1, 1);
+    px(g, 7, 0, 0x606060, 1, 1);
+  });
+
+  // --- item-dice ---
+  makeTexture(scene, 'item-dice', TILE_SIZE, TILE_SIZE, (g) => {
+    // Shadow
+    px(g, 3, 13, 0x808080, 11, 1);
+    // Left die
+    px(g, 2, 6, 0xf0f0f0, 5, 5);
+    px(g, 2, 6, 0xd8d8d8, 5, 1); // top highlight
+    px(g, 6, 7, 0xd0d0d0, 1, 4); // right shadow
+    px(g, 2, 10, 0xd0d0d0, 5, 1); // bottom shadow
+    // Left die dots (showing 5)
+    px(g, 3, 7, 0x1a1a1a, 1, 1);
+    px(g, 5, 7, 0x1a1a1a, 1, 1);
+    px(g, 4, 8, 0x1a1a1a, 1, 1);
+    px(g, 3, 9, 0x1a1a1a, 1, 1);
+    px(g, 5, 9, 0x1a1a1a, 1, 1);
+    // Right die (slightly rotated - offset)
+    px(g, 9, 5, 0xf0f0f0, 5, 5);
+    px(g, 9, 5, 0xe0e0e0, 5, 1);
+    px(g, 13, 6, 0xd0d0d0, 1, 4);
+    px(g, 9, 9, 0xd0d0d0, 5, 1);
+    // Right die dots (showing 3)
+    px(g, 10, 6, 0x1a1a1a, 1, 1);
+    px(g, 11, 7, 0x1a1a1a, 1, 1);
+    px(g, 12, 8, 0x1a1a1a, 1, 1);
+  });
+}
+
 export function generateAllSprites(scene: Phaser.Scene): void {
   generatePlayer(scene);
   generateChapterOutfits(scene);
@@ -1633,4 +1986,5 @@ export function generateAllSprites(scene: Phaser.Scene): void {
   generateUI(scene);
   generateHotTub(scene);
   generateBMW(scene);
+  generateItems(scene);
 }
