@@ -26,15 +26,15 @@ export class BeachScene extends BaseChapterScene {
     // Exit triggers at y=18, x=12-15
     this.addNavArrow(13, 17, 'Next chapter');
 
-    // Place the BMW 335i in the driveway
-    const carX = 22 * SCALED_TILE + SCALED_TILE / 2;
-    const carY = 10 * SCALED_TILE + SCALED_TILE / 2;
+    // Place the BMW 335i in the driveway (right next to house, row 8-9 area)
+    const carX = 4 * SCALED_TILE + SCALED_TILE / 2;
+    const carY = 9 * SCALED_TILE + SCALED_TILE / 2;
     const bmw = this.add.sprite(carX, carY, 'car-bmw335i');
     bmw.setScale(SCALE);
     bmw.setDepth(5);
-    this.collisionTiles.add('21,10');
-    this.collisionTiles.add('22,10');
-    this.collisionTiles.add('23,10');
+    this.collisionTiles.add('3,9');
+    this.collisionTiles.add('4,9');
+    this.collisionTiles.add('5,9');
 
     // Hot tub bubble jets — active bubbles rising from the water
     this.createHotTubBubbles();

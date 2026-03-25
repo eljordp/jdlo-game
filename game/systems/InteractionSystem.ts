@@ -40,7 +40,10 @@ export class InteractionSystem {
         const worldY = obj.y * SCALED_TILE + SCALED_TILE / 2;
 
         const sprite = this.scene.add.sprite(worldX, worldY, obj.sprite);
-        sprite.setScale(SCALE); // 16x16 items at scale 2 = 32px (half a tile, proportional)
+        // Small items (joints, pencils, keys) render smaller than big items (tablets, bbq)
+        const smallItems = ['item-joint', 'item-pencil', 'item-keys', 'item-dice'];
+        const itemScale = smallItems.includes(obj.sprite) ? SCALE * 0.6 : SCALE;
+        sprite.setScale(itemScale);
         sprite.setDepth(5); // above ground tiles, below player/NPCs
 
         this.sprites.set(obj.id, sprite);

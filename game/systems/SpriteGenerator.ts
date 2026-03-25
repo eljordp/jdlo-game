@@ -1534,107 +1534,80 @@ function generateAllNPCs(scene: Phaser.Scene) {
     }
   );
 
-  // Waitress — apron over dark top, hair in bun, friendly
-  makeTexture(scene, 'npc_waitress', TILE_SIZE, TILE_SIZE, (g) => {
-    const skin = 0xf0c090;
-    const skinS = 0xd0a070;
-    const hair = 0x503020;
-    const top = 0x303038;
-    const apron = 0xf0f0f0;
-    // Hair with bun on top
-    px(g, 6, -1, hair, 4, 1); // bun
-    px(g, 7, -2, hair, 2, 1); // bun top
-    px(g, 5, 0, hair, 6, 1);
-    px(g, 4, 1, hair, 8, 1);
-    px(g, 3, 2, hair, 10, 1);
-    px(g, 3, 3, hair, 2, 1);
-    px(g, 11, 3, hair, 2, 1);
-    // Face
-    px(g, 5, 3, skin, 6, 1);
-    px(g, 4, 4, skin, 8, 1);
-    px(g, 4, 5, skin, 8, 1);
-    px(g, 5, 6, skinS, 6, 1);
-    // Eyes (friendly, bright)
-    px(g, 5, 4, 0xffffff, 2, 1);
-    px(g, 9, 4, 0xffffff, 2, 1);
-    px(g, 6, 4, 0x304030);
-    px(g, 10, 4, 0x304030);
-    // Smile
-    px(g, 6, 5, 0xd08070, 4, 1);
-    // Dark top
-    px(g, 4, 7, top, 8, 1);
-    px(g, 3, 8, top, 10, 1);
-    px(g, 3, 9, top, 10, 1);
-    px(g, 4, 10, top, 8, 1);
-    // Apron overlay
-    px(g, 5, 8, apron, 6, 1);
-    px(g, 5, 9, apron, 6, 1);
-    px(g, 5, 10, apron, 6, 1);
-    px(g, 5, 11, apron, 6, 1);
-    // Apron strings
-    px(g, 4, 9, 0xe0e0e0, 1, 1);
-    px(g, 11, 9, 0xe0e0e0, 1, 1);
-    // Neck
-    px(g, 6, 7, skinS, 4, 1);
-    // Arms
-    px(g, 2, 8, skin, 1, 2);
-    px(g, 13, 8, skin, 1, 2);
-    // Pants (dark)
-    px(g, 4, 12, 0x303038, 3, 1);
-    px(g, 9, 12, 0x303038, 3, 1);
-    px(g, 7, 12, 0x000000, 2, 1);
-    // Shoes
-    px(g, 4, 13, 0x202020, 3, 1);
-    px(g, 9, 13, 0x202020, 3, 1);
-  });
+  // Waitress — apron over dark top, hair in bun, friendly — 32x32
+  generateNPC32(
+    scene,
+    'npc_waitress',
+    0x503020, // brown hair
+    'long',   // long hair (bun effect via extras)
+    0x303038, // dark top
+    0x404048,
+    0x303038, // dark pants
+    0xf0c090,
+    0xd0a070,
+    (g) => {
+      // Bun on top of head
+      px(g, 13, 0, 0x503020, 6, 1);
+      px(g, 14, -1, 0x503020, 4, 1); // bun peak (will clip but that's fine)
+      // Friendly green eyes override
+      px(g, 10, 7, 0xffffff, 4, 2);
+      px(g, 18, 7, 0xffffff, 4, 2);
+      px(g, 12, 7, 0x408040, 2, 2);
+      px(g, 20, 7, 0x408040, 2, 2);
+      // Wide smile
+      px(g, 13, 10, 0xd08070, 6, 1);
+      // Apron overlay on torso
+      px(g, 10, 15, 0xf0f0f0, 12, 1);
+      px(g, 10, 16, 0xf0f0f0, 12, 1);
+      px(g, 10, 17, 0xf0f0f0, 12, 1);
+      px(g, 10, 18, 0xe8e8e8, 12, 1);
+      px(g, 10, 19, 0xf0f0f0, 12, 1);
+      px(g, 10, 20, 0xf0f0f0, 12, 1);
+      px(g, 10, 21, 0xf0f0f0, 12, 1);
+      px(g, 10, 22, 0xe8e8e8, 12, 1);
+      // Apron strings at waist
+      px(g, 8, 18, 0xe0e0e0, 2, 1);
+      px(g, 22, 18, 0xe0e0e0, 2, 1);
+      // Apron pocket
+      px(g, 13, 19, 0xe0e0e0, 6, 2);
+    }
+  );
 
-  // Security — bald, black suit, earpiece, big build
-  makeTexture(scene, 'npc_security', TILE_SIZE, TILE_SIZE, (g) => {
-    const skin = 0xe0b080;
-    const skinS = 0xc09060;
-    const suit = 0x181820;
-    const suitL = 0x202028;
-    // Bald head
-    px(g, 5, 0, skin, 6, 1);
-    px(g, 4, 1, skin, 8, 1);
-    px(g, 3, 2, skin, 10, 1);
-    // Subtle hair shadow on top
-    px(g, 5, 0, 0xc09868, 6, 1);
-    // Face
-    px(g, 5, 3, skin, 6, 1);
-    px(g, 4, 4, skin, 8, 1);
-    px(g, 4, 5, skin, 8, 1);
-    px(g, 5, 6, skinS, 6, 1);
-    // Eyes (serious)
-    px(g, 5, 4, 0x202020, 2, 1);
-    px(g, 9, 4, 0x202020, 2, 1);
-    // Mouth
-    px(g, 7, 5, 0x906060, 2, 1);
-    // Earpiece (flesh dot near right ear)
-    px(g, 12, 4, 0xd0a878, 1, 1);
-    px(g, 12, 5, 0x303030, 1, 1); // wire
-    // Wide suit (big build — extend shoulders)
-    px(g, 4, 7, suit, 8, 1);
-    px(g, 2, 8, suit, 12, 1);
-    px(g, 2, 9, suitL, 12, 1);
-    px(g, 2, 10, suit, 12, 1);
-    // Extra wide shoulders
-    px(g, 1, 8, suit, 1, 2);
-    px(g, 14, 8, suit, 1, 2);
-    // Neck
-    px(g, 6, 7, skinS, 4, 1);
-    // Hands
-    px(g, 1, 10, skin);
-    px(g, 14, 10, skin);
-    // Pants
-    px(g, 4, 11, suit, 8, 1);
-    px(g, 4, 12, suitL, 3, 1);
-    px(g, 9, 12, suitL, 3, 1);
-    px(g, 7, 12, 0x000000, 2, 1);
-    // Shoes
-    px(g, 4, 13, 0x101010, 3, 1);
-    px(g, 9, 13, 0x101010, 3, 1);
-  });
+  // Security — bald, black suit, earpiece, big build — 32x32
+  generateNPC32(
+    scene,
+    'npc_security',
+    0x181820, // bald uses hat color as placeholder, we override
+    'bald',
+    0x181820, // black suit
+    0x202028,
+    0x181820, // matching pants
+    0xe0b080,
+    0xc09060,
+    (g) => {
+      // Serious narrow eyes override
+      px(g, 10, 7, 0x202020, 4, 1);
+      px(g, 18, 7, 0x202020, 4, 1);
+      // Stern mouth
+      px(g, 14, 10, 0x906060, 4, 1);
+      // Earpiece on right side
+      px(g, 25, 7, 0xe0b080, 1, 1); // flesh near ear
+      px(g, 25, 8, 0x303030, 1, 1); // earpiece
+      px(g, 25, 9, 0x303030, 1, 2); // wire going down
+      // Extra wide shoulders — extend suit beyond normal arms
+      px(g, 2, 16, 0x181820, 2, 3);
+      px(g, 28, 16, 0x181820, 2, 3);
+      px(g, 3, 15, 0x181820, 1, 1);
+      px(g, 28, 15, 0x181820, 1, 1);
+      // Override shoes to shiny black
+      px(g, 7, 28, 0x101010, 7, 1);
+      px(g, 18, 28, 0x101010, 7, 1);
+      px(g, 7, 29, 0x101010, 7, 1);
+      px(g, 18, 29, 0x101010, 7, 1);
+      px(g, 7, 30, 0x181818, 7, 1);
+      px(g, 18, 30, 0x181818, 7, 1);
+    }
+  );
 
   // Sister — young girl, smaller, long dark hair, pink top — 32x32
   generateNPC32(
@@ -1773,102 +1746,211 @@ function generateAllNPCs(scene: Phaser.Scene) {
     px(g, 16, 22, bodyDk, 2, 1);
   });
 
-  // Bikini Girl 1 — light blue bikini, long brown hair, lounging/sleeping
-  makeTexture(scene, 'npc_bikini1', TILE_SIZE, TILE_SIZE, (g) => {
+  // Bikini Girl 1 — light blue bikini, long brown hair, sleeping — 32x32
+  makeTexture(scene, 'npc_bikini1', CHAR_SIZE, CHAR_SIZE, (g) => {
     const skin = 0xf0c890;
     const skinS = 0xd0a870;
+    const skinH = 0xf8d8a0;
     const hair = 0x604020;
+    const hairH = 0x785030;
     const bikini = 0x40a0c0;
-    // Hair — long
-    px(g, 5, 0, hair, 6, 1);
-    px(g, 4, 1, hair, 8, 1);
-    px(g, 3, 2, hair, 10, 1);
-    px(g, 3, 3, hair, 2, 1);
-    px(g, 11, 3, hair, 2, 1);
-    px(g, 2, 4, hair, 2, 4);
-    px(g, 12, 4, hair, 2, 4);
+    const bikiniL = 0x50b0d0;
+    // Long flowing hair
+    px(g, 10, 0, hair, 12, 1);
+    px(g, 8, 1, hair, 16, 1);
+    px(g, 7, 2, hair, 18, 1);
+    px(g, 6, 3, hair, 20, 1);
+    px(g, 6, 4, hair, 20, 1);
+    px(g, 6, 5, hair, 4, 1);
+    px(g, 22, 5, hair, 4, 1);
+    // Hair flowing down sides
+    px(g, 4, 6, hair, 4, 8);
+    px(g, 24, 6, hair, 4, 8);
+    px(g, 5, 14, hair, 3, 2);
+    px(g, 24, 14, hair, 3, 2);
+    // Hair highlights
+    px(g, 12, 1, hairH, 3, 1);
+    px(g, 10, 2, hairH, 2, 1);
+    px(g, 18, 2, hairH, 2, 1);
     // Face
-    px(g, 5, 3, skin, 6, 1);
-    px(g, 4, 4, skin, 8, 1);
-    px(g, 4, 5, skin, 8, 1);
-    px(g, 5, 6, skinS, 6, 1);
-    // Eyes closed (sleeping)
-    px(g, 5, 4, 0x806050, 2, 1);
-    px(g, 9, 4, 0x806050, 2, 1);
-    // Mouth
-    px(g, 7, 5, 0xc07060, 2, 1);
+    px(g, 10, 5, skin, 12, 1);
+    px(g, 8, 6, skin, 16, 1);
+    px(g, 8, 7, skin, 16, 1);
+    px(g, 8, 8, skin, 16, 1);
+    px(g, 8, 9, skin, 16, 1);
+    px(g, 9, 10, skin, 14, 1);
+    px(g, 10, 11, skinS, 12, 1);
+    px(g, 11, 12, skinS, 10, 1);
+    px(g, 12, 5, skinH, 8, 1);
+    // Closed/sleepy eyes (lines, not open)
+    px(g, 10, 7, 0x806050, 4, 1);
+    px(g, 18, 7, 0x806050, 4, 1);
+    // Light eyelashes
+    px(g, 10, 6, 0x604020, 4, 1);
+    px(g, 18, 6, 0x604020, 4, 1);
+    // Nose
+    px(g, 15, 9, skinS, 2, 1);
+    // Sleepy mouth
+    px(g, 14, 10, 0xc07060, 4, 1);
+    // Ears
+    px(g, 7, 7, skin, 1, 2);
+    px(g, 24, 7, skin, 1, 2);
     // Neck
-    px(g, 6, 7, skinS, 4, 1);
-    // Bikini top
-    px(g, 4, 7, bikini, 2, 1);
-    px(g, 10, 7, bikini, 2, 1);
-    px(g, 3, 8, bikini, 10, 1);
-    px(g, 4, 9, bikini, 8, 1);
+    px(g, 13, 12, skinS, 6, 1);
+    px(g, 13, 13, skinS, 6, 1);
+    // Bikini top — two triangles with strap
+    px(g, 9, 14, bikini, 5, 2);
+    px(g, 18, 14, bikini, 5, 2);
+    px(g, 10, 16, bikini, 3, 1);
+    px(g, 19, 16, bikini, 3, 1);
+    // Strap between cups
+    px(g, 14, 14, bikiniL, 4, 1);
+    // Shoulder straps
+    px(g, 11, 13, bikiniL, 1, 1);
+    px(g, 20, 13, bikiniL, 1, 1);
+    // Exposed skin around bikini top
+    px(g, 8, 14, skin, 1, 3);
+    px(g, 23, 14, skin, 1, 3);
+    px(g, 14, 15, skin, 4, 1); // center gap
     // Exposed midriff
-    px(g, 4, 10, skin, 8, 1);
-    px(g, 5, 11, skin, 6, 1);
+    px(g, 8, 17, skin, 16, 1);
+    px(g, 8, 18, skin, 16, 1);
+    px(g, 8, 19, skinS, 16, 1);
+    px(g, 9, 20, skin, 14, 1);
+    px(g, 10, 21, skin, 12, 1);
+    // Belly button
+    px(g, 15, 19, skinS, 2, 1);
+    // Arms (skin, no sleeves)
+    px(g, 4, 15, skin, 2, 4);
+    px(g, 26, 15, skin, 2, 4);
+    px(g, 4, 19, skin, 2, 2);
+    px(g, 26, 19, skin, 2, 2);
+    px(g, 4, 21, skinS, 2, 1);
+    px(g, 26, 21, skinS, 2, 1);
     // Bikini bottom
-    px(g, 5, 12, bikini, 6, 1);
-    px(g, 5, 13, bikini, 3, 1);
-    px(g, 8, 13, bikini, 3, 1);
+    px(g, 10, 22, bikini, 12, 1);
+    px(g, 11, 23, bikini, 10, 1);
+    px(g, 11, 24, bikini, 4, 1);
+    px(g, 17, 24, bikini, 4, 1);
     // Legs
-    px(g, 4, 13, skin, 1, 1);
-    px(g, 11, 13, skin, 1, 1);
-    px(g, 4, 14, skin, 3, 1);
-    px(g, 9, 14, skin, 3, 1);
-    // Arms
-    px(g, 2, 8, skin, 1, 2);
-    px(g, 13, 8, skin, 1, 2);
+    px(g, 9, 25, skin, 5, 1);
+    px(g, 18, 25, skin, 5, 1);
+    px(g, 9, 26, skin, 5, 1);
+    px(g, 18, 26, skin, 5, 1);
+    px(g, 9, 27, skinS, 5, 1);
+    px(g, 18, 27, skinS, 5, 1);
+    // Feet
+    px(g, 8, 28, skin, 6, 1);
+    px(g, 18, 28, skin, 6, 1);
+    px(g, 8, 29, skinS, 6, 1);
+    px(g, 18, 29, skinS, 6, 1);
+    px(g, 8, 30, skinS, 6, 1);
+    px(g, 18, 30, skinS, 6, 1);
   });
 
-  // Bikini Girl 2 — pink bikini, dark hair
-  makeTexture(scene, 'npc_bikini2', TILE_SIZE, TILE_SIZE, (g) => {
+  // Bikini Girl 2 — pink bikini, dark hair, active/smiling — 32x32
+  makeTexture(scene, 'npc_bikini2', CHAR_SIZE, CHAR_SIZE, (g) => {
     const skin = 0xf0c890;
     const skinS = 0xd0a870;
+    const skinH = 0xf8d8a0;
     const hair = 0x302020;
+    const hairH = 0x402828;
     const bikini = 0xd06080;
-    // Hair — long dark
-    px(g, 5, 0, hair, 6, 1);
-    px(g, 4, 1, hair, 8, 1);
-    px(g, 3, 2, hair, 10, 1);
-    px(g, 3, 3, hair, 2, 1);
-    px(g, 11, 3, hair, 2, 1);
-    px(g, 2, 4, hair, 2, 4);
-    px(g, 12, 4, hair, 2, 4);
+    const bikiniL = 0xe07090;
+    // Long dark hair
+    px(g, 10, 0, hair, 12, 1);
+    px(g, 8, 1, hair, 16, 1);
+    px(g, 7, 2, hair, 18, 1);
+    px(g, 6, 3, hair, 20, 1);
+    px(g, 6, 4, hair, 20, 1);
+    px(g, 6, 5, hair, 4, 1);
+    px(g, 22, 5, hair, 4, 1);
+    // Hair flowing down sides
+    px(g, 4, 6, hair, 4, 8);
+    px(g, 24, 6, hair, 4, 8);
+    px(g, 5, 14, hair, 3, 3);
+    px(g, 24, 14, hair, 3, 3);
+    // Hair highlights
+    px(g, 12, 1, hairH, 3, 1);
+    px(g, 18, 2, hairH, 2, 1);
     // Face
-    px(g, 5, 3, skin, 6, 1);
-    px(g, 4, 4, skin, 8, 1);
-    px(g, 4, 5, skin, 8, 1);
-    px(g, 5, 6, skinS, 6, 1);
-    // Eyes open
-    px(g, 5, 4, 0xffffff, 2, 1);
-    px(g, 9, 4, 0xffffff, 2, 1);
-    px(g, 6, 4, 0x202020);
-    px(g, 10, 4, 0x202020);
-    // Mouth
-    px(g, 7, 5, 0xc07060, 2, 1);
+    px(g, 10, 5, skin, 12, 1);
+    px(g, 8, 6, skin, 16, 1);
+    px(g, 8, 7, skin, 16, 1);
+    px(g, 8, 8, skin, 16, 1);
+    px(g, 8, 9, skin, 16, 1);
+    px(g, 9, 10, skin, 14, 1);
+    px(g, 10, 11, skinS, 12, 1);
+    px(g, 11, 12, skinS, 10, 1);
+    px(g, 12, 5, skinH, 8, 1);
+    // Eyebrows (thin, arched)
+    px(g, 10, 6, 0x302020, 4, 1);
+    px(g, 18, 6, 0x302020, 4, 1);
+    // Open eyes with color
+    px(g, 10, 7, 0xffffff, 4, 2);
+    px(g, 18, 7, 0xffffff, 4, 2);
+    px(g, 12, 7, 0x206020, 2, 2); // green eyes
+    px(g, 20, 7, 0x206020, 2, 2);
+    // Nose
+    px(g, 15, 9, skinS, 2, 1);
+    // Slight smile
+    px(g, 13, 10, 0xd08070, 6, 1);
+    px(g, 12, 10, 0xd08070, 1, 1); // wider smile
+    px(g, 19, 10, 0xd08070, 1, 1);
+    // Ears
+    px(g, 7, 7, skin, 1, 2);
+    px(g, 24, 7, skin, 1, 2);
     // Neck
-    px(g, 6, 7, skinS, 4, 1);
-    // Bikini top
-    px(g, 4, 7, bikini, 2, 1);
-    px(g, 10, 7, bikini, 2, 1);
-    px(g, 3, 8, bikini, 10, 1);
-    px(g, 4, 9, bikini, 8, 1);
+    px(g, 13, 12, skinS, 6, 1);
+    px(g, 13, 13, skinS, 6, 1);
+    // Bikini top — pink
+    px(g, 9, 14, bikini, 5, 2);
+    px(g, 18, 14, bikini, 5, 2);
+    px(g, 10, 16, bikiniL, 3, 1);
+    px(g, 19, 16, bikiniL, 3, 1);
+    // Strap between cups
+    px(g, 14, 14, bikiniL, 4, 1);
+    // Shoulder straps
+    px(g, 11, 13, bikiniL, 1, 1);
+    px(g, 20, 13, bikiniL, 1, 1);
+    // Skin around bikini
+    px(g, 8, 14, skin, 1, 3);
+    px(g, 23, 14, skin, 1, 3);
+    px(g, 14, 15, skin, 4, 1);
     // Exposed midriff
-    px(g, 4, 10, skin, 8, 1);
-    px(g, 5, 11, skin, 6, 1);
+    px(g, 8, 17, skin, 16, 1);
+    px(g, 8, 18, skin, 16, 1);
+    px(g, 8, 19, skinS, 16, 1);
+    px(g, 9, 20, skin, 14, 1);
+    px(g, 10, 21, skin, 12, 1);
+    // Belly button
+    px(g, 15, 19, skinS, 2, 1);
+    // Arms (skin, no sleeves)
+    px(g, 4, 15, skin, 2, 4);
+    px(g, 26, 15, skin, 2, 4);
+    px(g, 4, 19, skin, 2, 2);
+    px(g, 26, 19, skin, 2, 2);
+    px(g, 4, 21, skinS, 2, 1);
+    px(g, 26, 21, skinS, 2, 1);
     // Bikini bottom
-    px(g, 5, 12, bikini, 6, 1);
-    px(g, 5, 13, bikini, 3, 1);
-    px(g, 8, 13, bikini, 3, 1);
+    px(g, 10, 22, bikini, 12, 1);
+    px(g, 11, 23, bikini, 10, 1);
+    px(g, 11, 24, bikini, 4, 1);
+    px(g, 17, 24, bikini, 4, 1);
     // Legs
-    px(g, 4, 13, skin, 1, 1);
-    px(g, 11, 13, skin, 1, 1);
-    px(g, 4, 14, skin, 3, 1);
-    px(g, 9, 14, skin, 3, 1);
-    // Arms
-    px(g, 2, 8, skin, 1, 2);
-    px(g, 13, 8, skin, 1, 2);
+    px(g, 9, 25, skin, 5, 1);
+    px(g, 18, 25, skin, 5, 1);
+    px(g, 9, 26, skin, 5, 1);
+    px(g, 18, 26, skin, 5, 1);
+    px(g, 9, 27, skinS, 5, 1);
+    px(g, 18, 27, skinS, 5, 1);
+    // Sandals
+    px(g, 8, 28, 0xc09060, 6, 1);
+    px(g, 18, 28, 0xc09060, 6, 1);
+    px(g, 8, 29, 0xb08050, 6, 1);
+    px(g, 18, 29, 0xb08050, 6, 1);
+    px(g, 8, 30, 0xa07040, 6, 1);
+    px(g, 18, 30, 0xa07040, 6, 1);
   });
 
   // Narrator / Professor — older, grey hair, wise
