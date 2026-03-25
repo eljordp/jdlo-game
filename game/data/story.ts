@@ -831,6 +831,28 @@ const ch2Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'Someone tagged \'NO WAY OUT\' on the wall. Felt that.' },
     { speaker: 'JP\'s Mind', text: 'Whoever wrote this probably believed it. I\'m starting to.' },
   ],
+  ch2_corner_guy: [
+    { speaker: 'Guy', text: 'You lost?' },
+    { speaker: 'JP', text: 'Nah. I know where I\'m going.' },
+    { speaker: 'Guy', text: 'That\'s what they all say around here.' },
+  ],
+  ch2_street_kid: [
+    { speaker: '???', text: 'Aye, you holding?' },
+    { speaker: 'JP', text: 'Not for you.' },
+    { speaker: '???', text: 'Whatever man.' },
+  ],
+  ch2_store: [
+    { speaker: 'JP\'s Mind', text: 'Corner store. Bulletproof glass at the register. This neighborhood is different.' },
+    { speaker: 'JP\'s Mind', text: 'JP buys a water and leaves. Head down. Business face on.' },
+  ],
+  ch2_nervous: [
+    { speaker: 'JP\'s Mind', text: 'Hands are steady but the heart is racing. Every drop feels like the last one.' },
+    { speaker: 'JP\'s Mind', text: 'One more. Just one more. Then I\'m done. That\'s what he said last time too.' },
+  ],
+  ch2_streetlight: [
+    { speaker: 'JP\'s Mind', text: 'Streetlight flickering. Half the lights on this block are out.' },
+    { speaker: 'JP\'s Mind', text: 'Nobody fixes anything here. Not the lights. Not the roads. Not the people.' },
+  ],
 };
 
 // ─── Chapter 3 inmate dialogue + interactables ──────────────────────

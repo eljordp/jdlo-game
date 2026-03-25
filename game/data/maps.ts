@@ -250,9 +250,9 @@ export const wrongCrowdMap: MapData = {
     [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 16  road continues
 
     // --- BUYER'S BLOCK (rows 17-22) ---
-    [ X, X, G, G, G, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, X, X ], // 17  different neighborhood
-    [ X, X, G, G, G, G, G, G, G, G, G, G, G, G, P, P, P, P, P, G, G, G, G, G, G, G, G, G, X, X ], // 18  path branches to buyer house
-    [ X, X, G, G, T, G, G, G, G, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, T, G, G, G, X, X ], // 19  trees + path to house
+    [ X, X, G, G, B, B, B, B, B, G, G, G, G, G, P, G, G, G, G, G, G, T, G, G, G, T, G, G, X, X ], // 17  corner store + trees
+    [ X, X, G, G, B, F, F, F, O, G, G, G, G, G, P, P, P, P, P, G, G, G, G, G, G, G, G, G, X, X ], // 18  store interior + path branches
+    [ X, X, G, G, B, B, B, B, B, G, G, T, G, G, G, G, G, G, P, G, G, G, G, G, T, G, G, G, X, X ], // 19  store wall + trees
     [ X, X, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, P, G, B, B, B, B, B, B, B, G, X, X ], // 20  buyer house top wall
     [ X, X, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, P, G, B, D, D, D, D, D, B, G, X, X ], // 21  inside visible through wall
     [ X, X, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, P, P, P, P, O, D, D, D, B, G, X, X ], // 22  path leads directly to door
@@ -269,6 +269,8 @@ export const wrongCrowdMap: MapData = {
     player: { x: 5, y: 3 },  // JP starts in his room
     npcs: [
       { id: 'ch2_homie_door', x: 13, y: 9, sprite: 'npc_kid' },     // homie by front door outside
+      { id: 'ch2_corner_guy', x: 6, y: 18, sprite: 'npc_generic' }, // guy at corner store
+      { id: 'ch2_street_kid', x: 10, y: 17, sprite: 'npc_shady' },  // kid on the street
       { id: 'ch2_lookout',    x: 18, y: 20, sprite: 'npc_shady' },   // outside buyer's house
       { id: 'ch2_buyer',      x: 23, y: 23, sprite: 'npc_generic' }, // inside buyer's house
     ],
@@ -280,9 +282,12 @@ export const wrongCrowdMap: MapData = {
     { id: 'ch2_mirror',    x: 10, y: 11, type: 'examine', glow: false },  // car mirror
     { id: 'ch2_buyer_house', x: 19, y: 22, type: 'examine', glow: true }, // approaching buyer's door
     { id: 'ch2_sale',      x: 23, y: 24, type: 'examine', glow: true, sprite: 'item-weed-bag' },   // THE TRIGGER — sale spot
-    { id: 'ch2_alley',     x: 7, y: 15, type: 'examine', glow: true },    // kept from original
-    { id: 'ch2_phone',     x: 4, y: 4, type: 'examine', glow: true, sprite: 'item-phone' },     // in JP's room
-    { id: 'ch2_graffiti',  x: 6, y: 17, type: 'examine', glow: true },    // buyer's block
+    { id: 'ch2_alley',     x: 7, y: 15, type: 'examine', glow: true },
+    { id: 'ch2_phone',     x: 4, y: 4, type: 'examine', glow: true, sprite: 'item-phone' },
+    { id: 'ch2_graffiti',  x: 3, y: 17, type: 'examine', glow: true },
+    { id: 'ch2_store',     x: 7, y: 18, type: 'examine', glow: true },
+    { id: 'ch2_nervous',   x: 12, y: 18, type: 'examine', glow: true },
+    { id: 'ch2_streetlight', x: 16, y: 17, type: 'examine', glow: true },
   ],
 };
 
