@@ -157,16 +157,17 @@ export const chapter1NPCs: NPCData[] = [
     y: 4,
     sprite: 'npc_nolan',
     dialogue: [
-      { speaker: 'Nolan', text: 'Bro we got a half pound coming in tomorrow.' },
-      { speaker: 'JP', text: 'Bet. Same guy?' },
-      { speaker: 'Nolan', text: 'Yeah. Easy money.' },
-      { speaker: 'Narrator', text: 'They talk like this is normal. Because it is.' },
-      { speaker: 'Nolan', text: 'You trying to match on this next pack?', choices: [
-        { text: '"Yeah, I\'m in."', next: [
-          { speaker: 'Nolan', text: 'That\'s what I like to hear. We eating this week.' },
+      { speaker: 'Nolan', text: 'Bro let\'s go to LA this weekend. Melrose.' },
+      { speaker: 'JP', text: 'Again? We always end up in Hollywood.' },
+      { speaker: 'Nolan', text: 'That\'s the point. Last time we linked with those TikTok girls.' },
+      { speaker: 'JP', text: 'And spent $400 on dinner for people we\'ll never see again.' },
+      { speaker: 'Nolan', text: 'It\'s networking bro.', choices: [
+        { text: '"That\'s not networking, that\'s burning money."', next: [
+          { speaker: 'Nolan', text: 'You sound like your pops right now.' },
+          { speaker: 'JP', text: 'Maybe he was right about some things.' },
         ]},
-        { text: '"I don\'t know man. Getting tired of this."', next: [
-          { speaker: 'Nolan', text: 'Tired? Bro we just getting started. Don\'t punk out on me.' },
+        { text: '"Alright. One more time."', next: [
+          { speaker: 'Nolan', text: 'That\'s my boy. I\'ll drive.' },
         ]},
       ]},
     ],
@@ -1005,7 +1006,7 @@ const ch1Extras: Record<string, DialogueLine[]> = {
   ],
   ch1_bong: [
     { speaker: 'Narrator', text: 'The bong sits on the kitchen counter like it lives there. Because it does.' },
-    { speaker: 'JP\'s Mind', text: 'We go through an ounce a week in this house. Easy.' },
+    { speaker: 'JP\'s Mind', text: 'I go through an ounce a week myself. The boys buy from me.' },
   ],
   ch1_girl3: [
     { speaker: 'Girl', text: 'JP! Get in the hot tub!' },

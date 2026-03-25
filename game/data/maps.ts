@@ -170,9 +170,9 @@ export const beachMap: MapData = {
     [ B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B ], // 0  house top wall
     [ B, F, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, B, C, C, C, C, C, C, C, B ], // 1  living room | JP room | kitchen | hot tub patio
     [ B, F, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, B, C, H, H, H, H, H, C, B ], // 2  hot tub (bubbly)
-    [ B, F, F, F, F, F, F, F, B, F, F, F, M, F, B, F, F, F, F, B, C, H, H, H, H, H, C, B ], // 3  computer in JP room
+    [ B, F, F, F, F, F, F, F, O, F, F, F, M, F, O, F, F, F, F, B, C, H, H, H, H, H, C, B ], // 3  doors between rooms (wider access)
     [ B, F, F, F, F, F, F, F, O, F, F, F, F, F, O, F, F, F, F, B, C, H, H, H, H, H, C, B ], // 4  doors between rooms
-    [ B, F, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, B, C, H, H, H, H, H, C, B ], // 5
+    [ B, F, F, F, F, F, F, F, O, F, F, F, F, F, O, F, F, F, F, B, C, H, H, H, H, H, C, B ], // 5  doors (3 tiles tall for easy access)
     [ B, F, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, B, C, C, C, C, C, C, C, B ], // 6
     [ B, B, B, B, O, B, B, B, B, B, B, O, B, B, B, B, O, B, B, B, B, B, B, O, B, B, B, B ], // 7  house bottom wall with doors
     [ G, G, G, G, P, G, G, G, G, G, G, P, G, G, G, G, P, G, G, G, G, G, G, P, G, G, G, G ], // 8  paths from house doors
@@ -194,14 +194,14 @@ export const beachMap: MapData = {
   spawns: {
     player: { x: 11, y: 9 },
     npcs: [
-      { id: 'ch1_homie1', x: 6,  y: 4,  sprite: 'npc_nolan' },
-      { id: 'ch1_homie2', x: 16, y: 4,  sprite: 'npc_david' },
-      { id: 'ch1_cooper',  x: 5,  y: 2,  sprite: 'npc_cooper' },
-      { id: 'ch1_girl1',  x: 22, y: 3,  sprite: 'npc_bikini1' },
-      { id: 'ch1_girl2',  x: 26, y: 3,  sprite: 'npc_bikini2' },
-      { id: 'ch1_girl3',  x: 24, y: 4,  sprite: 'npc_bikini1' },
-      { id: 'ch1_girl_couch', x: 3, y: 5, sprite: 'npc_bikini2' },
-      { id: 'ch1_terrell', x: 13, y: 4, sprite: 'npc_terrell' },
+      { id: 'ch1_homie1', x: 10, y: 2,  sprite: 'npc_nolan' },      // Nolan in JP's room area
+      { id: 'ch1_homie2', x: 3,  y: 2,  sprite: 'npc_david' },      // David in living room
+      { id: 'ch1_cooper',  x: 6,  y: 5,  sprite: 'npc_cooper' },     // Cooper in living room
+      { id: 'ch1_girl1',  x: 22, y: 3,  sprite: 'npc_bikini1' },     // In hot tub
+      { id: 'ch1_girl2',  x: 26, y: 3,  sprite: 'npc_bikini2' },     // Outside hot tub
+      { id: 'ch1_girl3',  x: 24, y: 4,  sprite: 'npc_bikini1' },     // In hot tub
+      { id: 'ch1_girl_couch', x: 2, y: 4, sprite: 'npc_bikini2' },   // Sleeping in living room
+      { id: 'ch1_terrell', x: 20, y: 6, sprite: 'npc_terrell' },     // By the hot tub patio
       { id: 'ch1_volleyball1', x: 10, y: 16, sprite: 'npc_surfer' },
       { id: 'ch1_volleyball2', x: 12, y: 16, sprite: 'npc_kid' },
       { id: 'ch1_sunbather',   x: 18, y: 15, sprite: 'npc_bikini1' },
