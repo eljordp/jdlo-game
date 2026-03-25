@@ -99,7 +99,7 @@ function drawPlayerFrame(
   const pantsLight = outfit?.pantsLight ?? 0x606878;
   const shoe = outfit?.shoe ?? COLORS.shoeDark;
   const eyeWhite = 0xffffff;
-  const eyeBlack = 0x202020;
+  const eyeBlack = 0x3a2010; // Brown eyes
 
   // -- Hair (rows 1-4) --
   // Row 0-1: top of hair
@@ -227,7 +227,7 @@ function drawPlayerFrame32(
   const shoe = outfit?.shoe ?? COLORS.shoeDark;
   const shoeH = 0x484848;
   const eyeWhite = 0xffffff;
-  const eyeBlack = 0x202020;
+  const eyeBlack = 0x3a2010; // Brown eyes
   const eyebrow = 0x281818;
   const mouth = 0xc07060;
   const noseShadow = 0xd8a878;
@@ -270,7 +270,9 @@ function drawPlayerFrame32(
     px(g, ox + 12, 7, eyeBlack, 2, 2);
     px(g, ox + 20, 7, eyeBlack, 2, 2);
     px(g, ox + 15, 9, noseShadow, 2, 1);
-    px(g, ox + 14, 10, mouth, 4, 1);
+    px(g, ox + 13, 10, mouth, 6, 1); // Wider smile
+    px(g, ox + 12, 11, mouth, 1, 1); // Smile curve left
+    px(g, ox + 19, 11, mouth, 1, 1); // Smile curve right
     px(g, ox + 7, 7, skin, 1, 2);
     px(g, ox + 24, 7, skin, 1, 2);
     px(g, ox + 7, 8, skinS, 1, 1);
@@ -1952,371 +1954,868 @@ function generateAllNPCs(scene: Phaser.Scene) {
 // ─── TILE SPRITES ───────────────────────────────────────────────────
 
 function generateTiles(scene: Phaser.Scene) {
-  const S = TILE_SIZE;
+  const S = TILE_SIZE; // 32
 
-  // -- Grass --
+  // -- Grass (32x32) --
   makeTexture(scene, 'tile-grass', S, S, (g) => {
-    // Base
+    // Base green fill
     g.fillStyle(COLORS.grassGreen);
     g.fillRect(0, 0, S, S);
-    // Variation — lighter patches
-    g.fillStyle(COLORS.grassLight);
-    px(g, 2, 3, COLORS.grassLight, 2, 1);
-    px(g, 8, 1, COLORS.grassLight, 3, 1);
-    px(g, 5, 7, COLORS.grassLight, 2, 1);
-    px(g, 12, 10, COLORS.grassLight, 2, 1);
-    px(g, 1, 12, COLORS.grassLight, 2, 1);
-    px(g, 10, 5, COLORS.grassLight, 1, 2);
-    // Darker blades
-    px(g, 4, 2, COLORS.grassDark);
-    px(g, 11, 6, COLORS.grassDark);
-    px(g, 7, 11, COLORS.grassDark);
-    px(g, 14, 3, COLORS.grassDark);
-    px(g, 1, 8, COLORS.grassDark);
-    // Tiny flower accents (occasional)
-    px(g, 3, 9, 0xf0e060);
-    px(g, 13, 13, 0xf0e060);
+
+    // Shade zones — 4 natural variation areas
+    px(g, 0, 0, 0x458a3a, 14, 10);    // top-left slightly darker zone
+    px(g, 18, 16, 0x4e9244, 14, 16);  // bottom-right slightly lighter zone
+    px(g, 6, 20, 0x478e3c, 10, 8);    // mid-bottom patch
+
+    // Lighter grass patches
+    px(g, 4, 5, COLORS.grassLight, 4, 1);
+    px(g, 16, 2, COLORS.grassLight, 5, 1);
+    px(g, 10, 14, COLORS.grassLight, 3, 1);
+    px(g, 24, 20, COLORS.grassLight, 4, 1);
+    px(g, 2, 24, COLORS.grassLight, 3, 1);
+    px(g, 20, 8, COLORS.grassLight, 3, 2);
+    px(g, 8, 28, COLORS.grassLight, 4, 1);
+    px(g, 28, 12, COLORS.grassLight, 3, 1);
+
+    // Individual grass blade strokes (darker green)
+    px(g, 3, 3, COLORS.grassDark, 1, 2);
+    px(g, 7, 1, COLORS.grassDark, 1, 2);
+    px(g, 12, 6, COLORS.grassDark, 1, 3);
+    px(g, 18, 4, COLORS.grassDark, 1, 2);
+    px(g, 22, 10, COLORS.grassDark, 1, 2);
+    px(g, 26, 6, COLORS.grassDark, 1, 3);
+    px(g, 5, 16, COLORS.grassDark, 1, 2);
+    px(g, 15, 22, COLORS.grassDark, 1, 2);
+    px(g, 28, 18, COLORS.grassDark, 1, 3);
+    px(g, 9, 10, COLORS.grassDark, 1, 2);
+    px(g, 20, 26, COLORS.grassDark, 1, 2);
+    px(g, 2, 30, COLORS.grassDark, 1, 2);
+    px(g, 30, 28, COLORS.grassDark, 1, 2);
+
+    // Even lighter blade tips
+    px(g, 3, 2, 0x60a855, 1, 1);
+    px(g, 12, 5, 0x60a855, 1, 1);
+    px(g, 22, 9, 0x60a855, 1, 1);
+    px(g, 26, 5, 0x60a855, 1, 1);
+    px(g, 15, 21, 0x60a855, 1, 1);
+    px(g, 28, 17, 0x60a855, 1, 1);
+
+    // Soil specks (brown)
+    px(g, 10, 3, 0x6a5a30, 1, 1);
+    px(g, 24, 15, 0x6a5a30, 1, 1);
+    px(g, 6, 22, 0x6a5a30, 1, 1);
+    px(g, 18, 29, 0x6a5a30, 1, 1);
+    px(g, 30, 4, 0x6a5a30, 1, 1);
+
+    // Flower accents (yellow and white dots)
+    px(g, 6, 8, 0xf0e060, 2, 2);
+    px(g, 7, 8, 0xf8f0a0, 1, 1);  // highlight
+    px(g, 26, 24, 0xf0e060, 2, 2);
+    px(g, 27, 24, 0xf8f0a0, 1, 1);
+    px(g, 14, 18, 0xffffff, 1, 1); // white flower
+    px(g, 3, 28, 0xffffff, 1, 1);
+    px(g, 22, 3, 0xf0e060, 1, 1);
   });
 
-  // -- Sand --
+  // -- Sand (32x32) --
   makeTexture(scene, 'tile-sand', S, S, (g) => {
+    // Sandy base
     g.fillStyle(COLORS.sandYellow);
     g.fillRect(0, 0, S, S);
-    // Texture
-    px(g, 3, 2, COLORS.sandLight, 3, 1);
-    px(g, 10, 5, COLORS.sandLight, 2, 1);
-    px(g, 1, 10, COLORS.sandLight, 2, 1);
-    px(g, 7, 13, COLORS.sandLight, 3, 1);
-    px(g, 5, 7, COLORS.sandDark, 2, 1);
-    px(g, 12, 11, COLORS.sandDark);
-    px(g, 2, 14, COLORS.sandDark);
-    // Small pebble
-    px(g, 9, 3, 0xb8a080);
-    px(g, 14, 9, 0xb8a080);
+
+    // Grain texture — scattered light dots
+    px(g, 3, 2, COLORS.sandLight, 4, 1);
+    px(g, 14, 5, COLORS.sandLight, 3, 1);
+    px(g, 22, 1, COLORS.sandLight, 5, 1);
+    px(g, 8, 10, COLORS.sandLight, 3, 2);
+    px(g, 2, 18, COLORS.sandLight, 4, 1);
+    px(g, 20, 14, COLORS.sandLight, 3, 1);
+    px(g, 26, 22, COLORS.sandLight, 4, 1);
+    px(g, 12, 26, COLORS.sandLight, 3, 1);
+    px(g, 5, 30, COLORS.sandLight, 5, 1);
+
+    // Darker sand grains
+    px(g, 10, 4, COLORS.sandDark, 3, 1);
+    px(g, 24, 8, COLORS.sandDark, 2, 1);
+    px(g, 6, 14, COLORS.sandDark, 2, 1);
+    px(g, 18, 20, COLORS.sandDark, 3, 1);
+    px(g, 4, 24, COLORS.sandDark, 2, 1);
+    px(g, 28, 16, COLORS.sandDark, 2, 1);
+    px(g, 14, 30, COLORS.sandDark, 3, 1);
+
+    // Wave-washed darker lines (subtle)
+    px(g, 0, 12, 0xc8a888, S, 1);
+    px(g, 0, 28, 0xc8a888, S, 1);
+
+    // Small shell shapes (tiny spirals)
+    px(g, 18, 7, 0xe8d0b0, 2, 2);
+    px(g, 19, 7, 0xf0e0c0, 1, 1);
+    px(g, 7, 22, 0xe8d0b0, 2, 2);
+    px(g, 8, 22, 0xf0e0c0, 1, 1);
+
+    // Pebble accents
+    px(g, 26, 4, 0xb8a080, 2, 2);
+    px(g, 12, 16, 0xb8a080, 2, 1);
+    px(g, 4, 8, 0xb8a080, 1, 1);
+    px(g, 22, 28, 0xb8a080, 2, 1);
   });
 
-  // -- Water (2-frame animation sheet) --
+  // -- Water (32x32, 2-frame animation — 64x32 sheet) --
   makeTexture(scene, 'tile-water', S * 2, S, (g) => {
-    // Frame 1
+    // --- Frame 1 ---
     g.fillStyle(COLORS.waterBlue);
     g.fillRect(0, 0, S, S);
-    px(g, 2, 3, COLORS.waterLight, 4, 1);
-    px(g, 9, 7, COLORS.waterLight, 3, 1);
-    px(g, 1, 11, COLORS.waterLight, 5, 1);
-    px(g, 5, 1, COLORS.waterDark, 3, 1);
-    px(g, 11, 5, COLORS.waterDark, 2, 1);
-    px(g, 3, 14, COLORS.waterDark, 4, 1);
-    // Sparkle
-    px(g, 6, 4, 0x80d0ff);
-    px(g, 13, 9, 0x80d0ff);
 
-    // Frame 2 — shifted highlights
+    // Depth variation — darker edges
+    px(g, 0, 0, COLORS.waterDark, S, 3);
+    px(g, 0, 29, COLORS.waterDark, S, 3);
+    px(g, 0, 0, COLORS.waterDark, 3, S);
+    px(g, 29, 0, COLORS.waterDark, 3, S);
+
+    // Ripple pattern — curved light lines
+    px(g, 4, 6, COLORS.waterLight, 8, 1);
+    px(g, 3, 7, COLORS.waterLight, 2, 1);
+    px(g, 12, 7, COLORS.waterLight, 2, 1);
+    px(g, 18, 14, COLORS.waterLight, 7, 1);
+    px(g, 17, 15, COLORS.waterLight, 2, 1);
+    px(g, 25, 15, COLORS.waterLight, 2, 1);
+    px(g, 6, 22, COLORS.waterLight, 10, 1);
+    px(g, 5, 23, COLORS.waterLight, 2, 1);
+    px(g, 16, 23, COLORS.waterLight, 2, 1);
+
+    // Dark wave troughs
+    px(g, 8, 3, COLORS.waterDark, 6, 1);
+    px(g, 22, 10, COLORS.waterDark, 5, 1);
+    px(g, 2, 18, COLORS.waterDark, 8, 1);
+    px(g, 20, 26, COLORS.waterDark, 6, 1);
+
+    // Light reflection highlights (white/light blue sparkles)
+    px(g, 10, 5, 0x80d0ff, 2, 1);
+    px(g, 11, 4, 0xa0e0ff, 1, 1);
+    px(g, 24, 13, 0x80d0ff, 2, 1);
+    px(g, 25, 12, 0xa0e0ff, 1, 1);
+    px(g, 12, 21, 0x80d0ff, 2, 1);
+    px(g, 13, 20, 0xa0e0ff, 1, 1);
+    px(g, 4, 28, 0x80d0ff, 1, 1);
+
+    // --- Frame 2 — shifted ripples ---
     g.fillStyle(COLORS.waterBlue);
     g.fillRect(S, 0, S, S);
-    px(g, S + 4, 5, COLORS.waterLight, 4, 1);
-    px(g, S + 11, 2, COLORS.waterLight, 3, 1);
-    px(g, S + 2, 9, COLORS.waterLight, 5, 1);
-    px(g, S + 7, 13, COLORS.waterDark, 3, 1);
-    px(g, S + 1, 3, COLORS.waterDark, 2, 1);
-    px(g, S + 10, 7, COLORS.waterDark, 4, 1);
-    px(g, S + 8, 1, 0x80d0ff);
-    px(g, S + 3, 11, 0x80d0ff);
+
+    // Depth variation
+    px(g, S, 0, COLORS.waterDark, S, 3);
+    px(g, S, 29, COLORS.waterDark, S, 3);
+    px(g, S, 0, COLORS.waterDark, 3, S);
+    px(g, S + 29, 0, COLORS.waterDark, 3, S);
+
+    // Shifted ripple pattern
+    px(g, S + 8, 8, COLORS.waterLight, 8, 1);
+    px(g, S + 7, 9, COLORS.waterLight, 2, 1);
+    px(g, S + 16, 9, COLORS.waterLight, 2, 1);
+    px(g, S + 2, 16, COLORS.waterLight, 7, 1);
+    px(g, S + 1, 17, COLORS.waterLight, 2, 1);
+    px(g, S + 9, 17, COLORS.waterLight, 2, 1);
+    px(g, S + 14, 24, COLORS.waterLight, 10, 1);
+    px(g, S + 13, 25, COLORS.waterLight, 2, 1);
+    px(g, S + 24, 25, COLORS.waterLight, 2, 1);
+
+    // Dark wave troughs shifted
+    px(g, S + 14, 5, COLORS.waterDark, 6, 1);
+    px(g, S + 4, 12, COLORS.waterDark, 5, 1);
+    px(g, S + 18, 20, COLORS.waterDark, 8, 1);
+    px(g, S + 6, 28, COLORS.waterDark, 6, 1);
+
+    // Shifted sparkles
+    px(g, S + 16, 7, 0x80d0ff, 2, 1);
+    px(g, S + 17, 6, 0xa0e0ff, 1, 1);
+    px(g, S + 6, 15, 0x80d0ff, 2, 1);
+    px(g, S + 7, 14, 0xa0e0ff, 1, 1);
+    px(g, S + 22, 23, 0x80d0ff, 2, 1);
+    px(g, S + 23, 22, 0xa0e0ff, 1, 1);
+    px(g, S + 10, 28, 0x80d0ff, 1, 1);
   });
 
-  // -- Path --
+  // -- Path (32x32) --
   makeTexture(scene, 'tile-path', S, S, (g) => {
+    // Dirt/stone base
     g.fillStyle(COLORS.pathBrown);
     g.fillRect(0, 0, S, S);
-    px(g, 1, 2, COLORS.pathLight, 3, 1);
-    px(g, 8, 6, COLORS.pathLight, 2, 1);
-    px(g, 3, 11, COLORS.pathLight, 4, 1);
-    px(g, 12, 3, COLORS.pathDark, 2, 1);
-    px(g, 5, 8, COLORS.pathDark, 3, 1);
-    px(g, 10, 13, COLORS.pathDark, 2, 1);
-    // Pebbles
-    px(g, 4, 4, 0x908070);
-    px(g, 11, 9, 0x908070);
+
+    // Worn center (lighter — foot traffic area)
+    px(g, 8, 0, COLORS.pathLight, 16, S);
+    px(g, 10, 0, 0xc0a080, 12, S);
+
+    // Edges blending to grass
+    px(g, 0, 0, 0x6a8050, 3, S);    // left grass edge
+    px(g, 29, 0, 0x6a8050, 3, S);   // right grass edge
+    px(g, 3, 0, 0x8a7858, 3, S);    // left blend
+    px(g, 26, 0, 0x8a7858, 3, S);   // right blend
+
+    // Stone/gravel detail on the path
+    px(g, 10, 4, 0x908070, 3, 2);
+    px(g, 18, 8, 0x908070, 4, 2);
+    px(g, 12, 16, 0x908070, 3, 3);
+    px(g, 20, 22, 0x908070, 2, 2);
+    px(g, 14, 28, 0x908070, 3, 2);
+
+    // Lighter gravel highlights
+    px(g, 11, 4, 0xa89880, 1, 1);
+    px(g, 19, 8, 0xa89880, 1, 1);
+    px(g, 13, 16, 0xa89880, 1, 1);
+
+    // Darker worn marks
+    px(g, 15, 10, COLORS.pathDark, 4, 1);
+    px(g, 12, 20, COLORS.pathDark, 5, 1);
+    px(g, 16, 26, COLORS.pathDark, 3, 1);
+
+    // Scattered small pebbles
+    px(g, 8, 6, 0x807060, 1, 1);
+    px(g, 22, 12, 0x807060, 1, 1);
+    px(g, 10, 24, 0x807060, 1, 1);
+    px(g, 24, 30, 0x807060, 1, 1);
   });
 
-  // -- Wall --
+  // -- Wall (32x32) — brick pattern --
   makeTexture(scene, 'tile-wall', S, S, (g) => {
+    // Base grey
     g.fillStyle(COLORS.wallGrey);
     g.fillRect(0, 0, S, S);
-    // Brick lines
+
+    // Horizontal mortar lines (every 8px)
     g.fillStyle(COLORS.wallDark);
-    g.fillRect(0, 4, S, 1);
-    g.fillRect(0, 9, S, 1);
-    g.fillRect(0, 14, S, 1);
-    g.fillRect(7, 0, 1, 4);
-    g.fillRect(3, 5, 1, 4);
-    g.fillRect(11, 5, 1, 4);
-    g.fillRect(7, 10, 1, 4);
-    // Highlights
+    g.fillRect(0, 7, S, 1);
+    g.fillRect(0, 15, S, 1);
+    g.fillRect(0, 23, S, 1);
+    g.fillRect(0, 31, S, 1);
+
+    // Vertical mortar — offset per row (standard brick pattern)
+    // Row 1 (y 0-6)
+    px(g, 7, 0, COLORS.wallDark, 1, 7);
+    px(g, 15, 0, COLORS.wallDark, 1, 7);
+    px(g, 23, 0, COLORS.wallDark, 1, 7);
+    px(g, 31, 0, COLORS.wallDark, 1, 7);
+    // Row 2 (y 8-14) — offset by 4
+    px(g, 3, 8, COLORS.wallDark, 1, 7);
+    px(g, 11, 8, COLORS.wallDark, 1, 7);
+    px(g, 19, 8, COLORS.wallDark, 1, 7);
+    px(g, 27, 8, COLORS.wallDark, 1, 7);
+    // Row 3 (y 16-22)
+    px(g, 7, 16, COLORS.wallDark, 1, 7);
+    px(g, 15, 16, COLORS.wallDark, 1, 7);
+    px(g, 23, 16, COLORS.wallDark, 1, 7);
+    px(g, 31, 16, COLORS.wallDark, 1, 7);
+    // Row 4 (y 24-30) — offset
+    px(g, 3, 24, COLORS.wallDark, 1, 7);
+    px(g, 11, 24, COLORS.wallDark, 1, 7);
+    px(g, 19, 24, COLORS.wallDark, 1, 7);
+    px(g, 27, 24, COLORS.wallDark, 1, 7);
+
+    // Light highlights on individual bricks (top-left of each)
     px(g, 1, 1, COLORS.wallLight, 5, 1);
-    px(g, 9, 6, COLORS.wallLight, 2, 1);
-    px(g, 4, 11, COLORS.wallLight, 3, 1);
+    px(g, 9, 1, COLORS.wallLight, 5, 1);
+    px(g, 17, 1, COLORS.wallLight, 5, 1);
+    px(g, 25, 1, COLORS.wallLight, 5, 1);
+    px(g, 5, 9, COLORS.wallLight, 5, 1);
+    px(g, 13, 9, COLORS.wallLight, 5, 1);
+    px(g, 21, 9, COLORS.wallLight, 5, 1);
+    px(g, 1, 17, COLORS.wallLight, 5, 1);
+    px(g, 9, 17, COLORS.wallLight, 5, 1);
+    px(g, 17, 17, COLORS.wallLight, 5, 1);
+    px(g, 25, 17, COLORS.wallLight, 5, 1);
+    px(g, 5, 25, COLORS.wallLight, 5, 1);
+    px(g, 13, 25, COLORS.wallLight, 5, 1);
+    px(g, 21, 25, COLORS.wallLight, 5, 1);
+
+    // Slight color variation per brick (subtle)
+    px(g, 9, 2, 0x868696, 4, 4);
+    px(g, 21, 10, 0x787888, 4, 4);
+    px(g, 1, 18, 0x868696, 4, 4);
+    px(g, 13, 26, 0x787888, 4, 4);
   });
 
-  // -- Floor --
+  // -- Floor (32x32) — wooden planks --
   makeTexture(scene, 'tile-floor', S, S, (g) => {
+    // Warm wood base
     g.fillStyle(COLORS.floorBeige);
     g.fillRect(0, 0, S, S);
-    // Tile grid lines
+
+    // Plank divisions (horizontal dark lines every 8px)
+    g.fillStyle(0xa89868);
+    g.fillRect(0, 7, S, 1);
+    g.fillRect(0, 15, S, 1);
+    g.fillRect(0, 23, S, 1);
+    g.fillRect(0, 31, S, 1);
+
+    // Wood grain lines (subtle horizontal streaks within each plank)
+    px(g, 2, 2, 0xd4c4a0, 10, 1);
+    px(g, 16, 3, 0xd4c4a0, 8, 1);
+    px(g, 4, 10, 0xd4c4a0, 12, 1);
+    px(g, 20, 11, 0xd4c4a0, 6, 1);
+    px(g, 6, 18, 0xd4c4a0, 8, 1);
+    px(g, 18, 19, 0xd4c4a0, 10, 1);
+    px(g, 2, 26, 0xd4c4a0, 14, 1);
+    px(g, 22, 27, 0xd4c4a0, 6, 1);
+
+    // Darker grain accent lines
+    px(g, 8, 4, 0xb0a078, 6, 1);
+    px(g, 14, 12, 0xb0a078, 8, 1);
+    px(g, 4, 20, 0xb0a078, 10, 1);
+    px(g, 10, 28, 0xb0a078, 8, 1);
+
+    // Knot details (small darker circles)
+    px(g, 10, 4, 0xa09060, 2, 2);
+    px(g, 11, 5, 0x968858, 1, 1);
+    px(g, 24, 18, 0xa09060, 2, 2);
+    px(g, 25, 19, 0x968858, 1, 1);
+
+    // Left edge shadow
     g.fillStyle(0xb0a080);
-    g.fillRect(0, 0, S, 1);
     g.fillRect(0, 0, 1, S);
-    // Subtle variation
-    px(g, 5, 5, 0xd0c0a0, 3, 3);
-    px(g, 10, 10, 0xb8a888, 2, 2);
   });
 
-  // -- Dark Floor --
+  // -- Dark Floor (32x32) — concrete/stone --
   makeTexture(scene, 'tile-dark-floor', S, S, (g) => {
+    // Dark stone base
     g.fillStyle(COLORS.darkFloor);
     g.fillRect(0, 0, S, S);
+
+    // Grid lines (tile edges)
     g.fillStyle(0x383040);
     g.fillRect(0, 0, S, 1);
     g.fillRect(0, 0, 1, S);
-    px(g, 6, 6, 0x504860, 3, 3);
-    px(g, 11, 3, 0x403848, 2, 2);
+    g.fillRect(0, 15, S, 1);
+    g.fillRect(15, 0, 1, S);
+
+    // Cracks
+    px(g, 8, 4, 0x3a3240, 1, 6);
+    px(g, 9, 9, 0x3a3240, 1, 4);
+    px(g, 22, 18, 0x3a3240, 1, 8);
+    px(g, 23, 25, 0x3a3240, 1, 4);
+    px(g, 14, 22, 0x3a3240, 5, 1);
+
+    // Stain patterns (lighter/darker patches)
+    px(g, 4, 4, 0x504860, 4, 4);
+    px(g, 20, 8, 0x504860, 5, 3);
+    px(g, 10, 20, 0x544c64, 6, 4);
+    px(g, 24, 26, 0x403848, 4, 3);
+
+    // Subtle texture dots
+    px(g, 6, 12, 0x423a52, 1, 1);
+    px(g, 18, 6, 0x423a52, 1, 1);
+    px(g, 28, 14, 0x423a52, 1, 1);
+    px(g, 12, 28, 0x423a52, 1, 1);
+    px(g, 2, 22, 0x504860, 1, 1);
+    px(g, 26, 4, 0x504860, 1, 1);
   });
 
-  // -- Dirt --
+  // -- Dirt (32x32) --
   makeTexture(scene, 'tile-dirt', S, S, (g) => {
+    // Rich brown earth base
     g.fillStyle(COLORS.dirtBrown);
     g.fillRect(0, 0, S, S);
-    px(g, 2, 3, 0xa88860, 3, 1);
-    px(g, 9, 7, 0x8a6a40, 2, 1);
-    px(g, 1, 12, 0xa88860, 4, 1);
-    px(g, 7, 1, 0x8a6a40);
-    px(g, 13, 10, 0xa88860, 2, 1);
-    // Tilled lines
+
+    // Clump texture — lighter/darker earth patches
+    px(g, 4, 4, 0xa88860, 5, 2);
+    px(g, 18, 8, 0xa88860, 4, 2);
+    px(g, 2, 16, 0xa88860, 6, 2);
+    px(g, 24, 22, 0xa88860, 4, 2);
+    px(g, 10, 28, 0xa88860, 5, 2);
+
+    px(g, 12, 2, 0x8a6a40, 3, 1);
+    px(g, 26, 6, 0x8a6a40, 4, 1);
+    px(g, 8, 14, 0x8a6a40, 5, 1);
+    px(g, 20, 18, 0x8a6a40, 3, 1);
+    px(g, 4, 26, 0x8a6a40, 4, 1);
+
+    // Tilled furrow lines (every 10px)
     g.fillStyle(0x7a5a30);
-    g.fillRect(0, 5, S, 1);
-    g.fillRect(0, 11, S, 1);
+    g.fillRect(0, 9, S, 1);
+    g.fillRect(0, 19, S, 1);
+    g.fillRect(0, 29, S, 1);
+
+    // Small root/worm details
+    px(g, 14, 6, 0x6a4a20, 3, 1);
+    px(g, 15, 7, 0x6a4a20, 1, 2);
+    px(g, 22, 14, 0x6a4a20, 2, 1);
+    px(g, 23, 15, 0x6a4a20, 1, 1);
+    px(g, 6, 24, 0x6a4a20, 4, 1);
+    px(g, 9, 25, 0x6a4a20, 1, 1);
+
+    // Scattered small stones
+    px(g, 8, 4, 0x807060, 2, 1);
+    px(g, 28, 12, 0x807060, 2, 1);
+    px(g, 16, 24, 0x807060, 1, 1);
   });
 
-  // -- Concrete / Road (dark asphalt) --
+  // -- Concrete / Road (32x32 dark asphalt) --
   makeTexture(scene, 'tile-concrete', S, S, (g) => {
     // Dark asphalt base
     g.fillStyle(0x404048);
     g.fillRect(0, 0, S, S);
-    // Texture variation
-    px(g, 2, 3, 0x484850, 3, 2);
-    px(g, 9, 8, 0x484850, 4, 2);
-    px(g, 1, 12, 0x484850, 2, 1);
-    // Darker patches (wear marks)
-    px(g, 6, 1, 0x383840, 2, 1);
-    px(g, 11, 6, 0x383840, 2, 2);
-    px(g, 3, 10, 0x383840, 1, 2);
-    // Subtle crack
-    px(g, 5, 5, 0x353538, 1, 3);
+
+    // Texture variation (slightly lighter patches)
+    px(g, 4, 4, 0x484850, 6, 3);
+    px(g, 18, 10, 0x484850, 8, 3);
+    px(g, 2, 20, 0x484850, 5, 2);
+    px(g, 24, 26, 0x484850, 6, 3);
+    px(g, 10, 16, 0x484850, 4, 2);
+
+    // Darker patches (wear marks / oil stains)
+    px(g, 12, 2, 0x383840, 4, 2);
+    px(g, 22, 8, 0x383840, 3, 3);
+    px(g, 6, 14, 0x383840, 2, 3);
+    px(g, 26, 18, 0x383840, 4, 2);
+    px(g, 14, 26, 0x383840, 3, 2);
+
+    // Crack lines (diagonal feel)
+    px(g, 8, 6, 0x353538, 1, 4);
+    px(g, 9, 9, 0x353538, 1, 3);
+    px(g, 10, 11, 0x353538, 1, 2);
+    px(g, 20, 18, 0x353538, 1, 5);
+    px(g, 21, 22, 0x353538, 1, 3);
+
+    // Tar patches (slightly warmer dark)
+    px(g, 16, 6, 0x3a3838, 3, 2);
+    px(g, 4, 24, 0x3a3838, 4, 2);
+
+    // Subtle aggregate dots (road surface texture)
+    px(g, 6, 2, 0x464650, 1, 1);
+    px(g, 14, 8, 0x464650, 1, 1);
+    px(g, 28, 4, 0x464650, 1, 1);
+    px(g, 2, 28, 0x464650, 1, 1);
+    px(g, 20, 30, 0x464650, 1, 1);
+    px(g, 30, 16, 0x464650, 1, 1);
   });
 
-  // -- Door --
+  // -- Door (32x32) --
   makeTexture(scene, 'tile-door', S, S, (g) => {
-    // Frame
+    // Door frame
     g.fillStyle(0x705030);
     g.fillRect(0, 0, S, S);
-    // Door panels
+
+    // Main door surface
     g.fillStyle(0x905830);
-    g.fillRect(2, 1, 12, 14);
-    // Panel insets
+    g.fillRect(3, 2, 26, 28);
+
+    // Top panels (two side by side)
     g.fillStyle(0x804820);
-    g.fillRect(3, 2, 4, 5);
-    g.fillRect(9, 2, 4, 5);
-    g.fillRect(3, 9, 4, 5);
-    g.fillRect(9, 9, 4, 5);
-    // Handle
-    px(g, 11, 8, 0xd0c030, 1, 2);
+    g.fillRect(5, 3, 9, 10);
+    g.fillRect(18, 3, 9, 10);
+
+    // Bottom panels
+    g.fillRect(5, 16, 9, 12);
+    g.fillRect(18, 16, 9, 12);
+
+    // Panel bevels (light top edge, dark bottom edge)
+    px(g, 5, 3, 0xa06830, 9, 1);
+    px(g, 18, 3, 0xa06830, 9, 1);
+    px(g, 5, 16, 0xa06830, 9, 1);
+    px(g, 18, 16, 0xa06830, 9, 1);
+    px(g, 5, 12, 0x704018, 9, 1);
+    px(g, 18, 12, 0x704018, 9, 1);
+    px(g, 5, 27, 0x704018, 9, 1);
+    px(g, 18, 27, 0x704018, 9, 1);
+
+    // Wood grain lines on panels
+    px(g, 7, 5, 0x8a5428, 5, 1);
+    px(g, 7, 8, 0x8a5428, 4, 1);
+    px(g, 20, 6, 0x8a5428, 5, 1);
+    px(g, 20, 9, 0x8a5428, 4, 1);
+    px(g, 7, 19, 0x8a5428, 6, 1);
+    px(g, 7, 23, 0x8a5428, 4, 1);
+    px(g, 20, 20, 0x8a5428, 5, 1);
+    px(g, 20, 24, 0x8a5428, 4, 1);
+
+    // Door handle / knob (gold)
+    px(g, 22, 14, 0xd0c030, 2, 3);
+    px(g, 23, 14, 0xe0d050, 1, 1); // highlight
+    px(g, 22, 16, 0xb0a020, 2, 1); // shadow
+
+    // Hinges (left side)
+    px(g, 3, 6, 0x606060, 2, 2);
+    px(g, 3, 22, 0x606060, 2, 2);
   });
 
-  // -- Tree --
+  // -- Tree (32x32) --
   makeTexture(scene, 'tile-tree', S, S, (g) => {
-    // Trunk
-    px(g, 6, 10, COLORS.treeTrunk, 4, 6);
-    px(g, 7, 10, 0x7a6040, 2, 6);
-    // Canopy — rounded shape
+    // Shadow underneath
+    px(g, 6, 28, 0x2a5020, 20, 3);
+    px(g, 8, 31, 0x2a5020, 16, 1);
+
+    // Trunk with bark texture
+    px(g, 13, 20, COLORS.treeTrunk, 6, 12);
+    px(g, 14, 20, 0x7a6040, 4, 12); // lighter bark center
+    // Bark lines
+    px(g, 13, 22, 0x5a4020, 6, 1);
+    px(g, 13, 25, 0x5a4020, 6, 1);
+    px(g, 13, 28, 0x5a4020, 6, 1);
+    // Bark highlights
+    px(g, 15, 21, 0x8a7050, 2, 1);
+    px(g, 15, 24, 0x8a7050, 2, 1);
+    px(g, 15, 27, 0x8a7050, 1, 1);
+
+    // Leafy canopy — rounded shape (multiple green shades)
     g.fillStyle(COLORS.treeGreen);
-    g.fillRect(3, 2, 10, 7);
-    g.fillRect(2, 3, 12, 5);
-    g.fillRect(4, 1, 8, 1);
-    // Shading
+    g.fillRect(5, 4, 22, 14);
+    g.fillRect(3, 6, 26, 10);
+    g.fillRect(7, 2, 18, 2);
+    g.fillRect(9, 1, 14, 2);
+
+    // Leaf clusters (lighter green patches)
+    px(g, 8, 4, 0x40a040, 6, 4);
+    px(g, 18, 3, 0x40a040, 5, 3);
+    px(g, 10, 10, 0x40a040, 4, 3);
+    px(g, 22, 8, 0x40a040, 4, 3);
+    px(g, 6, 7, 0x38a038, 3, 3);
+
+    // Dark shading (bottom of canopy)
     g.fillStyle(COLORS.treeDark);
-    g.fillRect(3, 6, 10, 2);
-    g.fillRect(2, 5, 1, 2);
-    // Highlights
-    px(g, 5, 2, 0x40a040, 3, 2);
-    px(g, 9, 3, 0x40a040, 2, 1);
+    g.fillRect(5, 14, 22, 4);
+    g.fillRect(3, 12, 2, 4);
+    g.fillRect(27, 12, 2, 4);
+
+    // Individual leaf highlight dots
+    px(g, 12, 3, 0x50b850, 2, 1);
+    px(g, 20, 5, 0x50b850, 2, 1);
+    px(g, 8, 8, 0x50b850, 1, 1);
+    px(g, 24, 10, 0x50b850, 1, 1);
+    px(g, 14, 6, 0x50b850, 1, 1);
   });
 
-  // -- Palm Tree --
+  // -- Palm Tree (32x32) --
   makeTexture(scene, 'tile-palm', S, S, (g) => {
-    // Trunk — curved
-    px(g, 7, 8, 0x907050, 2, 8);
-    px(g, 8, 7, 0x907050, 2, 1);
-    px(g, 8, 6, 0xa08060, 1, 1);
-    // Bark texture
-    px(g, 7, 9, 0x806040, 2, 1);
-    px(g, 7, 11, 0x806040, 2, 1);
-    px(g, 7, 13, 0x806040, 2, 1);
-    // Fronds (leaves spreading out)
-    g.fillStyle(0x30a030);
+    // Shadow
+    px(g, 10, 30, 0x2a5020, 14, 2);
+
+    // Curved trunk with ring texture
+    px(g, 14, 14, 0x907050, 4, 18);
+    px(g, 15, 13, 0x907050, 4, 1);
+    px(g, 16, 12, 0xa08060, 3, 1);
+    // Ring marks on trunk
+    px(g, 14, 16, 0x806040, 4, 1);
+    px(g, 14, 19, 0x806040, 4, 1);
+    px(g, 14, 22, 0x806040, 4, 1);
+    px(g, 14, 25, 0x806040, 4, 1);
+    px(g, 14, 28, 0x806040, 4, 1);
+    // Trunk highlight
+    px(g, 16, 15, 0xa08868, 1, 16);
+
+    // Fronds spreading out
     // Left frond
-    px(g, 1, 3, 0x30a030, 7, 1);
-    px(g, 0, 4, 0x30a030, 6, 1);
-    px(g, 0, 5, 0x209020, 4, 1);
+    px(g, 2, 5, 0x30a030, 14, 1);
+    px(g, 0, 6, 0x30a030, 12, 1);
+    px(g, 0, 7, 0x30a030, 10, 1);
+    px(g, 0, 8, 0x209020, 7, 1);
+    px(g, 0, 9, 0x209020, 4, 1);
     // Right frond
-    px(g, 9, 2, 0x30a030, 6, 1);
-    px(g, 10, 3, 0x30a030, 6, 1);
-    px(g, 12, 4, 0x209020, 4, 1);
-    // Top fronds
-    px(g, 5, 1, 0x30a030, 5, 1);
-    px(g, 6, 0, 0x40b040, 4, 1);
-    // Center
-    px(g, 7, 2, 0x50c050, 3, 2);
-    // Coconuts
-    px(g, 6, 4, 0x805020, 2, 2);
-    px(g, 9, 5, 0x906030);
+    px(g, 18, 4, 0x30a030, 12, 1);
+    px(g, 20, 5, 0x30a030, 12, 1);
+    px(g, 22, 6, 0x30a030, 10, 1);
+    px(g, 24, 7, 0x209020, 8, 1);
+    px(g, 26, 8, 0x209020, 4, 1);
+    // Top frond
+    px(g, 10, 1, 0x30a030, 12, 1);
+    px(g, 12, 0, 0x40b040, 8, 1);
+    px(g, 8, 2, 0x30a030, 16, 1);
+    // Down-hanging frond
+    px(g, 4, 10, 0x209020, 8, 1);
+    px(g, 2, 11, 0x209020, 6, 1);
+    px(g, 20, 9, 0x209020, 8, 1);
+    px(g, 24, 10, 0x209020, 6, 1);
+
+    // Center bright leaves
+    px(g, 14, 4, 0x50c050, 4, 4);
+    px(g, 12, 5, 0x40b040, 2, 2);
+    px(g, 18, 5, 0x40b040, 2, 2);
+
+    // Coconut cluster
+    px(g, 12, 8, 0x805020, 3, 3);
+    px(g, 17, 9, 0x906030, 3, 2);
+    px(g, 13, 10, 0x704018, 2, 2);
+    // Coconut highlights
+    px(g, 12, 8, 0x906830, 1, 1);
+    px(g, 17, 9, 0xa07038, 1, 1);
   });
 
-  // -- Vine (Vineyard Trellis Row) --
+  // -- Vine / Vineyard Trellis Row (32x32) --
   makeTexture(scene, 'tile-vine', S, S, (g) => {
-    // Central wooden trellis post (2px wide, full height)
+    // Central wooden trellis post (4px wide, full height)
     g.fillStyle(0x6a5030);
-    g.fillRect(7, 0, 2, 16);
+    g.fillRect(14, 0, 4, S);
     // Post highlight
-    px(g, 7, 0, 0x7a6040, 1, 16);
+    px(g, 14, 0, 0x7a6040, 2, S);
+    // Post grain lines
+    px(g, 15, 4, 0x5a4020, 1, 2);
+    px(g, 15, 12, 0x5a4020, 1, 2);
+    px(g, 15, 20, 0x5a4020, 1, 2);
+    px(g, 15, 28, 0x5a4020, 1, 2);
 
-    // Horizontal wire at top and middle
-    px(g, 0, 2, 0x808080, 16, 1);  // top wire
-    px(g, 0, 8, 0x808080, 16, 1);  // middle wire
+    // Horizontal wires
+    px(g, 0, 4, 0x808080, S, 1);   // top wire
+    px(g, 0, 16, 0x808080, S, 1);  // middle wire
+    px(g, 0, 5, 0x909090, S, 1);   // wire highlight
 
     // Green leaf clusters — left side
-    px(g, 1, 1, 0x408030, 3, 2);   // top-left leaves
-    px(g, 0, 3, 0x509040, 4, 2);   // upper-left foliage
-    px(g, 1, 6, 0x306820, 3, 2);   // mid-left leaves
-    px(g, 0, 9, 0x408030, 4, 2);   // lower-left foliage
-    px(g, 1, 12, 0x509040, 3, 2);  // bottom-left leaves
+    px(g, 1, 2, 0x408030, 6, 3);
+    px(g, 0, 6, 0x509040, 8, 3);
+    px(g, 2, 10, 0x306820, 6, 3);
+    px(g, 0, 14, 0x408030, 7, 3);
+    px(g, 1, 18, 0x509040, 6, 3);
+    px(g, 0, 22, 0x306820, 8, 3);
+    px(g, 2, 26, 0x408030, 5, 3);
+    px(g, 1, 30, 0x509040, 6, 2);
 
     // Green leaf clusters — right side
-    px(g, 12, 1, 0x509040, 3, 2);  // top-right leaves
-    px(g, 12, 3, 0x306820, 4, 2);  // upper-right foliage
-    px(g, 12, 6, 0x408030, 3, 2);  // mid-right leaves
-    px(g, 12, 9, 0x509040, 4, 2);  // lower-right foliage
-    px(g, 12, 12, 0x306820, 3, 2); // bottom-right leaves
+    px(g, 24, 1, 0x509040, 6, 3);
+    px(g, 22, 5, 0x306820, 8, 3);
+    px(g, 24, 9, 0x408030, 6, 3);
+    px(g, 22, 13, 0x509040, 7, 3);
+    px(g, 24, 17, 0x306820, 6, 3);
+    px(g, 22, 21, 0x408030, 8, 3);
+    px(g, 24, 25, 0x509040, 5, 3);
+    px(g, 22, 29, 0x306820, 6, 3);
 
-    // Leaf detail — individual pixels for texture
-    px(g, 4, 2, 0x509040, 2, 1);
-    px(g, 10, 4, 0x408030, 2, 1);
-    px(g, 5, 7, 0x306820, 2, 1);
-    px(g, 10, 10, 0x509040, 2, 1);
-    px(g, 4, 11, 0x408030, 2, 1);
+    // Leaf detail — individual leaf veins
+    px(g, 5, 3, 0x60a850, 1, 1);
+    px(g, 8, 8, 0x60a850, 1, 1);
+    px(g, 3, 15, 0x60a850, 1, 1);
+    px(g, 10, 20, 0x60a850, 1, 1);
+    px(g, 26, 3, 0x60a850, 1, 1);
+    px(g, 28, 12, 0x60a850, 1, 1);
+    px(g, 25, 22, 0x60a850, 1, 1);
 
-    // Purple grape clusters (2x2 each)
-    px(g, 2, 5, 0x604080, 2, 2);   // left cluster upper
-    px(g, 1, 10, 0x705090, 2, 2);  // left cluster lower
-    px(g, 13, 5, 0x705090, 2, 2);  // right cluster upper
-    px(g, 12, 11, 0x604080, 2, 2); // right cluster lower
-    // Grape highlights
-    px(g, 2, 5, 0x806098, 1, 1);
-    px(g, 13, 5, 0x806098, 1, 1);
-    px(g, 1, 10, 0x806098, 1, 1);
+    // Purple grape clusters (3x3 each, multiple berries)
+    px(g, 3, 7, 0x604080, 3, 3);
+    px(g, 4, 8, 0x705090, 2, 2);
+    px(g, 3, 7, 0x806098, 1, 1);    // highlight
+
+    px(g, 2, 19, 0x705090, 3, 3);
+    px(g, 3, 20, 0x604080, 2, 2);
+    px(g, 2, 19, 0x806098, 1, 1);
+
+    px(g, 26, 8, 0x705090, 3, 3);
+    px(g, 27, 9, 0x604080, 2, 2);
+    px(g, 26, 8, 0x806098, 1, 1);
+
+    px(g, 25, 20, 0x604080, 3, 3);
+    px(g, 26, 21, 0x705090, 2, 2);
+    px(g, 25, 20, 0x806098, 1, 1);
+
+    // Extra grape clusters for density
+    px(g, 5, 27, 0x604080, 2, 2);
+    px(g, 5, 27, 0x806098, 1, 1);
+    px(g, 27, 27, 0x705090, 2, 2);
+    px(g, 27, 27, 0x806098, 1, 1);
   });
 
-  // -- Fence --
+  // -- Fence (32x32) --
   makeTexture(scene, 'tile-fence', S, S, (g) => {
-    // Posts
+    // Left post
     g.fillStyle(0x907050);
-    g.fillRect(1, 2, 3, 14);
-    g.fillRect(12, 2, 3, 14);
-    // Rails
+    g.fillRect(2, 3, 5, 28);
+    // Right post
+    g.fillRect(25, 3, 5, 28);
+
+    // Post tops (beveled)
+    px(g, 2, 2, 0xb09070, 5, 1);
+    px(g, 25, 2, 0xb09070, 5, 1);
+
+    // Horizontal rails
     g.fillStyle(0xa08060);
-    g.fillRect(0, 4, S, 2);
-    g.fillRect(0, 10, S, 2);
-    // Post tops
-    px(g, 1, 1, 0xb09070, 3, 1);
-    px(g, 12, 1, 0xb09070, 3, 1);
-    // Wood grain
-    px(g, 2, 6, 0x806040, 1, 3);
-    px(g, 13, 6, 0x806040, 1, 3);
+    g.fillRect(0, 8, S, 3);
+    g.fillRect(0, 20, S, 3);
+
+    // Rail highlights (top edge of each rail)
+    px(g, 0, 8, 0xb89878, S, 1);
+    px(g, 0, 20, 0xb89878, S, 1);
+
+    // Rail shadow (bottom edge)
+    px(g, 0, 10, 0x886848, S, 1);
+    px(g, 0, 22, 0x886848, S, 1);
+
+    // Wood grain on posts
+    px(g, 3, 6, 0x806040, 1, 6);
+    px(g, 5, 12, 0x806040, 1, 5);
+    px(g, 3, 20, 0x806040, 1, 4);
+    px(g, 26, 6, 0x806040, 1, 6);
+    px(g, 28, 14, 0x806040, 1, 5);
+    px(g, 26, 24, 0x806040, 1, 4);
+
+    // Nail / joint details
+    px(g, 4, 8, 0x505050, 1, 1);
+    px(g, 4, 20, 0x505050, 1, 1);
+    px(g, 27, 8, 0x505050, 1, 1);
+    px(g, 27, 20, 0x505050, 1, 1);
+
+    // Post shadows on right side
+    px(g, 6, 4, 0x806040, 1, 26);
+    px(g, 29, 4, 0x806040, 1, 26);
   });
 
-  // -- Computer --
+  // -- Computer (32x32) --
   makeTexture(scene, 'tile-computer', S, S, (g) => {
-    // Desk
+    // Desk surface
     g.fillStyle(0x806040);
-    g.fillRect(0, 10, S, 6);
-    px(g, 0, 10, 0x906848, S, 1); // desk top edge
+    g.fillRect(0, 20, S, 12);
+    px(g, 0, 20, 0x906848, S, 1); // desk top edge highlight
+    // Desk front edge shadow
+    px(g, 0, 31, 0x604020, S, 1);
     // Desk legs
-    px(g, 1, 14, 0x604020, 2, 2);
-    px(g, 13, 14, 0x604020, 2, 2);
-    // Monitor
+    px(g, 1, 28, 0x604020, 3, 4);
+    px(g, 28, 28, 0x604020, 3, 4);
+
+    // Monitor bezel (dark grey frame)
     g.fillStyle(0x404050);
-    g.fillRect(2, 1, 12, 8);
+    g.fillRect(4, 1, 24, 16);
+    // Monitor inner bevel
+    px(g, 4, 1, 0x505060, 24, 1);  // top highlight
+    px(g, 4, 16, 0x303040, 24, 1); // bottom shadow
+
     // Screen
     g.fillStyle(0x3060a0);
-    g.fillRect(3, 2, 10, 6);
-    // Screen content (code lines)
-    px(g, 4, 3, 0x60c060, 4, 1);
-    px(g, 4, 5, 0x60c060, 6, 1);
-    px(g, 4, 7, 0x60c060, 3, 1);
-    // Stand
-    px(g, 6, 9, 0x404050, 4, 1);
-    px(g, 7, 10, 0x404050, 2, 1);
+    g.fillRect(6, 3, 20, 12);
+
+    // Screen content — code lines
+    px(g, 8, 4, 0x60c060, 8, 1);   // green code line 1
+    px(g, 8, 6, 0x60c060, 12, 1);  // green code line 2
+    px(g, 8, 8, 0x60c060, 6, 1);   // green code line 3
+    px(g, 10, 10, 0x60c060, 10, 1); // green code line 4 (indented)
+    px(g, 8, 12, 0x60c060, 4, 1);  // green code line 5
+    // Cursor
+    px(g, 12, 12, 0x80e080, 2, 1);
+    // Window bar at top
+    px(g, 6, 3, 0x405880, 20, 1);
+    px(g, 22, 3, 0xc04040, 2, 1); // close button
+    px(g, 20, 3, 0xe0c040, 2, 1); // minimize button
+
+    // Monitor stand
+    px(g, 12, 17, 0x404050, 8, 2);
+    px(g, 14, 19, 0x404050, 4, 1);
+
     // Keyboard
     g.fillStyle(0x505060);
-    g.fillRect(3, 11, 10, 2);
-    px(g, 4, 11, 0x606070, 8, 1);
+    g.fillRect(5, 22, 22, 4);
+    px(g, 6, 22, 0x606070, 20, 1); // key row highlight
+    // Individual key suggestion
+    px(g, 7, 23, 0x606878, 2, 1);
+    px(g, 10, 23, 0x606878, 2, 1);
+    px(g, 13, 23, 0x606878, 2, 1);
+    px(g, 16, 23, 0x606878, 2, 1);
+    px(g, 19, 23, 0x606878, 2, 1);
+    px(g, 22, 23, 0x606878, 2, 1);
+    px(g, 9, 24, 0x606878, 8, 1); // spacebar
+
+    // Mouse (right of keyboard)
+    px(g, 28, 23, 0x505060, 2, 3);
+    px(g, 28, 23, 0x606070, 2, 1);
   });
 
-  // -- Tractor (D8 Cat Bulldozer — Caterpillar Yellow) --
+  // -- Tractor (32x32 D8 Cat Bulldozer — Caterpillar Yellow) --
   makeTexture(scene, 'tile-tractor', S, S, (g) => {
-    // Body
+    // Main body — Caterpillar yellow
     g.fillStyle(0xd0a020);
-    g.fillRect(3, 3, 10, 6);
-    px(g, 4, 2, 0xe0b830, 8, 1); // top highlight
-    // Cab / window
+    g.fillRect(5, 5, 22, 12);
+    px(g, 6, 4, 0xe0b830, 20, 1); // top highlight
+    px(g, 5, 16, 0xb89018, 22, 1); // bottom shadow
+
+    // Cab / window area
     g.fillStyle(0x80c0e0);
-    g.fillRect(4, 3, 4, 3);
-    // Engine/hood
+    g.fillRect(7, 5, 8, 7);
+    // Window frame
+    px(g, 7, 5, 0xa0a0b0, 8, 1);
+    px(g, 7, 11, 0xa0a0b0, 8, 1);
+    px(g, 7, 5, 0xa0a0b0, 1, 7);
+    px(g, 14, 5, 0xa0a0b0, 1, 7);
+    // Window cross-bar
+    px(g, 10, 5, 0xa0a0b0, 1, 7);
+
+    // Engine/hood (right side)
     g.fillStyle(0xb08818);
-    g.fillRect(9, 4, 4, 4);
-    px(g, 13, 5, 0x808080, 1, 2); // exhaust
-    // Big back wheel
+    g.fillRect(17, 7, 10, 8);
+    px(g, 18, 8, 0xc09820, 8, 1); // hood highlight
+    // Grille lines
+    px(g, 26, 8, 0x808080, 1, 6);
+    px(g, 18, 10, 0xa08010, 8, 1);
+    px(g, 18, 12, 0xa08010, 8, 1);
+
+    // Exhaust stack
+    px(g, 26, 3, 0x606060, 2, 4);
+    px(g, 26, 2, 0x707070, 2, 1);
+    px(g, 27, 1, 0x505050, 1, 2); // smoke
+
+    // Tracks/treads (left side — big)
     g.fillStyle(0x303030);
-    g.fillRect(3, 9, 6, 6);
-    px(g, 4, 10, 0x505050, 4, 4); // hubcap
-    px(g, 5, 11, 0x303030, 2, 2);
-    // Small front wheel
-    g.fillRect(11, 11, 4, 4);
-    px(g, 12, 12, 0x505050, 2, 2);
-    // Axle
-    px(g, 9, 12, 0x606060, 2, 1);
+    g.fillRect(4, 18, 14, 12);
+    // Tread detail
+    px(g, 5, 19, 0x505050, 12, 10); // inner
+    px(g, 6, 20, 0x404040, 10, 8);  // hub area
+    px(g, 8, 22, 0x505050, 6, 4);   // center hub
+    px(g, 10, 23, 0x303030, 2, 2);  // axle
+    // Tread teeth
+    px(g, 4, 20, 0x383838, 1, 2);
+    px(g, 4, 23, 0x383838, 1, 2);
+    px(g, 4, 26, 0x383838, 1, 2);
+    px(g, 17, 20, 0x383838, 1, 2);
+    px(g, 17, 23, 0x383838, 1, 2);
+    px(g, 17, 26, 0x383838, 1, 2);
+
+    // Front wheel (smaller)
+    g.fillStyle(0x303030);
+    g.fillRect(22, 22, 8, 8);
+    px(g, 23, 23, 0x505050, 6, 6);
+    px(g, 25, 25, 0x303030, 2, 2);
+
+    // Axle connecting
+    px(g, 18, 24, 0x606060, 4, 2);
+
+    // CAT text hint (tiny yellow on side)
+    px(g, 8, 8, 0xe0c030, 3, 1);
   });
 
-  // -- Building Wall (exterior) --
+  // -- Building Wall (32x32 exterior) --
   makeTexture(scene, 'tile-building-wall', S, S, (g) => {
+    // Stucco/stone base
     g.fillStyle(0xa09888);
     g.fillRect(0, 0, S, S);
-    // Brick pattern
+
+    // Brick/stone pattern — horizontal mortar every 8px
     g.fillStyle(0x908878);
-    g.fillRect(0, 3, S, 1);
     g.fillRect(0, 7, S, 1);
-    g.fillRect(0, 11, S, 1);
     g.fillRect(0, 15, S, 1);
-    g.fillRect(4, 0, 1, 3);
-    g.fillRect(12, 0, 1, 3);
-    g.fillRect(0, 4, 1, 3);
-    g.fillRect(8, 4, 1, 3);
-    g.fillRect(4, 8, 1, 3);
-    g.fillRect(12, 8, 1, 3);
-    g.fillRect(0, 12, 1, 3);
-    g.fillRect(8, 12, 1, 3);
-    // Highlights
-    px(g, 1, 0, 0xb0a898, 3, 1);
-    px(g, 5, 4, 0xb0a898, 3, 1);
-    px(g, 1, 8, 0xb0a898, 3, 1);
+    g.fillRect(0, 23, S, 1);
+    g.fillRect(0, 31, S, 1);
+    // Vertical mortar — offset per row
+    px(g, 8, 0, 0x908878, 1, 7);
+    px(g, 24, 0, 0x908878, 1, 7);
+    px(g, 0, 8, 0x908878, 1, 7);
+    px(g, 16, 8, 0x908878, 1, 7);
+    px(g, 8, 16, 0x908878, 1, 7);
+    px(g, 24, 16, 0x908878, 1, 7);
+    px(g, 0, 24, 0x908878, 1, 7);
+    px(g, 16, 24, 0x908878, 1, 7);
+
+    // Stone highlights (top-left of each block)
+    px(g, 1, 0, 0xb0a898, 6, 1);
+    px(g, 10, 0, 0xb0a898, 12, 1);
+    px(g, 2, 8, 0xb0a898, 12, 1);
+    px(g, 18, 8, 0xb0a898, 12, 1);
+    px(g, 1, 16, 0xb0a898, 6, 1);
+    px(g, 10, 16, 0xb0a898, 12, 1);
+    px(g, 2, 24, 0xb0a898, 12, 1);
+    px(g, 18, 24, 0xb0a898, 12, 1);
+
+    // Weathering / darker patches
+    px(g, 4, 2, 0x988878, 3, 3);
+    px(g, 20, 10, 0x988878, 4, 3);
+    px(g, 10, 18, 0x988878, 3, 3);
+    px(g, 26, 26, 0x988878, 4, 3);
+
+    // Small window detail (cross-bar window)
+    px(g, 10, 2, 0x4a6a8a, 5, 4);  // window glass
+    px(g, 12, 2, 0x908878, 1, 4);  // vertical bar
+    px(g, 10, 3, 0x908878, 5, 1);  // horizontal bar
+    px(g, 10, 2, 0xb0a898, 5, 1);  // window top trim
+    px(g, 10, 5, 0x807868, 5, 1);  // window bottom trim
   });
 }
 
@@ -2519,39 +3018,66 @@ function generateTiredPlayer(scene: Phaser.Scene) {
 
 function generateHotTub(scene: Phaser.Scene) {
   const S = TILE_SIZE;
-  // Create a static bubbly tile
+  // Create a static bubbly tile (32x32)
   makeTexture(scene, 'tile-hottub', S, S, (g) => {
     // Warm blue base
     g.fillStyle(0x4098d0);
     g.fillRect(0, 0, S, S);
 
+    // Warm blue depth variation
+    px(g, 0, 0, 0x3888c0, S, 4);   // top edge darker
+    px(g, 0, 28, 0x3888c0, S, 4);  // bottom edge darker
+    px(g, 0, 0, 0x3888c0, 4, S);   // left edge
+    px(g, 28, 0, 0x3888c0, 4, S);  // right edge
+
     // Lighter warm water patches
-    px(g, 2, 2, 0x50a8e0, 3, 2);
-    px(g, 8, 6, 0x50a8e0, 4, 2);
-    px(g, 1, 10, 0x50a8e0, 3, 2);
-    px(g, 10, 12, 0x50a8e0, 3, 2);
+    px(g, 4, 4, 0x50a8e0, 6, 3);
+    px(g, 16, 10, 0x50a8e0, 8, 3);
+    px(g, 2, 18, 0x50a8e0, 6, 3);
+    px(g, 20, 22, 0x50a8e0, 6, 3);
+    px(g, 10, 26, 0x50a8e0, 5, 3);
 
-    // Bubbles — white/light circles scattered
-    px(g, 3, 3, 0xd0e8ff, 2, 2);
-    px(g, 10, 2, 0xd0e8ff, 2, 2);
-    px(g, 6, 7, 0xe0f0ff, 2, 2);
-    px(g, 13, 8, 0xd0e8ff, 2, 2);
-    px(g, 2, 12, 0xe0f0ff, 2, 2);
-    px(g, 8, 13, 0xd0e8ff, 2, 2);
-    px(g, 14, 14, 0xe0f0ff, 1, 1);
+    // Bubble clusters — larger, more detailed
+    // Cluster 1
+    px(g, 6, 5, 0xd0e8ff, 3, 3);
+    px(g, 7, 5, 0xe0f0ff, 2, 2);
+    px(g, 6, 5, 0xffffff, 1, 1);
+    // Cluster 2
+    px(g, 20, 4, 0xd0e8ff, 3, 3);
+    px(g, 21, 4, 0xe0f0ff, 2, 2);
+    px(g, 20, 4, 0xffffff, 1, 1);
+    // Cluster 3
+    px(g, 12, 12, 0xe0f0ff, 3, 3);
+    px(g, 13, 12, 0xd0e8ff, 2, 2);
+    px(g, 12, 12, 0xffffff, 1, 1);
+    // Cluster 4
+    px(g, 26, 14, 0xd0e8ff, 3, 3);
+    px(g, 27, 14, 0xe0f0ff, 2, 2);
+    px(g, 26, 14, 0xffffff, 1, 1);
+    // Cluster 5
+    px(g, 4, 22, 0xe0f0ff, 3, 3);
+    px(g, 5, 22, 0xd0e8ff, 2, 2);
+    px(g, 4, 22, 0xffffff, 1, 1);
+    // Cluster 6
+    px(g, 18, 26, 0xd0e8ff, 3, 3);
+    px(g, 19, 26, 0xe0f0ff, 2, 2);
+    px(g, 18, 26, 0xffffff, 1, 1);
 
-    // Bubble highlights (bright white dots)
-    px(g, 3, 3, 0xffffff, 1, 1);
-    px(g, 10, 2, 0xffffff, 1, 1);
-    px(g, 6, 7, 0xffffff, 1, 1);
-    px(g, 13, 8, 0xffffff, 1, 1);
-    px(g, 2, 12, 0xffffff, 1, 1);
-    px(g, 8, 13, 0xffffff, 1, 1);
+    // Small single bubbles
+    px(g, 10, 8, 0xe0f0ff, 2, 2);
+    px(g, 10, 8, 0xffffff, 1, 1);
+    px(g, 28, 8, 0xe0f0ff, 1, 1);
+    px(g, 14, 20, 0xe0f0ff, 2, 2);
+    px(g, 14, 20, 0xffffff, 1, 1);
+    px(g, 24, 28, 0xe0f0ff, 1, 1);
+    px(g, 8, 16, 0xe0f0ff, 1, 1);
 
-    // Steam wisps (very light)
-    px(g, 4, 0, 0xc0d8f0, 2, 1);
-    px(g, 11, 1, 0xc0d8f0, 2, 1);
-    px(g, 7, 0, 0xb0d0e8, 1, 1);
+    // Steam wisps (very light, at top)
+    px(g, 6, 0, 0xc0d8f0, 3, 1);
+    px(g, 8, 1, 0xb0d0e8, 2, 1);
+    px(g, 20, 0, 0xc0d8f0, 4, 1);
+    px(g, 22, 1, 0xb0d0e8, 2, 1);
+    px(g, 14, 0, 0xc0d8f0, 2, 1);
   });
 }
 

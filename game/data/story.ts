@@ -879,14 +879,22 @@ const ch0Extras: Record<string, DialogueLine[]> = {
   ],
   ch0_nolan_call: [
     { speaker: 'Narrator', text: 'JP\'s phone rings. It\'s Nolan.' },
-    { speaker: 'Nolan', text: 'Yo JP. You still stuck at home doing nothing?' },
-    { speaker: 'JP', text: 'Basically.' },
-    { speaker: 'Nolan', text: 'Bro come down to Santa Barbara. Me and the boys got a spot by the beach.' },
-    { speaker: 'Nolan', text: 'It\'s a good opportunity man. Lots of money to be made down here.' },
-    { speaker: 'JP', text: 'What kind of money?' },
-    { speaker: 'Nolan', text: 'The kind you don\'t put on a resume. You in or not?' },
-    { speaker: 'JP', text: '...yeah. I\'m in.' },
-    { speaker: 'JP\'s Mind', text: 'JP didn\'t ask any more questions. He just wanted out.' },
+    { speaker: 'Nolan', text: 'Yo JP. You still stuck at home?' },
+    { speaker: 'JP', text: 'Doing nothing bro.' },
+    { speaker: 'Nolan', text: 'Come down to Santa Barbara. Me and the boys got a spot by the beach.' },
+    { speaker: 'Nolan', text: 'We\'re all going to SBCC. It\'s chill. Good vibes, good weather, good people.' },
+    { speaker: 'JP', text: 'School? For real?' },
+    { speaker: 'Nolan', text: 'Yeah bro. Figure it out down here. Better than sitting in your room.' },
+    { speaker: 'JP', text: '', choices: [
+      { text: '"I need to get out of here. I\'m in."', next: [
+        { speaker: 'Nolan', text: 'Let\'s go. I\'ll send you the address.' },
+      ]},
+      { text: '"Let me think about it."', next: [
+        { speaker: 'Nolan', text: 'Don\'t think too long. Room\'s almost gone.' },
+        { speaker: 'JP', text: '...alright. I\'m in.' },
+      ]},
+    ]},
+    { speaker: 'JP\'s Mind', text: 'Nolan wasn\'t offering anything shady. Just a fresh start. JP needed that.' },
   ],
   ch0_hidden_stash: [
     { speaker: 'Narrator', text: 'A small bag of weed tucked behind the bookshelf.' },

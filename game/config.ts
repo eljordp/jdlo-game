@@ -1,7 +1,7 @@
 // Core game constants — shared across all systems and scenes
 
-export const TILE_SIZE = 16;
-export const SCALE = 4;
+export const TILE_SIZE = 32;
+export const SCALE = 2;
 export const SCALED_TILE = TILE_SIZE * SCALE; // 64px per tile on screen
 
 // Character sprites: 32x32 at scale 2 = 64px on screen (same as 16x16 at scale 4, but 4x detail)
@@ -48,10 +48,10 @@ export const COLORS = {
   treeGreen: 0x308030,
   treeDark: 0x206020,
 
-  // Character
-  skinTone: 0xf0c090,
-  skinShadow: 0xd0a070,
-  hairDark: 0x302020,
+  // Character — JP is tan with black hair, brown eyes
+  skinTone: 0xd4a870,
+  skinShadow: 0xb88850,
+  hairDark: 0x101010,
   shirtBlue: 0x4060c0,
   pantsGrey: 0x505060,
   shoeDark: 0x303030,
