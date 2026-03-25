@@ -72,7 +72,7 @@ export default function GameCanvas() {
         },
       },
       scale: {
-        mode: Phaser.Scale.ENVELOP,
+        mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
       },
       input: {
