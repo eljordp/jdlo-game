@@ -671,8 +671,19 @@ const ch1Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'Every night blurs into the next one.' },
   ],
   ch1_hottub: [
-    { speaker: 'JP\'s Mind', text: 'Hot tub\'s still running. Nobody\'s cleaned it in weeks.' },
-    { speaker: 'JP\'s Mind', text: 'We spend more on the electric bill for this thing than rent. Priorities.' },
+    { speaker: 'JP\'s Mind', text: 'Hot tub bubbling at 2 PM on a Wednesday. Three girls in bikinis. Nobody has a job.' },
+    { speaker: 'JP\'s Mind', text: 'This is what the good life looks like when you\'re 20 and selling weed in Santa Barbara.' },
+    { speaker: 'JP\'s Mind', text: 'Ask me in a year if it was worth it.' },
+  ],
+  ch1_girl3: [
+    { speaker: 'Girl', text: 'JP! Get in the hot tub!' },
+    { speaker: 'JP', text: 'Maybe later.' },
+    { speaker: 'Girl', text: 'You always say that. You\'re so boring.' },
+    { speaker: 'JP\'s Mind', text: 'She doesn\'t know what I do for a living. None of them do.' },
+  ],
+  ch1_girl_couch: [
+    { speaker: 'Narrator', text: 'She\'s passed out on the couch in a bikini. It\'s 2 PM.' },
+    { speaker: 'JP\'s Mind', text: 'She was here last night too. And the night before. I don\'t even know her name.' },
   ],
   ch1_mess: [
     { speaker: 'JP\'s Mind', text: 'Clothes, trash, plates. This house is disgusting.' },

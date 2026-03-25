@@ -160,10 +160,10 @@ export const beachMap: MapData = {
     //0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
     [ B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B ], // 0  house top wall
     [ B, F, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, B, C, C, C, C, C, C, C, B ], // 1  living room | JP room | kitchen | hot tub patio
-    [ B, F, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, B, C, C, C, C, C, C, C, B ], // 2
-    [ B, F, F, F, F, F, F, F, B, F, F, F, M, F, B, F, F, F, F, B, C, C, W, W, W, C, C, B ], // 3  computer in JP room, hot tub water
-    [ B, F, F, F, F, F, F, F, O, F, F, F, F, F, O, F, F, F, F, B, C, C, W, W, W, C, C, B ], // 4  doors between rooms
-    [ B, F, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, B, C, C, W, W, W, C, C, B ], // 5
+    [ B, F, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, B, C, W, W, W, W, W, C, B ], // 2  bigger hot tub
+    [ B, F, F, F, F, F, F, F, B, F, F, F, M, F, B, F, F, F, F, B, C, W, W, W, W, W, C, B ], // 3  computer in JP room
+    [ B, F, F, F, F, F, F, F, O, F, F, F, F, F, O, F, F, F, F, B, C, W, W, W, W, W, C, B ], // 4  doors between rooms
+    [ B, F, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, B, C, W, W, W, W, W, C, B ], // 5
     [ B, F, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, B, C, C, C, C, C, C, C, B ], // 6
     [ B, B, B, B, O, B, B, B, B, B, B, O, B, B, B, B, O, B, B, B, B, B, B, O, B, B, B, B ], // 7  house bottom wall with doors
     [ G, G, G, G, P, G, G, G, G, G, G, P, G, G, G, G, P, G, G, G, G, G, G, P, G, G, G, G ], // 8  paths from house doors
@@ -186,9 +186,11 @@ export const beachMap: MapData = {
     player: { x: 11, y: 9 },
     npcs: [
       { id: 'ch1_homie1', x: 6,  y: 4,  sprite: 'npc_kid' },
-      { id: 'ch1_homie2', x: 21, y: 11, sprite: 'npc_generic' },
-      { id: 'ch1_girl1',  x: 3,  y: 5,  sprite: 'npc_bikini1' },
-      { id: 'ch1_girl2',  x: 25, y: 11, sprite: 'npc_bikini2' },
+      { id: 'ch1_homie2', x: 16, y: 4,  sprite: 'npc_generic' },
+      { id: 'ch1_girl1',  x: 20, y: 2,  sprite: 'npc_bikini1' },
+      { id: 'ch1_girl2',  x: 26, y: 3,  sprite: 'npc_bikini2' },
+      { id: 'ch1_girl3',  x: 20, y: 5,  sprite: 'npc_bikini1' },
+      { id: 'ch1_girl_couch', x: 3, y: 5, sprite: 'npc_bikini2' },
     ],
   },
   triggers: [
@@ -244,15 +246,15 @@ export const wrongCrowdMap: MapData = {
     [ X, X, G, G, G, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, X, X ], // 17  different neighborhood
     [ X, X, G, G, G, G, G, G, G, G, G, G, G, G, P, P, P, P, P, G, G, G, G, G, G, G, G, G, X, X ], // 18  path branches to buyer house
     [ X, X, G, G, T, G, G, G, G, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, T, G, G, G, X, X ], // 19  trees + path to house
-    [ X, X, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, P, G, G, B, B, B, B, B, B, G, X, X ], // 20  buyer house exterior wall
-    [ X, X, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, P, P, P, B, D, D, D, D, B, G, X, X ], // 21  path to door | inside
-    [ X, X, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, B, B, O, B, B, B, G, X, X ], // 22  buyer house door
+    [ X, X, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, P, G, B, B, B, B, B, B, B, G, X, X ], // 20  buyer house top wall
+    [ X, X, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, P, G, B, D, D, D, D, D, B, G, X, X ], // 21  inside visible through wall
+    [ X, X, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, P, P, P, P, O, D, D, D, B, G, X, X ], // 22  path leads directly to door
 
     // --- INSIDE BUYER'S HOUSE (rows 23-27) ---
-    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, B, D, D, D, D, B, X, X, X ], // 23  inside buyer house
-    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, B, D, D, D, D, B, X, X, X ], // 24  sale spot area
-    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, B, D, D, M, D, B, X, X, X ], // 25  table (M) in back
-    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, B, B, B, B, B, B, X, X, X ], // 26  back wall
+    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, B, D, D, D, D, D, B, X, X, X ], // 23  inside buyer house
+    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, B, D, D, D, D, D, B, X, X, X ], // 24  sale spot area
+    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, B, D, D, D, M, D, B, X, X, X ], // 25  table (M) in back
+    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, B, B, B, B, B, B, B, X, X, X ], // 26  back wall
     [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 27  bottom border
   ],
   collisions: STANDARD_COLLISIONS,
@@ -260,8 +262,8 @@ export const wrongCrowdMap: MapData = {
     player: { x: 5, y: 3 },  // JP starts in his room
     npcs: [
       { id: 'ch2_homie_door', x: 12, y: 7, sprite: 'npc_kid' },     // homie in frat hallway
-      { id: 'ch2_lookout',    x: 19, y: 21, sprite: 'npc_shady' },   // outside buyer's door
-      { id: 'ch2_buyer',      x: 24, y: 23, sprite: 'npc_generic' }, // inside buyer's house
+      { id: 'ch2_lookout',    x: 18, y: 20, sprite: 'npc_shady' },   // outside buyer's house
+      { id: 'ch2_buyer',      x: 23, y: 23, sprite: 'npc_generic' }, // inside buyer's house
     ],
   },
   triggers: [],  // No scene triggers — only way out is through ch2_sale raid
@@ -269,7 +271,7 @@ export const wrongCrowdMap: MapData = {
     { id: 'ch2_grab_weed', x: 6, y: 2, type: 'examine', glow: true },   // desk in JP's room
     { id: 'ch2_car',       x: 9, y: 11, type: 'examine', glow: true },   // BMW on the curb
     { id: 'ch2_mirror',    x: 10, y: 11, type: 'examine', glow: false },  // car mirror
-    { id: 'ch2_buyer_house', x: 23, y: 22, type: 'examine', glow: true }, // buyer's front door
+    { id: 'ch2_buyer_house', x: 19, y: 22, type: 'examine', glow: true }, // approaching buyer's door
     { id: 'ch2_sale',      x: 23, y: 24, type: 'examine', glow: true },   // THE TRIGGER — sale spot
     { id: 'ch2_alley',     x: 7, y: 15, type: 'examine', glow: true },    // kept from original
     { id: 'ch2_phone',     x: 4, y: 4, type: 'examine', glow: true },     // in JP's room
