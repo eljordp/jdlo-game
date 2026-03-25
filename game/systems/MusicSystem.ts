@@ -77,8 +77,20 @@ export class MusicSystem {
     if (this.currentTrack === trackName) return;
     this.stop();
 
+    if (this.muted) {
+      this.currentTrack = trackName;
+      return;
+    }
+
+    // Beach ambiance — wave sounds using filtered noise
+    if (trackName === 'santa-barbara') {
+      this.playBeachAmbiance();
+      this.currentTrack = trackName;
+      return;
+    }
+
     const track = TRACKS[trackName];
-    if (!track || this.muted) {
+    if (!track) {
       this.currentTrack = trackName;
       return;
     }
@@ -123,6 +135,53 @@ export class MusicSystem {
         }
       }
     }, msPerBeat);
+  }
+
+  private static playBeachAmbiance(): void {
+    const ctx = this.getCtx();
+
+    // White noise buffer — sounds like ocean/waves when filtered
+    const bufferSize = ctx.sampleRate * 4;
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = (Math.random() * 2 - 1);
+    }
+
+    const noise = ctx.createBufferSource();
+    noise.buffer = buffer;
+    noise.loop = true;
+
+    // Band-pass filter — makes noise sound like waves
+    this.filterNode = ctx.createBiquadFilter();
+    this.filterNode.type = 'bandpass';
+    this.filterNode.frequency.value = 600;
+    this.filterNode.Q.value = 0.3;
+
+    // Very quiet
+    this.gainNode = ctx.createGain();
+    this.gainNode.gain.value = 0.015;
+
+    noise.connect(this.filterNode);
+    this.filterNode.connect(this.gainNode);
+    this.gainNode.connect(ctx.destination);
+    noise.start();
+
+    // Store as oscillator for cleanup (it's actually a BufferSource but same interface)
+    this.oscillator = noise as unknown as OscillatorNode;
+
+    // Wave rhythm — volume swells up and down like waves crashing
+    const waveRhythm = () => {
+      if (!this.gainNode || this.currentTrack !== 'santa-barbara') return;
+      const now = ctx.currentTime;
+      // Swell up
+      this.gainNode.gain.setTargetAtTime(0.03, now, 1.5);
+      // Fade down
+      this.gainNode.gain.setTargetAtTime(0.008, now + 3, 2);
+
+      this.interval = setTimeout(waveRhythm, 5000 + Math.random() * 3000) as unknown as ReturnType<typeof setInterval>;
+    };
+    waveRhythm();
   }
 
   static stop(): void {
