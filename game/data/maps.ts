@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // Tile Map Data — Pokemon Platinum-style maps for each chapter
-// Each tile is 16x16 px. Maps range from 15x12 (jail) to 30x25 (city).
+// Each tile is 16x16 px. Maps range from 20x18 (home) to 35x30 (jail).
 // ---------------------------------------------------------------------------
 
 export const TILES = {
@@ -111,69 +111,70 @@ export const homeMap: MapData = {
     { x: 9,  y: 17, action: 'scene', target: 'BeachScene' },
   ],
   interactables: [
-    { id: 'ch0_bed',    x: 11, y: 5,  type: 'examine', glow: true },
-    { id: 'ch0_window', x: 5,  y: 4,  type: 'examine', glow: true },
-    { id: 'ch0_fridge', x: 5,  y: 5,  type: 'examine', glow: true },
-    { id: 'ch0_tv',     x: 10, y: 6,  type: 'examine', glow: true },
+    { id: 'ch0_bed',     x: 11, y: 5,  type: 'examine', glow: true },
+    { id: 'ch0_window',  x: 5,  y: 4,  type: 'examine', glow: true },
+    { id: 'ch0_fridge',  x: 5,  y: 5,  type: 'examine', glow: true },
+    { id: 'ch0_tv',      x: 10, y: 6,  type: 'examine', glow: true },
+    { id: 'ch0_goodbye', x: 8,  y: 16, type: 'examine', glow: true },
   ],
 };
 
 // ---------------------------------------------------------------------------
-// 1. BEACH MAP — Coastal Town  (28 wide x 22 tall)
+// 1. BEACH MAP — Frat House by the Beach, Santa Barbara  (28 wide x 22 tall)
 // ---------------------------------------------------------------------------
-// Water along the south/east edge, sand dominates, palm trees scattered,
-// two small houses in the north, paths connecting everything.
+// Dirty house interior at top (living room, JP's room, kitchen, hot tub area).
+// Path/concrete connecting house to beach. Sand + water along the south.
 // ---------------------------------------------------------------------------
 export const beachMap: MapData = {
   tiles: [
     //0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
-    [ T, T, G, G, G, G, T, G, G, G, G, G, G, T, G, G, G, G, T, G, G, G, G, G, T, T, G, G ], // 0
-    [ T, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, T, G, L ], // 1
-    [ G, G, B, B, B, B, B, G, G, G, G, G, G, G, G, G, B, B, B, B, B, G, G, G, G, G, G, S ], // 2
-    [ G, G, B, F, F, F, B, G, G, T, G, G, G, G, G, G, B, F, F, F, B, G, G, G, G, G, S, S ], // 3
-    [ G, G, B, F, F, F, B, G, G, G, G, G, G, G, G, G, B, F, F, F, B, G, G, L, G, S, S, S ], // 4
-    [ G, G, B, B, O, B, B, G, G, G, G, G, G, G, G, G, B, B, O, B, B, G, G, G, S, S, S, S ], // 5
-    [ G, G, G, G, P, G, G, G, G, G, G, T, G, G, G, G, G, G, P, G, G, G, G, S, S, S, L, S ], // 6
-    [ G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, P, G, G, G, S, S, S, S, S, S ], // 7
-    [ G, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, S, S, L, S, S, S ], // 8
-    [ G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, P, G, G, S, S, S, S, S, S, S ], // 9
-    [ G, G, G, G, P, G, G, G, G, L, G, G, G, G, G, L, G, G, P, G, S, S, S, S, S, S, S, W ], // 10
-    [ G, G, T, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, P, G, S, S, L, S, S, S, W, W ], // 11
-    [ G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, P, S, S, S, S, S, S, W, W, W ], // 12
-    [ G, G, G, G, P, P, P, P, P, P, P, P, P, G, G, G, G, G, P, S, S, S, S, S, W, W, W, W ], // 13
-    [ G, G, L, G, G, G, G, G, G, G, G, G, P, G, G, G, G, S, S, S, S, L, S, W, W, W, W, W ], // 14
-    [ G, G, G, G, G, G, G, G, G, G, G, G, P, G, G, L, S, S, S, S, S, S, W, W, W, W, W, W ], // 15
-    [ G, G, G, G, G, T, G, G, G, G, G, G, P, G, S, S, S, S, S, S, S, W, W, W, W, W, W, W ], // 16
-    [ G, G, G, G, G, G, G, G, G, G, G, G, P, S, S, S, S, L, S, S, W, W, W, W, W, W, W, W ], // 17
-    [ G, G, G, G, G, G, G, T, G, G, G, G, P, S, S, S, S, S, S, W, W, W, W, W, W, W, W, W ], // 18
-    [ T, G, G, G, G, G, G, G, G, G, G, S, S, S, S, S, S, S, W, W, W, W, W, W, W, W, W, W ], // 19
-    [ T, G, G, G, G, G, G, G, G, G, S, S, S, S, S, L, S, W, W, W, W, W, W, W, W, W, W, W ], // 20
-    [ T, T, G, G, P, P, P, P, G, G, S, S, S, S, S, S, W, W, W, W, W, W, W, W, W, W, W, W ], // 21
+    [ B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B ], // 0  house top wall
+    [ B, F, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, B, C, C, C, C, C, C, C, B ], // 1  living room | JP room | kitchen | hot tub patio
+    [ B, F, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, B, C, C, C, C, C, C, C, B ], // 2
+    [ B, F, F, F, F, F, F, F, B, F, F, F, M, F, B, F, F, F, F, B, C, C, W, W, W, C, C, B ], // 3  computer in JP room, hot tub water
+    [ B, F, F, F, F, F, F, F, O, F, F, F, F, F, O, F, F, F, F, B, C, C, W, W, W, C, C, B ], // 4  doors between rooms
+    [ B, F, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, B, C, C, W, W, W, C, C, B ], // 5
+    [ B, F, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, B, C, C, C, C, C, C, C, B ], // 6
+    [ B, B, B, B, O, B, B, B, B, B, B, O, B, B, B, B, O, B, B, B, B, B, B, O, B, B, B, B ], // 7  house bottom wall with doors
+    [ G, G, G, G, P, G, G, G, G, G, G, P, G, G, G, G, P, G, G, G, G, G, G, P, G, G, G, G ], // 8  paths from house doors
+    [ G, G, G, G, P, G, G, G, G, G, G, P, G, G, G, G, P, G, G, G, G, G, G, P, G, G, G, G ], // 9
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 10 concrete walkway
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 11
+    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 12 grass transition
+    [ G, G, L, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, L, G, G ], // 13
+    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 14 sand starts
+    [ S, S, S, S, S, S, S, S, L, S, S, S, S, S, S, S, S, S, S, L, S, S, S, S, S, S, S, S ], // 15
+    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 16
+    [ S, S, S, S, S, L, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, L, S, S, S, S, S ], // 17
+    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 18
+    [ W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W ], // 19 ocean
+    [ W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W ], // 20
+    [ W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W ], // 21
   ],
   collisions: STANDARD_COLLISIONS,
   spawns: {
-    player: { x: 12, y: 10 },
+    player: { x: 11, y: 9 },
     npcs: [
-      { id: 'ch1_pops',     x: 5,  y: 6,  sprite: 'npc_pops' },
-      { id: 'ch1_mom',      x: 4,  y: 3,  sprite: 'npc_female' },
-      { id: 'ch1_friend',   x: 20, y: 9,  sprite: 'npc_kid' },
-      { id: 'ch1_stranger', x: 1,  y: 17, sprite: 'npc_shady' },
+      { id: 'ch1_homie1', x: 6,  y: 4,  sprite: 'npc_kid' },
+      { id: 'ch1_homie2', x: 21, y: 11, sprite: 'npc_generic' },
+      { id: 'ch1_girl1',  x: 3,  y: 5,  sprite: 'npc_bikini1' },
+      { id: 'ch1_girl2',  x: 25, y: 11, sprite: 'npc_bikini2' },
     ],
   },
   triggers: [
-    { x: 4,  y: 21, action: 'scene', target: 'WrongCrowdScene' },
-    { x: 5,  y: 21, action: 'scene', target: 'WrongCrowdScene' },
-    { x: 6,  y: 21, action: 'scene', target: 'WrongCrowdScene' },
-    { x: 7,  y: 21, action: 'scene', target: 'WrongCrowdScene' },
+    { x: 12, y: 18, action: 'scene', target: 'WrongCrowdScene' },
+    { x: 13, y: 18, action: 'scene', target: 'WrongCrowdScene' },
+    { x: 14, y: 18, action: 'scene', target: 'WrongCrowdScene' },
+    { x: 15, y: 18, action: 'scene', target: 'WrongCrowdScene' },
   ],
   interactables: [
-    { id: 'ch1_joint', x: 8, y: 12, type: 'examine', glow: true },
-    { id: 'ch1_stash', x: 3, y: 8, type: 'examine', glow: true },
-    { id: 'ch1_view', x: 22, y: 5, type: 'examine', glow: true },
-    { id: 'ch1_car', x: 7, y: 7, type: 'examine', glow: true },
-    { id: 'ch1_sunset', x: 14, y: 17, type: 'examine', glow: true },
-    { id: 'ch1_money', x: 2, y: 10, type: 'examine', glow: true },
-    { id: 'ch1_bench', x: 17, y: 10, type: 'examine', glow: true },
+    { id: 'ch1_weed1',   x: 12, y: 3,  type: 'examine', glow: true },
+    { id: 'ch1_weed2',   x: 10, y: 5,  type: 'examine', glow: true },
+    { id: 'ch1_weed3',   x: 4,  y: 2,  type: 'examine', glow: true },
+    { id: 'ch1_bottles', x: 16, y: 2,  type: 'examine', glow: true },
+    { id: 'ch1_hottub',  x: 23, y: 4,  type: 'examine', glow: true },
+    { id: 'ch1_mess',    x: 2,  y: 6,  type: 'examine', glow: true },
+    { id: 'ch1_view',    x: 14, y: 16, type: 'examine', glow: true },
   ],
 };
 
@@ -185,95 +186,161 @@ export const beachMap: MapData = {
 // ---------------------------------------------------------------------------
 export const wrongCrowdMap: MapData = {
   tiles: [
-    //0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25
-    [ X, X, X, X, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, X, X, X, X, X ], // 0
-    [ X, X, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, X, X, X ], // 1
-    [ X, C, C, B, B, B, B, C, C, B, B, B, B, B, C, C, C, B, B, B, B, B, C, C, X, X ], // 2
-    [ X, C, C, B, F, F, B, C, C, B, F, F, F, B, C, C, C, B, F, F, F, B, C, C, C, X ], // 3
-    [ X, C, C, B, F, F, B, C, C, B, F, F, F, B, C, C, C, B, F, F, F, B, C, C, C, X ], // 4
-    [ X, C, C, B, B, O, B, C, C, B, B, O, B, B, C, E, C, B, B, B, O, B, C, C, C, X ], // 5
-    [ X, C, C, C, C, C, C, C, C, C, C, C, C, C, C, E, C, C, C, C, C, C, C, C, C, X ], // 6
-    [ X, C, P, P, P, P, P, P, P, P, P, P, P, P, P, E, P, P, P, P, P, P, P, P, C, X ], // 7
-    [ X, C, C, C, C, C, C, C, X, X, C, C, C, C, C, C, C, C, C, X, X, C, C, C, C, X ], // 8
-    [ X, C, C, C, C, C, C, C, X, D, D, C, C, C, C, C, C, C, X, X, D, D, C, C, C, X ], // 9
-    [ X, C, B, B, B, B, C, C, X, D, D, C, C, E, C, C, C, C, X, D, D, D, C, C, C, X ], // 10
-    [ X, C, B, F, F, B, C, C, X, X, C, C, C, E, C, C, C, C, X, X, X, C, C, C, C, X ], // 11
-    [ X, C, B, F, F, B, C, C, C, C, C, C, C, C, C, G, G, G, G, G, G, G, G, C, C, X ], // 12
-    [ X, C, B, B, O, B, C, C, C, C, C, C, C, C, G, G, T, G, G, G, T, G, G, C, C, X ], // 13
-    [ X, C, C, C, C, C, C, C, C, C, C, C, C, C, G, G, G, G, G, G, G, G, G, C, C, X ], // 14
-    [ X, C, P, P, P, P, P, P, P, P, P, P, P, P, G, G, G, G, P, G, G, G, G, C, C, X ], // 15
-    [ X, C, C, C, C, C, C, C, C, X, X, C, C, C, G, T, G, G, P, G, G, T, G, C, C, X ], // 16
-    [ X, C, C, B, B, B, B, C, C, X, D, D, C, C, G, G, G, G, P, G, G, G, G, C, C, X ], // 17
-    [ X, C, C, B, F, F, B, C, C, X, D, D, C, C, G, G, G, G, P, G, G, G, G, C, C, X ], // 18
-    [ X, C, C, B, B, O, B, C, C, X, X, C, C, C, C, C, C, P, P, C, C, C, C, C, C, X ], // 19
-    [ X, C, C, C, C, C, C, C, C, C, C, C, C, P, P, P, P, P, C, C, C, C, C, C, C, X ], // 20
-    [ X, X, X, X, X, X, X, X, X, X, X, X, X, P, P, P, P, X, X, X, X, X, X, X, X, X ], // 21
+    //0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29
+    // --- FRAT HOUSE INTERIOR (rows 0-8) ---
+    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 0  top wall
+    [ X, X, B, B, B, B, B, B, B, X, X, B, B, B, B, B, B, B, B, B, X, X, X, X, X, X, X, X, X, X ], // 1  JP room walls + hallway walls
+    [ X, X, B, F, F, F, M, F, B, X, X, B, F, F, F, F, F, F, F, B, X, X, X, X, X, X, X, X, X, X ], // 2  JP room (M=desk w/ weed) | common room
+    [ X, X, B, F, F, F, F, F, B, X, X, B, F, F, F, F, F, F, F, B, X, X, X, X, X, X, X, X, X, X ], // 3  JP room | common room
+    [ X, X, B, F, F, F, F, F, B, X, X, B, F, F, F, F, F, F, F, B, X, X, X, X, X, X, X, X, X, X ], // 4  JP room | common room
+    [ X, X, B, B, B, B, O, B, B, X, X, B, B, B, O, B, B, B, B, B, X, X, X, X, X, X, X, X, X, X ], // 5  doors out of rooms
+    [ X, X, X, X, X, X, F, X, X, X, X, X, X, X, F, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 6  narrow hallway
+    [ X, X, X, X, X, X, F, F, F, F, F, F, F, F, F, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 7  hallway connecting rooms to front
+    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, O, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 8  front door of frat house
+
+    // --- FRONT YARD + PARKING (rows 9-12) ---
+    [ X, X, G, G, G, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, X, X ], // 9   front yard, path from door
+    [ X, X, G, G, G, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, X, X ], // 10  yard
+    [ X, X, G, G, G, G, G, G, E, E, E, E, G, G, P, G, G, G, T, G, G, G, T, G, G, G, G, G, X, X ], // 11  BMW 335i (FENCE = car shape) | trees
+    [ X, X, G, G, G, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, X, X ], // 12  yard to street
+
+    // --- STREET (rows 13-16) ---
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 13  road
+    [ C, C, C, C, E, E, E, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, E, E, E, C, C, C, C, C ], // 14  parked cars on street
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 15  road
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 16  road continues
+
+    // --- BUYER'S BLOCK (rows 17-22) ---
+    [ X, X, G, G, G, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, X, X ], // 17  different neighborhood
+    [ X, X, G, G, G, G, G, G, G, G, G, G, G, G, P, P, P, P, P, G, G, G, G, G, G, G, G, G, X, X ], // 18  path branches to buyer house
+    [ X, X, G, G, T, G, G, G, G, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, T, G, G, G, X, X ], // 19  trees + path to house
+    [ X, X, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, P, G, G, B, B, B, B, B, B, G, X, X ], // 20  buyer house exterior wall
+    [ X, X, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, P, P, P, B, D, D, D, D, B, G, X, X ], // 21  path to door | inside
+    [ X, X, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, B, B, O, B, B, B, G, X, X ], // 22  buyer house door
+
+    // --- INSIDE BUYER'S HOUSE (rows 23-27) ---
+    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, B, D, D, D, D, B, X, X, X ], // 23  inside buyer house
+    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, B, D, D, D, D, B, X, X, X ], // 24  sale spot area
+    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, B, D, D, M, D, B, X, X, X ], // 25  table (M) in back
+    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, B, B, B, B, B, B, X, X, X ], // 26  back wall
+    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 27  bottom border
   ],
   collisions: STANDARD_COLLISIONS,
   spawns: {
-    player: { x: 12, y: 1 },
+    player: { x: 5, y: 3 },  // JP starts in his room
     npcs: [
-      { id: 'ch2_shady',    x: 10, y: 9,  sprite: 'npc_shady' },
-      { id: 'ch2_warning',  x: 18, y: 14, sprite: 'npc_kid' },
-      { id: 'ch2_random',   x: 6,  y: 7,  sprite: 'npc_generic' },
+      { id: 'ch2_homie_door', x: 12, y: 7, sprite: 'npc_kid' },     // homie in frat hallway
+      { id: 'ch2_lookout',    x: 19, y: 21, sprite: 'npc_shady' },   // outside buyer's door
+      { id: 'ch2_buyer',      x: 24, y: 23, sprite: 'npc_generic' }, // inside buyer's house
     ],
   },
-  triggers: [
-    { x: 13, y: 21, action: 'scene', target: 'CourtScene' },
-    { x: 14, y: 21, action: 'scene', target: 'CourtScene' },
-    { x: 15, y: 21, action: 'scene', target: 'CourtScene' },
-    { x: 16, y: 21, action: 'scene', target: 'CourtScene' },
-  ],
+  triggers: [],  // No scene triggers — only way out is through ch2_sale raid
   interactables: [
-    { id: 'ch2_alley', x: 10, y: 10, type: 'examine', glow: true },
-    { id: 'ch2_phone', x: 5, y: 14, type: 'examine', glow: true },
-    { id: 'ch2_graffiti', x: 2, y: 7, type: 'examine', glow: true },
+    { id: 'ch2_grab_weed', x: 6, y: 2, type: 'examine', glow: true },   // desk in JP's room
+    { id: 'ch2_car',       x: 9, y: 11, type: 'examine', glow: true },   // BMW on the curb
+    { id: 'ch2_mirror',    x: 10, y: 11, type: 'examine', glow: false },  // car mirror
+    { id: 'ch2_buyer_house', x: 23, y: 22, type: 'examine', glow: true }, // buyer's front door
+    { id: 'ch2_sale',      x: 23, y: 24, type: 'examine', glow: true },   // THE TRIGGER — sale spot
+    { id: 'ch2_alley',     x: 7, y: 15, type: 'examine', glow: true },    // kept from original
+    { id: 'ch2_phone',     x: 4, y: 4, type: 'examine', glow: true },     // in JP's room
+    { id: 'ch2_graffiti',  x: 6, y: 17, type: 'examine', glow: true },    // buyer's block
   ],
 };
 
 // ---------------------------------------------------------------------------
 // 3. JAIL MAP — Cell + Hallway  (15 wide x 12 tall)
 // ---------------------------------------------------------------------------
-// Tiny. A 4x3 cell, a narrow hallway. Heavy walls. Claustrophobic.
+// REAL jail. Cells, yard, common area, hallways. 35 wide x 30 tall.
 // ---------------------------------------------------------------------------
 export const jailMap: MapData = {
   tiles: [
-    //0  1  2  3  4  5  6  7  8  9 10 11 12 13 14
-    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 0
-    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 1
-    [ X, X, X, X, X, X, D, D, D, D, D, D, X, X, X ], // 2
-    [ X, X, X, F, F, F, D, D, D, D, D, D, X, X, X ], // 3
-    [ X, X, X, F, F, F, D, D, D, D, D, D, X, X, X ], // 4
-    [ X, X, X, F, F, F, D, D, D, D, D, D, X, X, X ], // 5
-    [ X, X, X, X, O, X, D, D, D, D, D, D, X, X, X ], // 6
-    [ X, X, X, X, D, D, D, D, D, D, D, D, X, X, X ], // 7
-    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 8
-    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 9
-    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 10
-    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 11
+    //0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34
+    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 0
+    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 1
+
+    // --- CELL BLOCK (rows 2-10) left side + COMMON AREA right side ---
+    [ X, X, F, F, F, X, X, F, F, F, X, X, D, D, D, D, X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 2  cell1 | cell2 | hall | common area
+    [ X, X, F, F, F, X, X, F, F, F, X, X, D, D, D, D, X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 3
+    [ X, X, F, F, F, X, X, F, F, F, X, X, D, D, D, D, X, X, D, D, D, M, D, D, D, D, D, D, M, D, D, D, D, X, X ], // 4  tables in common area
+    [ X, X, X, O, X, X, X, X, O, X, X, X, D, D, D, D, X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 5  cell doors
+    [ X, X, F, F, F, X, X, F, F, F, X, X, D, D, D, D, X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 6  cell3 (JP's) | cell4
+    [ X, X, F, F, F, X, X, F, F, F, X, X, D, D, D, D, X, X, D, D, D, D, D, D, M, D, D, D, D, D, D, D, D, X, X ], // 7
+    [ X, X, F, F, F, X, X, F, F, F, X, X, D, D, D, D, X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 8
+    [ X, X, X, O, X, X, X, X, O, X, X, X, D, D, D, D, X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 9  cell doors
+    [ X, X, F, F, F, X, X, F, F, F, X, X, D, D, D, D, X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 10 cell5 | cell6 (extra)
+
+    // --- MAIN HALLWAY (rows 11-14) ---
+    [ X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 11
+    [ X, X, D, D, D, D, D, D, D, D, D, D, D, D, F, F, F, F, F, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 12 guard station
+    [ X, X, D, D, D, D, D, D, D, D, D, D, D, D, F, M, F, F, F, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 13 guard desk
+    [ X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 14
+
+    // --- YARD / EXERCISE AREA (rows 15-22) ---
+    [ X, X, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, X, X ], // 15
+    [ X, X, C, C, C, C, E, E, E, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, X, X ], // 16 pull-up bars
+    [ X, X, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, X, X ], // 17
+    [ X, X, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, F, F, F, C, X, X ], // 18 JP's study corner
+    [ X, X, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, F, F, F, C, X, X ], // 19
+    [ X, X, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, X, X ], // 20
+    [ X, X, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, X, X ], // 21
+    [ X, X, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, X, X ], // 22
+
+    // --- BOTTOM COMMON AREA (rows 23-25) ---
+    [ X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 23
+    [ X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 24
+    [ X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 25
+
+    // --- BOTTOM WALLS (rows 26-29) ---
+    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 26
+    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 27
+    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 28
+    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 29
   ],
   collisions: STANDARD_COLLISIONS,
   spawns: {
-    player: { x: 4, y: 4 },
+    player: { x: 3, y: 7 }, // JP's cell (cell3)
     npcs: [
-      { id: 'ch3_cellmate', x: 3, y: 5, sprite: 'npc_inmate' },
-      { id: 'ch3_guard',    x: 8, y: 5, sprite: 'npc_guard' },
-      { id: 'ch3_inmate1',  x: 7, y: 3, sprite: 'npc_inmate' },
-      { id: 'ch3_inmate2',  x: 10, y: 4, sprite: 'npc_inmate2' },
-      { id: 'ch3_inmate3',  x: 9, y: 7, sprite: 'npc_inmate3' },
-      { id: 'ch3_inmate4',  x: 6, y: 7, sprite: 'npc_inmate4' },
+      // --- Existing NPCs ---
+      { id: 'ch3_cellmate', x: 4, y: 6,  sprite: 'npc_inmate' },   // in JP's cell
+      { id: 'ch3_guard',    x: 16, y: 13, sprite: 'npc_guard' },    // guard station desk
+      { id: 'ch3_inmate1',  x: 3, y: 2,  sprite: 'npc_inmate' },   // cell 1
+      { id: 'ch3_inmate2',  x: 8, y: 3,  sprite: 'npc_inmate2' },  // cell 2
+      { id: 'ch3_inmate3',  x: 8, y: 7,  sprite: 'npc_inmate3' },  // cell 4
+      { id: 'ch3_inmate4',  x: 3, y: 10, sprite: 'npc_inmate4' },  // cell 5
+      { id: 'ch3_mind',     x: 13, y: 11, sprite: 'npc_mirror' },   // hallway — introspection
+
+      // --- New NPCs ---
+      { id: 'ch3_fighter1', x: 22, y: 3,  sprite: 'npc_inmate3' },  // common area
+      { id: 'ch3_fighter2', x: 24, y: 3,  sprite: 'npc_inmate2' },  // near fighter1
+      { id: 'ch3_dice1',    x: 30, y: 8,  sprite: 'npc_inmate' },   // dice corner
+      { id: 'ch3_dice2',    x: 31, y: 9,  sprite: 'npc_inmate4' },  // with dice1
+      { id: 'ch3_tattoo',   x: 26, y: 5,  sprite: 'npc_inmate2' },  // common area
+      { id: 'ch3_smoker',   x: 4, y: 21,  sprite: 'npc_inmate4' },  // yard corner
+      { id: 'ch3_pullups',  x: 7, y: 17,  sprite: 'npc_inmate3' },  // near pull-up bars
     ],
   },
   triggers: [
-    { x: 11, y: 5, action: 'scene', target: 'TractorScene' },
+    { x: 17, y: 25, action: 'scene', target: 'TractorScene' }, // bottom exit
+    { x: 18, y: 25, action: 'scene', target: 'TractorScene' },
   ],
   interactables: [
-    { id: 'ch3_wall_1', x: 3, y: 3, type: 'scratch', glow: true },
-    { id: 'ch3_wall_2', x: 4, y: 3, type: 'scratch', glow: true },
-    { id: 'ch3_wall_3', x: 5, y: 3, type: 'scratch', glow: true },
-    { id: 'ch3_wall_4', x: 3, y: 4, type: 'scratch', glow: true },
-    { id: 'ch3_book',    x: 5, y: 5, type: 'examine', glow: true },
-    { id: 'ch3_pushups', x: 5, y: 4, type: 'examine', glow: true },
+    // --- Existing interactables (moved to valid positions) ---
+    { id: 'ch3_wall_1',  x: 2, y: 7,  type: 'scratch', glow: true },   // JP's cell wall
+    { id: 'ch3_wall_2',  x: 2, y: 8,  type: 'scratch', glow: true },   // JP's cell wall
+    { id: 'ch3_wall_3',  x: 14, y: 12, type: 'scratch', glow: true },  // guard station
+    { id: 'ch3_wall_4',  x: 5, y: 11, type: 'scratch', glow: true },   // hallway wall
+    { id: 'ch3_book',    x: 4, y: 8,  type: 'examine', glow: true },   // JP's cell
+    { id: 'ch3_pushups', x: 10, y: 17, type: 'examine', glow: true },  // yard
+
+    // --- New interactables ---
+    { id: 'ch3_phone',       x: 9, y: 11,  type: 'examine', glow: true },  // hallway phone
+    { id: 'ch3_tablet',      x: 30, y: 18, type: 'examine', glow: true },  // study corner
+    { id: 'ch3_music',       x: 30, y: 19, type: 'examine', glow: true },  // study corner
+    { id: 'ch3_bed',         x: 3, y: 8,   type: 'examine', glow: true },  // JP's bunk
+    { id: 'ch3_toilet',      x: 2, y: 6,   type: 'examine', glow: true },  // JP's cell
+    { id: 'ch3_window',      x: 13, y: 14, type: 'examine', glow: true },  // small window in hallway
+    { id: 'ch3_dice_watch',  x: 29, y: 8,  type: 'examine', glow: true },  // watching dice
+    { id: 'ch3_fight_watch', x: 20, y: 3,  type: 'examine', glow: true },  // watching fight
   ],
 };
 

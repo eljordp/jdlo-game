@@ -885,6 +885,104 @@ function generateAllNPCs(scene: Phaser.Scene) {
     px(g, 12, oy + 2, 0xb09060, 1, 1);
   });
 
+  // Bikini Girl 1 — light blue bikini, long brown hair, lounging/sleeping
+  makeTexture(scene, 'npc_bikini1', TILE_SIZE, TILE_SIZE, (g) => {
+    const skin = 0xf0c890;
+    const skinS = 0xd0a870;
+    const hair = 0x604020;
+    const bikini = 0x40a0c0;
+    // Hair — long
+    px(g, 5, 0, hair, 6, 1);
+    px(g, 4, 1, hair, 8, 1);
+    px(g, 3, 2, hair, 10, 1);
+    px(g, 3, 3, hair, 2, 1);
+    px(g, 11, 3, hair, 2, 1);
+    px(g, 2, 4, hair, 2, 4);
+    px(g, 12, 4, hair, 2, 4);
+    // Face
+    px(g, 5, 3, skin, 6, 1);
+    px(g, 4, 4, skin, 8, 1);
+    px(g, 4, 5, skin, 8, 1);
+    px(g, 5, 6, skinS, 6, 1);
+    // Eyes closed (sleeping)
+    px(g, 5, 4, 0x806050, 2, 1);
+    px(g, 9, 4, 0x806050, 2, 1);
+    // Mouth
+    px(g, 7, 5, 0xc07060, 2, 1);
+    // Neck
+    px(g, 6, 7, skinS, 4, 1);
+    // Bikini top
+    px(g, 4, 7, bikini, 2, 1);
+    px(g, 10, 7, bikini, 2, 1);
+    px(g, 3, 8, bikini, 10, 1);
+    px(g, 4, 9, bikini, 8, 1);
+    // Exposed midriff
+    px(g, 4, 10, skin, 8, 1);
+    px(g, 5, 11, skin, 6, 1);
+    // Bikini bottom
+    px(g, 5, 12, bikini, 6, 1);
+    px(g, 5, 13, bikini, 3, 1);
+    px(g, 8, 13, bikini, 3, 1);
+    // Legs
+    px(g, 4, 13, skin, 1, 1);
+    px(g, 11, 13, skin, 1, 1);
+    px(g, 4, 14, skin, 3, 1);
+    px(g, 9, 14, skin, 3, 1);
+    // Arms
+    px(g, 2, 8, skin, 1, 2);
+    px(g, 13, 8, skin, 1, 2);
+  });
+
+  // Bikini Girl 2 — pink bikini, dark hair
+  makeTexture(scene, 'npc_bikini2', TILE_SIZE, TILE_SIZE, (g) => {
+    const skin = 0xf0c890;
+    const skinS = 0xd0a870;
+    const hair = 0x302020;
+    const bikini = 0xd06080;
+    // Hair — long dark
+    px(g, 5, 0, hair, 6, 1);
+    px(g, 4, 1, hair, 8, 1);
+    px(g, 3, 2, hair, 10, 1);
+    px(g, 3, 3, hair, 2, 1);
+    px(g, 11, 3, hair, 2, 1);
+    px(g, 2, 4, hair, 2, 4);
+    px(g, 12, 4, hair, 2, 4);
+    // Face
+    px(g, 5, 3, skin, 6, 1);
+    px(g, 4, 4, skin, 8, 1);
+    px(g, 4, 5, skin, 8, 1);
+    px(g, 5, 6, skinS, 6, 1);
+    // Eyes open
+    px(g, 5, 4, 0xffffff, 2, 1);
+    px(g, 9, 4, 0xffffff, 2, 1);
+    px(g, 6, 4, 0x202020);
+    px(g, 10, 4, 0x202020);
+    // Mouth
+    px(g, 7, 5, 0xc07060, 2, 1);
+    // Neck
+    px(g, 6, 7, skinS, 4, 1);
+    // Bikini top
+    px(g, 4, 7, bikini, 2, 1);
+    px(g, 10, 7, bikini, 2, 1);
+    px(g, 3, 8, bikini, 10, 1);
+    px(g, 4, 9, bikini, 8, 1);
+    // Exposed midriff
+    px(g, 4, 10, skin, 8, 1);
+    px(g, 5, 11, skin, 6, 1);
+    // Bikini bottom
+    px(g, 5, 12, bikini, 6, 1);
+    px(g, 5, 13, bikini, 3, 1);
+    px(g, 8, 13, bikini, 3, 1);
+    // Legs
+    px(g, 4, 13, skin, 1, 1);
+    px(g, 11, 13, skin, 1, 1);
+    px(g, 4, 14, skin, 3, 1);
+    px(g, 9, 14, skin, 3, 1);
+    // Arms
+    px(g, 2, 8, skin, 1, 2);
+    px(g, 13, 8, skin, 1, 2);
+  });
+
   // Narrator / Professor — older, grey hair, wise
   generateNPC(
     scene,

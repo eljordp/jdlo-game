@@ -140,7 +140,7 @@ export class CourtScene extends Phaser.Scene {
         break;
 
       case 4: // Lawyer
-        this.showText('Public Defender', GAME_HEIGHT / 2 - 80, { size: '12px', color: '#f0c040' });
+        this.showText('Lawyer', GAME_HEIGHT / 2 - 80, { size: '12px', color: '#f0c040' });
         this.showText('"Take the plea deal. One year.\nYou fight this, you\'re looking at\nthe full thirteen."', GAME_HEIGHT / 2 - 20);
         this.showText('JP', GAME_HEIGHT / 2 + 80, { size: '12px', color: '#f0c040', delay: 600 });
         this.showText('"...one year?"', GAME_HEIGHT / 2 + 110, { color: '#aaaacc', delay: 800 });

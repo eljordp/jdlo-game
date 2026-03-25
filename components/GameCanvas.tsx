@@ -31,6 +31,7 @@ export const virtualInput = {
   down: false,
   action: false,
   actionJustPressed: false,
+  gameSpeed: 1,
 };
 
 export default function GameCanvas() {
@@ -112,6 +113,7 @@ export default function GameCanvas() {
     setSpeedIndex(next);
     if (gameRef.current) {
       const speed = SPEEDS[next].value;
+      virtualInput.gameSpeed = speed;
       gameRef.current.scene.scenes.forEach((scene) => {
         if (scene.time) scene.time.timeScale = speed;
         if (scene.tweens) scene.tweens.timeScale = speed;
@@ -144,13 +146,8 @@ export default function GameCanvas() {
         className="w-full h-full"
       />
 
-      {/* Speed control */}
-      <div
-        className={`absolute top-3 right-3 z-20 flex gap-2 transition-opacity duration-300 ${
-          showControls ? "opacity-100" : "opacity-0 hover:opacity-100"
-        }`}
-        onMouseEnter={() => setShowControls(true)}
-      >
+      {/* Speed control — always visible */}
+      <div className="absolute top-3 right-3 z-20">
         <button
           onClick={cycleSpeed}
           className="px-3 py-1.5 bg-black/70 border border-white/20 rounded text-white text-xs font-mono hover:bg-white/10 transition-colors cursor-pointer"

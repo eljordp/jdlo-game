@@ -114,151 +114,133 @@ export const chapter0NPCs: NPCData[] = [
 ];
 
 export const chapter0OutroText: string[] = [
-  'JP couldn\'t stay in that house forever.',
-  'He needed to get out. See something. Be someone.',
+  'JP packed a bag. Hugged his sister. Dapped up Pops.',
+  'Didn\'t look back.',
 ];
 
 // ─── Chapter 1: Santa Barbara ──────────────────────────────────────────
 
 export const chapter1IntroText: string[] = [
-  'Chapter 1 — Santa Barbara',
-  'Beautiful beach town. Palm trees. Ocean air.',
-  'And absolutely nothing happening.',
+  'Santa Barbara',
+  'Frat house by the beach. Hot tub. Weed. Girls.',
+  'Looks like paradise. Feels like a trap.',
 ];
 
 export const chapter1NPCs: NPCData[] = [
   {
-    id: 'ch1_buyer',
-    x: 4,
-    y: 3,
-    sprite: 'npc_generic',
-    dialogue: [
-      { speaker: 'Buyer', text: 'Yo, you good? Same thing as last time?' },
-      { speaker: 'JP', text: 'Yeah. You know the price.' },
-      { speaker: 'Buyer', text: 'Bet. You always on point.' },
-      { speaker: 'JP', text: 'Appreciate it.' },
-      { speaker: 'Buyer', text: 'Same time Thursday?' },
-      { speaker: 'JP', text: 'Same time Thursday.' },
-    ],
-  },
-  {
-    id: 'ch1_pops',
+    id: 'ch1_homie1',
     x: 6,
-    y: 5,
-    sprite: 'npc_pops',
-    dialogue: [
-      { speaker: 'Pops', text: 'Aye. You got a minute?' },
-      { speaker: 'JP', text: 'What\'s up, Pops?' },
-      { speaker: 'Pops', text: 'I know you\'re young. I know you think you got all the time in the world.' },
-      { speaker: 'Pops', text: 'But the people you surround yourself with... that becomes your life. Choose carefully.' },
-      { speaker: 'JP', text: 'I hear you.' },
-      { speaker: 'Pops', text: 'Hearing and listening ain\'t the same thing, son.' },
-    ],
-  },
-  {
-    id: 'ch1_homie',
-    x: 10,
-    y: 8,
+    y: 4,
     sprite: 'npc_kid',
     dialogue: [
-      { speaker: 'Danny', text: 'Bro what you doing today?' },
-      { speaker: 'JP', text: 'Same thing as yesterday. Same thing as tomorrow.' },
-      { speaker: 'Danny', text: 'Facts. I\'m tryna re-up though. You hear from Tito?' },
-      { speaker: 'JP', text: 'Nah not yet. He\'ll come through.' },
-      { speaker: 'Danny', text: 'This shit is getting old, bro. Every day the same thing.' },
-      { speaker: 'JP', text: 'Yeah. It is.' },
+      { speaker: 'Danny', text: 'Bro we got a half pound coming in tomorrow.' },
+      { speaker: 'JP', text: 'Bet. Same guy?' },
+      { speaker: 'Danny', text: 'Yeah. Easy money.' },
+      { speaker: 'Narrator', text: 'They talk like this is normal. Because it is.' },
     ],
   },
   {
-    id: 'ch1_stranger',
-    x: 13,
-    y: 4,
-    sprite: 'npc_shady',
+    id: 'ch1_homie2',
+    x: 18,
+    y: 10,
+    sprite: 'npc_generic',
     dialogue: [
-      { speaker: 'OG on the Block', text: 'How long you been doing this?' },
-      { speaker: 'JP', text: 'Couple years. Why?' },
-      { speaker: 'OG on the Block', text: 'I been doing it twelve. Look at me. This is what twelve years looks like.' },
-      { speaker: 'OG on the Block', text: 'You\'re young enough to do something else. I\'m not.' },
-      { speaker: 'JP', text: '...' },
-      { speaker: 'OG on the Block', text: 'Yeah. That silence means you already know.' },
+      { speaker: 'Marcus', text: 'Hot tub\'s heated up. Girls are coming over later.' },
+      { speaker: 'JP', text: 'Again?' },
+      { speaker: 'Marcus', text: 'What else we gonna do?' },
+      { speaker: 'Narrator', text: 'This is the cycle.' },
+    ],
+  },
+  {
+    id: 'ch1_girl1',
+    x: 10,
+    y: 5,
+    sprite: 'npc_bikini1',
+    dialogue: [
+      { speaker: 'Narrator', text: 'She\'s passed out on the couch. It\'s 2 PM.' },
+    ],
+  },
+  {
+    id: 'ch1_girl2',
+    x: 20,
+    y: 10,
+    sprite: 'npc_bikini2',
+    dialogue: [
+      { speaker: 'Girl', text: 'You got a light?' },
+      { speaker: 'JP', text: 'Yeah here.' },
+      { speaker: 'Girl', text: 'Thanks. You live here?' },
+      { speaker: 'JP', text: 'For now.' },
     ],
   },
 ];
 
 export const chapter1OutroText: string[] = [
-  'Santa Barbara wasn\'t going anywhere. But JP was.',
-  'He just didn\'t know where yet.',
+  'Same house. Same people. Same bags. Same nothing.',
+  'But JP didn\'t see it yet.',
 ];
 
 // ─── Chapter 2: Wrong Crowd ────────────────────────────────────────────
 
 export const chapter2IntroText: string[] = [
-  'Chapter 2 — Wrong Crowd',
-  'Different streets. Different energy.',
-  'The kind of fun that stops being fun.',
+  'Wrong Crowd',
+  'Same routine. Grab the bags. Hit the block.',
+  'JP didn\'t think twice about it anymore.',
 ];
 
 export const chapter2NPCs: NPCData[] = [
   {
-    id: 'ch2_shady',
-    x: 3,
-    y: 6,
-    sprite: 'npc_shady',
-    dialogue: [
-      { speaker: 'Rico', text: 'Yo JP, why you still nickel-and-diming it?' },
-      { speaker: 'JP', text: 'It\'s not that bad.' },
-      { speaker: 'Rico', text: 'Nah bro, I made eight hundred last night. Easy.' },
-      { speaker: 'Rico', text: 'No boss. No schedule. Just gotta be smart about it.' },
-      { speaker: 'JP', text: '...how?' },
-      { speaker: 'Rico', text: 'I\'ll show you. Pull up tonight.' },
-    ],
-  },
-  {
-    id: 'ch2_warning',
-    x: 8,
-    y: 3,
-    sprite: 'npc_kid',
-    dialogue: [
-      { speaker: 'Marcus', text: 'Bro, I\'m hearing things about the people you\'re running with.' },
-      { speaker: 'JP', text: 'It\'s not like that. We just kick it.' },
-      { speaker: 'Marcus', text: 'That\'s what everybody says right before something goes sideways.' },
-      { speaker: 'Marcus', text: 'I\'m not your dad. But I\'m telling you — those dudes don\'t care about you.' },
-      { speaker: 'JP', text: 'I can handle myself.' },
-      { speaker: 'Marcus', text: 'I hope so, bro. I really hope so.' },
-    ],
-  },
-  {
-    id: 'ch2_random',
+    id: 'ch2_homie_door',
     x: 12,
     y: 7,
+    sprite: 'npc_kid',
+    dialogue: [
+      { speaker: 'Marcus', text: 'Ayo be safe out there.' },
+      { speaker: 'JP', text: 'Always.' },
+      { speaker: 'Marcus', text: 'Text me when you\'re back.' },
+    ],
+  },
+  {
+    id: 'ch2_lookout',
+    x: 19,
+    y: 21,
+    sprite: 'npc_shady',
+    dialogue: [
+      { speaker: 'Lookout', text: 'You JP?' },
+      { speaker: 'JP', text: 'Yeah.' },
+      { speaker: 'Lookout', text: 'He\'s inside. Make it quick.' },
+    ],
+  },
+  {
+    id: 'ch2_buyer',
+    x: 24,
+    y: 23,
     sprite: 'npc_generic',
     dialogue: [
-      { speaker: 'Guy on Corner', text: 'You got a light?' },
-      { speaker: 'JP', text: 'Nah.' },
-      { speaker: 'Guy on Corner', text: 'Whatever, man.' },
-      { speaker: 'JP\'s Mind', text: 'Dude doesn\'t even care if he\'s alive tomorrow. That\'s the energy out here.' },
+      { speaker: 'Buyer', text: 'You got that zip?' },
+      { speaker: 'JP', text: 'Right here.' },
+      { speaker: 'Buyer', text: 'Cool cool. Lemme get—' },
     ],
   },
 ];
 
 export const chapter2OutroText: string[] = [
-  'Wrong place. Wrong time. Wrong people.',
+  'Just another drop. Until it wasn\'t.',
   'The consequences came fast.',
 ];
 
 // ─── Chapter 3: Jail ───────────────────────────────────────────────────
 
 export const chapter3IntroText: string[] = [
-  'Chapter 3 — Locked Up',
-  'Four walls. No phone. No distractions.',
-  'Just JP and the truth about who he\'d been.',
+  'Chapter 4 — Locked Up',
+  '365 days. A bed, a toilet, and time.',
+  'What you do with it is on you.',
 ];
 
 export const chapter3NPCs: NPCData[] = [
   {
     id: 'ch3_cellmate',
     x: 4,
-    y: 4,
+    y: 6,
     sprite: 'npc_inmate',
     dialogue: [
       { speaker: 'OG', text: 'First time?' },
@@ -270,8 +252,8 @@ export const chapter3NPCs: NPCData[] = [
   },
   {
     id: 'ch3_guard',
-    x: 2,
-    y: 7,
+    x: 16,
+    y: 13,
     sprite: 'npc_guard',
     dialogue: [
       { speaker: 'Guard', text: 'You\'re quieter than most of the new ones.' },
@@ -282,8 +264,8 @@ export const chapter3NPCs: NPCData[] = [
   },
   {
     id: 'ch3_mind',
-    x: 6,
-    y: 5,
+    x: 13,
+    y: 11,
     sprite: 'npc_mirror',
     dialogue: [
       { speaker: 'JP\'s Mind', text: 'Look at where you are.' },
@@ -305,7 +287,7 @@ export const chapter3OutroText: string[] = [
 // ─── Chapter 4: Caymus Vineyards ─────────────────────────────────────
 
 export const chapter4IntroText: string[] = [
-  'Chapter 4 — Caymus Vineyards',
+  'Caymus Vineyards',
   'Napa Valley. Honest work. Dirt under the nails.',
   'And a screen that was about to change everything.',
 ];
@@ -363,7 +345,7 @@ export const chapter4OutroText: string[] = [
 // ─── Chapter 5: The Come Up ────────────────────────────────────────────
 
 export const chapter5IntroText: string[] = [
-  'Chapter 5 — The Come Up',
+  'The Come Up',
   'First client. First dollar. First proof it was real.',
   'And it was only the beginning.',
 ];
@@ -431,7 +413,7 @@ export const chapter5OutroText: string[] = [
 // ─── Chapter 6: Operator Mode ──────────────────────────────────────────
 
 export const chapter6IntroText: string[] = [
-  'Chapter 6 — Operator Mode',
+  'Operator Mode',
   'COO at Pomaika\'i Co. Office Kult. Enterprise clients. Vegas meetings.',
   'The kid from Santa Barbara was gone. The operator showed up.',
 ];
@@ -603,45 +585,70 @@ const ch0Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'Same shows. Same couch. Same nothing.' },
     { speaker: 'JP\'s Mind', text: 'I could sit here forever and nobody would notice. That\'s the scary part.' },
   ],
+  ch0_goodbye: [
+    { speaker: 'Pops', text: 'You sure about this?' },
+    { speaker: 'JP', text: 'I gotta go, Pops.' },
+    { speaker: 'Pops', text: 'I know. Just... be smart out there.' },
+    { speaker: 'Narrator', text: 'They dap up. Pops holds it a second longer than usual.' },
+    { speaker: 'Mom', text: '...' },
+    { speaker: 'Narrator', text: 'Mom doesn\'t say much. Just watches him from the kitchen doorway.' },
+    { speaker: 'Sister', text: 'You\'re coming back right?' },
+    { speaker: 'JP', text: 'Always.' },
+    { speaker: 'Narrator', text: 'The Frenchie whines at the door. He knows.' },
+  ],
 };
 
 // ─── Chapter 1 extras ──────────────────────────────────────────────────
 
 const ch1Extras: Record<string, DialogueLine[]> = {
-  ch1_joint: [
-    { speaker: 'JP\'s Mind', text: 'Another one. Like the one before it. And the one before that.' },
-    { speaker: 'JP\'s Mind', text: 'Wake up. Smoke. Hustle. Smoke again. Sleep. Repeat.' },
-    { speaker: 'JP\'s Mind', text: 'I\'m not even high anymore. I\'m just... maintaining.' },
+  ch1_weed1: [
+    { speaker: 'JP\'s Mind', text: 'Bags on bags. At least a QP sitting on the desk.' },
+    { speaker: 'JP\'s Mind', text: 'This used to feel exciting. Now it\'s just inventory.' },
   ],
-  ch1_stash: [
-    { speaker: 'JP\'s Mind', text: 'Same spot. Same routine. Same nothing.' },
-    { speaker: 'JP\'s Mind', text: 'I could do this with my eyes closed. And that\'s the problem.' },
+  ch1_weed2: [
+    { speaker: 'JP\'s Mind', text: 'More bags under the bed. This is the stash.' },
+    { speaker: 'JP\'s Mind', text: 'If the cops kicked this door in right now... nah, don\'t think about that.' },
+  ],
+  ch1_weed3: [
+    { speaker: 'JP\'s Mind', text: 'Weed on the coffee table. Nobody even hides it anymore.' },
+    { speaker: 'JP\'s Mind', text: 'We got so comfortable we forgot this was illegal.' },
+  ],
+  ch1_bottles: [
+    { speaker: 'JP\'s Mind', text: 'Empty bottles everywhere. Last night was crazy. Or was that Tuesday?' },
+    { speaker: 'JP\'s Mind', text: 'Every night blurs into the next one.' },
+  ],
+  ch1_hottub: [
+    { speaker: 'JP\'s Mind', text: 'Hot tub\'s still running. Nobody\'s cleaned it in weeks.' },
+    { speaker: 'JP\'s Mind', text: 'We spend more on the electric bill for this thing than rent. Priorities.' },
+  ],
+  ch1_mess: [
+    { speaker: 'JP\'s Mind', text: 'Clothes, trash, plates. This house is disgusting.' },
+    { speaker: 'JP\'s Mind', text: 'Nobody cleans. Nobody cares. That tells you everything.' },
   ],
   ch1_view: [
-    { speaker: 'JP\'s Mind', text: 'Beautiful place to waste your life.' },
-    { speaker: 'JP\'s Mind', text: 'Everybody visits Santa Barbara and says they wish they lived here. I live here and I\'m going nowhere.' },
-  ],
-  ch1_car: [
-    { speaker: 'JP\'s Mind', text: 'Same car. Same drive. Same nothing.' },
-    { speaker: 'JP\'s Mind', text: 'I could do this route blindfolded. That\'s not a flex. That\'s a problem.' },
-  ],
-  ch1_sunset: [
-    { speaker: 'JP\'s Mind', text: 'Santa Barbara sunsets hit different. Too bad I was too high to appreciate them.' },
-    { speaker: 'JP\'s Mind', text: 'One day I\'ll watch one of these sober. Maybe then I\'ll actually feel something.' },
-  ],
-  ch1_money: [
-    { speaker: 'JP\'s Mind', text: 'Made $200 today. Gone by tomorrow. The cycle never stops.' },
-    { speaker: 'JP\'s Mind', text: 'I\'m not building anything. I\'m just... surviving. And barely.' },
-  ],
-  ch1_bench: [
-    { speaker: 'JP\'s Mind', text: 'Used to sit here and think I had it all figured out.' },
-    { speaker: 'JP\'s Mind', text: 'Ocean right there. Beautiful. And I couldn\'t see past the end of the week.' },
+    { speaker: 'JP\'s Mind', text: 'Santa Barbara sunset. Beautiful place to waste your life.' },
+    { speaker: 'JP\'s Mind', text: 'Everybody visits and says they wish they lived here. I live here and I\'m going nowhere.' },
   ],
 };
 
 // ─── Chapter 2 extras ──────────────────────────────────────────────────
 
 const ch2Extras: Record<string, DialogueLine[]> = {
+  ch2_grab_weed: [
+    { speaker: 'JP\'s Mind', text: 'JP grabs two zips off the desk. Stuffs them in his jacket.' },
+    { speaker: 'JP\'s Mind', text: 'Same routine. Didn\'t even think about it anymore.' },
+  ],
+  ch2_car: [
+    { speaker: 'JP\'s Mind', text: 'Black 2008 BMW 335i. Not flashy. Just enough.' },
+    { speaker: 'JP\'s Mind', text: 'JP gets in and drives down the block.' },
+  ],
+  ch2_mirror: [
+    { speaker: 'JP\'s Mind', text: 'JP checks the rearview. Nothing behind him.' },
+    { speaker: 'JP\'s Mind', text: 'For now.' },
+  ],
+  ch2_buyer_house: [
+    { speaker: 'JP\'s Mind', text: 'This is the spot. In and out. Two minutes.' },
+  ],
   ch2_alley: [
     { speaker: 'JP\'s Mind', text: 'This is where bad decisions happen at 2 AM.' },
     { speaker: 'JP\'s Mind', text: 'Dark alley. No cameras. No witnesses. The kind of place where your life changes in one second.' },
@@ -651,7 +658,7 @@ const ch2Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'He knows. He always knows. And I keep dodging because I don\'t want to hear the truth.' },
   ],
   ch2_graffiti: [
-    { speaker: 'JP\'s Mind', text: 'Someone tagged \'NO WAY OUT\'. Felt that.' },
+    { speaker: 'JP\'s Mind', text: 'Someone tagged \'NO WAY OUT\' on the wall. Felt that.' },
     { speaker: 'JP\'s Mind', text: 'Whoever wrote this probably believed it. I\'m starting to.' },
   ],
 };
@@ -701,6 +708,41 @@ const ch3InmateDialogue: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'Clear mind. Strong body. That\'s the only way out of here as a better person.' },
     { speaker: 'JP\'s Mind', text: 'Forty-eight... forty-nine... fifty. Done. Tomorrow it\'s sixty.' },
   ],
+  ch3_fighter1: [
+    { speaker: 'Fighter', text: 'You looking at something?' },
+    { speaker: 'JP\'s Mind', text: 'JP stays quiet.' },
+    { speaker: 'Fighter', text: 'That\'s what I thought.' },
+  ],
+  ch3_fighter2: [
+    { speaker: 'Inmate', text: 'Don\'t mind him. He\'s been in here too long.' },
+    { speaker: 'Inmate', text: 'You\'re the quiet one huh? Smart.' },
+  ],
+  ch3_dice1: [
+    { speaker: 'Dice Player', text: 'Ayo new fish, you rolling?' },
+    { speaker: 'JP', text: 'Nah I\'m good.' },
+    { speaker: 'Dice Player', text: 'Your loss. I\'m up three soups.' },
+  ],
+  ch3_dice2: [
+    { speaker: 'Dice Player 2', text: 'This man been taking everybody\'s commissary all week.' },
+    { speaker: 'Dice Player 2', text: '*laughs*' },
+  ],
+  ch3_tattoo: [
+    { speaker: 'Tattoo Guy', text: 'Hold still bro... almost done.' },
+    { speaker: 'Tattoo Guy', text: 'You want one?' },
+    { speaker: 'JP', text: 'I\'m straight.' },
+  ],
+  ch3_smoker: [
+    { speaker: 'Smoker', text: '*coughing*' },
+    { speaker: 'Smoker', text: 'You want a hit?' },
+    { speaker: 'JP', text: 'Nah.' },
+    { speaker: 'Smoker', text: 'Suit yourself. Only thing that makes this place bearable.' },
+  ],
+  ch3_pullups: [
+    { speaker: 'Workout Inmate', text: '*doing pullups, grunting*' },
+    { speaker: 'Workout Inmate', text: 'You work out?' },
+    { speaker: 'JP', text: 'Every day.' },
+    { speaker: 'Workout Inmate', text: 'Good. Keeps your head right in here.' },
+  ],
 };
 
 // ─── Chapter 3 extras ──────────────────────────────────────────────────
@@ -721,6 +763,39 @@ const ch3Extras: Record<string, DialogueLine[]> = {
   ch3_wall_4: [
     { speaker: 'JP\'s Mind', text: 'Day 45. I have a plan. I just need to get out.' },
     { speaker: 'JP\'s Mind', text: 'I don\'t know what it looks like yet. But I know what it doesn\'t look like. And that\'s enough to start.' },
+  ],
+  ch3_phone: [
+    { speaker: 'JP', text: 'JP calls his Pops.' },
+    { speaker: 'JP', text: 'I\'m okay. I\'m figuring it out.' },
+    { speaker: 'JP\'s Mind', text: 'Long pause.' },
+    { speaker: 'Pops', text: 'I\'m proud of you for staying strong, son.' },
+  ],
+  ch3_tablet: [
+    { speaker: 'JP\'s Mind', text: 'JP pulls out his tablet. While everyone else is doing nothing, he\'s reading about business.' },
+    { speaker: 'JP\'s Mind', text: 'About systems. About getting out and staying out.' },
+  ],
+  ch3_music: [
+    { speaker: 'JP\'s Mind', text: 'Headphones in. The noise fades.' },
+    { speaker: 'JP\'s Mind', text: 'For a minute, it\'s just JP and the beat.' },
+  ],
+  ch3_bed: [
+    { speaker: 'JP\'s Mind', text: 'Hard mattress. Thin blanket.' },
+    { speaker: 'JP\'s Mind', text: 'But JP sleeps clear. No guilt. He earned this rest.' },
+  ],
+  ch3_toilet: [
+    { speaker: 'JP\'s Mind', text: 'Prison toilet. Rock bottom looks like this.' },
+  ],
+  ch3_window: [
+    { speaker: 'JP\'s Mind', text: 'A sliver of sky. That\'s all you get.' },
+    { speaker: 'JP\'s Mind', text: 'Make it enough.' },
+  ],
+  ch3_dice_watch: [
+    { speaker: 'JP\'s Mind', text: 'Everyone\'s gambling commissary. JP watches but doesn\'t play.' },
+    { speaker: 'JP\'s Mind', text: 'That\'s the old him.' },
+  ],
+  ch3_fight_watch: [
+    { speaker: 'JP\'s Mind', text: 'Two guys going at it over nothing. Guard doesn\'t even flinch.' },
+    { speaker: 'JP\'s Mind', text: 'This is normal here.' },
   ],
 };
 

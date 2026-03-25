@@ -16,13 +16,7 @@ export class WrongCrowdScene extends BaseChapterScene {
   }
 
   getMapData(): MapData {
-    // Add the weed sale interactable dynamically
-    const map = { ...wrongCrowdMap };
-    map.interactables = [
-      ...(map.interactables || []),
-      { id: 'ch2_sale', x: 12, y: 15, type: 'examine' as const, glow: true },
-    ];
-    return map;
+    return wrongCrowdMap;
   }
 
   getChapterDialogue(): { intro: DialogueLine[]; npcs: Record<string, DialogueLine[]> } {

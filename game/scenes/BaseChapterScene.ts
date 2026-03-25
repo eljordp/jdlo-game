@@ -53,6 +53,12 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     this.isMoving = false;
     this.frozen = false;
 
+    // Restore game speed from previous scene
+    if (virtualInput.gameSpeed !== 1) {
+      this.time.timeScale = virtualInput.gameSpeed;
+      this.tweens.timeScale = virtualInput.gameSpeed;
+    }
+
     // Camera fade in
     this.cameras.main.fadeIn(1000, 0, 0, 0);
 
@@ -92,8 +98,7 @@ export abstract class BaseChapterScene extends Phaser.Scene {
         npcData.sprite, 0
       ).setScale(SCALE).setDepth(9);
 
-      this.collisionTiles.add(`${npcData.x},${npcData.y}`);
-
+      // NPCs don't block movement — player can walk past them
       this.npcs.push({
         sprite,
         id: npcData.id,
