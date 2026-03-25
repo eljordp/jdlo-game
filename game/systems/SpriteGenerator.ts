@@ -2072,6 +2072,273 @@ function generateItems(scene: Phaser.Scene) {
   });
 }
 
+function generateMoreItems(scene: Phaser.Scene) {
+
+  // --- item-bed ---
+  makeTexture(scene, 'item-bed', TILE_SIZE, TILE_SIZE, (g) => {
+    // Bed frame (brown)
+    px(g, 2, 8, 0x6a4020, 12, 6);
+    px(g, 2, 8, 0x7a5030, 12, 1);
+    // Mattress (white)
+    px(g, 3, 6, 0xe8e0d8, 10, 4);
+    // Pillow
+    px(g, 3, 5, 0xf0ece8, 4, 3);
+    px(g, 4, 4, 0xf8f4f0, 2, 1);
+    // Blanket (blue)
+    px(g, 7, 7, 0x4060a0, 6, 3);
+    px(g, 7, 7, 0x5070b0, 6, 1);
+    // Headboard
+    px(g, 2, 4, 0x503010, 1, 5);
+    px(g, 2, 4, 0x604020, 1, 1);
+    // Legs
+    px(g, 3, 13, 0x503010, 1, 2);
+    px(g, 12, 13, 0x503010, 1, 2);
+  });
+
+  // --- item-mirror ---
+  makeTexture(scene, 'item-mirror', TILE_SIZE, TILE_SIZE, (g) => {
+    // Frame (gold/bronze)
+    px(g, 4, 2, 0xa08040, 8, 12);
+    px(g, 4, 2, 0xb09050, 8, 1);
+    px(g, 4, 2, 0xb09050, 1, 12);
+    px(g, 11, 2, 0x806030, 1, 12);
+    px(g, 4, 13, 0x806030, 8, 1);
+    // Mirror surface (light blue/silver)
+    px(g, 5, 3, 0xc0d8e8, 6, 10);
+    // Reflection streak
+    px(g, 6, 4, 0xe0f0ff, 2, 6);
+    px(g, 7, 5, 0xf0f8ff, 1, 3);
+    // Shadow at bottom
+    px(g, 5, 11, 0xa0b8c8, 6, 2);
+  });
+
+  // --- item-tv ---
+  makeTexture(scene, 'item-tv', TILE_SIZE, TILE_SIZE, (g) => {
+    // TV body (dark grey)
+    px(g, 2, 3, 0x1a1a1a, 12, 9);
+    // Bezel
+    px(g, 2, 3, 0x2a2a2a, 12, 1);
+    px(g, 2, 11, 0x2a2a2a, 12, 1);
+    px(g, 2, 3, 0x2a2a2a, 1, 9);
+    px(g, 13, 3, 0x2a2a2a, 1, 9);
+    // Screen (blue glow)
+    px(g, 3, 4, 0x3070b0, 10, 7);
+    px(g, 4, 5, 0x4090d0, 6, 4);
+    px(g, 5, 6, 0x60b0f0, 3, 2);
+    // Stand
+    px(g, 6, 12, 0x303030, 4, 1);
+    px(g, 5, 13, 0x404040, 6, 1);
+    // Power LED
+    px(g, 7, 11, 0x40ff40, 1, 1);
+  });
+
+  // --- item-couch ---
+  makeTexture(scene, 'item-couch', TILE_SIZE, TILE_SIZE, (g) => {
+    // Couch body (dark brown/maroon)
+    px(g, 1, 7, 0x6a3030, 14, 5);
+    // Back cushions
+    px(g, 1, 5, 0x7a3838, 14, 3);
+    px(g, 1, 5, 0x8a4040, 14, 1);
+    // Seat cushion lines
+    px(g, 5, 9, 0x582828, 1, 2);
+    px(g, 10, 9, 0x582828, 1, 2);
+    // Arms
+    px(g, 1, 6, 0x5a2828, 2, 6);
+    px(g, 13, 6, 0x5a2828, 2, 6);
+    // Highlight
+    px(g, 3, 8, 0x8a4848, 4, 1);
+    px(g, 9, 8, 0x8a4848, 4, 1);
+    // Legs
+    px(g, 2, 12, 0x402020, 1, 2);
+    px(g, 13, 12, 0x402020, 1, 2);
+  });
+
+  // --- item-bong ---
+  makeTexture(scene, 'item-bong', TILE_SIZE, TILE_SIZE, (g) => {
+    // Base (water chamber - glass blue)
+    px(g, 5, 8, 0x80b0d0, 5, 5);
+    px(g, 6, 7, 0x80b0d0, 3, 1);
+    // Water inside
+    px(g, 5, 10, 0x4080b0, 5, 3);
+    px(g, 6, 10, 0x5090c0, 3, 2);
+    // Neck (tube going up)
+    px(g, 7, 2, 0x90c0e0, 2, 6);
+    px(g, 7, 2, 0xa0d0f0, 1, 5);
+    // Mouthpiece
+    px(g, 6, 1, 0x70a0c0, 4, 2);
+    px(g, 7, 1, 0x80b0d0, 2, 1);
+    // Bowl (side stem)
+    px(g, 10, 6, 0x70a0c0, 2, 1);
+    px(g, 11, 5, 0x70a0c0, 1, 2);
+    px(g, 11, 4, 0x505050, 2, 2);
+    px(g, 12, 4, 0x404040, 1, 1);
+    // Glass highlight
+    px(g, 6, 3, 0xd0f0ff, 1, 3);
+    // Shadow
+    px(g, 5, 13, 0x506070, 6, 1);
+  });
+
+  // --- item-star ---
+  makeTexture(scene, 'item-star', TILE_SIZE, TILE_SIZE, (g) => {
+    // Central sparkle (warm gold)
+    px(g, 7, 7, 0xffd040, 2, 2);
+    // Rays outward
+    px(g, 7, 5, 0xffe060, 2, 2); // top
+    px(g, 7, 9, 0xffe060, 2, 2); // bottom
+    px(g, 5, 7, 0xffe060, 2, 2); // left
+    px(g, 9, 7, 0xffe060, 2, 2); // right
+    // Diagonal sparkle points
+    px(g, 5, 5, 0xffc830, 1, 1);
+    px(g, 10, 5, 0xffc830, 1, 1);
+    px(g, 5, 10, 0xffc830, 1, 1);
+    px(g, 10, 10, 0xffc830, 1, 1);
+    // Outer glow dots
+    px(g, 7, 3, 0xffb020, 1, 1);
+    px(g, 8, 12, 0xffb020, 1, 1);
+    px(g, 3, 7, 0xffb020, 1, 1);
+    px(g, 12, 8, 0xffb020, 1, 1);
+    // Core bright pixel
+    px(g, 7, 7, 0xfffff0, 1, 1);
+  });
+
+  // --- item-toilet ---
+  makeTexture(scene, 'item-toilet', TILE_SIZE, TILE_SIZE, (g) => {
+    // Bowl (white porcelain)
+    px(g, 4, 7, 0xe8e8e8, 8, 6);
+    px(g, 5, 6, 0xe8e8e8, 6, 1);
+    // Bowl shadow
+    px(g, 4, 12, 0xc8c8c8, 8, 1);
+    px(g, 11, 8, 0xd0d0d0, 1, 4);
+    // Water inside
+    px(g, 5, 9, 0x80c0e0, 6, 3);
+    px(g, 6, 9, 0xa0d8f0, 4, 2);
+    // Tank (back)
+    px(g, 5, 2, 0xe0e0e0, 6, 5);
+    px(g, 5, 2, 0xf0f0f0, 6, 1);
+    // Flush handle
+    px(g, 10, 3, 0xc0c0c0, 2, 1);
+    px(g, 11, 3, 0xd0d0d0, 1, 1);
+    // Seat rim
+    px(g, 4, 7, 0xd8d8d8, 8, 1);
+    // Shadow
+    px(g, 5, 13, 0xa0a0a0, 7, 1);
+  });
+
+  // --- item-scratch ---
+  makeTexture(scene, 'item-scratch', TILE_SIZE, TILE_SIZE, (g) => {
+    // Wall background hint
+    px(g, 3, 3, 0x606060, 10, 10);
+    // Scratch marks (lighter lines on dark wall)
+    // Tally marks - groups of 5
+    px(g, 4, 4, 0xa0a090, 1, 6);
+    px(g, 5, 4, 0xa0a090, 1, 6);
+    px(g, 6, 4, 0xa0a090, 1, 6);
+    px(g, 7, 4, 0xa0a090, 1, 6);
+    // Diagonal cross mark
+    px(g, 4, 5, 0xb0b0a0, 4, 1);
+    px(g, 4, 7, 0xb0b0a0, 4, 1);
+    // Second group
+    px(g, 9, 5, 0x909080, 1, 5);
+    px(g, 10, 5, 0x909080, 1, 5);
+    px(g, 11, 5, 0x909080, 1, 5);
+    // Scratch texture
+    px(g, 5, 11, 0x808070, 3, 1);
+    px(g, 9, 11, 0x808070, 2, 1);
+  });
+
+  // --- item-weights ---
+  makeTexture(scene, 'item-weights', TILE_SIZE, TILE_SIZE, (g) => {
+    // Bar (horizontal)
+    px(g, 2, 7, 0xb0b0b0, 12, 2);
+    px(g, 2, 7, 0xc0c0c0, 12, 1);
+    // Left weight plates
+    px(g, 1, 4, 0x404040, 3, 8);
+    px(g, 1, 4, 0x505050, 3, 1);
+    px(g, 1, 4, 0x505050, 1, 8);
+    // Right weight plates
+    px(g, 12, 4, 0x404040, 3, 8);
+    px(g, 12, 4, 0x505050, 3, 1);
+    px(g, 14, 4, 0x353535, 1, 8);
+    // Grip texture on bar
+    px(g, 6, 7, 0xd0d0d0, 1, 2);
+    px(g, 8, 7, 0xd0d0d0, 1, 2);
+    px(g, 10, 7, 0xd0d0d0, 1, 2);
+    // Shadow
+    px(g, 2, 12, 0x303030, 12, 1);
+  });
+
+  // --- item-window ---
+  makeTexture(scene, 'item-window', TILE_SIZE, TILE_SIZE, (g) => {
+    // Frame (grey)
+    px(g, 3, 2, 0x808080, 10, 12);
+    px(g, 3, 2, 0x909090, 10, 1);
+    px(g, 3, 2, 0x909090, 1, 12);
+    px(g, 12, 2, 0x606060, 1, 12);
+    px(g, 3, 13, 0x606060, 10, 1);
+    // Cross bars
+    px(g, 7, 2, 0x808080, 1, 12);
+    px(g, 3, 7, 0x808080, 10, 1);
+    // Sky panes (light blue)
+    px(g, 4, 3, 0x80c0f0, 3, 4);
+    px(g, 8, 3, 0x80c0f0, 4, 4);
+    px(g, 4, 8, 0x70b0e0, 3, 5);
+    px(g, 8, 8, 0x70b0e0, 4, 5);
+    // Cloud in upper pane
+    px(g, 5, 4, 0xf0f0f0, 2, 1);
+    px(g, 9, 5, 0xf0f0f0, 2, 1);
+    // Light bar
+    px(g, 4, 3, 0xa0d8ff, 3, 1);
+  });
+
+  // --- item-fridge ---
+  makeTexture(scene, 'item-fridge', TILE_SIZE, TILE_SIZE, (g) => {
+    // Body (white/silver)
+    px(g, 3, 1, 0xe0e0e0, 10, 14);
+    // Top door (freezer)
+    px(g, 3, 1, 0xd8d8d8, 10, 5);
+    px(g, 3, 1, 0xf0f0f0, 10, 1);
+    // Gap between doors
+    px(g, 3, 6, 0xa0a0a0, 10, 1);
+    // Bottom door (fridge)
+    px(g, 3, 7, 0xe0e0e0, 10, 8);
+    // Handles
+    px(g, 12, 3, 0xb0b0b0, 1, 2);
+    px(g, 12, 9, 0xb0b0b0, 1, 3);
+    // Shadow on right
+    px(g, 12, 2, 0xc0c0c0, 1, 13);
+    // Shadow on bottom
+    px(g, 3, 14, 0xa0a0a0, 10, 1);
+    // Door edge highlight
+    px(g, 3, 1, 0xf0f0f0, 1, 5);
+    px(g, 3, 7, 0xf0f0f0, 1, 7);
+  });
+
+  // --- item-food ---
+  makeTexture(scene, 'item-food', TILE_SIZE, TILE_SIZE, (g) => {
+    // Plate (white circle-ish)
+    px(g, 3, 8, 0xe8e8e8, 10, 5);
+    px(g, 4, 7, 0xe8e8e8, 8, 1);
+    px(g, 4, 13, 0xd0d0d0, 8, 1);
+    // Plate rim highlight
+    px(g, 4, 7, 0xf0f0f0, 8, 1);
+    // Food items on plate
+    // Meat/protein (brown)
+    px(g, 5, 9, 0x8a5020, 4, 3);
+    px(g, 5, 9, 0xa06030, 4, 1);
+    // Greens
+    px(g, 9, 9, 0x40a040, 3, 2);
+    px(g, 10, 9, 0x50b050, 2, 1);
+    // Rice/starch (white-ish)
+    px(g, 6, 11, 0xf0e8d0, 3, 2);
+    // Steam wisps
+    px(g, 6, 6, 0xc0c0c0, 1, 1);
+    px(g, 8, 5, 0xa0a0a0, 1, 1);
+    px(g, 10, 6, 0xb0b0b0, 1, 1);
+    // Shadow
+    px(g, 4, 14, 0x808080, 9, 1);
+  });
+}
+
 export function generateAllSprites(scene: Phaser.Scene): void {
   generatePlayer(scene);
   generateChapterOutfits(scene);
@@ -2081,4 +2348,5 @@ export function generateAllSprites(scene: Phaser.Scene): void {
   generateHotTub(scene);
   generateBMW(scene);
   generateItems(scene);
+  generateMoreItems(scene);
 }
