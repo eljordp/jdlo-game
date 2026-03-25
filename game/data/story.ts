@@ -209,8 +209,8 @@ export const chapter1OutroText: string[] = [
 
 export const chapter2IntroText: string[] = [
   'Wrong Crowd',
-  'Same routine. Grab the bags. Hit the block.',
-  'JP didn\'t think twice about it anymore.',
+  '3:33 AM. The house is quiet. JP is not.',
+  'Something feels off. But the money doesn\'t wait.',
 ];
 
 export const chapter2NPCs: NPCData[] = [
@@ -484,19 +484,22 @@ export const chapter5NPCs: NPCData[] = [
     ],
   },
   {
-    id: 'ch5_fw_wheels',
+    id: 'ch5_manza',
     x: 22,
     y: 8,
-    sprite: 'npc_kid',
+    sprite: 'npc_manza',
     dialogue: [
-      { speaker: 'fw.wheels', text: 'The wheel fitment calculator you built is sick. Customers love it.' },
-      { speaker: 'JP', text: 'That was a fun one. Custom tool, no template.' },
+      { speaker: 'Manza', text: 'JP, the website is fire. Exactly what I needed.' },
+      { speaker: 'JP', text: 'Told you I\'d come through.' },
+      { speaker: 'Manza', text: 'I got like five friends who need sites too. I\'m sending them all your way.' },
+      { speaker: 'JP', text: 'That\'s what I like to hear.' },
+      { speaker: 'Manza', text: 'Real talk, you\'re different from the other web guys. You actually care about the work.' },
     ],
   },
 ];
 
 export const chapter5OutroText: string[] = [
-  'WCT. Sticker Smith. DHL. Vacaville Appliance. fw.wheels.',
+  'WCT. Sticker Smith. DHL. Vacaville Appliance. Manza Visuals.',
   'The clients kept coming. The builds kept shipping. JP was operating.',
 ];
 
@@ -592,6 +595,17 @@ export const chapter6NPCs: NPCData[] = [
     dialogue: [
       { speaker: 'Team Member', text: 'JP, the dashboard you built is saving us 10 hours a week minimum.' },
       { speaker: 'JP', text: 'That\'s the point. Automate the boring stuff so you can focus on closing.' },
+    ],
+  },
+  {
+    id: 'ch6_manza',
+    x: 30,
+    y: 11,
+    sprite: 'npc_manza',
+    dialogue: [
+      { speaker: 'Manza', text: 'My boy just hit me up. He needs a site by Friday. You want it?' },
+      { speaker: 'JP', text: 'Send it over.' },
+      { speaker: 'Manza', text: 'Already did. Check your DMs. I told him you\'re the guy.' },
     ],
   },
   {
@@ -849,6 +863,9 @@ const ch0Extras: Record<string, DialogueLine[]> = {
     { speaker: 'Narrator', text: 'Mom keeps moving them to the top of the pile.' },
   ],
   // --- Yard ---
+  ch0_fishing: [
+    { speaker: 'Pops', text: 'Grab a rod. Let\'s see if they\'re biting.' },
+  ],
   ch0_bbq: [
     { speaker: 'Narrator', text: 'Pops\' BBQ grill.' },
     { speaker: 'Narrator', text: 'Summer Sundays used to be the best day of the week.' },
@@ -1223,20 +1240,35 @@ const ch4Extras: Record<string, DialogueLine[]> = {
   ch4_crash: [
     { speaker: 'JP', text: 'Yellow D8 Cat. Time to mow the east field.' },
     { speaker: 'Narrator', text: 'Back and forth. Row after row. The sun is beating down.' },
-    { speaker: 'Narrator', text: 'One hand on the wheel. One on his phone. A YouTube video about making money online.' },
-    { speaker: 'Narrator', text: 'CRUNCH. The D8 lurches. Metal screams. JP just drove through an irrigation line.' },
+    { speaker: 'Narrator', text: 'One hand on the wheel. One on his phone. YouTube video about making money online.' },
+    { speaker: 'Narrator', text: 'CRUNCH.' },
+    { speaker: 'Narrator', text: 'The D8 lurches. Metal screams. JP just drove through an irrigation line.' },
     { speaker: 'Narrator', text: 'Chuck comes sprinting from the farmhouse.' },
     { speaker: 'Chuck', text: 'WHAT THE HELL DID YOU DO?!' },
-    { speaker: 'JP', text: 'I... it was an accident.' },
-    { speaker: 'Chuck', text: 'That irrigation line costs more than your paycheck! Were you on your damn phone again?!' },
-    { speaker: 'JP', text: '...yeah.' },
-    { speaker: 'JP\'s Mind', text: 'This is it. I can\'t do this forever. Mowing fields for $12 an hour while I\'m watching people make thousands online.' },
-    { speaker: 'JP', text: 'Chuck, I\'m done. I appreciate the job but I gotta go.' },
-    { speaker: 'Chuck', text: 'Go? Go where? To do what?' },
-    { speaker: 'JP', text: 'I don\'t know yet. But not this.' },
+    { speaker: 'JP', text: 'I... it was an accident.', choices: [
+      { text: '"The line was already cracked."', next: [
+        { speaker: 'Chuck', text: 'Cracked?! That line was brand new! You were on your phone!' },
+        { speaker: 'JP', text: '...' },
+      ]},
+      { text: '"I was on my phone."', next: [
+        { speaker: 'Chuck', text: 'I KNEW IT. That phone is gonna cost you your job.' },
+        { speaker: 'JP', text: 'Maybe that\'s the point.' },
+      ]},
+    ]},
+    { speaker: 'Chuck', text: 'That irrigation line costs more than your paycheck!' },
+    { speaker: 'JP\'s Mind', text: 'This is it. I can\'t do this forever. $12 an hour while people make thousands online.' },
+    { speaker: 'JP', text: 'Chuck, I\'m done.', choices: [
+      { text: '"I appreciate everything. But I gotta go."', next: [
+        { speaker: 'Chuck', text: 'Go where? Do what?' },
+        { speaker: 'JP', text: 'I don\'t know yet. But not this.' },
+      ]},
+      { text: '"This isn\'t my life."', next: [
+        { speaker: 'Chuck', text: 'Your life? Kid, this is a JOB.' },
+        { speaker: 'JP', text: 'Exactly. I need more than a job.' },
+      ]},
+    ]},
     { speaker: 'Chuck', text: '...good luck, kid.' },
-    { speaker: 'JP\'s Mind', text: 'He doesn\'t get it. Nobody does yet. But they will.' },
-    { speaker: 'JP\'s Mind', text: 'I need a computer and an internet connection. That\'s it. That\'s the whole plan.' },
+    { speaker: 'JP\'s Mind', text: 'I need a computer and an internet connection. That\'s the whole plan.' },
   ],
   ch4_vineyard_row: [
     { speaker: 'JP\'s Mind', text: 'Cabernet Sauvignon grapes. Caymus is famous for these.' },
@@ -1331,7 +1363,7 @@ const ch6Extras: Record<string, DialogueLine[]> = {
   ch6_portfolio: [
     { speaker: 'JP\'s Mind', text: 'Six months ago I didn\'t know what HTML was.' },
     { speaker: 'JP\'s Mind', text: 'Now I\'m COO of Pomaika\'i. Systems operator at Office Kult. Running my own clients on the side.' },
-    { speaker: 'JP\'s Mind', text: 'Sticker Smith. WCT. DHL. Vacaville Appliance. fw.wheels. And it\'s still just the beginning.' },
+    { speaker: 'JP\'s Mind', text: 'Sticker Smith. WCT. DHL. Vacaville Appliance. Manza Visuals. And it\'s still just the beginning.' },
     { speaker: 'JP\'s Mind', text: 'People doing $400K a month treat me like an equal. Because I earned it.' },
   ],
   ch6_vegas: [

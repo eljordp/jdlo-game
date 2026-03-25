@@ -1458,6 +1458,62 @@ function generateAllNPCs(scene: Phaser.Scene) {
       px(g, 10, 5, 0xc8a078);
     }
   );
+
+  // Manza — creative/visual artist, dark skin, short dreads, camera vibe
+  generateNPC(
+    scene,
+    'npc_manza',
+    0x201818, // dark textured hair
+    'short',
+    0x181820, // black tee
+    0x202028,
+    0x282830, // dark jeans
+    0xa07848, // dark skin
+    0x806030,
+    (g) => {
+      // Short dreads texture — extra pixels on top of head
+      px(g, 4, 0, 0x201818, 2, 1);
+      px(g, 7, 0, 0x201818, 1, 1);
+      px(g, 10, 0, 0x201818, 2, 1);
+      px(g, 5, 1, 0x181010, 1, 1);
+      px(g, 9, 1, 0x181010, 1, 1);
+      // Chain detail on neck
+      px(g, 7, 6, 0xd0b040, 2, 1);
+      px(g, 8, 7, 0xd0b040, 1, 1);
+    }
+  );
+
+  // Zay — JP's boy, ride or die. Waves/low fade, designer fit, gold chain
+  generateNPC(
+    scene,
+    'npc_zay',
+    0x181010, // waves/low fade
+    'short',
+    0x1a1a28, // dark designer hoodie
+    0x222230,
+    0x1a1a20, // dark designer pants
+    0x905838, // dark skin
+    0x704828,
+    (g) => {
+      // Waves texture on hair
+      px(g, 5, 1, 0x201818, 1, 1);
+      px(g, 8, 1, 0x201818, 1, 1);
+      px(g, 10, 1, 0x201818, 1, 1);
+      // Gold chain
+      px(g, 7, 6, 0xd0b040, 2, 1);
+      px(g, 6, 7, 0xd0b040, 1, 1);
+      px(g, 9, 7, 0xd0b040, 1, 1);
+      px(g, 7, 7, 0xc0a030, 2, 1);
+      // Subtle brand detail on hoodie (small logo)
+      px(g, 6, 8, 0x303040, 1, 1);
+      px(g, 7, 8, 0x303040, 1, 1);
+      // Clean white shoes
+      px(g, 4, 13, 0xf0f0f0, 3, 1);
+      px(g, 9, 13, 0xf0f0f0, 3, 1);
+      px(g, 4, 14, 0xf0f0f0, 3, 1);
+      px(g, 9, 14, 0xf0f0f0, 3, 1);
+    }
+  );
 }
 
 // ─── TILE SPRITES ───────────────────────────────────────────────────
@@ -2363,6 +2419,201 @@ function generateCorvetteC8(scene: Phaser.Scene) {
   scene.textures.addCanvas('car-corvette-c8', canvas);
 }
 
+// ─── LAMBORGHINI SVJ SPRITE ──────────────────────────────────────────
+// 48x32 top-down sprite — Verde Mantis green SVJ, aggressive wedge, massive wing
+function generateLamboSVJ(scene: Phaser.Scene) {
+  if (scene.textures.exists('car-lambo-svj')) return;
+  const w = 48;
+  const h = 32;
+  const canvas = document.createElement('canvas');
+  canvas.width = w;
+  canvas.height = h;
+  const g = canvas.getContext('2d')!;
+  g.clearRect(0, 0, w, h);
+
+  const green = '#40c040';
+  const greenDark = '#30a030';
+  const greenLight = '#50d050';
+  const black = '#1a1a1e';
+  const darkGrey = '#282830';
+  const headlight = '#e0e8ff';
+  const headlightYellow = '#f0e060';
+  const taillight = '#ff2020';
+  const taillightDark = '#a01010';
+  const tire = '#181818';
+  const rim = '#606068';
+  const rimHighlight = '#808088';
+  const exhaust = '#505058';
+  const chrome = '#a0a0b0';
+  const windowTint = '#101828';
+  const windowShine = '#1a2848';
+  const carbonFiber = '#0a0a0e';
+  const diffuserGrey = '#2a2a30';
+
+  // === BODY SHELL — extreme wedge shape, very low and wide ===
+  g.fillStyle = green;
+  g.fillRect(4, 6, 40, 20);   // main body
+
+  // Wider rear haunches (SVJ is WIDE)
+  g.fillRect(3, 5, 18, 1);    // rear top widening
+  g.fillRect(3, 26, 18, 1);   // rear bottom widening
+  g.fillRect(4, 4, 14, 1);    // even wider rear
+  g.fillRect(4, 27, 14, 1);
+
+  // Aggressive front — narrower wedge
+  g.fillStyle = green;
+  g.fillRect(42, 9, 4, 14);   // front nose
+  g.fillRect(44, 10, 2, 12);  // front tip
+
+  // Rear section
+  g.fillStyle = green;
+  g.fillRect(1, 8, 4, 16);    // rear overhang
+  g.fillRect(2, 7, 3, 18);    // rear width
+
+  // === BODY SHADING ===
+  g.fillStyle = greenDark;
+  g.fillRect(4, 24, 38, 2);   // bottom shadow line
+  g.fillRect(4, 6, 38, 1);    // top shadow line
+  g.fillRect(4, 10, 1, 12);   // rear side shadow
+  g.fillRect(22, 7, 16, 1);   // body crease top
+  g.fillRect(22, 24, 16, 1);  // body crease bottom
+
+  g.fillStyle = greenLight;
+  g.fillRect(10, 7, 12, 1);   // top highlight
+  g.fillRect(10, 24, 12, 1);  // bottom highlight
+  g.fillRect(20, 8, 14, 1);   // center spine highlight
+
+  // === HEXAGONAL SIDE AIR INTAKES (SVJ signature) ===
+  g.fillStyle = carbonFiber;
+  g.fillRect(14, 6, 6, 2);    // top side intake
+  g.fillRect(14, 24, 6, 2);   // bottom side intake
+  g.fillStyle = darkGrey;
+  g.fillRect(15, 6, 4, 1);    // intake mesh top
+  g.fillRect(15, 25, 4, 1);   // intake mesh bottom
+  // Second set of intakes (larger, further back)
+  g.fillStyle = carbonFiber;
+  g.fillRect(6, 5, 5, 2);     // rear top scoop
+  g.fillRect(6, 25, 5, 2);    // rear bottom scoop
+  g.fillStyle = darkGrey;
+  g.fillRect(7, 5, 3, 1);
+  g.fillRect(7, 26, 3, 1);
+
+  // === MASSIVE REAR WING / SPOILER (SVJ distinctive feature) ===
+  g.fillStyle = carbonFiber;
+  g.fillRect(1, 3, 8, 2);     // wing top
+  g.fillRect(1, 27, 8, 2);    // wing bottom
+  g.fillStyle = black;
+  g.fillRect(2, 2, 6, 1);     // wing endplate top
+  g.fillRect(2, 29, 6, 1);    // wing endplate bottom
+  // Wing supports
+  g.fillStyle = carbonFiber;
+  g.fillRect(3, 5, 1, 2);     // top support
+  g.fillRect(7, 5, 1, 2);     // top support 2
+  g.fillRect(3, 25, 1, 2);    // bottom support
+  g.fillRect(7, 25, 1, 2);    // bottom support 2
+
+  // === ROOF / WINDOWS ===
+  g.fillStyle = windowTint;
+  g.fillRect(26, 10, 12, 12); // window area (very forward — engine is rear)
+  g.fillStyle = windowShine;
+  g.fillRect(27, 11, 5, 1);   // windshield glare
+  g.fillRect(27, 14, 4, 1);   // side window glare
+
+  // Pillars
+  g.fillStyle = black;
+  g.fillRect(25, 10, 1, 12);  // rear pillar
+  g.fillRect(38, 10, 1, 12);  // A-pillar
+  g.fillRect(33, 10, 1, 12);  // B-pillar
+
+  // === HEADLIGHTS (thin Y-shaped LED — Aventador SVJ style) ===
+  g.fillStyle = headlight;
+  g.fillRect(44, 10, 2, 1);   // top LED thin
+  g.fillRect(44, 21, 2, 1);   // bottom LED thin
+  g.fillStyle = headlightYellow;
+  g.fillRect(45, 11, 1, 1);   // Y-arm top
+  g.fillRect(43, 9, 1, 1);    // outer DRL top
+  g.fillRect(45, 20, 1, 1);   // Y-arm bottom
+  g.fillRect(43, 22, 1, 1);   // outer DRL bottom
+  // DRL extensions
+  g.fillStyle = headlight;
+  g.fillRect(42, 8, 3, 1);    // top DRL strip
+  g.fillRect(42, 23, 3, 1);   // bottom DRL strip
+
+  // === TAILLIGHTS (wide horizontal) ===
+  g.fillStyle = taillight;
+  g.fillRect(2, 7, 2, 3);     // top taillight
+  g.fillRect(2, 22, 2, 3);    // bottom taillight
+  g.fillStyle = taillightDark;
+  g.fillRect(2, 8, 1, 1);
+  g.fillRect(2, 23, 1, 1);
+
+  // === GIANT REAR DIFFUSER (SVJ has enormous one) ===
+  g.fillStyle = diffuserGrey;
+  g.fillRect(1, 11, 3, 10);   // center diffuser area
+  g.fillStyle = carbonFiber;
+  g.fillRect(0, 12, 2, 8);    // deep diffuser
+  // Diffuser fins
+  g.fillStyle = darkGrey;
+  g.fillRect(1, 13, 1, 1);
+  g.fillRect(1, 15, 1, 1);
+  g.fillRect(1, 17, 1, 1);
+  g.fillRect(1, 19, 1, 1);
+
+  // === QUAD EXHAUST (high-mounted on SVJ) ===
+  g.fillStyle = exhaust;
+  g.fillRect(0, 10, 2, 2);    // top-left
+  g.fillRect(0, 12, 1, 1);    // top-right
+  g.fillRect(0, 20, 2, 2);    // bottom-left
+  g.fillRect(0, 19, 1, 1);    // bottom-right
+  g.fillStyle = '#404040';
+  g.fillRect(0, 11, 1, 1);    // exhaust opening
+  g.fillRect(0, 21, 1, 1);
+
+  // === TIRES + RIMS ===
+  // Front tires
+  g.fillStyle = tire;
+  g.fillRect(36, 5, 6, 3);    // front-top
+  g.fillRect(36, 24, 6, 3);   // front-bottom
+  g.fillStyle = rim;
+  g.fillRect(38, 5, 2, 3);    // front-top rim
+  g.fillRect(38, 24, 2, 3);   // front-bottom rim
+  g.fillStyle = rimHighlight;
+  g.fillRect(39, 6, 1, 1);
+  g.fillRect(39, 25, 1, 1);
+
+  // Rear tires (very wide — Pirelli P Zeros)
+  g.fillStyle = tire;
+  g.fillRect(5, 2, 9, 4);     // rear-top (wider than C8)
+  g.fillRect(5, 26, 9, 4);    // rear-bottom
+  g.fillStyle = rim;
+  g.fillRect(7, 2, 5, 4);     // rear-top rim
+  g.fillRect(7, 26, 5, 4);    // rear-bottom rim
+  g.fillStyle = rimHighlight;
+  g.fillRect(8, 3, 3, 2);     // rear rim shine
+  g.fillRect(8, 27, 3, 2);
+
+  // === SIDE MIRRORS ===
+  g.fillStyle = green;
+  g.fillRect(32, 5, 2, 2);
+  g.fillRect(32, 25, 2, 2);
+  g.fillStyle = greenDark;
+  g.fillRect(33, 5, 1, 1);
+  g.fillRect(33, 25, 1, 1);
+
+  // === CENTER SPINE (engine cover lines) ===
+  g.fillStyle = greenDark;
+  g.fillRect(8, 15, 16, 2);   // engine cover spine
+  g.fillStyle = carbonFiber;
+  g.fillRect(10, 15, 2, 2);   // carbon engine vent
+  g.fillRect(16, 15, 2, 2);   // carbon engine vent 2
+
+  // === SVJ badge area ===
+  g.fillStyle = chrome;
+  g.fillRect(3, 15, 1, 2);    // tiny badge
+
+  scene.textures.addCanvas('car-lambo-svj', canvas);
+}
+
 // ─── ITEM SPRITES ─────────────────────────────────────────────────────
 // 16x16 pixel art items placed on interactable tiles so players can see
 // what they're about to interact with.
@@ -3018,6 +3269,7 @@ export function generateAllSprites(scene: Phaser.Scene): void {
   generateHotTub(scene);
   generateBMW(scene);
   generateCorvetteC8(scene);
+  generateLamboSVJ(scene);
   generateItems(scene);
   generateMoreItems(scene);
 }

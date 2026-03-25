@@ -287,143 +287,244 @@ export class EndScene extends Phaser.Scene {
 
   private postCreditsSequence() {
     const baseDepth = 300;
+    const d = baseDepth;
 
-    // "Meanwhile..."
-    const meanwhile = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'Meanwhile...', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '18px',
-      color: '#ffffff',
-    }).setOrigin(0.5).setDepth(baseDepth).setAlpha(0);
+    // Road scene dimensions
+    const roadY = GAME_HEIGHT / 2 + 180;  // road sits lower
+    const roadH = 60;
 
-    this.tweens.add({
-      targets: meanwhile,
-      alpha: 1,
-      duration: 1000,
-    });
+    // ── STEP 1: Fade to black, then build the night scene ──
+    // Background is already black from the overlay. Draw the night road.
 
-    // After 2s, fade "Meanwhile..." and show JP at computer
-    this.time.delayedCall(3000, () => {
-      this.tweens.add({
-        targets: meanwhile,
-        alpha: 0,
-        duration: 600,
-        onComplete: () => meanwhile.destroy(),
-      });
+    // Dark sky (very dark blue-black)
+    const sky = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 100, GAME_WIDTH, GAME_HEIGHT - 200, 0x060810)
+      .setDepth(d).setAlpha(0);
 
-      // Show JP sprite at computer
-      const jpSprite = this.add.sprite(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 40, 'player-ch6', 0)
-        .setScale(5).setDepth(baseDepth).setAlpha(0);
+    // Road surface
+    const road = this.add.rectangle(GAME_WIDTH / 2, roadY, GAME_WIDTH, roadH, 0x282830)
+      .setDepth(d).setAlpha(0);
+    const roadLine = this.add.rectangle(GAME_WIDTH / 2, roadY, GAME_WIDTH, 2, 0x404050)
+      .setDepth(d + 1).setAlpha(0);
 
-      // Desk/computer underneath
-      const desk = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 40, 120, 16, 0x604830)
-        .setDepth(baseDepth).setAlpha(0);
-      const monitor = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 10, 48, 36, 0x304060)
-        .setDepth(baseDepth - 1).setAlpha(0);
-      // Monitor glow
-      const glow = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 10, 44, 32, 0x4080c0)
-        .setDepth(baseDepth - 1).setAlpha(0);
+    // Road dashes (center line)
+    const dashes: Phaser.GameObjects.Rectangle[] = [];
+    for (let dx = 100; dx < GAME_WIDTH; dx += 80) {
+      const dash = this.add.rectangle(dx, roadY, 30, 2, 0x606068)
+        .setDepth(d + 1).setAlpha(0);
+      dashes.push(dash);
+    }
 
-      this.tweens.add({ targets: [jpSprite, desk, monitor], alpha: 1, duration: 800, delay: 400 });
-      this.tweens.add({ targets: glow, alpha: 0.6, duration: 800, delay: 400 });
+    // Streetlights
+    const lights: Phaser.GameObjects.GameObject[] = [];
+    for (let lx = 200; lx < GAME_WIDTH; lx += 300) {
+      const pole = this.add.rectangle(lx, roadY - roadH / 2 - 60, 3, 120, 0x404050)
+        .setDepth(d).setAlpha(0);
+      const bulb = this.add.circle(lx, roadY - roadH / 2 - 120, 4, 0xf0d060)
+        .setDepth(d + 1).setAlpha(0);
+      const glow = this.add.circle(lx, roadY - roadH / 2 - 100, 40, 0xf0d060, 0.05)
+        .setDepth(d).setAlpha(0);
+      lights.push(pole, bulb, glow);
+    }
 
-      // Monitor pulse
-      this.tweens.add({
-        targets: glow,
-        alpha: 0.3,
-        duration: 1500,
-        yoyo: true,
-        repeat: -1,
-        delay: 1200,
-      });
+    // Fade in the night scene
+    this.tweens.add({ targets: [sky, road, roadLine], alpha: 1, duration: 1500 });
+    dashes.forEach(dash => this.tweens.add({ targets: dash, alpha: 1, duration: 1500 }));
+    lights.forEach(l => this.tweens.add({ targets: l, alpha: 1, duration: 1500 }));
 
-      // Text sequence
-      const line1 = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 90, 'JP opens his laptop. A new message.', {
-        fontFamily: '"Press Start 2P", monospace',
-        fontSize: '11px',
-        color: '#aaaacc',
-      }).setOrigin(0.5).setDepth(baseDepth).setAlpha(0);
+    // ── STEP 2: Place the Lambo + Zay leaning ──
+    this.time.delayedCall(2000, () => {
+      // Lambo SVJ — parked on the road, right of center
+      const lamboX = GAME_WIDTH / 2 + 100;
+      const lamboY = roadY - 20;
+      const lambo = this.add.sprite(lamboX, lamboY, 'car-lambo-svj')
+        .setScale(4).setDepth(d + 2).setAlpha(0);
 
-      this.tweens.add({ targets: line1, alpha: 1, duration: 800, delay: 1600 });
+      // Zay — leaning against the car (just to the left of it)
+      const zayX = lamboX - 110;
+      const zayY = roadY - 50;
+      const zay = this.add.sprite(zayX, zayY, 'npc_zay', 0)
+        .setScale(5).setDepth(d + 3).setAlpha(0);
 
-      // "I need someone who can build what nobody else can."
-      const line2 = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 130,
-        '"I need someone who can build\nwhat nobody else can."', {
-        fontFamily: '"Press Start 2P", monospace',
-        fontSize: '11px',
-        color: '#f0c040',
-        align: 'center',
-        lineSpacing: 8,
-      }).setOrigin(0.5).setDepth(baseDepth).setAlpha(0);
+      this.tweens.add({ targets: [lambo, zay], alpha: 1, duration: 1000 });
 
-      this.tweens.add({ targets: line2, alpha: 1, duration: 800, delay: 4000 });
+      // ── STEP 3: JP walks in from the left ──
+      this.time.delayedCall(2000, () => {
+        const jpStartX = -80;
+        const jpY = roadY - 50;
+        const jp = this.add.sprite(jpStartX, jpY, 'player-ch6', 6) // right-facing frame
+          .setScale(5).setDepth(d + 3);
 
-      // "He smiles. Types back..."
-      const line3 = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 185,
-        'He smiles. Types back:\n"When do we start?"', {
-        fontFamily: '"Press Start 2P", monospace',
-        fontSize: '11px',
-        color: '#aaaacc',
-        align: 'center',
-        lineSpacing: 8,
-      }).setOrigin(0.5).setDepth(baseDepth).setAlpha(0);
+        // Walk JP in
+        this.tweens.add({
+          targets: jp,
+          x: zayX - 100,
+          duration: 2500,
+          ease: 'Linear',
+          onComplete: () => {
+            // JP stops, faces Zay (right-facing idle)
+            jp.setFrame(6);
 
-      this.tweens.add({ targets: line3, alpha: 1, duration: 800, delay: 7000 });
+            // ── STEP 4: Dialogue ──
+            const dialogueLines = [
+              { speaker: 'Zay', text: 'JP. My boy.' },
+              { speaker: 'JP', text: 'Zay. What\'s good.' },
+              { speaker: 'Zay', text: 'I heard what you been building. I\'m proud of you bro. For real.' },
+              { speaker: 'JP', text: 'Appreciate that. Means a lot coming from you.' },
+              { speaker: 'Zay', text: 'So where we going next?' },
+              { speaker: 'JP', text: 'Everywhere.' },
+            ];
 
-      // "To be continued..." in yellow
-      const tbc = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 250, 'To be continued...', {
-        fontFamily: '"Press Start 2P", monospace',
-        fontSize: '16px',
-        color: '#f0c040',
-      }).setOrigin(0.5).setDepth(baseDepth).setAlpha(0);
+            let lineIdx = 0;
+            const dialogueBg = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT - 120, GAME_WIDTH - 80, 100, 0x1a1a2e, 0.95)
+              .setDepth(d + 10).setStrokeStyle(2, 0x3a3a5e);
+            const speakerText = this.add.text(80, GAME_HEIGHT - 160, '', {
+              fontFamily: '"Press Start 2P", monospace',
+              fontSize: '12px',
+              color: '#f0c040',
+            }).setDepth(d + 11);
+            const lineText = this.add.text(80, GAME_HEIGHT - 135, '', {
+              fontFamily: '"Press Start 2P", monospace',
+              fontSize: '14px',
+              color: '#ffffff',
+              wordWrap: { width: GAME_WIDTH - 160 },
+              lineSpacing: 8,
+            }).setDepth(d + 11);
 
-      this.tweens.add({ targets: tbc, alpha: 1, duration: 1000, delay: 9500 });
+            const showLine = () => {
+              if (lineIdx >= dialogueLines.length) {
+                dialogueBg.destroy();
+                speakerText.destroy();
+                lineText.destroy();
+                // ── STEP 5: Both walk to the Lambo ──
+                walkToLambo(jp, zay, lambo);
+                return;
+              }
+              speakerText.setText(dialogueLines[lineIdx].speaker);
+              lineText.setText(dialogueLines[lineIdx].text);
+              lineIdx++;
+            };
 
-      // Pulse the "To be continued..."
-      this.tweens.add({
-        targets: tbc,
-        alpha: 0.5,
-        duration: 1500,
-        yoyo: true,
-        repeat: -1,
-        delay: 11000,
-      });
+            showLine();
 
-      // "Follow the story → @jdlo"
-      const follow = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 290, 'Follow the story  @jdlo', {
-        fontFamily: '"Press Start 2P", monospace',
-        fontSize: '10px',
-        color: '#6688cc',
-      }).setOrigin(0.5).setDepth(baseDepth).setAlpha(0)
-        .setInteractive({ useHandCursor: true });
+            const advanceDialogue = () => {
+              showLine();
+            };
 
-      follow.on('pointerdown', () => window.open('https://instagram.com/jdlo', '_blank'));
-      follow.on('pointerover', () => follow.setColor('#88aaee'));
-      follow.on('pointerout', () => follow.setColor('#6688cc'));
+            const spaceKeyPost = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+            spaceKeyPost.on('down', advanceDialogue);
+            this.input.on('pointerdown', advanceDialogue);
 
-      this.tweens.add({ targets: follow, alpha: 1, duration: 800, delay: 11500 });
+            const walkToLambo = (jpSpr: Phaser.GameObjects.Sprite, zaySpr: Phaser.GameObjects.Sprite, lamboSpr: Phaser.GameObjects.Sprite) => {
+              spaceKeyPost.off('down', advanceDialogue);
+              this.input.off('pointerdown', advanceDialogue);
 
-      // "SPACE to play again" at bottom
-      const replayHint = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 40, 'SPACE to play again', {
-        fontFamily: '"Press Start 2P", monospace',
-        fontSize: '9px',
-        color: '#333355',
-      }).setOrigin(0.5).setDepth(baseDepth).setAlpha(0);
+              // Both walk toward the Lambo
+              this.tweens.add({
+                targets: jpSpr,
+                x: lamboX - 60,
+                duration: 1500,
+                ease: 'Linear',
+              });
+              this.tweens.add({
+                targets: zaySpr,
+                x: lamboX - 30,
+                duration: 1200,
+                ease: 'Linear',
+                onComplete: () => {
+                  // ── STEP 6: They "get in" — sprites fade into the car ──
+                  this.tweens.add({
+                    targets: [jpSpr, zaySpr],
+                    alpha: 0,
+                    duration: 600,
+                    onComplete: () => {
+                      jpSpr.destroy();
+                      zaySpr.destroy();
 
-      this.tweens.add({ targets: replayHint, alpha: 1, duration: 800, delay: 12500 });
-      this.tweens.add({
-        targets: replayHint,
-        alpha: 0.2,
-        duration: 1200,
-        yoyo: true,
-        repeat: -1,
-        delay: 13500,
-      });
+                      // ── STEP 7: Lambo drives off screen ──
+                      this.time.delayedCall(500, () => {
+                        this.tweens.add({
+                          targets: lamboSpr,
+                          x: GAME_WIDTH + 300,
+                          scaleX: 2,
+                          scaleY: 2,
+                          duration: 2500,
+                          ease: 'Quad.easeIn',
+                          onComplete: () => {
+                            lamboSpr.destroy();
 
-      // Re-enable replay from post-credits
-      this.input.keyboard!.on('keydown-SPACE', () => {
-        this.cameras.main.fadeOut(1000, 0, 0, 0);
-        this.cameras.main.once('camerafadeoutcomplete', () => {
-          this.scene.start('IntroScene');
+                            // ── STEP 8: Road gets quiet ──
+                            this.time.delayedCall(1500, () => {
+                              // "To be continued..." fades in
+                              const tbc = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 40, 'To be continued...', {
+                                fontFamily: '"Press Start 2P", monospace',
+                                fontSize: '20px',
+                                color: '#f0c040',
+                              }).setOrigin(0.5).setDepth(d + 10).setAlpha(0);
+
+                              this.tweens.add({
+                                targets: tbc,
+                                alpha: 1,
+                                duration: 1500,
+                              });
+
+                              // Pulse
+                              this.tweens.add({
+                                targets: tbc,
+                                alpha: 0.5,
+                                duration: 1500,
+                                yoyo: true,
+                                repeat: -1,
+                                delay: 2500,
+                              });
+
+                              // "Follow the story -> @jdlo"
+                              const follow = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 20, 'Follow the story  @jdlo', {
+                                fontFamily: '"Press Start 2P", monospace',
+                                fontSize: '12px',
+                                color: '#6688cc',
+                              }).setOrigin(0.5).setDepth(d + 10).setAlpha(0)
+                                .setInteractive({ useHandCursor: true });
+
+                              follow.on('pointerdown', () => window.open('https://instagram.com/jdlo', '_blank'));
+                              follow.on('pointerover', () => follow.setColor('#88aaee'));
+                              follow.on('pointerout', () => follow.setColor('#6688cc'));
+
+                              this.tweens.add({ targets: follow, alpha: 1, duration: 800, delay: 2000 });
+
+                              // Replay hint
+                              const replayHint = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 40, 'SPACE to play again', {
+                                fontFamily: '"Press Start 2P", monospace',
+                                fontSize: '9px',
+                                color: '#333355',
+                              }).setOrigin(0.5).setDepth(d + 10).setAlpha(0);
+
+                              this.tweens.add({ targets: replayHint, alpha: 1, duration: 800, delay: 3000 });
+                              this.tweens.add({
+                                targets: replayHint,
+                                alpha: 0.2,
+                                duration: 1200,
+                                yoyo: true,
+                                repeat: -1,
+                                delay: 4000,
+                              });
+
+                              // Re-enable replay
+                              this.input.keyboard!.on('keydown-SPACE', () => {
+                                this.cameras.main.fadeOut(1000, 0, 0, 0);
+                                this.cameras.main.once('camerafadeoutcomplete', () => {
+                                  this.scene.start('IntroScene');
+                                });
+                              });
+                            });
+                          },
+                        });
+                      });
+                    },
+                  });
+                },
+              });
+            };
+          },
         });
       });
     });

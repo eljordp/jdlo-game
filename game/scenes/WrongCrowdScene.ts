@@ -26,6 +26,12 @@ export class WrongCrowdScene extends BaseChapterScene {
     super.create();
     this.raidTriggered = false;
 
+    // NIGHT TIME OVERLAY — dark blue tint over everything
+    const nightOverlay = this.add.rectangle(
+      GAME_WIDTH * 2, GAME_HEIGHT * 2, GAME_WIDTH * 4, GAME_HEIGHT * 4,
+      0x080820, 0.35
+    ).setDepth(3).setScrollFactor(1);
+
     // Place the BMW 335i sprite
     const carX = 9 * SCALED_TILE + SCALED_TILE / 2;
     const carY = 11 * SCALED_TILE + SCALED_TILE / 2;
@@ -36,10 +42,86 @@ export class WrongCrowdScene extends BaseChapterScene {
     this.collisionTiles.add('9,11');
     this.collisionTiles.add('10,11');
 
-    // Add navigation hints — glowing arrows showing the path
+    // Navigation hints
     this.addHint(14, 8, 'Exit house');
     this.addHint(9, 11, 'Your 335i');
     this.addHint(18, 18, 'Buyer\'s block');
+
+    // 3:33 AM wake up cutscene at start
+    this.play333Cutscene();
+  }
+
+  private play333Cutscene() {
+    this.frozen = true;
+    const objects: Phaser.GameObjects.GameObject[] = [];
+
+    // Black screen
+    const bg = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000)
+      .setScrollFactor(0).setDepth(600).setAlpha(1);
+    objects.push(bg);
+
+    // Clock: 3:33 AM
+    const clock = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 100, '3:33 AM', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '32px',
+      color: '#ff2020',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(601).setAlpha(0);
+    objects.push(clock);
+
+    // Fade in clock
+    this.tweens.add({
+      targets: clock,
+      alpha: 1,
+      duration: 1000,
+      hold: 1500,
+      yoyo: true,
+      onComplete: () => {
+        // Bad thoughts sequence
+        const thoughts = [
+          { text: 'JP wakes up. Can\'t sleep again.', delay: 0 },
+          { text: 'Something feels off tonight.', delay: 1500 },
+          { text: 'Like something bad is about to happen.', delay: 3000 },
+          { text: 'Phone buzzes. It\'s the buyer.\n"You coming or not?"', delay: 4800 },
+          { text: '...fuck it.', delay: 6500 },
+        ];
+
+        for (const thought of thoughts) {
+          const t = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2, thought.text, {
+            fontFamily: '"Press Start 2P", monospace',
+            fontSize: '13px',
+            color: '#888899',
+            wordWrap: { width: GAME_WIDTH - 200 },
+            align: 'center',
+            lineSpacing: 8,
+          }).setOrigin(0.5).setScrollFactor(0).setDepth(601).setAlpha(0);
+          objects.push(t);
+
+          this.tweens.add({
+            targets: t,
+            alpha: 1,
+            duration: 600,
+            delay: thought.delay,
+            hold: 1200,
+            yoyo: true,
+          });
+        }
+
+        // After all thoughts, fade out and start gameplay
+        this.time.delayedCall(8500, () => {
+          this.tweens.add({
+            targets: bg,
+            alpha: 0,
+            duration: 1000,
+            onComplete: () => {
+              for (const obj of objects) {
+                if (obj && obj.active) obj.destroy();
+              }
+              this.frozen = false;
+            },
+          });
+        });
+      },
+    });
   }
 
   private addHint(x: number, y: number, _label: string) {

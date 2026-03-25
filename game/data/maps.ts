@@ -100,8 +100,8 @@ export const homeMap: MapData = {
     [ G, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 14 yard
     [ G, G, E, E, E, E, E, E, E, E, P, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, G, G ], // 15 fence top
     [ G, G, E, G, G, T, G, G, G, G, P, G, G, G, G, G, T, G, G, G, G, G, G, G, T, G, G, E, G, G ], // 16 yard interior + trees
-    [ G, G, E, G, G, G, G, G, G, G, P, G, G, L, G, G, G, G, G, G, G, G, G, G, G, G, G, E, G, G ], // 17 palm
-    [ G, G, E, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, T, G, G, G, G, G, G, G, E, G, G ], // 18 tree
+    [ G, G, E, G, G, G, G, G, G, G, P, G, G, L, G, G, G, G, G, G, W, W, W, G, G, G, G, E, G, G ], // 17 palm + pond
+    [ G, G, E, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, T, W, W, W, G, G, G, G, E, G, G ], // 18 tree + pond
     [ G, G, E, T, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, L, G, G, G, G, E, G, G ], // 19 tree + palm
     [ G, G, E, E, E, E, E, E, E, E, P, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, G, G ], // 20 fence bottom
     [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 21 street
@@ -153,6 +153,7 @@ export const homeMap: MapData = {
     { id: 'ch0_bbq',           x: 6,  y: 17, type: 'examine', glow: true, sprite: 'item-bbq' },
     { id: 'ch0_nolan_call',    x: 7,  y: 4,  type: 'examine', glow: true, sprite: 'item-phone' },
     { id: 'ch0_frenchie_ball', x: 16, y: 17, type: 'examine', glow: true },
+    { id: 'ch0_fishing',       x: 19, y: 17, type: 'examine', glow: true },
     { id: 'ch0_goodbye',       x: 10, y: 20, type: 'examine', glow: true },
   ],
 };
@@ -512,7 +513,7 @@ export const comeUpMap: MapData = {
       { id: 'ch5_impressed',    x: 15, y: 8,  sprite: 'npc_biz' },
       { id: 'ch5_dhl',          x: 15, y: 10, sprite: 'npc_dhl_client' },
       { id: 'ch5_vacaville',    x: 8,  y: 8,  sprite: 'npc_waitress' },
-      { id: 'ch5_fw_wheels',    x: 22, y: 8,  sprite: 'npc_kid' },
+      { id: 'ch5_manza',         x: 22, y: 8,  sprite: 'npc_manza' },
     ],
   },
   triggers: [
@@ -599,6 +600,8 @@ export const operatorMap: MapData = {
       { id: 'ch6_client2',      x: 33, y: 4,  sprite: 'npc_business' },
       { id: 'ch6_team_member',  x: 24, y: 11, sprite: 'npc_generic' },
       { id: 'ch6_security',     x: 24, y: 8,  sprite: 'npc_security' },
+      // LA zone — referrals
+      { id: 'ch6_manza',         x: 30, y: 11, sprite: 'npc_manza' },
       // Vegas zone
       { id: 'ch6_vegas_contact', x: 10, y: 25, sprite: 'npc_suit' },
       { id: 'ch6_casino_host',   x: 6,  y: 29, sprite: 'npc_business' },
