@@ -23,6 +23,8 @@ export const TILES = {
   BUILDING_WALL: 16,
 } as const;
 
+export type InteractableType = 'examine' | 'item' | 'evolve' | 'showcase' | 'scratch';
+
 export type MapData = {
   tiles: number[][];
   collisions: number[];
@@ -31,6 +33,7 @@ export type MapData = {
     npcs: { id: string; x: number; y: number; sprite: string }[];
   };
   triggers: { x: number; y: number; action: string; target?: string }[];
+  interactables: { id: string; x: number; y: number; type: InteractableType; sprite?: string; glow?: boolean }[];
 };
 
 // Shorthand aliases so the grids stay compact and readable
@@ -112,6 +115,11 @@ export const beachMap: MapData = {
     { x: 6,  y: 21, action: 'scene', target: 'WrongCrowdScene' },
     { x: 7,  y: 21, action: 'scene', target: 'WrongCrowdScene' },
   ],
+  interactables: [
+    { id: 'ch1_joint', x: 8, y: 12, type: 'examine', glow: true },
+    { id: 'ch1_stash', x: 3, y: 8, type: 'examine', glow: true },
+    { id: 'ch1_view', x: 22, y: 5, type: 'examine', glow: true },
+  ],
 };
 
 // ---------------------------------------------------------------------------
@@ -161,6 +169,7 @@ export const wrongCrowdMap: MapData = {
     { x: 15, y: 21, action: 'scene', target: 'JailScene' },
     { x: 16, y: 21, action: 'scene', target: 'JailScene' },
   ],
+  interactables: [],
 };
 
 // ---------------------------------------------------------------------------
@@ -194,6 +203,12 @@ export const jailMap: MapData = {
   },
   triggers: [
     { x: 11, y: 5, action: 'scene', target: 'TractorScene' },
+  ],
+  interactables: [
+    { id: 'ch3_wall_1', x: 3, y: 3, type: 'scratch', glow: true },
+    { id: 'ch3_wall_2', x: 4, y: 3, type: 'scratch', glow: true },
+    { id: 'ch3_wall_3', x: 5, y: 3, type: 'scratch', glow: true },
+    { id: 'ch3_wall_4', x: 3, y: 4, type: 'scratch', glow: true },
   ],
 };
 
@@ -239,6 +254,12 @@ export const tractorMap: MapData = {
   triggers: [
     { x: 6,  y: 4,  action: 'dialogue', target: 'ch4_computer' },
     { x: 8,  y: 21, action: 'scene', target: 'ComeUpScene' },
+  ],
+  interactables: [
+    { id: 'ch4_tractor', x: 13, y: 5, type: 'examine', glow: true },
+    { id: 'ch4_vines', x: 18, y: 8, type: 'examine', glow: true },
+    { id: 'ch4_phone', x: 6, y: 8, type: 'examine', glow: true },
+    { id: 'ch4_ai_discovery', x: 5, y: 4, type: 'evolve', glow: true },
   ],
 };
 
@@ -289,6 +310,11 @@ export const comeUpMap: MapData = {
   triggers: [
     { x: 27, y: 23, action: 'scene', target: 'OperatorScene' },
   ],
+  interactables: [
+    { id: 'ch5_wct_showcase', x: 3, y: 14, type: 'showcase', glow: true },
+    { id: 'ch5_sticker_showcase', x: 19, y: 14, type: 'showcase', glow: true },
+    { id: 'ch5_dhl_showcase', x: 13, y: 17, type: 'showcase', glow: true },
+  ],
 };
 
 // ---------------------------------------------------------------------------
@@ -337,6 +363,10 @@ export const operatorMap: MapData = {
   },
   triggers: [
     { x: 14, y: 24, action: 'scene', target: 'EndScene' },
+  ],
+  interactables: [
+    { id: 'ch6_dashboard', x: 8, y: 5, type: 'examine', glow: true },
+    { id: 'ch6_portfolio', x: 14, y: 10, type: 'examine', glow: true },
   ],
 };
 

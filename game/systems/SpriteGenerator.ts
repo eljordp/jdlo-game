@@ -185,6 +185,15 @@ function generatePlayer(scene: Phaser.Scene) {
   g.destroy();
   rt.destroy();
 
+  // Add spritesheet frame data so Phaser knows how to slice the texture
+  const playerTexture = scene.textures.get('player');
+  const source = playerTexture.source[0];
+  // Remove the default __BASE frame and add individual frames
+  playerTexture.add('__BASE', 0, 0, 0, sheetW, sheetH);
+  for (let i = 0; i < 8; i++) {
+    playerTexture.add(i, 0, i * frameW, 0, frameW, frameH);
+  }
+
   // Create animations
   // Frame layout: 0=down-idle, 1=down-step, 2=up-idle, 3=up-step, 4=left-idle, 5=left-step, 6=right-idle, 7=right-step
   const dirs = ['down', 'up', 'left', 'right'];

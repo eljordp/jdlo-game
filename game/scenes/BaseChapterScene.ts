@@ -1,7 +1,10 @@
 import Phaser from 'phaser';
-import { TILE_SIZE, SCALE, GAME_WIDTH, GAME_HEIGHT, SCALED_TILE, MOVEMENT_SPEED } from '../config';
+import { GAME_WIDTH, GAME_HEIGHT, SCALED_TILE, SCALE } from '../config';
 import { DialogueSystem, DialogueLine } from '../systems/DialogueSystem';
 import { MapBuilder } from '../systems/MapBuilder';
+import { InteractionSystem } from '../systems/InteractionSystem';
+import { EvolutionAnimation } from '../systems/EvolutionAnimation';
+import { ShowcaseFrame } from '../systems/ShowcaseFrame';
 import type { MapData } from '../data/maps';
 
 type NPCObject = {
@@ -10,15 +13,18 @@ type NPCObject = {
   dialogue: DialogueLine[];
 };
 
+// Showcase data stored in dialogue map with this prefix
+const SHOWCASE_PREFIX = 'showcase:';
+
 export abstract class BaseChapterScene extends Phaser.Scene {
   protected player!: Phaser.GameObjects.Sprite;
   protected cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   protected wasd!: { W: Phaser.Input.Keyboard.Key; A: Phaser.Input.Keyboard.Key; S: Phaser.Input.Keyboard.Key; D: Phaser.Input.Keyboard.Key };
   protected dialogue!: DialogueSystem;
+  protected interactions!: InteractionSystem;
   protected npcs: NPCObject[] = [];
   protected collisionTiles: Set<string> = new Set();
   protected isMoving = false;
-  protected moveTarget = { x: 0, y: 0 };
   protected facing: 'down' | 'up' | 'left' | 'right' = 'down';
   protected frozen = false;
   protected triggers: { x: number; y: number; action: string; target?: string }[] = [];
@@ -29,6 +35,11 @@ export abstract class BaseChapterScene extends Phaser.Scene {
 
   abstract getMapData(): MapData;
   abstract getChapterDialogue(): { intro: DialogueLine[]; npcs: Record<string, DialogueLine[]> };
+
+  // Override in subclasses to provide showcase data
+  getShowcaseData(): Record<string, { title: string; description: string; revenue: string }> {
+    return {};
+  }
 
   create() {
     this.npcs = [];
@@ -74,7 +85,6 @@ export abstract class BaseChapterScene extends Phaser.Scene {
         npcData.sprite, 0
       ).setScale(SCALE).setDepth(9);
 
-      // Add collision for NPC tile
       this.collisionTiles.add(`${npcData.x},${npcData.y}`);
 
       this.npcs.push({
@@ -83,6 +93,11 @@ export abstract class BaseChapterScene extends Phaser.Scene {
         dialogue: chapterDialogue.npcs[npcData.id] || [{ text: '...' }],
       });
     }
+
+    // Set up interaction system
+    this.interactions = new InteractionSystem(this);
+    const interactables = (mapData.interactables || []) as import('../systems/InteractionSystem').Interactable[];
+    this.interactions.init(interactables);
 
     // Set up dialogue system
     this.dialogue = new DialogueSystem(this);
@@ -142,12 +157,15 @@ export abstract class BaseChapterScene extends Phaser.Scene {
   }
 
   private handleInteract() {
+    // If dialogue is active, advance it
     if (this.dialogue.isActive()) {
       this.dialogue.advance();
       return;
     }
 
-    // Check for nearby NPC
+    if (this.frozen) return;
+
+    // Get player tile position and facing tile
     const playerTileX = Math.round((this.player.x - SCALED_TILE / 2) / SCALED_TILE);
     const playerTileY = Math.round((this.player.y - SCALED_TILE / 2) / SCALED_TILE);
 
@@ -158,6 +176,7 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     if (this.facing === 'left') facingX--;
     if (this.facing === 'right') facingX++;
 
+    // Check NPCs first
     for (const npc of this.npcs) {
       const npcTileX = Math.round((npc.sprite.x - SCALED_TILE / 2) / SCALED_TILE);
       const npcTileY = Math.round((npc.sprite.y - SCALED_TILE / 2) / SCALED_TILE);
@@ -165,6 +184,72 @@ export abstract class BaseChapterScene extends Phaser.Scene {
       if (npcTileX === facingX && npcTileY === facingY) {
         this.dialogue.show(npc.dialogue);
         return;
+      }
+    }
+
+    // Check interactables (at facing tile AND current tile)
+    const interactable = this.interactions.checkInteraction(facingX, facingY)
+      || this.interactions.checkInteraction(playerTileX, playerTileY);
+
+    if (interactable) {
+      this.handleInteractable(interactable);
+    }
+  }
+
+  private handleInteractable(interactable: { id: string; type: string; consumed?: boolean }) {
+    const chapterDialogue = this.getChapterDialogue();
+    const showcaseData = this.getShowcaseData();
+
+    switch (interactable.type) {
+      case 'examine':
+      case 'scratch': {
+        // Show dialogue from the chapter's NPC map (interactable IDs are stored there too)
+        const lines = chapterDialogue.npcs[interactable.id];
+        if (lines) {
+          this.dialogue.show(lines);
+          this.interactions.consume(interactable.id);
+        }
+        break;
+      }
+
+      case 'evolve': {
+        // Tech evolution animation (Chapter 4)
+        this.frozen = true;
+        // Show the discovery dialogue first
+        const discoveryLines = chapterDialogue.npcs[interactable.id];
+        if (discoveryLines) {
+          this.dialogue.show(discoveryLines, () => {
+            EvolutionAnimation.play(
+              this,
+              ['ChatGPT', 'Wix', 'Webflow', 'Lovable', 'Claude Code'],
+              () => {
+                this.frozen = false;
+                this.interactions.consume(interactable.id);
+              }
+            );
+          });
+        }
+        break;
+      }
+
+      case 'showcase': {
+        // Show client work frame (Chapter 5-6)
+        const data = showcaseData[interactable.id];
+        if (data) {
+          this.frozen = true;
+          ShowcaseFrame.show(this, data, () => {
+            this.frozen = false;
+            this.interactions.consume(interactable.id);
+          });
+        } else {
+          // Fallback to dialogue if no showcase data
+          const lines = chapterDialogue.npcs[interactable.id];
+          if (lines) {
+            this.dialogue.show(lines);
+            this.interactions.consume(interactable.id);
+          }
+        }
+        break;
       }
     }
   }
@@ -177,10 +262,9 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     });
   }
 
-  update() {
+  update(_time: number, _delta: number) {
     if (this.frozen || this.dialogue.isActive() || this.isMoving) return;
 
-    // Get input direction
     let dx = 0;
     let dy = 0;
 
@@ -189,31 +273,24 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     else if (this.cursors.up.isDown || this.wasd.W.isDown) { dy = -1; this.facing = 'up'; }
     else if (this.cursors.down.isDown || this.wasd.S.isDown) { dy = 1; this.facing = 'down'; }
 
-    // Update facing frame
     const frameMap = { down: 0, up: 2, left: 4, right: 6 };
     this.player.setFrame(frameMap[this.facing]);
 
     if (dx === 0 && dy === 0) return;
 
-    // Calculate target tile
     const currentTileX = Math.round((this.player.x - SCALED_TILE / 2) / SCALED_TILE);
     const currentTileY = Math.round((this.player.y - SCALED_TILE / 2) / SCALED_TILE);
     const targetTileX = currentTileX + dx;
     const targetTileY = currentTileY + dy;
 
-    // Check collision
     const key = `${targetTileX},${targetTileY}`;
     if (this.collisionTiles.has(key)) return;
-
-    // Check bounds
     if (targetTileX < 0 || targetTileX >= this.mapWidth || targetTileY < 0 || targetTileY >= this.mapHeight) return;
 
-    // Move to target
     this.isMoving = true;
     const targetX = targetTileX * SCALED_TILE + SCALED_TILE / 2;
     const targetY = targetTileY * SCALED_TILE + SCALED_TILE / 2;
 
-    // Walking animation frame
     const walkFrame = frameMap[this.facing] + 1;
     this.player.setFrame(walkFrame);
 
@@ -225,8 +302,6 @@ export abstract class BaseChapterScene extends Phaser.Scene {
       onComplete: () => {
         this.isMoving = false;
         this.player.setFrame(frameMap[this.facing]);
-
-        // Check triggers
         this.checkTriggers(targetTileX, targetTileY);
       },
     });
