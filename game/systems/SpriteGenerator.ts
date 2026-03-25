@@ -36,7 +36,7 @@ class DrawContext {
   }
 }
 
-// Helper: create texture from canvas drawing with proper transparency
+// Helper: create texture from raw HTML canvas — guarantees transparency
 function makeTexture(
   scene: Phaser.Scene,
   key: string,
@@ -44,12 +44,14 @@ function makeTexture(
   height: number,
   draw: (ctx: DrawContext) => void
 ) {
-  const canvasTexture = scene.textures.createCanvas(key, width, height)!;
-  const rawCtx = canvasTexture.getContext();
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const rawCtx = canvas.getContext('2d')!;
   rawCtx.clearRect(0, 0, width, height);
   const dc = new DrawContext(rawCtx);
   draw(dc);
-  canvasTexture.refresh();
+  scene.textures.addCanvas(key, canvas);
 }
 
 // LEGACY: Phaser Graphics px helper — only used where we still need Graphics API
@@ -195,9 +197,11 @@ function generatePlayer(scene: Phaser.Scene) {
   const sheetW = frameW * 8;
   const sheetH = frameH;
 
-  // Create canvas texture with transparency
-  const canvasTexture = scene.textures.createCanvas('player', sheetW, sheetH)!;
-  const rawCtx = canvasTexture.getContext();
+  // Create raw canvas for transparency
+  const canvas = document.createElement('canvas');
+  canvas.width = sheetW;
+  canvas.height = sheetH;
+  const rawCtx = canvas.getContext('2d')!;
   rawCtx.clearRect(0, 0, sheetW, sheetH);
   const dc = new DrawContext(rawCtx);
 
@@ -216,7 +220,7 @@ function generatePlayer(scene: Phaser.Scene) {
     frameIndex++;
   }
 
-  canvasTexture.refresh();
+  scene.textures.addCanvas('player', canvas);
 
   // Add spritesheet frame data
   const texture = scene.textures.get('player');
