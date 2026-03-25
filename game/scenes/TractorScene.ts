@@ -4,6 +4,7 @@ import { tractorDialogue } from '../data/story';
 import type { DialogueLine } from '../systems/DialogueSystem';
 import { EvolutionAnimation } from '../systems/EvolutionAnimation';
 import { SCALED_TILE, GAME_WIDTH, GAME_HEIGHT } from '../config';
+import { Analytics } from '../systems/Analytics';
 
 export class TractorScene extends BaseChapterScene {
   constructor() {
@@ -46,6 +47,7 @@ export class TractorScene extends BaseChapterScene {
   // Override to add post-evolution cutscene
   protected handleInteractable(interactable: { id: string; type: string; consumed?: boolean }) {
     if (interactable.id === 'ch4_ai_discovery' && interactable.type === 'evolve') {
+      Analytics.trackInteraction(interactable.id);
       this.frozen = true;
       const chapterDialogue = this.getChapterDialogue();
       const discoveryLines = chapterDialogue.npcs[interactable.id];

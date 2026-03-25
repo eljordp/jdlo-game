@@ -3,6 +3,7 @@ import { comeUpMap, MapData } from '../data/maps';
 import { comeUpDialogue } from '../data/story';
 import type { DialogueLine } from '../systems/DialogueSystem';
 import { GAME_WIDTH, GAME_HEIGHT } from '../config';
+import { Analytics } from '../systems/Analytics';
 
 export class ComeUpScene extends BaseChapterScene {
   constructor() {
@@ -65,6 +66,8 @@ export class ComeUpScene extends BaseChapterScene {
   // Override to add payment cutscene for first dollar
   protected handleInteractable(interactable: { id: string; type: string; consumed?: boolean }) {
     if (interactable.id === 'ch5_first_dollar') {
+      Analytics.trackInteraction(interactable.id);
+      this.requiredDone = true;
       this.playPaymentCutscene();
       this.interactions.consume(interactable.id);
       return;
