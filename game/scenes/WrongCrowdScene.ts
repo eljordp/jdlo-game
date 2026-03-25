@@ -14,7 +14,7 @@ export class WrongCrowdScene extends BaseChapterScene {
   }
 
   protected getPlayerTexture(): string {
-    return 'player-ch2';
+    return 'player-ch3-tired';
   }
 
   protected getMusicTrack(): string {

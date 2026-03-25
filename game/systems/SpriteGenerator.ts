@@ -1563,6 +1563,79 @@ function generateChapterOutfits(scene: Phaser.Scene) {
   }
 }
 
+// ─── TIRED PLAYER (Ch3 — messy hair, bags under eyes) ────────────────
+
+function generateTiredPlayer(scene: Phaser.Scene) {
+  if (scene.textures.exists('player-ch3-tired')) return;
+
+  const frameW = TILE_SIZE;
+  const sheetW = frameW * 8;
+  const sheetH = frameW;
+  const canvas = document.createElement('canvas');
+  canvas.width = sheetW;
+  canvas.height = sheetH;
+  const rawCtx = canvas.getContext('2d')!;
+  rawCtx.clearRect(0, 0, sheetW, sheetH);
+  const dc = new DrawContext(rawCtx);
+
+  // Draw base ch2 outfit frames (black hoodie)
+  const outfit: OutfitColors = {
+    shirt: 0x202028, shirtLight: 0x2a2a32,
+    pants: 0x1a1a20, pantsLight: 0x242428,
+    shoe: 0x303030,
+  };
+  const directions: Array<'down' | 'up' | 'left' | 'right'> = ['down', 'up', 'left', 'right'];
+  let fi = 0;
+  for (const dir of directions) {
+    drawPlayerFrame(dc, fi * frameW, dir, false, outfit);
+    fi++;
+    drawPlayerFrame(dc, fi * frameW, dir, true, outfit);
+    fi++;
+  }
+
+  const hair = 0x302020;
+  const bagColor = 0x604850; // dark circles
+
+  // Overlay messy hair + tired eyes on each frame
+  for (let f = 0; f < 8; f++) {
+    const ox = f * frameW;
+    const dir = (['down', 'down', 'up', 'up', 'left', 'left', 'right', 'right'] as const)[f];
+
+    // Extra shaggy hair — bangs hanging lower over forehead
+    px(dc, ox + 4, 3, hair, 2, 1);  // left bangs extending down
+    px(dc, ox + 10, 3, hair, 2, 1); // right bangs extending down
+    px(dc, ox + 5, 3, hair, 1, 1);  // center-left messy strand
+    px(dc, ox + 6, 2, hair, 4, 1);  // thick messy top layer
+    // Stray strands hanging further down
+    px(dc, ox + 3, 4, hair, 1, 1);  // far left strand
+    px(dc, ox + 12, 4, hair, 1, 1); // far right strand
+
+    if (dir === 'down') {
+      // Dark circles under eyes (row 5, under the eye positions at row 4)
+      px(dc, ox + 5, 5, bagColor, 2, 1); // under left eye
+      px(dc, ox + 9, 5, bagColor, 2, 1); // under right eye
+      // Slightly droopy eye effect — darken outer corners
+      px(dc, ox + 5, 4, 0x181818, 1, 1); // droopy left outer
+      px(dc, ox + 10, 4, 0x181818, 1, 1); // droopy right outer
+    } else if (dir === 'left') {
+      // Dark circle under visible eye
+      px(dc, ox + 5, 5, bagColor, 2, 1);
+      px(dc, ox + 5, 4, 0x181818, 1, 1);
+    } else if (dir === 'right') {
+      // Dark circle under visible eye
+      px(dc, ox + 9, 5, bagColor, 2, 1);
+      px(dc, ox + 10, 4, 0x181818, 1, 1);
+    }
+    // 'up' direction — just extra messy hair on back, no eye changes needed
+  }
+
+  scene.textures.addCanvas('player-ch3-tired', canvas);
+  const texture = scene.textures.get('player-ch3-tired');
+  for (let i = 0; i < 8; i++) {
+    texture.add(i, 0, i * frameW, 0, frameW, frameW);
+  }
+}
+
 // ─── MAIN EXPORT ────────────────────────────────────────────────────
 
 // ─── HOT TUB TILE ────────────────────────────────────────────────────
@@ -2525,6 +2598,7 @@ function generateMoreItems(scene: Phaser.Scene) {
 export function generateAllSprites(scene: Phaser.Scene): void {
   generatePlayer(scene);
   generateChapterOutfits(scene);
+  generateTiredPlayer(scene);
   generateAllNPCs(scene);
   generateTiles(scene);
   generateUI(scene);

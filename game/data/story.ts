@@ -812,6 +812,19 @@ const ch1Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'Santa Barbara sunset. Beautiful place to waste your life.' },
     { speaker: 'JP\'s Mind', text: 'Everybody visits and says they wish they lived here. I live here and I\'m going nowhere.' },
   ],
+  ch1_volleyball1: [
+    { speaker: 'Guy', text: 'Yo you play?' },
+    { speaker: 'JP', text: 'Nah I\'m good.' },
+    { speaker: 'Guy', text: 'Your loss bro!' },
+  ],
+  ch1_volleyball2: [
+    { speaker: 'Kid', text: 'Set it here! Set it here!' },
+    { speaker: 'JP\'s Mind', text: 'Just kids being kids. Must be nice.' },
+  ],
+  ch1_sunbather: [
+    { speaker: 'JP\'s Mind', text: 'She\'s been laying there for hours. Not a care in the world.' },
+    { speaker: 'JP\'s Mind', text: 'Meanwhile I\'m out here counting bags.' },
+  ],
 };
 
 // ─── Chapter 2 extras ──────────────────────────────────────────────────
@@ -865,6 +878,18 @@ const ch2Extras: Record<string, DialogueLine[]> = {
   ch2_streetlight: [
     { speaker: 'JP\'s Mind', text: 'Streetlight flickering. Half the lights on this block are out.' },
     { speaker: 'JP\'s Mind', text: 'Nobody fixes anything here. Not the lights. Not the roads. Not the people.' },
+  ],
+  ch2_money_stack: [
+    { speaker: 'JP\'s Mind', text: 'Stacks on the dresser. More than a 20-year-old should have in cash.' },
+    { speaker: 'JP\'s Mind', text: 'None of it legal.' },
+  ],
+  ch2_designer: [
+    { speaker: 'JP\'s Mind', text: 'Designer bags. Gucci. Louis. All bought with drug money.' },
+    { speaker: 'JP\'s Mind', text: 'Looks good. Feels empty.' },
+  ],
+  ch2_mirror_room: [
+    { speaker: 'Narrator', text: 'JP looks at himself. Shaggy hair. Bags under his eyes.' },
+    { speaker: 'JP\'s Mind', text: 'When\'s the last time he slept a full night?' },
   ],
 };
 

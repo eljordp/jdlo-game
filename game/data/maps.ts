@@ -96,10 +96,10 @@ export const homeMap: MapData = {
     [ G, G, G, B, B, B, B, B, B, B, O, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, G, G, G ], // 13 front door
     [ G, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 14 yard
     [ G, G, E, E, E, E, E, E, E, E, P, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, G, G ], // 15 fence top
-    [ G, G, E, G, G, T, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, T, G, G, E, G, G ], // 16 yard interior
-    [ G, G, E, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, E, G, G ], // 17
-    [ G, G, E, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, E, G, G ], // 18
-    [ G, G, E, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, E, G, G ], // 19
+    [ G, G, E, G, G, T, G, G, G, G, P, G, G, G, G, G, T, G, G, G, G, G, G, G, T, G, G, E, G, G ], // 16 yard interior + trees
+    [ G, G, E, G, G, G, G, G, G, G, P, G, G, L, G, G, G, G, G, G, G, G, G, G, G, G, G, E, G, G ], // 17 palm
+    [ G, G, E, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, T, G, G, G, G, G, G, G, E, G, G ], // 18 tree
+    [ G, G, E, T, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, L, G, G, G, G, E, G, G ], // 19 tree + palm
     [ G, G, E, E, E, E, E, E, E, E, P, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, G, G ], // 20 fence bottom
     [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 21 street
     [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 22 street
@@ -174,11 +174,11 @@ export const beachMap: MapData = {
     [ G, G, G, G, P, G, G, G, G, G, G, P, G, G, G, G, P, G, G, G, G, G, G, P, G, G, G, G ], // 9
     [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 10 concrete walkway
     [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 11
-    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 12 grass transition
-    [ G, G, L, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, L, G, G ], // 13
+    [ G, G, T, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, T, G, G ], // 12 grass transition + trees
+    [ G, G, L, G, G, G, L, G, G, G, G, G, G, G, G, G, G, G, G, G, G, L, G, G, G, L, G, G ], // 13 more palms
     [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 14 sand starts
     [ S, S, S, S, S, S, S, S, L, S, S, S, S, S, S, S, S, S, S, L, S, S, S, S, S, S, S, S ], // 15
-    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 16
+    [ S, S, S, L, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, L, S, S, S ], // 16 extra palms on beach
     [ S, S, S, S, S, L, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, L, S, S, S, S, S ], // 17
     [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 18
     [ W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W ], // 19 ocean
@@ -197,6 +197,9 @@ export const beachMap: MapData = {
       { id: 'ch1_girl3',  x: 20, y: 5,  sprite: 'npc_bikini1' },
       { id: 'ch1_girl_couch', x: 3, y: 5, sprite: 'npc_bikini2' },
       { id: 'ch1_terrel', x: 13, y: 4, sprite: 'npc_terrel' },
+      { id: 'ch1_volleyball1', x: 10, y: 16, sprite: 'npc_generic' },
+      { id: 'ch1_volleyball2', x: 12, y: 16, sprite: 'npc_kid' },
+      { id: 'ch1_sunbather',   x: 18, y: 15, sprite: 'npc_bikini1' },
     ],
   },
   triggers: [
@@ -240,10 +243,10 @@ export const wrongCrowdMap: MapData = {
     [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, O, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 8  front door of townhouse
 
     // --- FRONT YARD + PARKING (rows 9-12) ---
-    [ X, X, G, G, G, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, X, X ], // 9   front yard, path from door
+    [ X, X, G, G, T, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, T, G, G, G, X, X ], // 9   front yard + trees
     [ X, X, G, G, G, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, X, X ], // 10  yard
     [ X, X, G, G, G, G, G, G, G, G, G, G, G, G, P, G, G, G, T, G, G, G, T, G, G, G, G, G, X, X ], // 11  BMW 335i parked here (sprite overlay) | trees
-    [ X, X, G, G, G, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, X, X ], // 12  yard to street
+    [ X, X, G, G, G, G, T, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, T, G, G, X, X ], // 12  yard to street + trees
 
     // --- STREET (rows 13-16) ---
     [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 13  road
@@ -286,6 +289,9 @@ export const wrongCrowdMap: MapData = {
     { id: 'ch2_sale',      x: 23, y: 24, type: 'examine', glow: true, sprite: 'item-weed-bag' },   // THE TRIGGER — sale spot
     { id: 'ch2_alley',     x: 7, y: 15, type: 'examine', glow: true },
     { id: 'ch2_phone',     x: 4, y: 4, type: 'examine', glow: true, sprite: 'item-phone' },
+    { id: 'ch2_money_stack', x: 3, y: 3, type: 'examine', glow: true, sprite: 'item-money' },
+    { id: 'ch2_designer',   x: 7, y: 3, type: 'examine', glow: true, sprite: 'item-weed-bag' },
+    { id: 'ch2_mirror_room', x: 5, y: 4, type: 'examine', glow: true, sprite: 'item-mirror' },
     { id: 'ch2_graffiti',  x: 3, y: 17, type: 'examine', glow: true },
     { id: 'ch2_store',     x: 7, y: 18, type: 'examine', glow: true },
     { id: 'ch2_nervous',   x: 12, y: 18, type: 'examine', glow: true },
@@ -462,17 +468,17 @@ export const comeUpMap: MapData = {
     [ X, X, X, X, B, F, F, F, F, B, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 3
     [ X, X, X, X, B, F, F, F, F, B, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 4
     [ X, X, X, X, B, B, B, O, B, B, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 5
-    [ G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 6
+    [ G, G, T, G, G, G, G, P, G, G, G, G, T, G, G, G, G, G, G, G, G, T, G, G, G, G, G, G ], // 6  trees along path
     [ G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 7
     [ G, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, G ], // 8
-    [ G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 9
+    [ G, G, G, G, G, G, G, P, G, G, T, G, G, G, G, G, G, G, G, G, G, G, G, G, T, G, G, G ], // 9  trees
     [ G, G, B, B, B, B, G, P, G, G, G, G, G, G, G, G, G, B, B, B, B, B, B, G, G, G, G, G ], // 10
     [ G, G, B, F, F, B, G, P, G, G, T, G, G, G, G, G, G, B, F, F, F, F, B, G, G, T, G, G ], // 11
     [ G, G, B, F, F, B, G, P, G, G, G, G, G, G, G, G, G, B, F, F, F, F, B, G, G, G, G, G ], // 12
     [ G, G, B, B, O, B, G, P, G, G, G, G, G, G, G, G, G, B, B, B, O, B, B, G, G, G, G, G ], // 13
     [ G, G, G, G, P, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G ], // 14
     [ G, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, G ], // 15
-    [ G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 16
+    [ G, G, G, G, G, G, G, P, G, G, T, G, G, G, G, T, G, G, G, G, G, G, G, G, G, T, G, G ], // 16 trees
     [ G, G, B, B, B, B, B, P, G, B, B, B, B, B, G, G, G, B, B, B, B, B, B, B, G, G, G, G ], // 17  print shop + DHL
     [ G, G, B, F, F, F, B, P, G, B, F, F, F, B, G, G, G, B, F, F, D, F, F, B, G, G, G, G ], // 18
     [ G, G, B, F, F, F, B, P, G, B, F, F, F, B, G, P, G, B, F, D, D, D, F, B, G, G, G, G ], // 19
@@ -533,7 +539,7 @@ export const operatorMap: MapData = {
     [ G, C, C, C, B, B, B, B, O, B, B, C, C, C, C, C, C, C, B, B, B, B, O, B, B, B, C, C, C, G ], // 7
     [ G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G ], // 8
     [ G, C, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, C, G ], // 9
-    [ G, C, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G ], // 10
+    [ T, C, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, C, T ], // 10 trees at edges
     [ G, C, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G ], // 11
     [ G, C, C, B, B, B, B, B, B, B, B, B, B, C, P, C, C, G, G, G, G, G, G, G, G, G, G, C, C, G ], // 12
     [ G, C, C, B, F, F, F, F, F, F, F, F, B, C, P, C, C, G, G, T, G, G, G, T, G, G, G, C, C, G ], // 13
@@ -542,7 +548,7 @@ export const operatorMap: MapData = {
     [ G, C, C, B, F, F, F, F, F, F, F, F, B, C, P, C, C, G, T, G, P, G, P, G, T, G, G, C, C, G ], // 16
     [ G, C, C, B, F, F, F, F, F, F, F, F, B, C, P, C, C, G, G, G, P, G, P, G, G, G, G, C, C, G ], // 17
     [ G, C, C, B, B, B, B, B, B, O, B, B, B, C, P, C, C, G, G, G, P, P, P, G, G, G, G, C, C, G ], // 18
-    [ G, C, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, G, G, G, G, G, G, G, G, G, G, C, C, G ], // 19
+    [ T, C, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, G, G, T, G, G, G, T, G, G, G, C, C, T ], // 19 trees
     [ G, C, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, C, G ], // 20
     [ G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, B, B, B, B, O, B, B, B, B, C, C, C, G ], // 21  Pomaika'i office (door at col 21)
     [ G, G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, B, F, F, M, F, F, M, F, B, C, C, G, G ], // 22
