@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import Phaser from "phaser";
 import { BootScene } from "@/game/scenes/BootScene";
 import { IntroScene } from "@/game/scenes/IntroScene";
+import { HomeScene } from "@/game/scenes/HomeScene";
 import { BeachScene } from "@/game/scenes/BeachScene";
 import { WrongCrowdScene } from "@/game/scenes/WrongCrowdScene";
 import { CourtScene } from "@/game/scenes/CourtScene";
@@ -79,6 +80,7 @@ export default function GameCanvas() {
       scene: [
         BootScene,
         IntroScene,
+        HomeScene,
         BeachScene,
         WrongCrowdScene,
         CourtScene,

@@ -68,6 +68,57 @@ const STANDARD_COLLISIONS = [
 ];
 
 // ---------------------------------------------------------------------------
+// 0. HOME MAP — Suburban House + Yard  (20 wide x 18 tall)
+// ---------------------------------------------------------------------------
+// JP's childhood home. Small house with rooms, a yard with grass and a path,
+// fence around the yard, a tree or two. Before everything else.
+// ---------------------------------------------------------------------------
+export const homeMap: MapData = {
+  tiles: [
+    //0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19
+    [ T, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, T ], // 0
+    [ G, G, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, G, G ], // 1
+    [ G, G, E, G, G, G, G, G, G, G, G, G, G, G, G, G, G, E, G, G ], // 2
+    [ G, G, E, G, B, B, B, B, B, B, B, B, B, B, G, G, G, E, G, G ], // 3
+    [ G, G, E, G, B, F, F, F, B, F, F, M, F, B, G, T, G, E, G, G ], // 4
+    [ G, G, E, G, B, F, F, F, B, F, F, F, F, B, G, G, G, E, G, G ], // 5
+    [ G, G, E, G, B, F, F, F, O, F, F, F, F, B, G, G, G, E, G, G ], // 6
+    [ G, G, E, G, B, B, B, B, B, B, O, B, B, B, G, G, G, E, G, G ], // 7
+    [ G, G, E, G, G, G, G, G, P, G, P, G, G, G, G, G, G, E, G, G ], // 8
+    [ G, G, E, G, G, G, G, G, P, P, P, G, G, G, G, G, G, E, G, G ], // 9
+    [ G, G, E, G, G, T, G, G, P, G, G, G, G, G, G, G, G, E, G, G ], // 10
+    [ G, G, E, G, G, G, G, G, P, G, G, G, G, G, G, G, G, E, G, G ], // 11
+    [ G, G, E, G, G, G, G, G, P, G, G, G, G, G, T, G, G, E, G, G ], // 12
+    [ G, G, E, E, E, E, E, E, P, E, E, E, E, E, E, E, E, E, G, G ], // 13
+    [ G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G ], // 14
+    [ G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G ], // 15
+    [ G, G, G, G, G, G, G, P, P, P, G, G, G, G, G, G, G, G, G, G ], // 16
+    [ G, G, G, G, G, G, G, P, P, P, G, G, G, G, G, G, G, G, G, G ], // 17
+  ],
+  collisions: STANDARD_COLLISIONS,
+  spawns: {
+    player: { x: 8, y: 8 },
+    npcs: [
+      { id: 'ch0_pops',    x: 12, y: 9,  sprite: 'npc_pops' },
+      { id: 'ch0_mom',     x: 6,  y: 5,  sprite: 'npc_female' },
+      { id: 'ch0_sister',  x: 6,  y: 6,  sprite: 'npc_sister' },
+      { id: 'ch0_frenchie', x: 14, y: 11, sprite: 'npc_frenchie' },
+    ],
+  },
+  triggers: [
+    { x: 7,  y: 17, action: 'scene', target: 'BeachScene' },
+    { x: 8,  y: 17, action: 'scene', target: 'BeachScene' },
+    { x: 9,  y: 17, action: 'scene', target: 'BeachScene' },
+  ],
+  interactables: [
+    { id: 'ch0_bed',    x: 11, y: 5,  type: 'examine', glow: true },
+    { id: 'ch0_window', x: 5,  y: 4,  type: 'examine', glow: true },
+    { id: 'ch0_fridge', x: 5,  y: 5,  type: 'examine', glow: true },
+    { id: 'ch0_tv',     x: 10, y: 6,  type: 'examine', glow: true },
+  ],
+};
+
+// ---------------------------------------------------------------------------
 // 1. BEACH MAP — Coastal Town  (28 wide x 22 tall)
 // ---------------------------------------------------------------------------
 // Water along the south/east edge, sand dominates, palm trees scattered,
@@ -278,6 +329,7 @@ export const tractorMap: MapData = {
     { id: 'ch4_lunch', x: 2, y: 7, type: 'examine', glow: true },
     { id: 'ch4_paycheck', x: 24, y: 11, type: 'examine', glow: true },
     { id: 'ch4_d8_seat', x: 15, y: 5, type: 'examine', glow: true },
+    { id: 'ch4_crash', x: 17, y: 5, type: 'examine', glow: true },
   ],
 };
 
@@ -398,6 +450,7 @@ export const operatorMap: MapData = {
 // All maps indexed by key — useful for the scene manager
 // ---------------------------------------------------------------------------
 export const ALL_MAPS: Record<string, MapData> = {
+  home: homeMap,
   beach: beachMap,
   wrongCrowd: wrongCrowdMap,
   jail: jailMap,

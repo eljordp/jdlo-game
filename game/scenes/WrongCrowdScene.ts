@@ -7,7 +7,7 @@ import { GAME_WIDTH, GAME_HEIGHT } from '../config';
 export class WrongCrowdScene extends BaseChapterScene {
   constructor() {
     super({ key: 'WrongCrowdScene' });
-    this.chapterTitle = 'Chapter 2: Wrong Crowd';
+    this.chapterTitle = 'Chapter 3: Wrong Crowd';
     this.nextScene = 'CourtScene';
   }
 

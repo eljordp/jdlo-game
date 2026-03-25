@@ -6,7 +6,7 @@ import type { DialogueLine } from '../systems/DialogueSystem';
 export class OperatorScene extends BaseChapterScene {
   constructor() {
     super({ key: 'OperatorScene' });
-    this.chapterTitle = 'Chapter 6: Operator Mode';
+    this.chapterTitle = 'Chapter 7: Operator Mode';
     this.nextScene = 'EndScene';
   }
 

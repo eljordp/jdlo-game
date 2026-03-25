@@ -167,7 +167,7 @@ export class IntroScene extends Phaser.Scene {
     this.phase = 'done';
     this.cameras.main.fadeOut(1000, 0, 0, 0);
     this.cameras.main.once('camerafadeoutcomplete', () => {
-      this.scene.start('BeachScene');
+      this.scene.start('HomeScene');
     });
   }
 

@@ -47,6 +47,77 @@ export const introDialogue: DialogueLine[] = [
   },
 ];
 
+// ─── Chapter 0: Home ─────────────────────────────────────────────────
+
+export const chapter0IntroText: string[] = [
+  'Before the streets. Before the hustle. Before everything.',
+  'Just a kid at home trying to figure it out.',
+];
+
+export const chapter0NPCs: NPCData[] = [
+  {
+    id: 'ch0_pops',
+    x: 12,
+    y: 9,
+    sprite: 'npc_pops',
+    dialogue: [
+      { speaker: 'Pops', text: 'You been in your room all day.' },
+      { speaker: 'JP', text: 'Just thinking.' },
+      { speaker: 'Pops', text: 'I know you\'re trying to figure things out. That\'s okay.' },
+      { speaker: 'Pops', text: 'I didn\'t have it figured out at your age either. Nobody does.' },
+      { speaker: 'Pops', text: 'Just don\'t sit still too long. Life doesn\'t wait.' },
+      { speaker: 'JP', text: 'I know, Pops.' },
+      { speaker: 'Pops', text: 'I\'m not going anywhere. But the world is. Get moving, son.' },
+    ],
+  },
+  {
+    id: 'ch0_mom',
+    x: 6,
+    y: 5,
+    sprite: 'npc_female',
+    dialogue: [
+      { speaker: 'Mom', text: 'Dinner\'s at six.' },
+      { speaker: 'JP', text: 'Okay.' },
+      { speaker: 'Mom', text: 'You need to start thinking about what you\'re gonna do.' },
+      { speaker: 'JP', text: 'I am thinking about it.' },
+      { speaker: 'Mom', text: 'Thinking and doing are two different things.' },
+    ],
+  },
+  {
+    id: 'ch0_sister',
+    x: 6,
+    y: 6,
+    sprite: 'npc_sister',
+    dialogue: [
+      { speaker: 'Sister', text: 'JP! Come play with me!' },
+      { speaker: 'JP', text: 'Not right now.' },
+      { speaker: 'Sister', text: 'You\'re always in your room.' },
+      { speaker: 'JP', text: 'I know. I\'m sorry.' },
+      { speaker: 'Sister', text: 'Mommy and Daddy were fighting again.' },
+      { speaker: 'JP', text: '...I know.' },
+      { speaker: 'Sister', text: 'Are you gonna leave like Mommy says?' },
+      { speaker: 'JP', text: 'I\'m not going anywhere. Not yet.' },
+    ],
+  },
+  {
+    id: 'ch0_frenchie',
+    x: 14,
+    y: 11,
+    sprite: 'npc_frenchie',
+    dialogue: [
+      { speaker: 'Narrator', text: 'The Frenchie wags his whole body when he sees JP.' },
+      { speaker: 'Narrator', text: 'He doesn\'t care about your problems. He just wants belly rubs.' },
+      { speaker: 'JP', text: 'At least you\'re happy to see me.' },
+      { speaker: 'Narrator', text: 'Sometimes the dog is the only one who gets it.' },
+    ],
+  },
+];
+
+export const chapter0OutroText: string[] = [
+  'JP couldn\'t stay in that house forever.',
+  'He needed to get out. See something. Be someone.',
+];
+
 // ─── Chapter 1: Santa Barbara ──────────────────────────────────────────
 
 export const chapter1IntroText: string[] = [
@@ -513,6 +584,27 @@ function buildChapterDialogue(
   return { intro: introLines, npcs: npcMap };
 }
 
+// ─── Chapter 0 extras ──────────────────────────────────────────────────
+
+const ch0Extras: Record<string, DialogueLine[]> = {
+  ch0_bed: [
+    { speaker: 'JP\'s Mind', text: 'Another night staring at the ceiling. What am I doing with my life?' },
+    { speaker: 'JP\'s Mind', text: 'Everyone I grew up with is either working or locked up. And I\'m just... here.' },
+  ],
+  ch0_window: [
+    { speaker: 'JP\'s Mind', text: 'Everyone else seems to have it figured out.' },
+    { speaker: 'JP\'s Mind', text: 'Same neighborhood. Same view. Same nothing changing.' },
+  ],
+  ch0_fridge: [
+    { speaker: 'JP\'s Mind', text: 'Nothing in the fridge. Story of my life.' },
+    { speaker: 'JP\'s Mind', text: 'Mom\'s been working doubles. Pops picks up what he can. And I\'m just eating their food.' },
+  ],
+  ch0_tv: [
+    { speaker: 'JP\'s Mind', text: 'Same shows. Same couch. Same nothing.' },
+    { speaker: 'JP\'s Mind', text: 'I could sit here forever and nobody would notice. That\'s the scary part.' },
+  ],
+};
+
 // ─── Chapter 1 extras ──────────────────────────────────────────────────
 
 const ch1Extras: Record<string, DialogueLine[]> = {
@@ -672,6 +764,28 @@ const ch4Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'Yellow D8 Caterpillar. Loud as hell. You learn to think in the noise.' },
     { speaker: 'JP\'s Mind', text: 'Eight hours on this thing and my back is done. But my mind is sharper than it\'s ever been.' },
   ],
+  ch4_crash: [
+    { speaker: 'Narrator', text: 'CRUNCH.' },
+    { speaker: 'JP', text: 'Oh shit.' },
+    { speaker: 'JP', text: 'Oh shit oh shit oh shit.' },
+    { speaker: 'Narrator', text: 'Frank comes running from the farmhouse.' },
+    { speaker: 'Frank', text: 'What did you hit?! What happened?!' },
+    { speaker: 'JP', text: 'I... I don\'t know. Something was buried under the dirt.' },
+    { speaker: 'Frank', text: 'That\'s an irrigation line! Do you know how much that costs?!' },
+    { speaker: 'JP', text: 'I\'m sorry, Frank. I...' },
+    { speaker: 'Frank', text: 'Sorry doesn\'t fix a busted pipe, kid!' },
+    { speaker: 'JP\'s Mind', text: '...' },
+    { speaker: 'JP\'s Mind', text: 'I can\'t do this anymore.' },
+    { speaker: 'JP\'s Mind', text: 'Every day the same dirt. Same sun. Same $12 an hour. Same nothing.' },
+    { speaker: 'JP', text: 'Frank.' },
+    { speaker: 'Frank', text: 'What.' },
+    { speaker: 'JP', text: 'I\'m done. I can\'t do this anymore.' },
+    { speaker: 'Frank', text: 'You\'re quitting? Over a busted pipe?' },
+    { speaker: 'JP', text: 'It\'s not about the pipe. It\'s about everything. I\'m not meant for this.' },
+    { speaker: 'JP', text: 'Fuck this. I\'m going to find my own way.' },
+    { speaker: 'Frank', text: '...Good luck, kid. You\'re gonna need it.' },
+    { speaker: 'JP\'s Mind', text: 'He\'s wrong. I don\'t need luck. I need a computer and an internet connection.' },
+  ],
 };
 
 // ─── Chapter 5 extras ──────────────────────────────────────────────────
@@ -740,6 +854,7 @@ const ch6Extras: Record<string, DialogueLine[]> = {
 
 // ─── Build bridge exports ──────────────────────────────────────────────
 
+export const homeDialogue = buildChapterDialogue(chapter0IntroText, chapter0NPCs, chapter0OutroText, ch0Extras);
 export const beachDialogue = buildChapterDialogue(chapter1IntroText, chapter1NPCs, chapter1OutroText, ch1Extras);
 export const wrongCrowdDialogue = buildChapterDialogue(chapter2IntroText, chapter2NPCs, chapter2OutroText, ch2Extras);
 export const jailDialogue = buildChapterDialogue(chapter3IntroText, chapter3NPCs, chapter3OutroText, { ...ch3Extras, ...ch3InmateDialogue });

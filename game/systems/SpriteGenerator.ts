@@ -816,6 +816,75 @@ function generateAllNPCs(scene: Phaser.Scene) {
     }
   );
 
+  // Sister — young girl, smaller, long dark hair, pink top
+  makeTexture(scene, 'npc_sister', TILE_SIZE, TILE_SIZE, (g) => {
+    // Shift everything down 2px to appear shorter
+    const oy = 2;
+    // Hair — long dark
+    px(g, 5, oy + 0, 0x302020, 6, 1);
+    px(g, 4, oy + 1, 0x302020, 8, 1);
+    px(g, 3, oy + 2, 0x302020, 10, 1);
+    px(g, 3, oy + 3, 0x302020, 2, 1);
+    px(g, 11, oy + 3, 0x302020, 2, 1);
+    // Long sides
+    px(g, 2, oy + 4, 0x302020, 2, 3);
+    px(g, 12, oy + 4, 0x302020, 2, 3);
+    // Face
+    px(g, 5, oy + 3, 0xf0c090, 6, 1);
+    px(g, 4, oy + 4, 0xf0c090, 8, 1);
+    px(g, 4, oy + 5, 0xf0c090, 8, 1);
+    px(g, 5, oy + 6, 0xd0a070, 6, 1);
+    // Eyes
+    px(g, 5, oy + 4, 0xffffff, 2, 1);
+    px(g, 9, oy + 4, 0xffffff, 2, 1);
+    px(g, 6, oy + 4, 0x202020);
+    px(g, 10, oy + 4, 0x202020);
+    // Mouth — smile
+    px(g, 7, oy + 5, 0xc07060, 2, 1);
+    // Pink/purple top
+    px(g, 4, oy + 7, 0xc060a0, 8, 1);
+    px(g, 3, oy + 8, 0xc060a0, 10, 1);
+    px(g, 3, oy + 9, 0xd070b0, 10, 1);
+    // Shorts
+    px(g, 4, oy + 10, 0x505060, 8, 1);
+    px(g, 4, oy + 11, 0x505060, 3, 1);
+    px(g, 9, oy + 11, 0x505060, 3, 1);
+    // Shoes
+    px(g, 4, oy + 12, 0xf08080, 3, 1);
+    px(g, 9, oy + 12, 0xf08080, 3, 1);
+  });
+
+  // Frenchie — tan French Bulldog
+  makeTexture(scene, 'npc_frenchie', TILE_SIZE, TILE_SIZE, (g) => {
+    // Dog is centered, sits lower in the 16x16 tile
+    const oy = 6;
+    // Body — tan/fawn
+    px(g, 4, oy + 2, 0xc8a070, 8, 4); // main body
+    px(g, 3, oy + 3, 0xc8a070, 1, 2); // left side
+    px(g, 12, oy + 3, 0xc8a070, 1, 2); // right side
+    // Head — slightly darker face
+    px(g, 5, oy + 0, 0xc8a070, 6, 2); // top of head
+    px(g, 4, oy + 1, 0xa08050, 8, 1); // face
+    // Big bat ears (characteristic Frenchie feature)
+    px(g, 4, oy - 1, 0xa08050, 2, 2); // left ear
+    px(g, 10, oy - 1, 0xa08050, 2, 2); // right ear
+    px(g, 4, oy - 2, 0xa08050, 1, 1); // left ear tip
+    px(g, 11, oy - 2, 0xa08050, 1, 1); // right ear tip
+    // Inner ear (pink)
+    px(g, 5, oy - 1, 0xd09080, 1, 1);
+    px(g, 10, oy - 1, 0xd09080, 1, 1);
+    // Eyes
+    px(g, 6, oy + 0, 0x202020, 1, 1);
+    px(g, 9, oy + 0, 0x202020, 1, 1);
+    // Black nose
+    px(g, 7, oy + 1, 0x101010, 2, 1);
+    // Stubby legs
+    px(g, 4, oy + 6, 0xc8a070, 2, 2); // front left
+    px(g, 10, oy + 6, 0xc8a070, 2, 2); // front right
+    // Tail — tiny stub
+    px(g, 12, oy + 2, 0xb09060, 1, 1);
+  });
+
   // Narrator / Professor — older, grey hair, wise
   generateNPC(
     scene,
@@ -1226,6 +1295,10 @@ function generateChapterOutfits(scene: Phaser.Scene) {
   const sheetW = frameW * 8;
 
   const outfits: { key: string; colors: OutfitColors }[] = [
+    {
+      key: 'player-ch0',
+      colors: { shirt: 0x808088, shirtLight: 0x909098, pants: 0x404050, pantsLight: 0x505060, shoe: 0x383838 },
+    },
     {
       key: 'player-ch1',
       colors: { shirt: 0xf0f0f0, shirtLight: 0xe0e0e0, pants: 0x303038, pantsLight: 0x404048, shoe: 0x303030 },

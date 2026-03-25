@@ -6,7 +6,7 @@ import type { DialogueLine } from '../systems/DialogueSystem';
 export class ComeUpScene extends BaseChapterScene {
   constructor() {
     super({ key: 'ComeUpScene' });
-    this.chapterTitle = 'Chapter 5: The Come Up';
+    this.chapterTitle = 'Chapter 6: The Come Up';
     this.nextScene = 'LAScene';
   }
 
