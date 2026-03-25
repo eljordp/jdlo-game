@@ -295,18 +295,18 @@ export const chapter2NPCs: NPCData[] = [
 
 export const chapter2OutroText: string[] = [
   'Just another drop. Until it wasn\'t.',
-  'Attempted murder. 13 years.',
-  'JP didn\'t attempt to hurt anyone. Didn\'t matter.',
-  'The system had already decided.',
+  'Doors kicked in. Flashlights. Shouting.',
+  'Face down on the floor.',
 ];
 
 // ─── Chapter 3: Jail ───────────────────────────────────────────────────
 
 export const chapter3IntroText: string[] = [
   'Locked Up',
-  '13 years. That\'s what they gave him.',
+  'Attempted murder. 13 years.',
+  'JP didn\'t attempt to hurt anyone. Didn\'t matter.',
+  'The system had already decided.',
   'A bed. A toilet. And time.',
-  'Nothing but time.',
 ];
 
 export const chapter3NPCs: NPCData[] = [
