@@ -964,35 +964,80 @@ function generateAllNPCs(scene: Phaser.Scene) {
     px(g, 9, oy + 12, 0xf08080, 3, 1);
   });
 
-  // Frenchie — tan French Bulldog
+  // Frenchie — tan French Bulldog (top-down/front view)
   makeTexture(scene, 'npc_frenchie', TILE_SIZE, TILE_SIZE, (g) => {
-    // Dog is centered, sits lower in the 16x16 tile
-    const oy = 6;
-    // Body — tan/fawn
-    px(g, 4, oy + 2, 0xc8a070, 8, 4); // main body
-    px(g, 3, oy + 3, 0xc8a070, 1, 2); // left side
-    px(g, 12, oy + 3, 0xc8a070, 1, 2); // right side
-    // Head — slightly darker face
-    px(g, 5, oy + 0, 0xc8a070, 6, 2); // top of head
-    px(g, 4, oy + 1, 0xa08050, 8, 1); // face
-    // Big bat ears (characteristic Frenchie feature)
-    px(g, 4, oy - 1, 0xa08050, 2, 2); // left ear
-    px(g, 10, oy - 1, 0xa08050, 2, 2); // right ear
-    px(g, 4, oy - 2, 0xa08050, 1, 1); // left ear tip
-    px(g, 11, oy - 2, 0xa08050, 1, 1); // right ear tip
-    // Inner ear (pink)
-    px(g, 5, oy - 1, 0xd09080, 1, 1);
-    px(g, 10, oy - 1, 0xd09080, 1, 1);
-    // Eyes
-    px(g, 6, oy + 0, 0x202020, 1, 1);
-    px(g, 9, oy + 0, 0x202020, 1, 1);
-    // Black nose
-    px(g, 7, oy + 1, 0x101010, 2, 1);
-    // Stubby legs
-    px(g, 4, oy + 6, 0xc8a070, 2, 2); // front left
-    px(g, 10, oy + 6, 0xc8a070, 2, 2); // front right
-    // Tail — tiny stub
-    px(g, 12, oy + 2, 0xb09060, 1, 1);
+    const body = 0xc8a070;   // main tan/fawn
+    const bodyDk = 0xb08858; // darker back
+    const bodyLt = 0xd8b880; // lighter belly
+    const earPink = 0xd8a0a0;
+    const nose = 0x101010;
+    const eye = 0x181818;
+    const eyeShine = 0x606080;
+
+    // ── Big bat ears (rows 0-4) — THE signature Frenchie feature ──
+    // Left ear — tall triangle pointing up-left
+    px(g, 2, 0, body, 1, 1);       // tip
+    px(g, 1, 1, body, 2, 1);       // widen
+    px(g, 1, 2, body, 3, 1);       // widen
+    px(g, 2, 3, body, 3, 1);       // base connects to head
+    // Left ear inner pink
+    px(g, 2, 1, earPink, 1, 1);
+    px(g, 2, 2, earPink, 2, 1);
+
+    // Right ear — tall triangle pointing up-right
+    px(g, 13, 0, body, 1, 1);      // tip
+    px(g, 13, 1, body, 2, 1);      // widen
+    px(g, 12, 2, body, 3, 1);      // widen
+    px(g, 11, 3, body, 3, 1);      // base connects to head
+    // Right ear inner pink
+    px(g, 13, 1, earPink, 1, 1);
+    px(g, 12, 2, earPink, 2, 1);
+
+    // ── Wide flat head (rows 3-6) ──
+    px(g, 3, 3, body, 10, 1);      // top of skull
+    px(g, 3, 4, body, 10, 1);      // forehead
+    px(g, 3, 5, bodyLt, 10, 1);    // face — lighter muzzle area
+    px(g, 4, 6, bodyLt, 8, 1);     // lower face / jowls
+
+    // Brow ridge — slightly darker line above eyes
+    px(g, 4, 4, bodyDk, 2, 1);
+    px(g, 10, 4, bodyDk, 2, 1);
+
+    // Big round dark eyes (row 4-5) — spaced apart
+    px(g, 5, 4, eye, 2, 2);        // left eye
+    px(g, 9, 4, eye, 2, 2);        // right eye
+    // Eye shine
+    px(g, 5, 4, eyeShine, 1, 1);
+    px(g, 9, 4, eyeShine, 1, 1);
+
+    // Short flat snout + black nose (row 5-6)
+    px(g, 7, 5, nose, 2, 1);       // nose
+    // Mouth line
+    px(g, 7, 6, bodyDk, 1, 1);
+    px(g, 8, 6, bodyDk, 1, 1);
+
+    // ── Stocky wide body (rows 7-11) ──
+    px(g, 3, 7, body, 10, 1);      // shoulders — widest
+    px(g, 3, 8, body, 10, 1);      // chest
+    px(g, 3, 9, bodyDk, 10, 1);    // back (darker)
+    px(g, 4, 10, body, 8, 1);      // lower body
+    px(g, 4, 11, body, 8, 1);      // rump
+
+    // Belly highlight (center lighter)
+    px(g, 6, 8, bodyLt, 4, 1);
+    px(g, 6, 9, bodyLt, 4, 1);
+
+    // ── Short stubby legs (rows 12-13) ──
+    px(g, 3, 12, bodyDk, 2, 2);    // front-left leg
+    px(g, 11, 12, bodyDk, 2, 2);   // front-right leg
+    px(g, 5, 12, bodyDk, 2, 1);    // back-left leg
+    px(g, 9, 12, bodyDk, 2, 1);    // back-right leg
+    // Tiny paws
+    px(g, 3, 14, 0xa07848, 2, 1);
+    px(g, 11, 14, 0xa07848, 2, 1);
+
+    // No tail — Frenchies have a tiny nub (just 1px hint)
+    px(g, 8, 12, bodyDk, 1, 1);
   });
 
   // Bikini Girl 1 — light blue bikini, long brown hair, lounging/sleeping
@@ -1345,6 +1390,50 @@ function generateTiles(scene: Phaser.Scene) {
     // Coconuts
     px(g, 6, 4, 0x805020, 2, 2);
     px(g, 9, 5, 0x906030);
+  });
+
+  // -- Vine (Vineyard Trellis Row) --
+  makeTexture(scene, 'tile-vine', S, S, (g) => {
+    // Central wooden trellis post (2px wide, full height)
+    g.fillStyle(0x6a5030);
+    g.fillRect(7, 0, 2, 16);
+    // Post highlight
+    px(g, 7, 0, 0x7a6040, 1, 16);
+
+    // Horizontal wire at top and middle
+    px(g, 0, 2, 0x808080, 16, 1);  // top wire
+    px(g, 0, 8, 0x808080, 16, 1);  // middle wire
+
+    // Green leaf clusters — left side
+    px(g, 1, 1, 0x408030, 3, 2);   // top-left leaves
+    px(g, 0, 3, 0x509040, 4, 2);   // upper-left foliage
+    px(g, 1, 6, 0x306820, 3, 2);   // mid-left leaves
+    px(g, 0, 9, 0x408030, 4, 2);   // lower-left foliage
+    px(g, 1, 12, 0x509040, 3, 2);  // bottom-left leaves
+
+    // Green leaf clusters — right side
+    px(g, 12, 1, 0x509040, 3, 2);  // top-right leaves
+    px(g, 12, 3, 0x306820, 4, 2);  // upper-right foliage
+    px(g, 12, 6, 0x408030, 3, 2);  // mid-right leaves
+    px(g, 12, 9, 0x509040, 4, 2);  // lower-right foliage
+    px(g, 12, 12, 0x306820, 3, 2); // bottom-right leaves
+
+    // Leaf detail — individual pixels for texture
+    px(g, 4, 2, 0x509040, 2, 1);
+    px(g, 10, 4, 0x408030, 2, 1);
+    px(g, 5, 7, 0x306820, 2, 1);
+    px(g, 10, 10, 0x509040, 2, 1);
+    px(g, 4, 11, 0x408030, 2, 1);
+
+    // Purple grape clusters (2x2 each)
+    px(g, 2, 5, 0x604080, 2, 2);   // left cluster upper
+    px(g, 1, 10, 0x705090, 2, 2);  // left cluster lower
+    px(g, 13, 5, 0x705090, 2, 2);  // right cluster upper
+    px(g, 12, 11, 0x604080, 2, 2); // right cluster lower
+    // Grape highlights
+    px(g, 2, 5, 0x806098, 1, 1);
+    px(g, 13, 5, 0x806098, 1, 1);
+    px(g, 1, 10, 0x806098, 1, 1);
   });
 
   // -- Fence --

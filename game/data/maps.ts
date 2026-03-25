@@ -22,6 +22,7 @@ export const TILES = {
   TRACTOR: 15,
   BUILDING_WALL: 16,
   HOT_TUB: 17,
+  VINE: 18,
 } as const;
 
 export type InteractableType = 'examine' | 'item' | 'evolve' | 'showcase' | 'scratch';
@@ -56,6 +57,7 @@ const M = TILES.COMPUTER;
 const R = TILES.TRACTOR;
 const B = TILES.BUILDING_WALL;
 const H = TILES.HOT_TUB;
+const V = TILES.VINE;
 
 // Collision tiles shared across most maps
 const STANDARD_COLLISIONS = [
@@ -68,6 +70,7 @@ const STANDARD_COLLISIONS = [
   TILES.TRACTOR,
   TILES.BUILDING_WALL,
   TILES.HOT_TUB,
+  TILES.VINE,
 ];
 
 // ---------------------------------------------------------------------------
@@ -409,19 +412,19 @@ export const tractorMap: MapData = {
     [ T, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, T ], // 1
     [ G, G, G, B, B, B, B, B, G, G, E, E, E, E, E, E, E, E, E, E, E, E, E, G, G, G, G, G ], // 2
     [ G, G, G, B, F, F, F, B, G, G, E, I, I, I, I, I, I, I, I, I, I, I, E, G, G, G, G, G ], // 3
-    [ G, G, G, B, F, F, M, B, G, G, E, I, E, I, E, I, E, I, E, I, E, I, E, G, G, G, G, G ], // 4  vineyard row
+    [ G, G, G, B, F, F, M, B, G, G, E, I, V, I, V, I, V, I, V, I, V, I, E, G, G, G, G, G ], // 4  vineyard row
     [ G, G, G, B, F, F, F, B, G, G, E, I, I, I, I, I, R, I, I, I, I, I, E, G, G, G, G, G ], // 5
-    [ G, G, G, B, B, O, B, B, G, G, E, I, E, I, E, I, E, I, E, I, E, I, E, G, G, G, G, G ], // 6  vineyard row
+    [ G, G, G, B, B, O, B, B, G, G, E, I, V, I, V, I, V, I, V, I, V, I, E, G, G, G, G, G ], // 6  vineyard row
     [ G, G, G, G, G, P, G, G, G, G, E, I, I, I, I, I, I, I, I, I, I, I, E, G, G, G, G, G ], // 7
-    [ G, G, G, G, G, P, G, G, G, G, E, I, E, I, E, I, E, I, E, I, E, I, E, G, G, T, G, G ], // 8  vineyard row
+    [ G, G, G, G, G, P, G, G, G, G, E, I, V, I, V, I, V, I, V, I, V, I, E, G, G, T, G, G ], // 8  vineyard row
     [ G, P, P, P, P, P, P, P, P, P, E, I, I, I, I, I, I, I, I, I, I, I, E, G, G, G, G, G ], // 9
     [ G, G, G, G, G, P, G, G, G, G, E, E, E, E, E, P, E, E, E, E, E, E, E, G, G, G, G, G ], // 10
     [ G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G ], // 11
     [ G, G, T, G, G, P, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, T, G, G ], // 12
     [ G, G, G, G, G, P, G, G, E, E, E, E, E, E, E, P, E, E, E, E, E, E, E, G, G, G, G, G ], // 13
-    [ G, G, G, G, G, P, G, G, E, I, E, I, E, I, E, P, I, E, I, E, I, E, E, G, G, G, G, G ], // 14  vineyard row
+    [ G, G, G, G, G, P, G, G, E, I, V, I, V, I, E, P, I, V, I, V, I, V, E, G, G, G, G, G ], // 14  vineyard row
     [ G, G, G, G, G, P, G, G, E, I, I, I, I, I, I, I, I, I, I, I, I, I, E, G, G, G, G, G ], // 15
-    [ G, G, G, G, G, P, G, G, E, I, E, I, E, I, E, I, E, I, E, I, E, I, E, G, G, G, G, G ], // 16  vineyard row
+    [ G, G, G, G, G, P, G, G, E, I, V, I, V, I, V, I, V, I, V, I, V, I, E, G, G, G, G, G ], // 16  vineyard row
     [ G, G, G, G, G, P, G, G, E, I, I, I, I, I, I, I, I, I, I, I, I, I, E, G, G, G, G, G ], // 17
     [ G, G, G, G, G, P, G, G, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, G, G, G, G, G ], // 18
     [ G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 19
@@ -479,9 +482,9 @@ export const comeUpMap: MapData = {
     [ G, G, G, G, P, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G ], // 14
     [ G, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, G ], // 15
     [ G, G, G, G, G, G, G, P, G, G, T, G, G, G, G, T, G, G, G, G, G, G, G, G, G, T, G, G ], // 16 trees
-    [ G, G, B, B, B, B, B, P, G, B, B, B, B, B, G, G, G, B, B, B, B, B, B, B, G, G, G, G ], // 17  print shop + DHL
-    [ G, G, B, F, F, F, B, P, G, B, F, F, F, B, G, G, G, B, F, F, D, F, F, B, G, G, G, G ], // 18
-    [ G, G, B, F, F, F, B, P, G, B, F, F, F, B, G, P, G, B, F, D, D, D, F, B, G, G, G, G ], // 19
+    [ G, G, B, B, B, B, B, P, G, E, B, B, B, B, G, G, G, E, B, B, B, B, B, B, G, G, G, G ], // 17  print shop + DHL (E = signposts)
+    [ G, G, B, F, F, F, B, P, G, B, F, M, F, B, G, G, G, B, D, D, D, D, D, B, G, G, G, G ], // 18  M=press in shop, D=dark warehouse
+    [ G, G, B, F, F, F, B, P, G, B, F, F, F, B, G, P, G, B, D, D, M, D, D, B, G, G, G, G ], // 19  M=shipping terminal
     [ G, G, B, B, O, B, B, P, G, B, B, O, B, B, G, P, G, B, B, B, O, B, B, B, G, G, G, G ], // 20
     [ G, G, G, G, P, G, G, P, G, G, G, P, G, G, G, P, G, G, G, G, P, G, G, G, G, G, G, G ], // 21
     [ G, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, G ], // 22

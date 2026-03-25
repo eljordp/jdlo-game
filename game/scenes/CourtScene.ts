@@ -215,27 +215,64 @@ export class CourtScene extends Phaser.Scene {
           this.add.rectangle(cx + 10, cy + 50, 80, 40, 0x3a2820)
         );
 
-        // Police flash
-        this.makePoliceFlash();
+        // Door-breaking animation — white rectangle slides in rapidly from left
+        const door = this.addObj(
+          this.add.rectangle(-100, cy, 200, GAME_HEIGHT, 0xffffff).setOrigin(0, 0.5).setAlpha(0).setDepth(5)
+        );
+        this.time.delayedCall(400, () => {
+          this.addTween({
+            targets: door,
+            x: 0,
+            alpha: 0.9,
+            duration: 150,
+            ease: 'Power4',
+            onComplete: () => {
+              // Screen shake on impact
+              this.cameras.main.shake(800, 0.02);
+              // Flash fades out
+              this.addTween({
+                targets: door,
+                alpha: 0,
+                duration: 500,
+              });
+            },
+          });
+        });
 
-        // Screen shake
-        this.cameras.main.shake(800, 0.015);
+        // Intense fast-alternating police lights
+        const redLeft = this.addObj(
+          this.add.rectangle(0, cy, 160, GAME_HEIGHT, 0xff0000).setOrigin(0, 0.5).setAlpha(0).setDepth(4)
+        );
+        const blueRight = this.addObj(
+          this.add.rectangle(GAME_WIDTH, cy, 160, GAME_HEIGHT, 0x0044ff).setOrigin(1, 0.5).setAlpha(0).setDepth(4)
+        );
+        const redRight = this.addObj(
+          this.add.rectangle(GAME_WIDTH, cy, 160, GAME_HEIGHT, 0xff0000).setOrigin(1, 0.5).setAlpha(0).setDepth(4)
+        );
+        const blueLeft = this.addObj(
+          this.add.rectangle(0, cy, 160, GAME_HEIGHT, 0x0044ff).setOrigin(0, 0.5).setAlpha(0).setDepth(4)
+        );
+        // Fast alternation (150ms instead of 300ms), higher intensity
+        this.addTween({
+          targets: [redLeft, blueRight],
+          alpha: { from: 0, to: 0.4 },
+          duration: 150,
+          yoyo: true,
+          repeat: -1,
+          delay: 0,
+        });
+        this.addTween({
+          targets: [blueLeft, redRight],
+          alpha: { from: 0, to: 0.4 },
+          duration: 150,
+          yoyo: true,
+          repeat: -1,
+          delay: 150,
+        });
 
         // BANG text
         this.showText('BANG  BANG  BANG', cy - 120, { size: '32px', color: '#ff3333' });
         this.showText('POLICE! OPEN UP!', cy - 60, { size: '16px', color: '#ff6666', delay: 800 });
-
-        // Door break flash — white bar from left side
-        this.time.delayedCall(600, () => {
-          const flash = this.addObj(
-            this.add.rectangle(0, cy, 200, GAME_HEIGHT, 0xffffff).setOrigin(0, 0.5).setAlpha(0.8)
-          );
-          this.addTween({
-            targets: flash,
-            alpha: 0,
-            duration: 400,
-          });
-        });
 
         this.showContinue(2500);
         break;
@@ -356,7 +393,7 @@ export class CourtScene extends Phaser.Scene {
           this.showText('SUPERIOR COURT OF CALIFORNIA', 60, { size: '11px', color: '#666688', delay: 400 });
           this.showText('FACING', cy + 220, { size: '14px', color: '#888899', delay: 1000 });
 
-          // "13 YEARS" scales up with impact
+          // "13 YEARS" scales up with impact + pulsing red + heartbeat camera
           this.time.delayedCall(1400, () => {
             const bigText = this.add.text(cx, cy + 270, '13 YEARS', {
               fontFamily: '"Press Start 2P", monospace',
@@ -365,6 +402,15 @@ export class CourtScene extends Phaser.Scene {
               align: 'center',
             }).setOrigin(0.5).setScale(2.5).setAlpha(0);
             this.textObjects.push(bigText);
+
+            // Overlapping darker red text for pulse effect
+            const pulseText = this.add.text(cx, cy + 270, '13 YEARS', {
+              fontFamily: '"Press Start 2P", monospace',
+              fontSize: '40px',
+              color: '#880000',
+              align: 'center',
+            }).setOrigin(0.5).setScale(2.5).setAlpha(0).setDepth(1);
+            this.textObjects.push(pulseText);
 
             this.addTween({
               targets: bigText,
@@ -375,7 +421,36 @@ export class CourtScene extends Phaser.Scene {
               ease: 'Back.easeOut',
               onComplete: () => {
                 this.cameras.main.shake(400, 0.008);
+
+                // Pulse between red and dark red via overlapping text alpha
+                this.addTween({
+                  targets: pulseText,
+                  alpha: { from: 0, to: 0.7 },
+                  duration: 500,
+                  yoyo: true,
+                  repeat: -1,
+                  ease: 'Sine.easeInOut',
+                });
+
+                // Heartbeat camera zoom — subtle pulse in/out
+                this.addTween({
+                  targets: this.cameras.main,
+                  zoom: 1.015,
+                  duration: 400,
+                  yoyo: true,
+                  repeat: -1,
+                  ease: 'Sine.easeInOut',
+                });
               },
+            });
+
+            // Scale in the pulse text in sync
+            this.addTween({
+              targets: pulseText,
+              scaleX: 1,
+              scaleY: 1,
+              duration: 600,
+              ease: 'Back.easeOut',
             });
           });
 
@@ -455,35 +530,60 @@ export class CourtScene extends Phaser.Scene {
 
         this.showText('SENTENCED', cy + 200, { size: '16px', color: '#888899' });
 
-        // Gavel flash — full screen white flash
-        this.time.delayedCall(800, () => {
-          const flash = this.addObj(
-            this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0xffffff).setAlpha(0.6).setDepth(10)
+        // Gavel strike animation — brown rectangle swings down from above
+        this.time.delayedCall(600, () => {
+          // Gavel head
+          const gavelHead = this.addObj(
+            this.add.rectangle(cx + 160, benchY - 100, 24, 12, 0x5c3a1a).setDepth(12)
           );
-          this.addTween({ targets: flash, alpha: 0, duration: 300 });
-          this.cameras.main.shake(200, 0.006);
+          // Gavel handle
+          const gavelHandle = this.addObj(
+            this.add.rectangle(cx + 160, benchY - 112, 4, 20, 0x3e2810).setDepth(11)
+          );
+
+          // Swing down
+          this.addTween({
+            targets: [gavelHead, gavelHandle],
+            y: '+=80',
+            duration: 200,
+            ease: 'Quad.easeIn',
+            onComplete: () => {
+              // White flash on impact
+              const flash = this.addObj(
+                this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0xffffff).setAlpha(0.7).setDepth(15)
+              );
+              this.addTween({ targets: flash, alpha: 0, duration: 250 });
+              this.cameras.main.shake(300, 0.01);
+
+              // Fade out gavel
+              this.addTween({
+                targets: [gavelHead, gavelHandle],
+                alpha: 0,
+                duration: 400,
+                delay: 200,
+              });
+            },
+          });
         });
 
-        // "1 YEAR" impact text
-        this.time.delayedCall(1000, () => {
-          const yearText = this.add.text(cx, cy + 250, '1 YEAR', {
+        // "1 YEAR" slams in from above with Bounce ease
+        this.time.delayedCall(900, () => {
+          const yearText = this.add.text(cx, -100, '1 YEAR', {
             fontFamily: '"Press Start 2P", monospace',
             fontSize: '36px',
             color: '#f0c040',
             align: 'center',
-          }).setOrigin(0.5).setScale(2).setAlpha(0);
+          }).setOrigin(0.5).setAlpha(1).setDepth(14);
           this.textObjects.push(yearText);
 
           this.addTween({
             targets: yearText,
-            scaleX: 1,
-            scaleY: 1,
-            alpha: 1,
-            duration: 500,
-            ease: 'Back.easeOut',
+            y: cy + 250,
+            duration: 800,
+            ease: 'Bounce.easeOut',
           });
 
-          this.showText('California State', cy + 310, { size: '12px', color: '#666688', delay: 400 });
+          this.showText('California State', cy + 310, { size: '12px', color: '#666688', delay: 900 });
         });
 
         this.showContinue(3000);
@@ -499,10 +599,46 @@ export class CourtScene extends Phaser.Scene {
           this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x060610)
         );
 
-        // Spotlight — layered circles getting brighter toward center
-        this.addObj(this.add.circle(cx, cy + 20, 160, 0x101020, 0.3));
-        this.addObj(this.add.circle(cx, cy + 20, 100, 0x181830, 0.3));
-        this.addObj(this.add.circle(cx, cy + 20, 50, 0x202040, 0.3));
+        // Spotlight — layered circles getting brighter toward center, breathing
+        const spotOuter = this.addObj(this.add.circle(cx, cy + 20, 160, 0x101020, 0.3));
+        const spotMid = this.addObj(this.add.circle(cx, cy + 20, 100, 0x181830, 0.3));
+        const spotInner = this.addObj(this.add.circle(cx, cy + 20, 50, 0x202040, 0.3));
+
+        // Breathing spotlight — expand and contract slowly
+        const spotlights = [spotOuter, spotMid, spotInner];
+        for (const spot of spotlights) {
+          this.addTween({
+            targets: spot,
+            scaleX: 1.08,
+            scaleY: 1.08,
+            alpha: (spot as Phaser.GameObjects.Arc).alpha * 1.2,
+            duration: 3000,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut',
+          });
+        }
+
+        // Subtle dust particles floating in the light
+        this.time.addEvent({
+          delay: 600,
+          loop: true,
+          callback: () => {
+            if (!this.scene.isActive()) return;
+            const px = cx + (Math.random() * 120 - 60);
+            const py = cy + 20 + (Math.random() * 80 - 40);
+            const dust = this.add.circle(px, py, 1, 0x888899, 0.3).setDepth(8);
+            this.sceneObjects.push(dust);
+            this.addTween({
+              targets: dust,
+              y: py - 20 - Math.random() * 20,
+              x: px + (Math.random() * 30 - 15),
+              alpha: 0,
+              duration: 2500 + Math.random() * 1500,
+              onComplete: () => dust.destroy(),
+            });
+          },
+        });
 
         // JP sprite centered, alone
         const jp = this.addObj(

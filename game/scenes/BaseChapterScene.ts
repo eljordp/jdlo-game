@@ -283,16 +283,32 @@ export abstract class BaseChapterScene extends Phaser.Scene {
       return;
     }
 
-    // Pull-ups — moving up and down
+    // Pull-ups — pull up with body compression, pause at top, drop down faster
     if (id.includes('pullup')) {
-      this.tweens.add({
-        targets: sprite,
-        y: baseY - 12,
-        duration: 800,
-        yoyo: true,
-        repeat: -1,
-        ease: 'Power2',
-      });
+      const pullUp = () => {
+        this.tweens.add({
+          targets: sprite,
+          y: baseY - 18,
+          scaleY: SCALE * 0.85,
+          duration: 600,
+          ease: 'Quad.easeOut',
+          onComplete: () => {
+            this.time.delayedCall(200, () => {
+              this.tweens.add({
+                targets: sprite,
+                y: baseY,
+                scaleY: SCALE,
+                duration: 400,
+                ease: 'Quad.easeIn',
+                onComplete: () => {
+                  this.time.delayedCall(300, pullUp);
+                },
+              });
+            });
+          },
+        });
+      };
+      pullUp();
       return;
     }
 
@@ -339,7 +355,7 @@ export abstract class BaseChapterScene extends Phaser.Scene {
       return;
     }
 
-    // Smoker — subtle sway + smoke particles
+    // Smoker — subtle sway + smoke particles + lit ember
     if (id.includes('smoker') || id.includes('smoke')) {
       this.tweens.add({
         targets: sprite,
@@ -349,15 +365,15 @@ export abstract class BaseChapterScene extends Phaser.Scene {
         repeat: -1,
         ease: 'Sine.easeInOut',
       });
-      // Smoke puff rising
+      // Smoke puff rising — bigger, brighter, more frequent
       this.time.addEvent({
-        delay: 2000,
+        delay: 1500,
         loop: true,
         callback: () => {
           const smoke = this.add.text(
             sprite.x + 8, sprite.y - 20, '~',
-            { fontFamily: 'monospace', fontSize: '12px', color: '#999999' }
-          ).setDepth(20).setAlpha(0.6);
+            { fontFamily: 'monospace', fontSize: '16px', color: '#bbbbbb' }
+          ).setDepth(20).setAlpha(0.7);
           this.tweens.add({
             targets: smoke,
             y: smoke.y - 30,
@@ -366,6 +382,16 @@ export abstract class BaseChapterScene extends Phaser.Scene {
             onComplete: () => smoke.destroy(),
           });
         },
+      });
+
+      // Lit cigarette ember — orange/red glow near hand
+      const ember = this.add.circle(sprite.x + 6, sprite.y + 4, 2, 0xff4400).setDepth(20);
+      this.tweens.add({
+        targets: ember,
+        alpha: 0.3,
+        duration: 800,
+        yoyo: true,
+        repeat: -1,
       });
       return;
     }

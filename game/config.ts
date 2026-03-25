@@ -87,4 +87,5 @@ export const TILE_IDS = {
   TRACTOR: 15,
   BUILDING_WALL: 16,
   HOT_TUB: 17,
+  VINE: 18,
 } as const;

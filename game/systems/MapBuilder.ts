@@ -20,6 +20,7 @@ const TILE_TEXTURE_MAP: Record<number, string> = {
   [TILE_IDS.TRACTOR]: 'tile-tractor',
   [TILE_IDS.BUILDING_WALL]: 'tile-building-wall',
   [TILE_IDS.HOT_TUB]: 'tile-hottub',
+  [TILE_IDS.VINE]: 'tile-vine',
 };
 
 // Detail tiles that need a ground tile rendered underneath
@@ -30,6 +31,7 @@ const OVERLAY_TILES = new Set<number>([
   TILE_IDS.TRACTOR,
   TILE_IDS.COMPUTER,
   TILE_IDS.DOOR,
+  TILE_IDS.VINE,
 ]);
 
 // What ground tile to put under each overlay, based on nearby tiles
