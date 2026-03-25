@@ -26,25 +26,26 @@ export class WrongCrowdScene extends BaseChapterScene {
     super.create();
     this.raidTriggered = false;
 
-    // NIGHT TIME OVERLAY — dark blue tint over everything
+    // Nighttime tint — dark blue overlay
+    this.cameras.main.setBackgroundColor(0x080810);
     const nightOverlay = this.add.rectangle(
-      GAME_WIDTH * 2, GAME_HEIGHT * 2, GAME_WIDTH * 4, GAME_HEIGHT * 4,
-      0x080820, 0.35
-    ).setDepth(3).setScrollFactor(1);
+      this.cameras.main.scrollX + 640, this.cameras.main.scrollY + 480,
+      2000, 2000, 0x101030
+    ).setAlpha(0.35).setScrollFactor(0).setDepth(100);
 
     // Place the BMW 335i sprite
-    const carX = 9 * SCALED_TILE + SCALED_TILE / 2;
+    const carX = 11 * SCALED_TILE + SCALED_TILE / 2;
     const carY = 11 * SCALED_TILE + SCALED_TILE / 2;
     const bmw = this.add.sprite(carX, carY, 'car-bmw335i');
     bmw.setScale(SCALE);
     bmw.setDepth(5);
-    this.collisionTiles.add('8,11');
-    this.collisionTiles.add('9,11');
     this.collisionTiles.add('10,11');
+    this.collisionTiles.add('11,11');
+    this.collisionTiles.add('12,11');
 
     // Navigation hints
-    this.addHint(14, 8, 'Exit house');
-    this.addHint(9, 11, 'Your 335i');
+    this.addHint(11, 8, 'Exit house');
+    this.addHint(11, 11, 'Your 335i');
     this.addHint(18, 18, 'Buyer\'s block');
 
     // 3:33 AM wake up cutscene at start

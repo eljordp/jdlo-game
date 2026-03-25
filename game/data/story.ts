@@ -1150,6 +1150,14 @@ const ch2Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'Streetlight flickering. Half the lights on this block are out.' },
     { speaker: 'JP\'s Mind', text: 'Nobody fixes anything here. Not the lights. Not the roads. Not the people.' },
   ],
+  ch2_light1: [
+    { speaker: 'JP\'s Mind', text: '3:33 AM. Nobody else is up.' },
+    { speaker: 'JP\'s Mind', text: 'House feels different when it\'s empty.' },
+  ],
+  ch2_light2: [
+    { speaker: 'JP\'s Mind', text: 'Kitchen light flickers. Bulb\'s been out for weeks.' },
+    { speaker: 'JP\'s Mind', text: 'Nobody fixes anything around here.' },
+  ],
   ch2_money_stack: [
     { speaker: 'JP\'s Mind', text: 'Stacks on the dresser. More than a 20-year-old should have in cash.' },
     { speaker: 'JP\'s Mind', text: 'None of it legal.' },

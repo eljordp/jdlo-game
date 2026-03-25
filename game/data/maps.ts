@@ -239,57 +239,59 @@ export const beachMap: MapData = {
 };
 
 // ---------------------------------------------------------------------------
-// 2. WRONG CROWD MAP — Urban / Street Area  (26 wide x 22 tall)
+// 2. WRONG CROWD MAP — SB Frat House at Night + Buyer's Block  (30 wide x 28 tall)
 // ---------------------------------------------------------------------------
-// Concrete-heavy, alleyways between buildings, a small park, street lamps,
-// claustrophobic compared to the beach.
+// Same SB frat house layout from beachMap but at 3:33 AM — dark, empty.
+// JP wakes up alone, grabs product, drives to buyer's house across the street.
 // ---------------------------------------------------------------------------
 export const wrongCrowdMap: MapData = {
   tiles: [
     //0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29
-    // --- FRAT HOUSE INTERIOR (rows 0-8) ---
-    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 0  top wall
-    [ X, X, B, B, B, B, B, B, B, X, X, B, B, B, B, B, B, B, B, B, X, X, X, X, X, X, X, X, X, X ], // 1  JP room walls + hallway walls
-    [ X, X, B, F, F, F, M, F, B, X, X, B, F, F, F, F, F, F, F, B, X, X, X, X, X, X, X, X, X, X ], // 2  JP room (M=desk w/ weed) | common room
-    [ X, X, B, F, F, F, F, F, B, X, X, B, F, F, F, F, F, F, F, B, X, X, X, X, X, X, X, X, X, X ], // 3  JP room | common room
-    [ X, X, B, F, F, F, F, F, B, X, X, B, F, F, F, F, F, F, F, B, X, X, X, X, X, X, X, X, X, X ], // 4  JP room | common room
-    [ X, X, B, B, B, B, O, B, B, X, X, B, B, B, O, B, B, B, B, B, X, X, X, X, X, X, X, X, X, X ], // 5  doors out of rooms
-    [ X, X, X, X, X, X, F, X, X, X, X, X, X, X, F, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 6  narrow hallway
-    [ X, X, X, X, X, X, F, F, F, F, F, F, F, F, F, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 7  hallway connecting rooms to front
-    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, O, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 8  front door of townhouse
+    // --- SB FRAT HOUSE AT NIGHT (rows 0-7) — same layout as beachMap but DARK_FLOOR ---
+    [ X, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, X ], // 0  house top wall
+    [ X, B, D, D, D, D, D, D, B, D, D, D, D, D, B, D, D, D, D, B, C, C, C, C, C, C, C, B, X, X ], // 1  living room | JP room | kitchen | hot tub patio
+    [ X, B, D, D, D, D, D, D, B, D, D, D, D, D, B, D, D, D, D, B, C, H, H, H, H, H, C, B, X, X ], // 2  hot tub (empty at night)
+    [ X, B, D, D, D, D, D, D, B, D, D, D, M, D, B, D, D, D, D, B, C, H, H, H, H, H, C, B, X, X ], // 3  M=computer desk in JP room
+    [ X, B, D, D, D, D, D, D, O, D, D, D, D, D, O, D, D, D, D, B, C, H, H, H, H, H, C, B, X, X ], // 4  doors between rooms
+    [ X, B, D, D, D, D, D, D, B, D, D, D, D, D, B, D, D, D, D, B, C, H, H, H, H, H, C, B, X, X ], // 5  walls between rooms
+    [ X, B, D, D, D, D, D, D, B, D, D, D, D, D, B, D, D, D, D, B, C, C, C, C, C, C, C, B, X, X ], // 6
+    [ X, B, B, B, O, B, B, B, B, B, B, O, B, B, B, B, O, B, B, B, B, B, B, O, B, B, B, B, X, X ], // 7  house bottom wall with doors
 
-    // --- FRONT YARD + PARKING (rows 9-12) ---
-    [ X, X, G, G, T, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, T, G, G, G, X, X ], // 9   front yard + trees
-    [ X, X, G, G, G, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, X, X ], // 10  yard
-    [ X, X, G, G, G, G, G, G, G, G, G, G, G, G, P, G, G, G, T, G, G, G, T, G, G, G, G, G, X, X ], // 11  BMW 335i parked here (sprite overlay) | trees
-    [ X, X, G, G, G, G, T, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, T, G, G, X, X ], // 12  yard to street + trees
+    // --- DARK YARD (rows 8-9) ---
+    [ X, G, G, G, P, G, T, G, G, G, G, P, G, G, G, G, P, G, G, G, G, G, G, P, G, T, G, G, X, X ], // 8  paths from house doors + trees
+    [ X, G, G, G, P, G, G, G, G, G, G, P, G, G, G, G, P, G, G, G, G, G, G, P, G, G, G, G, X, X ], // 9  yard
 
-    // --- STREET (rows 13-16) ---
-    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 13  road
-    [ C, C, C, C, E, E, E, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, E, E, E, C, C, C, C, C ], // 14  parked cars on street
-    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 15  road
-    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 16  road continues
+    // --- STREET (rows 10-12) ---
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 10 concrete street
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 11 BMW parked here (sprite overlay)
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 12 street
+
+    // --- STREET + APPROACH (rows 13-16) ---
+    [ C, C, C, C, E, E, E, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, E, E, E, C, C, C, C, C ], // 13 parked cars (fences)
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 14 road with path
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 15 road
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 16 road continues
 
     // --- BUYER'S BLOCK (rows 17-22) ---
-    [ X, X, G, G, B, B, B, B, B, G, G, G, G, G, P, G, G, G, G, G, G, T, G, G, G, T, G, G, X, X ], // 17  corner store + trees
-    [ X, X, G, G, B, F, F, F, O, G, G, G, G, G, P, P, P, P, P, G, G, G, G, G, G, G, G, G, X, X ], // 18  store interior + path branches
-    [ X, X, G, G, B, B, B, B, B, G, G, T, G, G, G, G, G, G, P, G, G, G, G, G, T, G, G, G, X, X ], // 19  store wall + trees
-    [ X, X, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, P, G, B, B, B, B, B, B, B, G, X, X ], // 20  buyer house top wall
-    [ X, X, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, P, G, B, D, D, D, D, D, B, G, X, X ], // 21  inside visible through wall
-    [ X, X, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, P, P, P, P, O, D, D, D, B, G, X, X ], // 22  path leads directly to door
+    [ X, X, G, G, B, B, B, B, B, G, G, G, G, G, P, G, G, G, G, G, G, T, G, G, G, T, G, G, X, X ], // 17 corner store + trees
+    [ X, X, G, G, B, F, F, F, O, G, G, G, G, G, P, P, P, P, P, G, G, G, G, G, G, G, G, G, X, X ], // 18 store interior + path branches
+    [ X, X, G, G, B, B, B, B, B, G, G, T, G, G, G, G, G, G, P, G, G, G, G, G, T, G, G, G, X, X ], // 19 store wall + trees
+    [ X, X, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, P, G, B, B, B, B, B, B, B, G, X, X ], // 20 buyer house top wall
+    [ X, X, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, P, G, B, D, D, D, D, D, B, G, X, X ], // 21 inside visible through wall
+    [ X, X, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, P, P, P, P, O, D, D, D, B, G, X, X ], // 22 path leads directly to door
 
     // --- INSIDE BUYER'S HOUSE (rows 23-27) ---
-    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, B, D, D, D, D, D, B, X, X, X ], // 23  inside buyer house
-    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, B, D, D, D, D, D, B, X, X, X ], // 24  sale spot area
-    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, B, D, D, D, M, D, B, X, X, X ], // 25  table (M) in back
-    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, B, B, B, B, B, B, B, X, X, X ], // 26  back wall
-    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 27  bottom border
+    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, B, D, D, D, D, D, B, X, X, X ], // 23 inside buyer house
+    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, B, D, D, D, D, D, B, X, X, X ], // 24 sale spot area
+    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, B, D, D, D, M, D, B, X, X, X ], // 25 table (M) in back
+    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, B, B, B, B, B, B, B, X, X, X ], // 26 back wall
+    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 27 bottom border
   ],
   collisions: STANDARD_COLLISIONS,
   spawns: {
-    player: { x: 5, y: 3 },  // JP starts in his room
+    player: { x: 11, y: 3 },  // JP starts in his room (same position as beachMap JP room)
     npcs: [
-      { id: 'ch2_homie_door', x: 13, y: 9, sprite: 'npc_kid' },     // homie by front door outside
+      { id: 'ch2_homie_door', x: 14, y: 9, sprite: 'npc_kid' },     // Marcus waiting outside
       { id: 'ch2_corner_guy', x: 6, y: 18, sprite: 'npc_generic' }, // guy at corner store
       { id: 'ch2_street_kid', x: 10, y: 17, sprite: 'npc_shady' },  // kid on the street
       { id: 'ch2_lookout',    x: 18, y: 20, sprite: 'npc_shady' },   // outside buyer's house
@@ -298,19 +300,16 @@ export const wrongCrowdMap: MapData = {
   },
   triggers: [],  // No scene triggers — only way out is through ch2_sale raid
   interactables: [
-    { id: 'ch2_grab_weed', x: 6, y: 2, type: 'examine', glow: true, sprite: 'item-weed-bag' },   // desk in JP's room
-    { id: 'ch2_gun',       x: 4, y: 2, type: 'examine', glow: true, sprite: 'item-gun' },       // gun on the dresser
-    { id: 'ch2_computer',  x: 5, y: 3, type: 'examine', glow: true },                            // trap dashboard on computer
-    { id: 'ch2_bed',       x: 7, y: 4, type: 'examine', glow: true, sprite: 'item-bed' },       // JP's bed
-    { id: 'ch2_car',       x: 9, y: 11, type: 'examine', glow: true, sprite: 'item-keys' },   // BMW on the curb
-    { id: 'ch2_mirror',    x: 10, y: 11, type: 'examine', glow: false },  // car mirror
-    { id: 'ch2_buyer_house', x: 19, y: 22, type: 'examine', glow: true }, // approaching buyer's door
-    { id: 'ch2_sale',      x: 23, y: 24, type: 'examine', glow: true, sprite: 'item-weed-bag' },   // THE TRIGGER — sale spot
-    { id: 'ch2_alley',     x: 7, y: 15, type: 'examine', glow: true },
-    { id: 'ch2_phone',     x: 4, y: 4, type: 'examine', glow: true, sprite: 'item-phone' },
-    { id: 'ch2_money_stack', x: 3, y: 3, type: 'examine', glow: true, sprite: 'item-money' },
-    { id: 'ch2_designer',   x: 7, y: 3, type: 'examine', glow: true, sprite: 'item-weed-bag' },
-    { id: 'ch2_mirror_room', x: 5, y: 4, type: 'examine', glow: true },
+    { id: 'ch2_grab_weed', x: 12, y: 3, type: 'examine', glow: true, sprite: 'item-weed-bag' },  // weed on desk in JP's room
+    { id: 'ch2_gun',       x: 10, y: 1, type: 'examine', glow: true, sprite: 'item-gun' },       // gun in JP's room
+    { id: 'ch2_computer',  x: 12, y: 1, type: 'examine', glow: true },                            // computer/desk
+    { id: 'ch2_bed',       x: 9,  y: 5, type: 'examine', glow: true, sprite: 'item-bed' },       // bed in JP's room
+    { id: 'ch2_car',       x: 11, y: 11, type: 'examine', glow: true, sprite: 'item-keys' },     // BMW on street
+    { id: 'ch2_sale',      x: 23, y: 24, type: 'examine', glow: true, sprite: 'item-weed-bag' }, // THE TRIGGER — sale spot
+    { id: 'ch2_phone',     x: 10, y: 3, type: 'examine', glow: true, sprite: 'item-phone' },     // phone in JP's room
+    { id: 'ch2_money_stack', x: 13, y: 3, type: 'examine', glow: true, sprite: 'item-money' },   // money in JP's room
+    { id: 'ch2_light1',    x: 4, y: 3, type: 'examine', glow: true },                             // light switch in living room
+    { id: 'ch2_light2',    x: 16, y: 3, type: 'examine', glow: true },                            // light switch in kitchen
     { id: 'ch2_graffiti',  x: 3, y: 17, type: 'examine', glow: true },
     { id: 'ch2_store',     x: 7, y: 18, type: 'examine', glow: true },
     { id: 'ch2_nervous',   x: 12, y: 18, type: 'examine', glow: true },
