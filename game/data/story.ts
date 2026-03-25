@@ -106,13 +106,21 @@ export const chapter0NPCs: NPCData[] = [
     sprite: 'npc_sister',
     dialogue: [
       { speaker: 'Sister', text: 'JP! Come play with me!' },
-      { speaker: 'JP', text: 'Not right now.' },
-      { speaker: 'Sister', text: 'You\'re always in your room.' },
+      { speaker: 'JP', text: 'Not right now, I\'m busy.' },
+      { speaker: 'Sister', text: 'You\'re ALWAYS busy.' },
       { speaker: 'JP', text: 'I know. I\'m sorry.' },
-      { speaker: 'Sister', text: 'Mommy and Daddy were fighting again.' },
-      { speaker: 'JP', text: '...I know.' },
-      { speaker: 'Sister', text: 'Are you gonna leave like Mommy says?' },
-      { speaker: 'JP', text: 'I\'m not going anywhere. Not yet.' },
+      { speaker: 'Sister', text: 'Will you be here for my birthday?' },
+      { speaker: 'JP', text: '', choices: [
+        { text: '"Of course. I promise."', next: [
+          { speaker: 'Sister', text: 'Pinky promise?' },
+          { speaker: 'JP', text: 'Pinky promise.' },
+          { speaker: 'JP\'s Mind', text: 'He meant it. But life doesn\'t always let you keep promises.' },
+        ]},
+        { text: '"I\'ll try my best."', next: [
+          { speaker: 'Sister', text: '...okay.' },
+          { speaker: 'JP\'s Mind', text: 'She didn\'t believe him. Smart kid.' },
+        ]},
+      ]},
     ],
   },
   {
