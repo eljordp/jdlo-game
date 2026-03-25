@@ -75,7 +75,6 @@ const STANDARD_COLLISIONS = [
   TILES.COMPUTER,
   TILES.TRACTOR,
   TILES.BUILDING_WALL,
-  TILES.HOT_TUB,
   TILES.VINE,
   TILES.HOUSE_WALL,
   TILES.COUNTER,
@@ -177,9 +176,9 @@ export const beachMap: MapData = {
     [ B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B ], // 0  house top wall
     [ B, F, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, B, C, C, C, C, C, C, C, B ], // 1  living room | JP room | kitchen | hot tub patio
     [ B, F, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, B, C, H, H, H, H, H, C, B ], // 2  hot tub (bubbly)
-    [ B, F, F, F, F, F, F, F, O, F, F, F, M, F, O, F, F, F, F, B, C, H, H, H, H, H, C, B ], // 3  doors between rooms (wider access)
-    [ B, F, F, F, F, F, F, F, O, F, F, F, F, F, O, F, F, F, F, B, C, H, H, H, H, H, C, B ], // 4  doors between rooms
-    [ B, F, F, F, F, F, F, F, O, F, F, F, F, F, O, F, F, F, F, B, C, H, H, H, H, H, C, B ], // 5  doors (3 tiles tall for easy access)
+    [ B, F, F, F, F, F, F, F, B, F, F, F, M, F, B, F, F, F, F, B, C, H, H, H, H, H, C, B ], // 3  walls between rooms
+    [ B, F, F, F, F, F, F, F, O, F, F, F, F, F, O, F, F, F, F, B, C, H, H, H, H, H, C, B ], // 4  single doors between rooms
+    [ B, F, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, B, C, H, H, H, H, H, C, B ], // 5  walls between rooms
     [ B, F, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, B, C, C, C, C, C, C, C, B ], // 6
     [ B, B, B, B, O, B, B, B, B, B, B, O, B, B, B, B, O, B, B, B, B, B, B, O, B, B, B, B ], // 7  house bottom wall with doors
     [ G, G, G, G, P, G, G, G, G, G, G, P, G, G, G, G, P, G, G, G, G, G, G, P, G, G, G, G ], // 8  paths from house doors
@@ -232,8 +231,9 @@ export const beachMap: MapData = {
     { id: 'ch1_blunt',   x: 22, y: 6,  type: 'examine', glow: true, sprite: 'item-joint' },
     { id: 'ch1_bong',    x: 17, y: 1,  type: 'examine', glow: true, sprite: 'item-bong' },
     { id: 'ch1_setup',   x: 11, y: 2,  type: 'examine', glow: true, sprite: 'item-tablet' },
+    { id: 'ch1_bed',     x: 9,  y: 5,  type: 'examine', glow: true, sprite: 'item-bed' },
     { id: 'ch1_closet',  x: 13, y: 2,  type: 'examine', glow: true },
-    { id: 'ch1_speaker', x: 9,  y: 2,  type: 'examine', glow: true },
+    { id: 'ch1_speaker', x: 9,  y: 1,  type: 'examine', glow: true },
     { id: 'ch1_volleyball1', x: 11, y: 16, type: 'examine', glow: true },
   ],
 };

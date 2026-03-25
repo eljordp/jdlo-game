@@ -152,34 +152,47 @@ export class MusicSystem {
     noise.buffer = buffer;
     noise.loop = true;
 
-    // Band-pass filter — makes noise sound like waves
+    // Low-pass filter — cuts harsh highs, keeps the deep ocean rumble
     this.filterNode = ctx.createBiquadFilter();
-    this.filterNode.type = 'bandpass';
-    this.filterNode.frequency.value = 600;
-    this.filterNode.Q.value = 0.3;
+    this.filterNode.type = 'lowpass';
+    this.filterNode.frequency.value = 280;
+    this.filterNode.Q.value = 0.7;
+
+    // Second filter for extra smoothness
+    const smoothFilter = ctx.createBiquadFilter();
+    smoothFilter.type = 'lowpass';
+    smoothFilter.frequency.value = 400;
+    smoothFilter.Q.value = 0.5;
 
     // Very quiet
     this.gainNode = ctx.createGain();
-    this.gainNode.gain.value = 0.015;
+    this.gainNode.gain.value = 0.025;
 
     noise.connect(this.filterNode);
-    this.filterNode.connect(this.gainNode);
+    this.filterNode.connect(smoothFilter);
+    smoothFilter.connect(this.gainNode);
     this.gainNode.connect(ctx.destination);
     noise.start();
 
     // Store as oscillator for cleanup (it's actually a BufferSource but same interface)
     this.oscillator = noise as unknown as OscillatorNode;
 
-    // Wave rhythm — volume swells up and down like waves crashing
+    // Wave rhythm — slow volume swells like waves rolling in and out
     const waveRhythm = () => {
       if (!this.gainNode || this.currentTrack !== 'santa-barbara') return;
       const now = ctx.currentTime;
-      // Swell up
-      this.gainNode.gain.setTargetAtTime(0.03, now, 1.5);
-      // Fade down
-      this.gainNode.gain.setTargetAtTime(0.008, now + 3, 2);
+      // Wave rolls in — slow swell
+      this.gainNode.gain.setTargetAtTime(0.05, now, 2.0);
+      // Wave recedes — gentle fade
+      this.gainNode.gain.setTargetAtTime(0.012, now + 4, 2.5);
 
-      this.interval = setTimeout(waveRhythm, 5000 + Math.random() * 3000) as unknown as ReturnType<typeof setInterval>;
+      // Also shift filter frequency slightly for each wave (deeper = further away feel)
+      if (this.filterNode) {
+        this.filterNode.frequency.setTargetAtTime(350, now, 1.5);
+        this.filterNode.frequency.setTargetAtTime(250, now + 4, 2.0);
+      }
+
+      this.interval = setTimeout(waveRhythm, 6000 + Math.random() * 4000) as unknown as ReturnType<typeof setInterval>;
     };
     waveRhythm();
   }

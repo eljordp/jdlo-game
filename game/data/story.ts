@@ -202,7 +202,10 @@ export const chapter1NPCs: NPCData[] = [
     y: 5,
     sprite: 'npc_bikini1',
     dialogue: [
-      { speaker: 'Narrator', text: 'She\'s passed out on the couch. It\'s 2 PM.' },
+      { speaker: 'Girl', text: 'You live here?' },
+      { speaker: 'JP', text: 'Yeah.' },
+      { speaker: 'Girl', text: 'This place is crazy. Who\'s throwing tonight?' },
+      { speaker: 'JP', text: 'We always throwing.' },
     ],
   },
   {
@@ -1058,6 +1061,10 @@ const ch1Extras: Record<string, DialogueLine[]> = {
   ch1_speaker: [
     { speaker: 'JP\'s Mind', text: 'Bluetooth speaker playing the same playlist on repeat. Playboi Carti. Travis Scott.' },
     { speaker: 'JP\'s Mind', text: 'The vibe never changes.' },
+  ],
+  ch1_bed: [
+    { speaker: 'JP\'s Mind', text: 'Unmade bed. Sheets smell like weed and cologne.' },
+    { speaker: 'JP\'s Mind', text: 'Can\'t remember the last time he slept before 4 AM.' },
   ],
 };
 

@@ -2,10 +2,12 @@ import { BaseChapterScene } from './BaseChapterScene';
 import { beachMap, MapData } from '../data/maps';
 import { beachDialogue } from '../data/story';
 import type { DialogueLine } from '../systems/DialogueSystem';
-import { SCALED_TILE, SCALE, GAME_WIDTH, GAME_HEIGHT } from '../config';
+import { SCALED_TILE, SCALE, GAME_WIDTH, GAME_HEIGHT, TILE_IDS } from '../config';
 import { Analytics } from '../systems/Analytics';
 
 export class BeachScene extends BaseChapterScene {
+  private inHotTub = false;
+
   constructor() {
     super({ key: 'BeachScene' });
     this.chapterTitle = 'Chapter 2: Santa Barbara';
@@ -106,6 +108,20 @@ export class BeachScene extends BaseChapterScene {
         }
       },
     });
+  }
+
+  protected onPlayerMove(tileX: number, tileY: number): void {
+    const mapData = this.getMapData();
+    const tile = mapData.tiles[tileY]?.[tileX];
+    const onHotTub = tile === TILE_IDS.HOT_TUB;
+
+    if (onHotTub && !this.inHotTub) {
+      this.inHotTub = true;
+      this.player.setTexture('player-swim');
+    } else if (!onHotTub && this.inHotTub) {
+      this.inHotTub = false;
+      this.player.setTexture(this.getPlayerTexture());
+    }
   }
 
   protected getObjectiveHint(): string {

@@ -278,6 +278,8 @@ function drawPlayerFrame32(
     px(g, ox + 7, 8, skinS, 1, 1);
     px(g, ox + 24, 8, skinS, 1, 1);
   } else if (direction === 'up') {
+    // Back of head — full hair coverage, no gaps
+    px(g, ox + 8, 5, hair, 16, 1);
     px(g, ox + 8, 6, hair, 16, 1);
     px(g, ox + 8, 7, hair, 16, 1);
     px(g, ox + 8, 8, hair, 16, 1);
@@ -287,6 +289,7 @@ function drawPlayerFrame32(
     px(g, ox + 10, 7, hairH, 2, 1);
     px(g, ox + 16, 8, hairH, 3, 1);
     px(g, ox + 12, 9, hairH, 2, 1);
+    px(g, ox + 14, 6, hairH, 4, 1);
     px(g, ox + 7, 7, skin, 1, 2);
     px(g, ox + 24, 7, skin, 1, 2);
   } else if (direction === 'left') {
@@ -3068,6 +3071,11 @@ function generateChapterOutfits(scene: Phaser.Scene) {
     {
       key: 'player-ch6',
       colors: { shirt: 0x1a2040, shirtLight: 0x243050, pants: 0x181820, pantsLight: 0x222230, shoe: 0x202020 },
+    },
+    {
+      // Swim trunks — "shirt" is skin tone (shirtless), blue trunks
+      key: 'player-swim',
+      colors: { shirt: 0xd4a870, shirtLight: 0xdcb480, pants: 0x2060b0, pantsLight: 0x3070c0, shoe: 0xd4a870 },
     },
   ];
 

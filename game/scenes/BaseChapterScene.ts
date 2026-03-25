@@ -821,6 +821,7 @@ export abstract class BaseChapterScene extends Phaser.Scene {
       onComplete: () => {
         this.isMoving = false;
         this.player.setFrame(frameMap[this.facing]);
+        this.onPlayerMove(targetTileX, targetTileY);
         this.checkTriggers(targetTileX, targetTileY);
       },
     });
@@ -870,6 +871,9 @@ export abstract class BaseChapterScene extends Phaser.Scene {
       }
     }
   }
+
+  /** Override in subclasses to react to player movement (e.g. hot tub clothes change) */
+  protected onPlayerMove(_tileX: number, _tileY: number): void {}
 
   private checkTriggers(tileX: number, tileY: number) {
     for (const trigger of this.triggers) {
