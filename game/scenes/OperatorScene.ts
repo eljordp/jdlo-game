@@ -14,6 +14,16 @@ export class OperatorScene extends BaseChapterScene {
     return 'player-ch6';
   }
 
+  create() {
+    super.create();
+    // Exit at 14,24
+    this.addNavArrow(14, 23, 'The End');
+  }
+
+  protected getObjectiveHint(): string {
+    return 'You made it. Look around. Head to the end.';
+  }
+
   getMapData(): MapData {
     return operatorMap;
   }

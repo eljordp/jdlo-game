@@ -14,6 +14,20 @@ export class ComeUpScene extends BaseChapterScene {
     return 'player-ch5';
   }
 
+  create() {
+    super.create();
+    // Client showcases
+    this.addNavArrow(3, 13, 'WCT');
+    this.addNavArrow(19, 13, 'Sticker Smith');
+    this.addNavArrow(13, 16, 'DHL');
+    // Exit at 27,23
+    this.addNavArrow(27, 22, 'Exit');
+  }
+
+  protected getObjectiveHint(): string {
+    return 'Visit clients. Build your portfolio.';
+  }
+
   getMapData(): MapData {
     return comeUpMap;
   }

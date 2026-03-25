@@ -34,6 +34,9 @@ export abstract class BaseChapterScene extends Phaser.Scene {
   protected chapterTitle = '';
   protected nextScene = '';
 
+  private navArrows: Phaser.GameObjects.Text[] = [];
+  private navArrowTweens: Phaser.Tweens.Tween[] = [];
+
   abstract getMapData(): MapData;
   abstract getChapterDialogue(): { intro: DialogueLine[]; npcs: Record<string, DialogueLine[]> };
 
@@ -52,6 +55,12 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     this.collisionTiles = new Set();
     this.isMoving = false;
     this.frozen = false;
+
+    // Clean up previous nav arrows
+    for (const tween of this.navArrowTweens) tween.stop();
+    for (const arrow of this.navArrows) arrow.destroy();
+    this.navArrows = [];
+    this.navArrowTweens = [];
 
     // Restore game speed from previous scene
     if (virtualInput.gameSpeed !== 1) {
@@ -98,8 +107,7 @@ export abstract class BaseChapterScene extends Phaser.Scene {
         npcData.sprite, 0
       ).setScale(SCALE).setDepth(9);
 
-      // NPCs block movement
-      this.collisionTiles.add(`${npcData.x},${npcData.y}`);
+      // NPCs are walkable — maps too tight for solid NPCs
 
       this.npcs.push({
         sprite,
@@ -127,6 +135,9 @@ export abstract class BaseChapterScene extends Phaser.Scene {
 
     // Show chapter title
     this.showChapterTitle();
+
+    // Show objective hint
+    this.showObjectiveHint();
   }
 
   private showChapterTitle() {
@@ -166,6 +177,72 @@ export abstract class BaseChapterScene extends Phaser.Scene {
             }
           },
         });
+      },
+    });
+  }
+
+  protected addNavArrow(tileX: number, tileY: number, label?: string) {
+    const worldX = tileX * SCALED_TILE + SCALED_TILE / 2;
+    const worldY = tileY * SCALED_TILE - 8;
+
+    const arrow = this.add.text(worldX, worldY, '\u25bc', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '10px',
+      color: '#f0c040',
+    }).setOrigin(0.5, 1).setDepth(50).setAlpha(0.6);
+
+    this.navArrows.push(arrow);
+
+    const tween = this.tweens.add({
+      targets: arrow,
+      y: worldY + 8,
+      alpha: 0.2,
+      duration: 800,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
+    });
+    this.navArrowTweens.push(tween);
+
+    if (label) {
+      const labelText = this.add.text(worldX, worldY + 14, label, {
+        fontFamily: '"Press Start 2P", monospace',
+        fontSize: '7px',
+        color: '#f0c040',
+      }).setOrigin(0.5, 0).setDepth(50).setAlpha(0.4);
+
+      this.navArrows.push(labelText);
+    }
+  }
+
+  protected getObjectiveHint(): string {
+    return 'Explore and interact with everything';
+  }
+
+  private showObjectiveHint() {
+    const hint = this.getObjectiveHint();
+    if (!hint) return;
+
+    const bg = this.add.rectangle(GAME_WIDTH / 2, 30, GAME_WIDTH - 80, 28, 0x000000, 0.55)
+      .setScrollFactor(0).setDepth(90).setAlpha(0);
+
+    const text = this.add.text(GAME_WIDTH / 2, 30, hint, {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '9px',
+      color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(91).setAlpha(0);
+
+    // Fade in
+    this.tweens.add({
+      targets: [bg, text],
+      alpha: (target: Phaser.GameObjects.GameObject) => target === bg ? 0.55 : 0.85,
+      duration: 600,
+      delay: 3500, // show after chapter title finishes
+      hold: 8000,
+      yoyo: true,
+      onComplete: () => {
+        bg.destroy();
+        text.destroy();
       },
     });
   }

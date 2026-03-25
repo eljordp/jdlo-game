@@ -20,6 +20,8 @@ export class InteractionSystem {
   private interactables: Interactable[] = [];
   private sprites: Map<string, Phaser.GameObjects.Sprite> = new Map();
   private glowTweens: Map<string, Phaser.Tweens.Tween> = new Map();
+  private markers: Map<string, Phaser.GameObjects.Text> = new Map();
+  private markerTweens: Map<string, Phaser.Tweens.Tween> = new Map();
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
@@ -55,6 +57,30 @@ export class InteractionSystem {
           this.glowTweens.set(obj.id, tween);
         }
       }
+
+      // Add "!" marker above any interactable with glow, regardless of sprite
+      if (obj.glow) {
+        const markerX = obj.x * SCALED_TILE + SCALED_TILE / 2;
+        const markerY = obj.y * SCALED_TILE - 4;
+
+        const marker = this.scene.add.text(markerX, markerY, '!', {
+          fontFamily: '"Press Start 2P", monospace',
+          fontSize: '10px',
+          color: '#f0c040',
+        }).setOrigin(0.5, 1).setDepth(50);
+
+        this.markers.set(obj.id, marker);
+
+        const bounce = this.scene.tweens.add({
+          targets: marker,
+          y: markerY - 6,
+          duration: 800,
+          yoyo: true,
+          repeat: -1,
+          ease: 'Sine.easeInOut',
+        });
+        this.markerTweens.set(obj.id, bounce);
+      }
     }
   }
 
@@ -85,6 +111,18 @@ export class InteractionSystem {
     if (sprite) {
       sprite.setVisible(false);
     }
+
+    // Destroy the "!" marker
+    const markerTween = this.markerTweens.get(id);
+    if (markerTween) {
+      markerTween.stop();
+      this.markerTweens.delete(id);
+    }
+    const marker = this.markers.get(id);
+    if (marker) {
+      marker.destroy();
+      this.markers.delete(id);
+    }
   }
 
   getSprite(id: string): Phaser.GameObjects.Sprite | undefined {
@@ -101,6 +139,16 @@ export class InteractionSystem {
       sprite.destroy();
     }
     this.sprites.clear();
+
+    for (const tween of this.markerTweens.values()) {
+      tween.stop();
+    }
+    this.markerTweens.clear();
+
+    for (const marker of this.markers.values()) {
+      marker.destroy();
+    }
+    this.markers.clear();
 
     this.interactables = [];
   }

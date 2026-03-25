@@ -14,6 +14,16 @@ export class BeachScene extends BaseChapterScene {
     return 'player-ch1';
   }
 
+  create() {
+    super.create();
+    // Exit triggers at y=18, x=12-15
+    this.addNavArrow(13, 17, 'Next chapter');
+  }
+
+  protected getObjectiveHint(): string {
+    return 'Check out the frat house. Head south to leave.';
+  }
+
   getMapData(): MapData {
     return beachMap;
   }

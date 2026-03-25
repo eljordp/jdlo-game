@@ -14,6 +14,16 @@ export class HomeScene extends BaseChapterScene {
     return 'player-ch0';
   }
 
+  create() {
+    super.create();
+    // Exit triggers at y=24, x=9-12
+    this.addNavArrow(10, 23, 'Leave home');
+  }
+
+  protected getObjectiveHint(): string {
+    return 'Explore your house. Talk to family. Leave when ready.';
+  }
+
   getMapData(): MapData {
     return homeMap;
   }

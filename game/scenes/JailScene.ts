@@ -14,6 +14,16 @@ export class JailScene extends BaseChapterScene {
     return 'player-ch3';
   }
 
+  create() {
+    super.create();
+    // Exit triggers at y=25, x=17-18
+    this.addNavArrow(17, 24, 'Freedom');
+  }
+
+  protected getObjectiveHint(): string {
+    return 'Survive. Study. Find the exit.';
+  }
+
   getMapData(): MapData {
     return jailMap;
   }

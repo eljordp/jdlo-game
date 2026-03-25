@@ -55,6 +55,10 @@ export class WrongCrowdScene extends BaseChapterScene {
     });
   }
 
+  protected getObjectiveHint(): string {
+    return 'Grab the weed. Get in the 335i. Make the drop.';
+  }
+
   getMapData(): MapData {
     return wrongCrowdMap;
   }
