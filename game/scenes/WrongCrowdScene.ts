@@ -99,51 +99,36 @@ export class WrongCrowdScene extends BaseChapterScene {
   }
 
   private playDrivingCutscene() {
-    // Fade to black for driving cutscene
     this.cameras.main.fadeOut(600, 0, 0, 0);
     this.cameras.main.once('camerafadeoutcomplete', () => {
-      // Create driving overlay
+      // Track ALL objects for cleanup
+      const cutsceneObjects: Phaser.GameObjects.GameObject[] = [];
+
       const overlay = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x101018)
         .setScrollFactor(0).setDepth(500);
-
-      // Road scrolling
-      const roadLines: Phaser.GameObjects.Rectangle[] = [];
-      for (let i = 0; i < 8; i++) {
-        const line = this.add.rectangle(
-          200 + i * 160, GAME_HEIGHT / 2 + 40,
-          40, 6, 0xf0c040
-        ).setScrollFactor(0).setDepth(501);
-        roadLines.push(line);
-
-        this.tweens.add({
-          targets: line,
-          x: line.x - 160,
-          duration: 400,
-          repeat: -1,
-        });
-      }
+      cutsceneObjects.push(overlay);
 
       // Road surface
-      this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 40, GAME_WIDTH, 80, 0x303038)
+      const road = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 40, GAME_WIDTH, 80, 0x303038)
         .setScrollFactor(0).setDepth(500);
+      cutsceneObjects.push(road);
 
-      // Re-add road lines on top
-      roadLines.forEach(l => l.setDepth(501));
+      // Road lines
+      for (let i = 0; i < 8; i++) {
+        const line = this.add.rectangle(
+          200 + i * 160, GAME_HEIGHT / 2 + 40, 40, 6, 0xf0c040
+        ).setScrollFactor(0).setDepth(501);
+        cutsceneObjects.push(line);
+        this.tweens.add({ targets: line, x: line.x - 160, duration: 400, repeat: -1 });
+      }
 
-      // BMW driving
+      // BMW
       const bmw = this.add.sprite(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 30, 'car-bmw335i')
         .setScale(SCALE).setScrollFactor(0).setDepth(502);
+      cutsceneObjects.push(bmw);
+      this.tweens.add({ targets: bmw, y: GAME_HEIGHT / 2 + 34, duration: 300, yoyo: true, repeat: -1 });
 
-      // Slight bounce
-      this.tweens.add({
-        targets: bmw,
-        y: GAME_HEIGHT / 2 + 34,
-        duration: 300,
-        yoyo: true,
-        repeat: -1,
-      });
-
-      // City lights passing
+      // City lights
       for (let i = 0; i < 15; i++) {
         const light = this.add.rectangle(
           Math.random() * GAME_WIDTH,
@@ -151,40 +136,30 @@ export class WrongCrowdScene extends BaseChapterScene {
           3, 4 + Math.random() * 8,
           [0xf0c040, 0x40a0f0, 0xf06040][Math.floor(Math.random() * 3)]
         ).setScrollFactor(0).setDepth(501).setAlpha(0.4);
-
-        this.tweens.add({
-          targets: light,
-          x: light.x - 300,
-          duration: 800 + Math.random() * 400,
-          repeat: -1,
-        });
+        cutsceneObjects.push(light);
+        this.tweens.add({ targets: light, x: light.x - 300, duration: 800 + Math.random() * 400, repeat: -1 });
       }
 
-      // Driving text
+      // Text
       const text1 = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 160, 'Driving down the block...', {
-        fontFamily: '"Press Start 2P", monospace',
-        fontSize: '14px',
-        color: '#ffffff',
+        fontFamily: '"Press Start 2P", monospace', fontSize: '14px', color: '#ffffff',
       }).setOrigin(0.5).setScrollFactor(0).setDepth(503).setAlpha(0);
-
+      cutsceneObjects.push(text1);
       this.tweens.add({ targets: text1, alpha: 1, duration: 600, delay: 500 });
 
       const text2 = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 120, 'Two zips in the jacket. Same routine.', {
-        fontFamily: '"Press Start 2P", monospace',
-        fontSize: '11px',
-        color: '#aaaacc',
+        fontFamily: '"Press Start 2P", monospace', fontSize: '11px', color: '#aaaacc',
       }).setOrigin(0.5).setScrollFactor(0).setDepth(503).setAlpha(0);
-
+      cutsceneObjects.push(text2);
       this.tweens.add({ targets: text2, alpha: 1, duration: 600, delay: 1200 });
 
-      // After 3 seconds, teleport player to the buyer's block
+      // After 3.5 seconds, clean up EVERYTHING and teleport
       this.time.delayedCall(3500, () => {
-        // Clean up driving scene
-        overlay.destroy();
-        roadLines.forEach(l => l.destroy());
-        bmw.destroy();
-        text1.destroy();
-        text2.destroy();
+        // Kill all tweens on cutscene objects first
+        for (const obj of cutsceneObjects) {
+          this.tweens.killTweensOf(obj);
+          obj.destroy();
+        }
 
         // Move player to the buyer's neighborhood
         this.player.setPosition(
