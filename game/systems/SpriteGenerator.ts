@@ -234,21 +234,21 @@ function drawPlayerFrame32(
   const belt = 0x403830;
   const beltBuckle = 0x908070;
 
-  // ── HAIR (rows 0-5) ──
-  px(g, ox + 10, 0, hair, 12, 1);
-  px(g, ox + 8, 1, hair, 16, 1);
-  px(g, ox + 7, 2, hair, 18, 1);
+  // ── HAIR (rows 0-6) — full coverage, no bald spots ──
+  px(g, ox + 9, 0, hair, 14, 1);
+  px(g, ox + 7, 1, hair, 18, 1);
+  px(g, ox + 6, 2, hair, 20, 1);
   px(g, ox + 6, 3, hair, 20, 1);
   px(g, ox + 6, 4, hair, 20, 1);
   px(g, ox + 6, 5, hair, 20, 1);
-  // Hair highlights
-  px(g, ox + 12, 1, hairH, 3, 1);
-  px(g, ox + 10, 2, hairH, 2, 1);
-  px(g, ox + 15, 3, hairH, 2, 1);
-  px(g, ox + 11, 4, hairH, 1, 1);
-  px(g, ox + 18, 2, hairH, 2, 1);
-  // Forehead highlight
-  px(g, ox + 11, 5, skinH, 10, 1);
+  px(g, ox + 7, 6, hair, 2, 1);  // hair comes down on sides
+  px(g, ox + 23, 6, hair, 2, 1);
+  // Hair highlights — subtle shine
+  px(g, ox + 11, 1, hairH, 4, 1);
+  px(g, ox + 10, 2, hairH, 3, 1);
+  px(g, ox + 14, 3, hairH, 3, 1);
+  px(g, ox + 17, 2, hairH, 3, 1);
+  px(g, ox + 12, 4, hairH, 2, 1);
 
   // ── FACE (rows 5-12) ──
   px(g, ox + 6, 6, hair, 3, 3);  // side hair left
