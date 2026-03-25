@@ -2614,25 +2614,24 @@ function generateMoreItems(scene: Phaser.Scene) {
 
   // --- item-window ---
   makeTexture(scene, 'item-window', TILE_SIZE, TILE_SIZE, (g) => {
-    // Frame (grey)
-    px(g, 3, 2, 0x808080, 10, 12);
-    px(g, 3, 2, 0x909090, 10, 1);
-    px(g, 3, 2, 0x909090, 1, 12);
-    px(g, 12, 2, 0x606060, 1, 12);
-    px(g, 3, 13, 0x606060, 10, 1);
-    // Cross bars
-    px(g, 7, 2, 0x808080, 1, 12);
-    px(g, 3, 7, 0x808080, 10, 1);
-    // Sky panes (light blue)
-    px(g, 4, 3, 0x80c0f0, 3, 4);
-    px(g, 8, 3, 0x80c0f0, 4, 4);
-    px(g, 4, 8, 0x70b0e0, 3, 5);
-    px(g, 8, 8, 0x70b0e0, 4, 5);
-    // Cloud in upper pane
-    px(g, 5, 4, 0xf0f0f0, 2, 1);
-    px(g, 9, 5, 0xf0f0f0, 2, 1);
-    // Light bar
-    px(g, 4, 3, 0xa0d8ff, 3, 1);
+    // Small window frame centered in tile (8x8 at offset 4,4)
+    // Outer frame (thin grey border)
+    px(g, 4, 4, 0x808890, 8, 1);  // top
+    px(g, 4, 11, 0x606870, 8, 1); // bottom
+    px(g, 4, 4, 0x707880, 1, 8);  // left
+    px(g, 11, 4, 0x606870, 1, 8); // right
+    // Cross bars dividing into 4 panes
+    px(g, 7, 4, 0x707880, 1, 8);  // vertical bar
+    px(g, 4, 7, 0x707880, 8, 1);  // horizontal bar
+    // Glass panes (light blue, 2x2 each)
+    px(g, 5, 5, 0x90d0f8, 2, 2);  // top-left pane
+    px(g, 8, 5, 0x80c8f0, 3, 2);  // top-right pane
+    px(g, 5, 8, 0x70b8e8, 2, 3);  // bottom-left pane
+    px(g, 8, 8, 0x68b0e0, 3, 3);  // bottom-right pane
+    // Tiny highlight on glass
+    px(g, 5, 5, 0xc0e8ff, 1, 1);  // glint top-left
+    // Sill
+    px(g, 4, 12, 0x909898, 8, 1);
   });
 
   // --- item-fridge ---

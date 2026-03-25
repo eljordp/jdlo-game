@@ -825,6 +825,18 @@ const ch1Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'She\'s been laying there for hours. Not a care in the world.' },
     { speaker: 'JP\'s Mind', text: 'Meanwhile I\'m out here counting bags.' },
   ],
+  ch1_setup: [
+    { speaker: 'JP\'s Mind', text: 'JP\'s setup. Dual monitors. Crypto charts on one, YouTube tutorials on the other.' },
+    { speaker: 'JP\'s Mind', text: 'This is where the hustle happens.' },
+  ],
+  ch1_closet: [
+    { speaker: 'JP\'s Mind', text: 'Clothes everywhere. Half designer, half thrift.' },
+    { speaker: 'JP\'s Mind', text: 'JP\'s style is "I have money but I don\'t want you to know how I got it."' },
+  ],
+  ch1_speaker: [
+    { speaker: 'JP\'s Mind', text: 'Bluetooth speaker playing the same playlist on repeat. Playboi Carti. Travis Scott.' },
+    { speaker: 'JP\'s Mind', text: 'The vibe never changes.' },
+  ],
 };
 
 // ─── Chapter 2 extras ──────────────────────────────────────────────────

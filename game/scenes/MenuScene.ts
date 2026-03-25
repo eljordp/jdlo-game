@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '../config';
 import { SaveSystem } from '../systems/SaveSystem';
 import { MusicSystem } from '../systems/MusicSystem';
+import { SoundEffects } from '../systems/SoundEffects';
 import { virtualInput } from '../../components/GameCanvas';
 
 type MenuState = 'main' | 'chapters' | 'settings';
@@ -287,11 +288,13 @@ export class MenuScene extends Phaser.Scene {
 
     this.selectedIndex = next;
     this.updateMenuVisuals();
+    SoundEffects.playBlip();
   }
 
   private confirmSelection() {
     const item = this.menuItems[this.selectedIndex];
     if (item && item.enabled) {
+      SoundEffects.playConfirm();
       item.action();
     }
   }

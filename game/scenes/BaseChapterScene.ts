@@ -8,6 +8,7 @@ import { EvolutionAnimation } from '../systems/EvolutionAnimation';
 import { ShowcaseFrame } from '../systems/ShowcaseFrame';
 import { MusicSystem } from '../systems/MusicSystem';
 import { SaveSystem } from '../systems/SaveSystem';
+import { SoundEffects } from '../systems/SoundEffects';
 import type { MapData } from '../data/maps';
 
 type NPCObject = {
@@ -38,6 +39,7 @@ export abstract class BaseChapterScene extends Phaser.Scene {
 
   private navArrows: Phaser.GameObjects.Text[] = [];
   private navArrowTweens: Phaser.Tweens.Tween[] = [];
+  private speechBubbles: Map<string, Phaser.GameObjects.Text> = new Map();
 
   abstract getMapData(): MapData;
   abstract getChapterDialogue(): { intro: DialogueLine[]; npcs: Record<string, DialogueLine[]> };
@@ -62,6 +64,7 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     this.collisionTiles = new Set();
     this.isMoving = false;
     this.frozen = false;
+    this.speechBubbles = new Map();
 
     // Clean up previous nav arrows
     for (const tween of this.navArrowTweens) tween.stop();
@@ -77,6 +80,28 @@ export abstract class BaseChapterScene extends Phaser.Scene {
 
     // Camera fade in
     this.cameras.main.fadeIn(1000, 0, 0, 0);
+
+    // Pokemon-style opening bars effect
+    const openTop = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 4, GAME_WIDTH, GAME_HEIGHT / 2, 0x000000)
+      .setScrollFactor(0).setDepth(999);
+    const openBottom = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT * 3 / 4, GAME_WIDTH, GAME_HEIGHT / 2, 0x000000)
+      .setScrollFactor(0).setDepth(999);
+    this.tweens.add({
+      targets: openTop,
+      y: -GAME_HEIGHT / 4,
+      duration: 800,
+      delay: 200,
+      ease: 'Quad.easeOut',
+      onComplete: () => openTop.destroy(),
+    });
+    this.tweens.add({
+      targets: openBottom,
+      y: GAME_HEIGHT + GAME_HEIGHT / 4,
+      duration: 800,
+      delay: 200,
+      ease: 'Quad.easeOut',
+      onComplete: () => openBottom.destroy(),
+    });
 
     // Set up input
     this.cursors = this.input.keyboard!.createCursorKeys();
@@ -532,12 +557,19 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     if (this.facing === 'left') facingX--;
     if (this.facing === 'right') facingX++;
 
+    // Clear all speech bubbles when interacting
+    for (const [key, bubble] of this.speechBubbles) {
+      bubble.destroy();
+      this.speechBubbles.delete(key);
+    }
+
     // Check NPCs first
     for (const npc of this.npcs) {
       const npcTileX = Math.round((npc.sprite.x - SCALED_TILE / 2) / SCALED_TILE);
       const npcTileY = Math.round((npc.sprite.y - SCALED_TILE / 2) / SCALED_TILE);
 
       if (npcTileX === facingX && npcTileY === facingY) {
+        SoundEffects.playBlip();
         this.dialogue.show(npc.dialogue);
         return;
       }
@@ -614,9 +646,28 @@ export abstract class BaseChapterScene extends Phaser.Scene {
 
   protected transitionToScene(sceneKey: string) {
     this.frozen = true;
-    this.cameras.main.fadeOut(800, 0, 0, 0);
-    this.cameras.main.once('camerafadeoutcomplete', () => {
-      this.scene.start(sceneKey);
+    SoundEffects.playDoorOpen();
+
+    // Pokemon-style bars closing in from top and bottom
+    const topBar = this.add.rectangle(GAME_WIDTH / 2, -GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000)
+      .setScrollFactor(0).setDepth(1000);
+    const bottomBar = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT + GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000)
+      .setScrollFactor(0).setDepth(1000);
+
+    this.tweens.add({
+      targets: topBar,
+      y: GAME_HEIGHT / 4,
+      duration: 600,
+      ease: 'Quad.easeIn',
+    });
+    this.tweens.add({
+      targets: bottomBar,
+      y: GAME_HEIGHT * 3 / 4,
+      duration: 600,
+      ease: 'Quad.easeIn',
+      onComplete: () => {
+        this.scene.start(sceneKey);
+      },
     });
   }
 
@@ -678,6 +729,42 @@ export abstract class BaseChapterScene extends Phaser.Scene {
       duration: 100,
       yoyo: true,
     });
+
+    // Show speech bubbles for nearby NPCs
+    this.updateSpeechBubbles();
+  }
+
+  private updateSpeechBubbles() {
+    const playerTileX = Math.round((this.player.x - SCALED_TILE / 2) / SCALED_TILE);
+    const playerTileY = Math.round((this.player.y - SCALED_TILE / 2) / SCALED_TILE);
+
+    for (const npc of this.npcs) {
+      const npcTileX = Math.round((npc.sprite.x - SCALED_TILE / 2) / SCALED_TILE);
+      const npcTileY = Math.round((npc.sprite.y - SCALED_TILE / 2) / SCALED_TILE);
+      const dist = Math.abs(playerTileX - npcTileX) + Math.abs(playerTileY - npcTileY);
+
+      if (dist <= 2 && !this.dialogue.isActive()) {
+        if (!this.speechBubbles.has(npc.id)) {
+          const bubble = this.add.text(npc.sprite.x, npc.sprite.y - 30, '...', {
+            fontFamily: '"Press Start 2P", monospace',
+            fontSize: '8px',
+            color: '#ffffff',
+            backgroundColor: '#000000aa',
+            padding: { x: 4, y: 2 },
+          }).setOrigin(0.5).setDepth(15);
+          this.speechBubbles.set(npc.id, bubble);
+        } else {
+          // Update position (NPC might be animated/moving)
+          const bubble = this.speechBubbles.get(npc.id)!;
+          bubble.setPosition(npc.sprite.x, npc.sprite.y - 30);
+        }
+      } else {
+        if (this.speechBubbles.has(npc.id)) {
+          this.speechBubbles.get(npc.id)!.destroy();
+          this.speechBubbles.delete(npc.id);
+        }
+      }
+    }
   }
 
   private checkTriggers(tileX: number, tileY: number) {

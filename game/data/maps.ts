@@ -222,6 +222,9 @@ export const beachMap: MapData = {
     { id: 'ch1_smoke',   x: 6,  y: 9,  type: 'examine', glow: true, sprite: 'item-joint' },
     { id: 'ch1_blunt',   x: 22, y: 6,  type: 'examine', glow: true, sprite: 'item-joint' },
     { id: 'ch1_bong',    x: 15, y: 5,  type: 'examine', glow: true, sprite: 'item-bong' },
+    { id: 'ch1_setup',   x: 11, y: 2,  type: 'examine', glow: true, sprite: 'item-tablet' },
+    { id: 'ch1_closet',  x: 13, y: 2,  type: 'examine', glow: true },
+    { id: 'ch1_speaker', x: 9,  y: 2,  type: 'examine', glow: true },
   ],
 };
 

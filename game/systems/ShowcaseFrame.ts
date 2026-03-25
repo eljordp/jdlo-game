@@ -1,4 +1,5 @@
 import { GAME_WIDTH, GAME_HEIGHT } from '../config';
+import { SoundEffects } from './SoundEffects';
 
 export interface ShowcaseData {
   title: string;
@@ -118,6 +119,8 @@ export class ShowcaseFrame {
     let countElapsed = 0;
     let counting = true;
     let canClose = false;
+    let lastCashSound = 0;
+    const cashSoundInterval = 250; // play cash ding every 250ms during count
 
     // Count-up timer
     const countTimer = scene.time.addEvent({
@@ -130,6 +133,12 @@ export class ShowcaseFrame {
         const eased = 1 - Math.pow(1 - progress, 3);
         const current = Math.floor(eased * targetAmount);
         revenueText.setText('$' + current.toLocaleString());
+
+        // Play cash ding periodically during count
+        if (countElapsed - lastCashSound >= cashSoundInterval && counting) {
+          SoundEffects.playCash();
+          lastCashSound = countElapsed;
+        }
 
         if (progress >= 1) {
           revenueText.setText(data.revenue);

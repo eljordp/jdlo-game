@@ -177,6 +177,21 @@ export class EndScene extends Phaser.Scene {
 
     this.tweens.add({ targets: dm, alpha: 1, duration: 800, delay: ctaDelay + 1200 });
 
+    // Share button
+    const shareBtn = this.add.text(GAME_WIDTH / 2, ctaY + 250, '[ SHARE YOUR JOURNEY ]', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '11px',
+      color: '#f0c040',
+    }).setOrigin(0.5).setAlpha(0).setInteractive({ useHandCursor: true });
+
+    shareBtn.on('pointerdown', () => {
+      this.shareGame();
+    });
+    shareBtn.on('pointerover', () => shareBtn.setColor('#ffdd66'));
+    shareBtn.on('pointerout', () => shareBtn.setColor('#f0c040'));
+
+    this.tweens.add({ targets: shareBtn, alpha: 1, duration: 800, delay: ctaDelay + 1500 });
+
     // Play again
     const restart = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 40, 'SPACE to play again', {
       fontFamily: '"Press Start 2P", monospace',
@@ -210,5 +225,71 @@ export class EndScene extends Phaser.Scene {
     this.input.on('pointerdown', () => {
       // Mobile tap to replay (only if tapping empty area, not a link)
     });
+  }
+
+  private shareGame() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1080;
+    canvas.height = 1080;
+    const ctx = canvas.getContext('2d')!;
+
+    // Dark background
+    ctx.fillStyle = '#0a0a1a';
+    ctx.fillRect(0, 0, 1080, 1080);
+
+    // Title
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 64px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('JDLO', 540, 200);
+
+    // Subtitle
+    ctx.fillStyle = '#f0c040';
+    ctx.font = '28px monospace';
+    ctx.fillText('A True Story', 540, 260);
+
+    // Stats
+    ctx.fillStyle = '#aaaacc';
+    ctx.font = '22px monospace';
+    ctx.fillText("I played through JP's story", 540, 400);
+    ctx.fillText('From Santa Barbara to the boardroom', 540, 440);
+
+    // CTA
+    ctx.fillStyle = '#f0c040';
+    ctx.font = '26px monospace';
+    ctx.fillText('Play it yourself:', 540, 600);
+    ctx.fillStyle = '#6688cc';
+    ctx.font = '24px monospace';
+    ctx.fillText('jdlo-game.vercel.app', 540, 650);
+
+    // @jdlo
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '20px monospace';
+    ctx.fillText('@jdlo', 540, 750);
+
+    // Try to share or download
+    canvas.toBlob((blob) => {
+      if (blob && navigator.share) {
+        const file = new File([blob], 'jdlo-game.png', { type: 'image/png' });
+        navigator.share({
+          title: 'JDLO | The Game',
+          text: "I just played through JP's story. From Santa Barbara to the boardroom.",
+          files: [file],
+        }).catch(() => {
+          this.downloadShare(blob);
+        });
+      } else if (blob) {
+        this.downloadShare(blob);
+      }
+    }, 'image/png');
+  }
+
+  private downloadShare(blob: Blob) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'jdlo-game.png';
+    a.click();
+    URL.revokeObjectURL(url);
   }
 }
