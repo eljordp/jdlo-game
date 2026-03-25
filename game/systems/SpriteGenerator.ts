@@ -44,6 +44,9 @@ function makeTexture(
   height: number,
   draw: (ctx: DrawContext) => void
 ) {
+  // Skip if texture already exists — prevents green/black placeholder squares
+  // when scenes restart and try to re-register the same canvas key
+  if (scene.textures.exists(key)) return;
   const canvas = document.createElement('canvas');
   canvas.width = width;
   canvas.height = height;
@@ -1377,17 +1380,17 @@ function generateTiles(scene: Phaser.Scene) {
     px(g, 4, 11, 0x606070, 8, 1);
   });
 
-  // -- Tractor --
+  // -- Tractor (D8 Cat Bulldozer — Caterpillar Yellow) --
   makeTexture(scene, 'tile-tractor', S, S, (g) => {
     // Body
-    g.fillStyle(0xc03030);
+    g.fillStyle(0xd0a020);
     g.fillRect(3, 3, 10, 6);
-    px(g, 4, 2, 0xd04040, 8, 1); // top
+    px(g, 4, 2, 0xe0b830, 8, 1); // top highlight
     // Cab / window
     g.fillStyle(0x80c0e0);
     g.fillRect(4, 3, 4, 3);
     // Engine/hood
-    g.fillStyle(0xa02828);
+    g.fillStyle(0xb08818);
     g.fillRect(9, 4, 4, 4);
     px(g, 13, 5, 0x808080, 1, 2); // exhaust
     // Big back wheel

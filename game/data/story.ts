@@ -1089,8 +1089,8 @@ const ch5Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'The prices kept going up because the work kept getting better.' },
   ],
   ch5_github: [
-    { speaker: 'JP\'s Mind', text: '32 repos on GitHub. Some abandoned. Some shipped.' },
-    { speaker: 'JP\'s Mind', text: 'Every one taught JP something.' },
+    { speaker: 'JP\'s Mind', text: '60+ repos on GitHub. Some abandoned. Most shipped.' },
+    { speaker: 'JP\'s Mind', text: 'Every one taught JP something. Every failure was a lesson. Every build was proof.' },
   ],
   ch5_stack: [
     { speaker: 'JP\'s Mind', text: 'Next.js. React. Tailwind. Supabase. Vercel. Claude.' },
