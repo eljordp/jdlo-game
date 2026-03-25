@@ -22,7 +22,7 @@ export class BootScene extends Phaser.Scene {
     // Check font immediately, then retry fast
     const checkFont = () => {
       if (document.fonts.check('12px "Press Start 2P"')) {
-        this.scene.start('IntroScene');
+        this.scene.start('MenuScene');
       } else {
         this.time.delayedCall(50, checkFont);
       }
@@ -33,7 +33,7 @@ export class BootScene extends Phaser.Scene {
     // Fallback — don't wait more than 1 second
     this.time.delayedCall(1000, () => {
       if (this.scene.isActive('BootScene')) {
-        this.scene.start('IntroScene');
+        this.scene.start('MenuScene');
       }
     });
   }

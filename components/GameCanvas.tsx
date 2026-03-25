@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import Phaser from "phaser";
 import { BootScene } from "@/game/scenes/BootScene";
+import { MenuScene } from "@/game/scenes/MenuScene";
 import { IntroScene } from "@/game/scenes/IntroScene";
 import { HomeScene } from "@/game/scenes/HomeScene";
 import { BeachScene } from "@/game/scenes/BeachScene";
@@ -82,6 +83,7 @@ export default function GameCanvas() {
       },
       scene: [
         BootScene,
+        MenuScene,
         IntroScene,
         HomeScene,
         BeachScene,

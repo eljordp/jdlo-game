@@ -7,6 +7,7 @@ import { InteractionSystem } from '../systems/InteractionSystem';
 import { EvolutionAnimation } from '../systems/EvolutionAnimation';
 import { ShowcaseFrame } from '../systems/ShowcaseFrame';
 import { MusicSystem } from '../systems/MusicSystem';
+import { SaveSystem } from '../systems/SaveSystem';
 import type { MapData } from '../data/maps';
 
 type NPCObject = {
@@ -152,6 +153,9 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     // Start background music
     const track = this.getMusicTrack();
     if (track) MusicSystem.play(track);
+
+    // Autosave progress
+    SaveSystem.saveChapter(this.scene.key);
   }
 
   private showChapterTitle() {
