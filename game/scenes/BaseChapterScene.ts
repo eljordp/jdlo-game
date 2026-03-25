@@ -462,6 +462,30 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     }
   }
 
+  protected playSmokingAnimation() {
+    // Create smoke particles above player for 3 seconds
+    const emitSmoke = () => {
+      const smoke = this.add.text(
+        this.player.x + (Math.random() * 10 - 5),
+        this.player.y - 25,
+        '~',
+        { fontFamily: 'monospace', fontSize: '14px', color: '#bbbbbb' }
+      ).setDepth(20).setAlpha(0.7);
+      this.tweens.add({
+        targets: smoke,
+        y: smoke.y - 40,
+        x: smoke.x + (Math.random() * 20 - 10),
+        alpha: 0,
+        duration: 1500,
+        onComplete: () => smoke.destroy(),
+      });
+    };
+    // Emit several puffs
+    for (let i = 0; i < 6; i++) {
+      this.time.delayedCall(i * 400, emitSmoke);
+    }
+  }
+
   protected handleInteract() {
     // If dialogue is active, advance it
     if (this.dialogue.isActive()) {
@@ -512,7 +536,9 @@ export abstract class BaseChapterScene extends Phaser.Scene {
         // Show dialogue from the chapter's NPC map (interactable IDs are stored there too)
         const lines = chapterDialogue.npcs[interactable.id];
         if (lines) {
-          this.dialogue.show(lines);
+          // Check if this is a smoking interaction
+          const isSmoking = interactable.id.includes('smoke') || interactable.id.includes('blunt') || interactable.id.includes('bong');
+          this.dialogue.show(lines, isSmoking ? () => this.playSmokingAnimation() : undefined);
           this.interactions.consume(interactable.id);
         }
         break;

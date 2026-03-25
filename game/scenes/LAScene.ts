@@ -200,9 +200,9 @@ export class LAScene extends Phaser.Scene {
           });
         }
 
-        // BMW (standing in for C8 Corvette) driving on road
+        // C8 Corvette cruising on the road
         const car = this.addObj(
-          this.add.sprite(cx + 100, GAME_HEIGHT - 60, 'car-bmw335i').setScale(SCALE).setFlipX(true)
+          this.add.sprite(cx + 100, GAME_HEIGHT - 60, 'car-corvette-c8').setScale(SCALE).setFlipX(true)
         );
         // Subtle bounce
         this.addTween({

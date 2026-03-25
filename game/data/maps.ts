@@ -528,8 +528,8 @@ export const operatorMap: MapData = {
     [ G, G, C, C, B, B, B, B, B, B, B, C, C, C, C, C, C, C, B, B, B, B, B, B, B, B, C, C, G, G ], // 2
     [ G, C, C, C, B, F, F, F, F, F, B, C, C, C, C, C, C, C, B, F, F, F, F, F, F, B, C, C, C, G ], // 3
     [ G, C, C, C, B, F, F, F, F, F, B, C, C, C, C, C, C, C, B, F, F, F, F, F, F, B, C, C, C, G ], // 4
-    [ G, C, C, C, B, F, F, F, F, F, B, C, C, E, C, C, E, C, B, F, F, M, F, F, F, B, C, C, C, G ], // 5
-    [ G, C, C, C, B, F, F, F, F, F, B, C, C, E, C, C, E, C, B, F, F, F, F, F, F, B, C, C, C, G ], // 6
+    [ G, C, C, C, B, F, F, F, F, F, B, C, C, C, C, C, C, C, B, F, F, M, F, F, F, B, C, C, C, G ], // 5
+    [ G, C, C, C, B, F, F, F, F, F, B, C, C, C, C, C, C, C, B, F, F, F, F, F, F, B, C, C, C, G ], // 6
     [ G, C, C, C, B, B, B, B, O, B, B, C, C, C, C, C, C, C, B, B, B, B, O, B, B, B, C, C, C, G ], // 7
     [ G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G ], // 8
     [ G, C, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, C, G ], // 9

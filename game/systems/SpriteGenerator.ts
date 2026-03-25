@@ -1735,6 +1735,173 @@ function generateBMW(scene: Phaser.Scene) {
   scene.textures.addCanvas('car-bmw335i', canvas);
 }
 
+// ─── CORVETTE C8 ──────────────────────────────────────────────────────
+// 48x32 top-down sprite — white/silver C8 Stingray, mid-engine, aggressive
+function generateCorvetteC8(scene: Phaser.Scene) {
+  if (scene.textures.exists('car-corvette-c8')) return;
+  const w = 48;
+  const h = 32;
+  const canvas = document.createElement('canvas');
+  canvas.width = w;
+  canvas.height = h;
+  const g = canvas.getContext('2d')!;
+  g.clearRect(0, 0, w, h);
+
+  const bodyMain = '#e0e0e8';
+  const bodyShadow = '#c8c8d0';
+  const bodyHighlight = '#f0f0f8';
+  const black = '#1a1a1e';
+  const darkGrey = '#303038';
+  const windowTint = '#101828';
+  const windowShine = '#1a2848';
+  const chrome = '#a0a0b0';
+  const headlight = '#d0e8ff';
+  const headlightBlue = '#80b0ff';
+  const taillight = '#ff2020';
+  const taillightDark = '#a01010';
+  const tire = '#181818';
+  const rim = '#808088';
+  const rimHighlight = '#a0a0a8';
+  const exhaust = '#505058';
+  const diffuser = '#0a0a0e';
+  const scoopDark = '#404048';
+
+  // === BODY SHELL (top-down, facing right) ===
+  // C8 is very low and wide with wedge proportions
+  // Main body — wider than BMW, more aggressive shape
+  g.fillStyle = bodyMain;
+  g.fillRect(4, 6, 40, 20);   // main body
+
+  // Wider rear haunches (C8 has huge rear fenders)
+  g.fillRect(4, 5, 16, 1);    // rear top widening
+  g.fillRect(4, 26, 16, 1);   // rear bottom widening
+  g.fillRect(6, 4, 12, 1);    // even wider rear
+  g.fillRect(6, 27, 12, 1);
+
+  // Front is narrower (mid-engine = short front)
+  g.fillStyle = bodyMain;
+  g.fillRect(42, 8, 4, 16);   // front nose
+  g.fillRect(44, 9, 2, 14);   // front tip narrower
+
+  // Rear section (left side, wider)
+  g.fillStyle = bodyMain;
+  g.fillRect(1, 8, 4, 16);    // rear overhang
+  g.fillRect(2, 7, 3, 18);    // rear width
+
+  // === BODY SHADING ===
+  g.fillStyle = bodyShadow;
+  g.fillRect(4, 24, 38, 2);   // bottom shadow line
+  g.fillRect(4, 6, 38, 1);    // top shadow line
+  g.fillRect(4, 10, 1, 12);   // rear side shadow
+
+  g.fillStyle = bodyHighlight;
+  g.fillRect(10, 7, 28, 1);   // top highlight streak
+  g.fillRect(10, 24, 28, 1);  // bottom highlight streak
+  g.fillRect(20, 8, 14, 1);   // center spine highlight
+
+  // === SIDE SCOOPS (C8 signature — behind doors) ===
+  g.fillStyle = scoopDark;
+  g.fillRect(17, 6, 4, 2);    // top side scoop
+  g.fillRect(17, 24, 4, 2);   // bottom side scoop
+  g.fillStyle = black;
+  g.fillRect(18, 6, 2, 1);    // scoop intake dark
+  g.fillRect(18, 25, 2, 1);
+
+  // === ROOF / WINDOWS (targa-style, black A-pillars) ===
+  g.fillStyle = windowTint;
+  g.fillRect(24, 10, 14, 12); // window area (pushed forward — mid-engine)
+  g.fillStyle = windowShine;
+  g.fillRect(25, 11, 6, 1);   // windshield glare
+  g.fillRect(25, 14, 4, 1);   // side window glare
+
+  // Black A-pillars (targa top look)
+  g.fillStyle = black;
+  g.fillRect(23, 10, 1, 12);  // rear window pillar
+  g.fillRect(30, 10, 1, 12);  // B-pillar
+  g.fillRect(38, 10, 1, 12);  // A-pillar (front)
+  // Targa bar across top
+  g.fillRect(28, 10, 3, 1);
+  g.fillRect(28, 21, 3, 1);
+
+  // === HEADLIGHTS (thin LED strip style — C8 signature) ===
+  g.fillStyle = headlight;
+  g.fillRect(44, 9, 2, 1);    // top LED strip thin
+  g.fillRect(44, 22, 2, 1);   // bottom LED strip thin
+  g.fillStyle = headlightBlue;
+  g.fillRect(45, 10, 1, 2);   // blue accent top
+  g.fillRect(45, 20, 1, 2);   // blue accent bottom
+  // DRL line extending back
+  g.fillStyle = headlight;
+  g.fillRect(42, 8, 4, 1);    // top DRL
+  g.fillRect(42, 23, 4, 1);   // bottom DRL
+
+  // === REAR — wide taillights + quad exhaust + diffuser ===
+  g.fillStyle = taillight;
+  g.fillRect(2, 7, 2, 4);     // top taillight
+  g.fillRect(2, 21, 2, 4);    // bottom taillight
+  g.fillStyle = taillightDark;
+  g.fillRect(2, 8, 1, 2);     // taillight depth
+  g.fillRect(2, 22, 1, 2);
+
+  // Black rear diffuser (big on C8)
+  g.fillStyle = diffuser;
+  g.fillRect(1, 12, 3, 8);    // center diffuser
+  g.fillRect(0, 13, 2, 6);    // deep diffuser
+
+  // Quad exhaust tips (center-exit on C8)
+  g.fillStyle = chrome;
+  g.fillRect(0, 11, 2, 2);    // top-left exhaust
+  g.fillRect(0, 13, 2, 2);    // top-right exhaust
+  g.fillRect(0, 19, 2, 2);    // bottom-left exhaust
+  g.fillRect(0, 21, 2, 2);    // bottom-right exhaust
+  g.fillStyle = exhaust;
+  g.fillRect(0, 12, 1, 1);    // exhaust openings
+  g.fillRect(0, 14, 1, 1);
+  g.fillRect(0, 20, 1, 1);
+  g.fillRect(0, 22, 1, 1);
+
+  // === TIRES + RIMS ===
+  // Front tires (narrower)
+  g.fillStyle = tire;
+  g.fillRect(36, 5, 6, 3);    // front-top tire
+  g.fillRect(36, 24, 6, 3);   // front-bottom tire
+  g.fillStyle = rim;
+  g.fillRect(38, 5, 2, 3);    // front-top rim
+  g.fillRect(38, 24, 2, 3);   // front-bottom rim
+  g.fillStyle = rimHighlight;
+  g.fillRect(39, 6, 1, 1);    // rim shine
+  g.fillRect(39, 25, 1, 1);
+
+  // Rear tires (much wider — C8 has 345s in the back)
+  g.fillStyle = tire;
+  g.fillRect(5, 3, 8, 4);     // rear-top tire (wider)
+  g.fillRect(5, 25, 8, 4);    // rear-bottom tire (wider)
+  g.fillStyle = rim;
+  g.fillRect(7, 3, 4, 4);     // rear-top rim
+  g.fillRect(7, 25, 4, 4);    // rear-bottom rim
+  g.fillStyle = rimHighlight;
+  g.fillRect(8, 4, 2, 2);     // rear rim shine
+  g.fillRect(8, 26, 2, 2);
+
+  // === SIDE MIRRORS ===
+  g.fillStyle = bodyMain;
+  g.fillRect(32, 5, 2, 2);    // top mirror
+  g.fillRect(32, 25, 2, 2);   // bottom mirror
+  g.fillStyle = bodyShadow;
+  g.fillRect(33, 5, 1, 1);
+  g.fillRect(33, 25, 1, 1);
+
+  // === SUBTLE STINGRAY BADGE AREA (center rear) ===
+  g.fillStyle = chrome;
+  g.fillRect(3, 15, 1, 2);    // tiny chrome badge hint
+
+  // === CENTER SPINE (C8 has a prominent center line) ===
+  g.fillStyle = bodyShadow;
+  g.fillRect(20, 15, 16, 2);  // center spine line
+
+  scene.textures.addCanvas('car-corvette-c8', canvas);
+}
+
 // ─── ITEM SPRITES ─────────────────────────────────────────────────────
 // 16x16 pixel art items placed on interactable tiles so players can see
 // what they're about to interact with.
@@ -2363,6 +2530,7 @@ export function generateAllSprites(scene: Phaser.Scene): void {
   generateUI(scene);
   generateHotTub(scene);
   generateBMW(scene);
+  generateCorvetteC8(scene);
   generateItems(scene);
   generateMoreItems(scene);
 }
