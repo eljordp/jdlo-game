@@ -817,17 +817,34 @@ export class JailScene extends BaseChapterScene {
       inputEnabled = false;
       dodgeActive = false;
 
-      const success = Math.random() < 0.5;
-      if (success) {
-        talkDebuff = true;
-        showText('JP talks the inmate down.\nEnemy attack weakened.', () => {
-          enemyTurn();
+      // Talk NEVER works in jail — you get slapped for trying
+      showText('JP: "Bro we don\'t gotta do this—"', () => {
+        showText('That gay ass shit don\'t work in here.', () => {
+          // Enemy gets a FREE hit — bitch slap
+          const slapDmg = 20;
+          jpHP = Math.max(0, jpHP - slapDmg);
+          updateHPBars();
+
+          // Slap animation
+          this.cameras.main.shake(300, 0.015);
+          const flash = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0xffffff)
+            .setScrollFactor(0).setDepth(710).setAlpha(0.4);
+          this.tweens.add({
+            targets: flash,
+            alpha: 0,
+            duration: 200,
+            onComplete: () => flash.destroy(),
+          });
+
+          showText(`Inmate slaps JP! ${slapDmg} damage!\n"I SAID DON'T TALK TO ME."`, () => {
+            if (jpHP <= 0) {
+              endBattle('lose');
+            } else {
+              enemyTurn();
+            }
+          });
         });
-      } else {
-        showText("The inmate doesn't want to hear it.", () => {
-          enemyTurn();
-        });
-      }
+      });
     };
 
     const doWalkAway = () => {
