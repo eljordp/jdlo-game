@@ -717,17 +717,98 @@ function generateAllNPCs(scene: Phaser.Scene) {
     0xd0a070
   );
 
-  // Sticker Smith client
+  // Sticker Smith client (legacy key kept for backward compat)
   generateNPC(
     scene,
     'npc_sticker',
-    0x803020,
+    0x181818,
+    'short',
+    0x209020,
+    0x30a030,
+    0x303840,
+    0x8a6a40,
+    0x705030,
+    (g) => {
+      // Black beard — fill chin/jaw area rows 5-7
+      px(g, 5, 5, 0x202020, 6, 1); // upper beard across lower face
+      px(g, 5, 6, 0x202020, 6, 1); // mid beard
+      px(g, 6, 7, 0x202020, 4, 1); // lower chin beard
+      px(g, 4, 5, 0x202020, 1, 2); // left jaw
+      px(g, 11, 5, 0x202020, 1, 2); // right jaw
+    }
+  );
+
+  // Sticker Smith — Indian with beard, green brand shirt (new key)
+  generateNPC(
+    scene,
+    'npc_sticker_smith',
+    0x181818, // dark hair
     'short',
     0x209020, // green brand shirt
     0x30a030,
     0x303840,
-    0xe0b080,
+    0x8a6a40, // brown skin
+    0x705030, // shadow
+    (g) => {
+      // Black beard — fill chin/jaw area rows 5-7
+      px(g, 5, 5, 0x202020, 6, 1); // upper beard across lower face
+      px(g, 5, 6, 0x202020, 6, 1); // mid beard
+      px(g, 6, 7, 0x202020, 4, 1); // lower chin beard
+      px(g, 4, 5, 0x202020, 1, 2); // left jaw
+      px(g, 11, 5, 0x202020, 1, 2); // right jaw
+    }
+  );
+
+  // Nolan — JP's homie, white skin, brown hair, green shirt, jeans
+  generateNPC(
+    scene,
+    'npc_nolan',
+    0x604830, // brown hair
+    'short',
+    0x40a050, // green shirt
+    0x50b060,
+    0x4060a0, // jeans
+    0xf0c890, // light skin
+    0xd0a870
+  );
+
+  // David — JP's homie, light brown skin, dark curly hair, red shirt
+  generateNPC(
+    scene,
+    'npc_david',
+    0x302020, // dark curly hair
+    'short',
+    0xc04040, // red shirt
+    0xd05050,
+    0x383840, // dark pants
+    0xe0b080, // light brown skin
     0xc09060
+  );
+
+  // Cooper — JP's homie, white skin, blonde hair, blue shirt, khakis
+  generateNPC(
+    scene,
+    'npc_cooper',
+    0xc0a050, // blonde hair
+    'short',
+    0x4060c0, // blue shirt
+    0x5070d0,
+    0xa09060, // khaki pants
+    0xf0c890, // white skin
+    0xd0a870
+  );
+
+  // DHL Client — professional, dark skin, DHL-ish yellow shirt
+  generateNPC(
+    scene,
+    'npc_dhl_client',
+    0x202020, // short dark hair
+    'short',
+    0xd0a020, // yellow/red DHL-ish shirt
+    0xe0b030,
+    0x303040, // dark pants
+    0xa08050, // dark skin
+    0x806838
   );
 
   // Mentor figure
@@ -765,17 +846,30 @@ function generateAllNPCs(scene: Phaser.Scene) {
     }
   );
 
-  // Malachi — business partner
+  // Malachi — business partner, man bun + glasses + navy suit
   generateNPC(
     scene,
     'npc_malachi',
     0x201818,
     'short',
-    0x2040a0, // blue button-up
-    0x3050b0,
-    0x303040,
+    0x1a2040, // dark navy suit jacket
+    0x222850,
+    0x1a1a2a, // dark suit pants
     0xc09060,
-    0xa07848
+    0xa07848,
+    (g) => {
+      // Man bun — extra hair stacked on top of head
+      px(g, 6, -1, 0x201818, 4, 1);
+      px(g, 7, -2, 0x201818, 2, 1);
+      // Glasses frames over eyes
+      px(g, 4, 4, 0xc0c0d0, 3, 1); // left lens frame
+      px(g, 9, 4, 0xc0c0d0, 3, 1); // right lens frame
+      px(g, 7, 4, 0xc0c0d0, 2, 1); // bridge
+      px(g, 4, 3, 0xc0c0d0, 1, 1); // left top corner
+      px(g, 11, 3, 0xc0c0d0, 1, 1); // right top corner
+      // White collar detail
+      px(g, 6, 7, 0xf0f0f0, 4, 1);
+    }
   );
 
   // Suit — big client

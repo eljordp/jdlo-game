@@ -188,8 +188,9 @@ export const beachMap: MapData = {
   spawns: {
     player: { x: 11, y: 9 },
     npcs: [
-      { id: 'ch1_homie1', x: 6,  y: 4,  sprite: 'npc_kid' },
-      { id: 'ch1_homie2', x: 16, y: 4,  sprite: 'npc_generic' },
+      { id: 'ch1_homie1', x: 6,  y: 4,  sprite: 'npc_nolan' },
+      { id: 'ch1_homie2', x: 16, y: 4,  sprite: 'npc_david' },
+      { id: 'ch1_cooper',  x: 5,  y: 2,  sprite: 'npc_cooper' },
       { id: 'ch1_girl1',  x: 20, y: 2,  sprite: 'npc_bikini1' },
       { id: 'ch1_girl2',  x: 26, y: 3,  sprite: 'npc_bikini2' },
       { id: 'ch1_girl3',  x: 20, y: 5,  sprite: 'npc_bikini1' },
@@ -392,19 +393,19 @@ export const tractorMap: MapData = {
     [ T, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, T ], // 1
     [ G, G, G, B, B, B, B, B, G, G, E, E, E, E, E, E, E, E, E, E, E, E, E, G, G, G, G, G ], // 2
     [ G, G, G, B, F, F, F, B, G, G, E, I, I, I, I, I, I, I, I, I, I, I, E, G, G, G, G, G ], // 3
-    [ G, G, G, B, F, F, M, B, G, G, E, I, I, I, I, I, I, I, I, I, I, I, E, G, G, G, G, G ], // 4
+    [ G, G, G, B, F, F, M, B, G, G, E, I, E, I, E, I, E, I, E, I, E, I, E, G, G, G, G, G ], // 4  vineyard row
     [ G, G, G, B, F, F, F, B, G, G, E, I, I, I, I, I, R, I, I, I, I, I, E, G, G, G, G, G ], // 5
-    [ G, G, G, B, B, O, B, B, G, G, E, I, I, I, I, I, I, I, I, I, I, I, E, G, G, G, G, G ], // 6
+    [ G, G, G, B, B, O, B, B, G, G, E, I, E, I, E, I, E, I, E, I, E, I, E, G, G, G, G, G ], // 6  vineyard row
     [ G, G, G, G, G, P, G, G, G, G, E, I, I, I, I, I, I, I, I, I, I, I, E, G, G, G, G, G ], // 7
-    [ G, G, G, G, G, P, G, G, G, G, E, I, I, I, I, I, I, I, I, I, I, I, E, G, G, T, G, G ], // 8
+    [ G, G, G, G, G, P, G, G, G, G, E, I, E, I, E, I, E, I, E, I, E, I, E, G, G, T, G, G ], // 8  vineyard row
     [ G, P, P, P, P, P, P, P, P, P, E, I, I, I, I, I, I, I, I, I, I, I, E, G, G, G, G, G ], // 9
     [ G, G, G, G, G, P, G, G, G, G, E, E, E, E, E, P, E, E, E, E, E, E, E, G, G, G, G, G ], // 10
     [ G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G ], // 11
     [ G, G, T, G, G, P, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, T, G, G ], // 12
     [ G, G, G, G, G, P, G, G, E, E, E, E, E, E, E, P, E, E, E, E, E, E, E, G, G, G, G, G ], // 13
-    [ G, G, G, G, G, P, G, G, E, I, I, I, I, I, I, P, I, I, I, I, I, I, E, G, G, G, G, G ], // 14
+    [ G, G, G, G, G, P, G, G, E, I, E, I, E, I, E, P, I, E, I, E, I, E, E, G, G, G, G, G ], // 14  vineyard row
     [ G, G, G, G, G, P, G, G, E, I, I, I, I, I, I, I, I, I, I, I, I, I, E, G, G, G, G, G ], // 15
-    [ G, G, G, G, G, P, G, G, E, I, I, I, I, I, I, I, I, I, I, I, I, I, E, G, G, G, G, G ], // 16
+    [ G, G, G, G, G, P, G, G, E, I, E, I, E, I, E, I, E, I, E, I, E, I, E, G, G, G, G, G ], // 16  vineyard row
     [ G, G, G, G, G, P, G, G, E, I, I, I, I, I, I, I, I, I, I, I, I, I, E, G, G, G, G, G ], // 17
     [ G, G, G, G, G, P, G, G, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, G, G, G, G, G ], // 18
     [ G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 19
@@ -432,6 +433,7 @@ export const tractorMap: MapData = {
     { id: 'ch4_paycheck', x: 24, y: 11, type: 'examine', glow: true, sprite: 'item-money' },
     { id: 'ch4_d8_seat', x: 15, y: 5, type: 'examine', glow: true },
     { id: 'ch4_crash', x: 17, y: 5, type: 'examine', glow: true },
+    { id: 'ch4_vineyard_row', x: 13, y: 7, type: 'examine', glow: true },
   ],
 };
 
@@ -461,12 +463,12 @@ export const comeUpMap: MapData = {
     [ G, G, G, G, P, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G ], // 14
     [ G, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, G ], // 15
     [ G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 16
-    [ G, G, B, B, B, B, B, P, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 17
-    [ G, G, B, F, F, F, B, P, G, G, G, G, T, G, G, G, G, G, G, T, G, G, G, T, G, G, G, G ], // 18
-    [ G, G, B, F, F, F, B, P, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 19
-    [ G, G, B, B, O, B, B, P, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 20
-    [ G, G, G, G, P, G, G, P, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 21
-    [ G, P, P, P, P, P, P, P, P, P, P, P, P, P, P, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 22
+    [ G, G, B, B, B, B, B, P, G, B, B, B, B, B, G, G, G, B, B, B, B, B, B, B, G, G, G, G ], // 17  print shop + DHL
+    [ G, G, B, F, F, F, B, P, G, B, F, F, F, B, G, G, G, B, F, F, D, F, F, B, G, G, G, G ], // 18
+    [ G, G, B, F, F, F, B, P, G, B, F, F, F, B, G, P, G, B, F, D, D, D, F, B, G, G, G, G ], // 19
+    [ G, G, B, B, O, B, B, P, G, B, B, O, B, B, G, P, G, B, B, B, O, B, B, B, G, G, G, G ], // 20
+    [ G, G, G, G, P, G, G, P, G, G, G, P, G, G, G, P, G, G, G, G, P, G, G, G, G, G, G, G ], // 21
+    [ G, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, G ], // 22
     [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, P, P, P, P, P, P, P, P, P, P, P, P, P, G ], // 23
   ],
   collisions: STANDARD_COLLISIONS,
@@ -474,9 +476,10 @@ export const comeUpMap: MapData = {
     player: { x: 7, y: 3 },
     npcs: [
       { id: 'ch5_first_client', x: 4,  y: 14, sprite: 'npc_client' },
-      { id: 'ch5_sticker',      x: 20, y: 14, sprite: 'npc_sticker' },
+      { id: 'ch5_sticker',      x: 20, y: 14, sprite: 'npc_sticker_smith' },
       { id: 'ch5_mentor',       x: 13, y: 18, sprite: 'npc_mentor' },
       { id: 'ch5_impressed',    x: 15, y: 8,  sprite: 'npc_biz' },
+      { id: 'ch5_dhl',          x: 15, y: 10, sprite: 'npc_dhl_client' },
     ],
   },
   triggers: [
@@ -489,6 +492,8 @@ export const comeUpMap: MapData = {
     { id: 'ch5_first_dollar', x: 6, y: 3, type: 'examine', glow: true, sprite: 'item-money' },
     { id: 'ch5_late_night', x: 7, y: 3, type: 'examine', glow: true },
     { id: 'ch5_review', x: 24, y: 9, type: 'examine', glow: true, sprite: 'item-phone' },
+    { id: 'ch5_print_shop', x: 11, y: 21, type: 'examine', glow: true },
+    { id: 'ch5_dhl_building', x: 20, y: 21, type: 'examine', glow: true },
   ],
 };
 
@@ -522,10 +527,10 @@ export const operatorMap: MapData = {
     [ G, C, C, B, B, B, B, B, B, O, B, B, B, C, P, C, C, G, G, G, P, P, P, G, G, G, G, C, C, G ], // 18
     [ G, C, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, G, G, G, G, G, G, G, G, G, G, C, C, G ], // 19
     [ G, C, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, C, G ], // 20
-    [ G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G ], // 21
-    [ G, G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G, G ], // 22
-    [ T, G, G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G, G, T ], // 23
-    [ T, T, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, T, T ], // 24
+    [ G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, B, B, B, B, B, B, B, B, B, C, C, C, G ], // 21  Pomaika'i office
+    [ G, G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, B, F, F, M, F, F, M, F, B, C, C, G, G ], // 22
+    [ T, G, G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, B, F, F, F, F, F, F, F, B, C, G, G, T ], // 23
+    [ T, T, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, B, B, B, B, O, B, B, B, B, G, G, T, T ], // 24
   ],
   collisions: STANDARD_COLLISIONS,
   spawns: {
@@ -545,6 +550,7 @@ export const operatorMap: MapData = {
     { id: 'ch6_vegas', x: 5, y: 8, type: 'examine', glow: true },
     { id: 'ch6_team', x: 11, y: 14, type: 'examine', glow: true, sprite: 'item-phone' },
     { id: 'ch6_mirror', x: 5, y: 22, type: 'examine', glow: true },
+    { id: 'ch6_pomaikai_office', x: 21, y: 23, type: 'examine', glow: true },
   ],
 };
 
