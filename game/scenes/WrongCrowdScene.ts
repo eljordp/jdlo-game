@@ -74,6 +74,14 @@ export class WrongCrowdScene extends BaseChapterScene {
   }
 
   protected handleInteractable(interactable: { id: string; type: string; consumed?: boolean }) {
+    // Car interaction — driving cutscene
+    if (interactable.id === 'ch2_car') {
+      this.frozen = true;
+      this.interactions.consume(interactable.id);
+      this.playDrivingCutscene();
+      return;
+    }
+
     if (interactable.id === 'ch2_sale' && !this.raidTriggered) {
       this.raidTriggered = true;
       const lines = this.getChapterDialogue().npcs['ch2_sale'];
@@ -84,6 +92,105 @@ export class WrongCrowdScene extends BaseChapterScene {
       return;
     }
     super.handleInteractable(interactable);
+  }
+
+  private playDrivingCutscene() {
+    // Fade to black for driving cutscene
+    this.cameras.main.fadeOut(600, 0, 0, 0);
+    this.cameras.main.once('camerafadeoutcomplete', () => {
+      // Create driving overlay
+      const overlay = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x101018)
+        .setScrollFactor(0).setDepth(500);
+
+      // Road scrolling
+      const roadLines: Phaser.GameObjects.Rectangle[] = [];
+      for (let i = 0; i < 8; i++) {
+        const line = this.add.rectangle(
+          200 + i * 160, GAME_HEIGHT / 2 + 40,
+          40, 6, 0xf0c040
+        ).setScrollFactor(0).setDepth(501);
+        roadLines.push(line);
+
+        this.tweens.add({
+          targets: line,
+          x: line.x - 160,
+          duration: 400,
+          repeat: -1,
+        });
+      }
+
+      // Road surface
+      this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 40, GAME_WIDTH, 80, 0x303038)
+        .setScrollFactor(0).setDepth(500);
+
+      // Re-add road lines on top
+      roadLines.forEach(l => l.setDepth(501));
+
+      // BMW driving
+      const bmw = this.add.sprite(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 30, 'car-bmw335i')
+        .setScale(SCALE).setScrollFactor(0).setDepth(502);
+
+      // Slight bounce
+      this.tweens.add({
+        targets: bmw,
+        y: GAME_HEIGHT / 2 + 34,
+        duration: 300,
+        yoyo: true,
+        repeat: -1,
+      });
+
+      // City lights passing
+      for (let i = 0; i < 15; i++) {
+        const light = this.add.rectangle(
+          Math.random() * GAME_WIDTH,
+          GAME_HEIGHT / 2 - 60 - Math.random() * 120,
+          3, 4 + Math.random() * 8,
+          [0xf0c040, 0x40a0f0, 0xf06040][Math.floor(Math.random() * 3)]
+        ).setScrollFactor(0).setDepth(501).setAlpha(0.4);
+
+        this.tweens.add({
+          targets: light,
+          x: light.x - 300,
+          duration: 800 + Math.random() * 400,
+          repeat: -1,
+        });
+      }
+
+      // Driving text
+      const text1 = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 160, 'Driving down the block...', {
+        fontFamily: '"Press Start 2P", monospace',
+        fontSize: '14px',
+        color: '#ffffff',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(503).setAlpha(0);
+
+      this.tweens.add({ targets: text1, alpha: 1, duration: 600, delay: 500 });
+
+      const text2 = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 120, 'Two zips in the jacket. Same routine.', {
+        fontFamily: '"Press Start 2P", monospace',
+        fontSize: '11px',
+        color: '#aaaacc',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(503).setAlpha(0);
+
+      this.tweens.add({ targets: text2, alpha: 1, duration: 600, delay: 1200 });
+
+      // After 3 seconds, teleport player to the buyer's block
+      this.time.delayedCall(3500, () => {
+        // Clean up driving scene
+        overlay.destroy();
+        roadLines.forEach(l => l.destroy());
+        bmw.destroy();
+        text1.destroy();
+        text2.destroy();
+
+        // Move player to the buyer's neighborhood
+        this.player.setPosition(
+          18 * SCALED_TILE + SCALED_TILE / 2,
+          19 * SCALED_TILE + SCALED_TILE / 2
+        );
+        this.cameras.main.fadeIn(800, 0, 0, 0);
+        this.frozen = false;
+      });
+    });
   }
 
   // Also trigger raid if player walks into the sale area
