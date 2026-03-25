@@ -9,7 +9,7 @@ export class JailScene extends BaseChapterScene {
   constructor() {
     super({ key: 'JailScene' });
     this.chapterTitle = 'Chapter 4: Locked Up';
-    this.nextScene = 'TractorScene';
+    this.nextScene = 'ReleaseScene';
     this.requiredInteractionId = 'ch3_bed';
   }
 
@@ -1072,7 +1072,7 @@ export class JailScene extends BaseChapterScene {
           this.frozen = false;
           this.requiredDone = true;
           // Transition to TractorScene
-          this.transitionToScene('TractorScene');
+          this.transitionToScene('ReleaseScene');
         },
       });
       return;

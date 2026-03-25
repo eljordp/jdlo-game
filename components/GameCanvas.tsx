@@ -14,6 +14,7 @@ import { TractorScene } from "@/game/scenes/TractorScene";
 import { ComeUpScene } from "@/game/scenes/ComeUpScene";
 import { LAScene } from "@/game/scenes/LAScene";
 import { OperatorScene } from "@/game/scenes/OperatorScene";
+import { ReleaseScene } from "@/game/scenes/ReleaseScene";
 import { EndScene } from "@/game/scenes/EndScene";
 import { TransitionScene } from "@/game/scenes/TransitionScene";
 import { GAME_WIDTH, GAME_HEIGHT } from "@/game/config";
@@ -91,6 +92,7 @@ export default function GameCanvas() {
         WrongCrowdScene,
         CourtScene,
         JailScene,
+        ReleaseScene,
         TractorScene,
         ComeUpScene,
         LAScene,

@@ -360,11 +360,7 @@ export const chapter3NPCs: NPCData[] = [
 ];
 
 export const chapter3OutroText: string[] = [
-  'I knew it.',
-  'God showed.',
-  'The truth always prevails.',
-  'The doors opened. Jordi walked out a different person.',
-  'Not because jail changed him. Because he changed himself.',
+  '...',
 ];
 
 // ─── Chapter 4: Caymus Vineyards ─────────────────────────────────────
