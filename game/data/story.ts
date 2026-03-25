@@ -66,7 +66,14 @@ export const chapter0NPCs: NPCData[] = [
       { speaker: 'Pops', text: 'You been on that computer all day.' },
       { speaker: 'JP', text: 'I\'m looking at crypto.' },
       { speaker: 'Pops', text: 'Crypto? Just don\'t lose your shirt.' },
-      { speaker: 'JP', text: 'I won\'t.' },
+      { speaker: 'JP', text: '', choices: [
+        { text: '"I won\'t. I\'ve been studying it."', next: [
+          { speaker: 'Pops', text: 'Studying. That\'s good. Just don\'t bet the house.' },
+        ]},
+        { text: '"I don\'t really know what I\'m doing yet."', next: [
+          { speaker: 'Pops', text: 'At least you\'re honest about it. Most people aren\'t.' },
+        ]},
+      ]},
       { speaker: 'Pops', text: 'Whatever you do, just do it all the way. Don\'t half-ass it.' },
     ],
   },
@@ -79,6 +86,14 @@ export const chapter0NPCs: NPCData[] = [
       { speaker: 'Mom', text: 'Those college letters are still on the counter.' },
       { speaker: 'JP', text: 'I\'m not going, Mom.' },
       { speaker: 'Mom', text: 'You got accepted to three schools, Jordan.' },
+      { speaker: 'JP', text: '', choices: [
+        { text: '"I can learn more on my own, Mom."', next: [
+          { speaker: 'Mom', text: 'You sound just like your father.' },
+        ]},
+        { text: '"I know it\'s hard to understand."', next: [
+          { speaker: 'Mom', text: '...I just want you to have options, Jordan.' },
+        ]},
+      ]},
       { speaker: 'JP', text: 'I know. But I\'m not spending forty thousand a year for something I can learn myself.' },
       { speaker: 'Mom', text: '...' },
       { speaker: 'Narrator', text: 'She walks away. She doesn\'t agree but she\'s done arguing.' },
@@ -138,6 +153,14 @@ export const chapter1NPCs: NPCData[] = [
       { speaker: 'JP', text: 'Bet. Same guy?' },
       { speaker: 'Nolan', text: 'Yeah. Easy money.' },
       { speaker: 'Narrator', text: 'They talk like this is normal. Because it is.' },
+      { speaker: 'Nolan', text: 'You trying to match on this next pack?', choices: [
+        { text: '"Yeah, I\'m in."', next: [
+          { speaker: 'Nolan', text: 'That\'s what I like to hear. We eating this week.' },
+        ]},
+        { text: '"I don\'t know man. Getting tired of this."', next: [
+          { speaker: 'Nolan', text: 'Tired? Bro we just getting started. Don\'t punk out on me.' },
+        ]},
+      ]},
     ],
   },
   {
@@ -180,9 +203,15 @@ export const chapter1NPCs: NPCData[] = [
     sprite: 'npc_bikini2',
     dialogue: [
       { speaker: 'Girl', text: 'You got a light?' },
-      { speaker: 'JP', text: 'Yeah here.' },
-      { speaker: 'Girl', text: 'Thanks. You live here?' },
-      { speaker: 'JP', text: 'For now.' },
+      { speaker: 'JP', text: '', choices: [
+        { text: '"Yeah, here."', next: [
+          { speaker: 'Girl', text: 'Thanks. You live here?' },
+          { speaker: 'JP', text: 'For now.' },
+        ]},
+        { text: '"Nah."', next: [
+          { speaker: 'Girl', text: 'Whatever.' },
+        ]},
+      ]},
     ],
   },
   {
@@ -231,9 +260,15 @@ export const chapter2NPCs: NPCData[] = [
     y: 21,
     sprite: 'npc_shady',
     dialogue: [
-      { speaker: 'Lookout', text: 'You JP?' },
-      { speaker: 'JP', text: 'Yeah.' },
-      { speaker: 'Lookout', text: 'He\'s inside. Make it quick.' },
+      { speaker: '???', text: 'You JP?' },
+      { speaker: 'JP', text: '', choices: [
+        { text: '"Yeah. He inside?"', next: [
+          { speaker: '???', text: 'Yeah. Make it quick.' },
+        ]},
+        { text: '"Who\'s asking?"', next: [
+          { speaker: '???', text: 'Relax. He\'s inside. Go.' },
+        ]},
+      ]},
     ],
   },
   {
@@ -274,6 +309,14 @@ export const chapter3NPCs: NPCData[] = [
       { speaker: 'JP', text: 'Yeah.' },
       { speaker: 'OG', text: 'I been here three times. Don\'t be like me.' },
       { speaker: 'OG', text: 'Most dudes in here had one moment where they could\'ve walked away. They didn\'t.' },
+      { speaker: 'OG', text: 'What about you? What was your moment?', choices: [
+        { text: '"I should\'ve stayed home."', next: [
+          { speaker: 'OG', text: 'Yeah. But you didn\'t. So now what?' },
+        ]},
+        { text: '"I don\'t know. It all happened so fast."', next: [
+          { speaker: 'OG', text: 'It always does. The smart ones learn from it. The rest come back.' },
+        ]},
+      ]},
       { speaker: 'OG', text: 'When you get out — and you will — don\'t come back. That\'s the only thing that matters.' },
     ],
   },
@@ -329,7 +372,14 @@ export const chapter4NPCs: NPCData[] = [
       { speaker: 'Chuck', text: 'You show up on time. That already puts you ahead of the last three guys.' },
       { speaker: 'JP', text: 'I just wanna work.' },
       { speaker: 'Chuck', text: 'Good. That D8 Cat needs to clear the east block by noon. Cab Sauv vines going in next week.' },
-      { speaker: 'JP', text: 'I\'ll figure it out.' },
+      { speaker: 'Chuck', text: 'Think you can handle it?', choices: [
+        { text: '"I\'ll figure it out."', next: [
+          { speaker: 'Chuck', text: 'That\'s what I like to hear.' },
+        ]},
+        { text: '"Honestly? I\'d rather be doing something else."', next: [
+          { speaker: 'Chuck', text: 'Wouldn\'t we all. But this is what pays the bills.' },
+        ]},
+      ]},
       { speaker: 'Chuck', text: 'This is Caymus. We don\'t cut corners. The grapes don\'t lie and neither does the land. Ask if you\'re stuck.' },
     ],
   },
@@ -520,9 +570,14 @@ export const chapter6NPCs: NPCData[] = [
     dialogue: [
       { speaker: 'Malachi', text: 'JP. That dashboard you built for the team — everyone\'s using it.' },
       { speaker: 'JP', text: 'Good. That was the point.' },
-      { speaker: 'Malachi', text: 'I got us a meeting with a new client. Big one. You ready?' },
-      { speaker: 'JP', text: 'Send me the details. I\'ll have the proposal ready by morning.' },
-      { speaker: 'Malachi', text: 'That\'s why you\'re COO, bro.' },
+      { speaker: 'Malachi', text: 'Big meeting tomorrow. New client. You ready?', choices: [
+        { text: '"Always ready."', next: [
+          { speaker: 'Malachi', text: 'That\'s why you\'re COO, bro.' },
+        ]},
+        { text: '"Send me the details. I\'ll have the proposal by morning."', next: [
+          { speaker: 'Malachi', text: 'By morning? You\'re insane. That\'s why this works.' },
+        ]},
+      ]},
     ],
   },
   {
@@ -531,11 +586,17 @@ export const chapter6NPCs: NPCData[] = [
     y: 3,
     sprite: 'npc_suit',
     dialogue: [
-      { speaker: 'Enterprise Client', text: 'We need a full system. Website. AI receptionist. CRM. Booking.' },
-      { speaker: 'JP', text: 'I can have a working demo by end of week.' },
-      { speaker: 'Enterprise Client', text: 'End of week? Our last vendor quoted eight weeks.' },
-      { speaker: 'JP', text: 'I\'m not your last vendor.' },
-      { speaker: 'Enterprise Client', text: 'Clearly. Let\'s talk numbers.' },
+      { speaker: 'Client', text: 'We need the full stack. Website, CRM, AI receptionist, booking.', choices: [
+        { text: '"End of week."', next: [
+          { speaker: 'Client', text: 'End of week?! Our last vendor quoted eight weeks.' },
+          { speaker: 'JP', text: 'I\'m not your last vendor.' },
+        ]},
+        { text: '"Tell me more about the business first."', next: [
+          { speaker: 'Client', text: 'Smart. Most devs just start coding without understanding the problem.' },
+          { speaker: 'JP', text: 'That\'s why they take eight weeks.' },
+        ]},
+      ]},
+      { speaker: 'Client', text: 'Clearly. Let\'s talk numbers.' },
     ],
   },
   {
@@ -544,10 +605,16 @@ export const chapter6NPCs: NPCData[] = [
     y: 7,
     sprite: 'npc_whale',
     dialogue: [
-      { speaker: 'Big Player', text: 'JP, that automation you set up saved us twenty hours a week. Minimum.' },
-      { speaker: 'JP', text: 'Appreciate that. How\'s the revenue looking?' },
-      { speaker: 'Big Player', text: 'We did four hundred K last month. Best month yet.' },
-      { speaker: 'JP', text: 'Let me show you what else we can automate.' },
+      { speaker: 'Big Player', text: 'That automation saved us twenty hours a week. What else can you do?', choices: [
+        { text: '"What do you need?"', next: [
+          { speaker: 'Big Player', text: 'I need someone who sees the whole system. Not just pieces.' },
+          { speaker: 'JP', text: 'That\'s literally what I do.' },
+        ]},
+        { text: '"I can automate your entire pipeline."', next: [
+          { speaker: 'Big Player', text: 'The whole thing? What would that cost?' },
+          { speaker: 'JP', text: 'Less than what it\'s costing you now.' },
+        ]},
+      ]},
       { speaker: 'Big Player', text: 'This is why I keep you close, man. You see the system before anyone explains it.' },
       { speaker: 'JP', text: 'Pattern recognition. That\'s the edge.' },
     ],
@@ -1051,12 +1118,16 @@ const ch3InmateDialogue: Record<string, DialogueLine[]> = {
     { speaker: 'Inmate', text: 'You\'re smart not to talk much. Just do your time and get out.' },
   ],
   ch3_inmate2: [
-    { speaker: 'Tatted Inmate', text: 'Yo new fish. You look stressed.' },
-    { speaker: 'Tatted Inmate', text: 'I got something that\'ll take the edge off. Just a little something. Everybody does it in here.' },
-    { speaker: 'JP', text: 'Nah, I\'m good.' },
-    { speaker: 'Tatted Inmate', text: 'For real? You sure? It makes the time go by, trust me.' },
-    { speaker: 'JP', text: 'I said I\'m good.' },
-    { speaker: 'Tatted Inmate', text: 'Suit yourself, homie. Offer\'s always open.' },
+    { speaker: 'Inmate', text: 'Ayo new fish. You want something to take the edge off?', choices: [
+      { text: '"Nah. I\'m good."', next: [
+        { speaker: 'Inmate', text: 'Suit yourself.' },
+        { speaker: 'JP\'s Mind', text: 'Old JP would have said yes. Not anymore.' },
+      ]},
+      { text: '"I don\'t do that anymore."', next: [
+        { speaker: 'Inmate', text: 'Anymore? So you USED to. Interesting.' },
+        { speaker: 'JP\'s Mind', text: 'He\'s trying to get in my head. Not today.' },
+      ]},
+    ]},
   ],
   ch3_inmate3: [
     { speaker: 'Big Inmate', text: 'You see that dude at lunch? Tried to get tough with me.' },
