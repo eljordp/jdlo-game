@@ -17,4 +17,19 @@ export class OperatorScene extends BaseChapterScene {
   getChapterDialogue(): { intro: DialogueLine[]; npcs: Record<string, DialogueLine[]> } {
     return operatorDialogue;
   }
+
+  getShowcaseData(): Record<string, { title: string; description: string; revenue: string }> {
+    return {
+      ch6_dashboard: {
+        title: "Pomaika'i Team Dashboard",
+        description: 'Full ops dashboard. Built in one session. Whole team uses it daily.',
+        revenue: 'COO',
+      },
+      ch6_portfolio: {
+        title: 'The Portfolio',
+        description: '6+ clients. Websites, AI systems, sales ops. All self-taught in 5 months.',
+        revenue: '$10K+/mo',
+      },
+    };
+  }
 }
