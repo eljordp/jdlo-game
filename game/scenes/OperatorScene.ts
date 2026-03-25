@@ -21,12 +21,12 @@ export class OperatorScene extends BaseChapterScene {
 
   create() {
     super.create();
-    // Exit at 14,24
-    this.addNavArrow(14, 23, 'The End');
+    // Exit at home zone — bottom of the map
+    this.addNavArrow(34, 33, 'The End');
   }
 
   protected getObjectiveHint(): string {
-    return 'You made it. Look around. Head to the end.';
+    return 'LA. Vegas. Home. Explore it all. Head south to the end.';
   }
 
   getMapData(): MapData {

@@ -32,7 +32,7 @@ export abstract class BaseChapterScene extends Phaser.Scene {
   protected isMoving = false;
   protected facing: 'down' | 'up' | 'left' | 'right' = 'down';
   protected frozen = false;
-  protected triggers: { x: number; y: number; action: string; target?: string }[] = [];
+  protected triggers: { x: number; y: number; action: string; target?: string; data?: Record<string, string> }[] = [];
   protected mapWidth = 0;
   protected mapHeight = 0;
   protected chapterTitle = '';
@@ -659,7 +659,7 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     }
   }
 
-  protected transitionToScene(sceneKey: string) {
+  protected transitionToScene(sceneKey: string, sceneData?: Record<string, string>) {
     this.frozen = true;
     SoundEffects.playDoorOpen();
     Analytics.trackChapterComplete(this.scene.key);
@@ -682,7 +682,7 @@ export abstract class BaseChapterScene extends Phaser.Scene {
       duration: 600,
       ease: 'Quad.easeIn',
       onComplete: () => {
-        this.scene.start(sceneKey);
+        this.scene.start(sceneKey, sceneData);
       },
     });
   }
@@ -788,7 +788,7 @@ export abstract class BaseChapterScene extends Phaser.Scene {
       if (trigger.x === tileX && trigger.y === tileY) {
         if (trigger.action === 'scene' && trigger.target) {
           if (!this.requiredInteractionId || this.requiredDone) {
-            this.transitionToScene(trigger.target);
+            this.transitionToScene(trigger.target, trigger.data);
           } else {
             this.dialogue.show([{ text: 'There\'s something you need to do first...' }]);
           }

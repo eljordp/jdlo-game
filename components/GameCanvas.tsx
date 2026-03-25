@@ -15,6 +15,7 @@ import { ComeUpScene } from "@/game/scenes/ComeUpScene";
 import { LAScene } from "@/game/scenes/LAScene";
 import { OperatorScene } from "@/game/scenes/OperatorScene";
 import { EndScene } from "@/game/scenes/EndScene";
+import { TransitionScene } from "@/game/scenes/TransitionScene";
 import { GAME_WIDTH, GAME_HEIGHT } from "@/game/config";
 import { MusicSystem } from "@/game/systems/MusicSystem";
 
@@ -95,6 +96,7 @@ export default function GameCanvas() {
         LAScene,
         OperatorScene,
         EndScene,
+        TransitionScene,
       ],
     };
 

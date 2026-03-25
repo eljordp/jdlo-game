@@ -4,7 +4,8 @@
 
 // ─── Types ─────────────────────────────────────────────────────────────
 
-export type DialogueLine = { speaker?: string; text: string };
+export type DialogueChoice = { text: string; next?: DialogueLine[] };
+export type DialogueLine = { speaker?: string; text: string; choices?: DialogueChoice[] };
 
 export type NPCData = {
   id: string;
@@ -257,6 +258,7 @@ export const chapter2OutroText: string[] = [
 
 export const chapter3IntroText: string[] = [
   'Chapter 4 — Locked Up',
+  '9 months. Behind bars.',
   '365 days. A bed, a toilet, and time.',
   'What you do with it is on you.',
 ];
@@ -382,8 +384,19 @@ export const chapter5NPCs: NPCData[] = [
     y: 4,
     sprite: 'npc_client',
     dialogue: [
-      { speaker: 'Small Biz Owner', text: 'So you can really build me a website? How much?' },
-      { speaker: 'JP', text: 'Three hundred. I\'ll have it done in a week.' },
+      { speaker: 'Small Biz Owner', text: 'So you can really build me a website?',
+        choices: [
+          { text: 'Yeah. And it\'ll be better than anything you\'ve seen.',
+            next: [
+              { speaker: 'Small Biz Owner', text: 'Ha. Confident. I like that.' },
+            ] },
+          { text: 'I can try. I\'m still learning.',
+            next: [
+              { speaker: 'Small Biz Owner', text: 'At least you\'re honest.' },
+            ] },
+        ] },
+      { speaker: 'Small Biz Owner', text: 'How much?' },
+      { speaker: 'JP', text: '$300.' },
       { speaker: 'Small Biz Owner', text: 'Three hundred?? My last quote was four thousand.' },
       { speaker: 'JP', text: 'Their quote. My price. And mine will look better.' },
       { speaker: 'Small Biz Owner', text: 'Alright, let\'s do it.' },
@@ -397,8 +410,18 @@ export const chapter5NPCs: NPCData[] = [
     dialogue: [
       { speaker: 'Sticker Smith', text: 'JP, this site is clean. Like, actually clean.' },
       { speaker: 'JP', text: 'Told you I\'d handle it.' },
-      { speaker: 'Sticker Smith', text: 'You did the Google Business thing too? We\'re getting calls now.' },
-      { speaker: 'JP', text: 'That was week one. Wait till we set up the marketing.' },
+      { speaker: 'Sticker Smith', text: 'We\'re getting calls now. How much for the full marketing setup?',
+        choices: [
+          { text: '$1,000. Full package.',
+            next: [
+              { speaker: 'JP', text: 'Website, Google Business, SEO, the whole thing.' },
+            ] },
+          { text: 'Let me think about it and get back to you.',
+            next: [
+              { speaker: 'JP', text: 'I want to make sure I scope it right.' },
+            ] },
+        ] },
+      { speaker: 'Sticker Smith', text: 'Deal.' },
       { speaker: 'Sticker Smith', text: 'Bro, you\'re different. Most people just talk.' },
     ],
   },
@@ -434,9 +457,19 @@ export const chapter5NPCs: NPCData[] = [
     y: 10,
     sprite: 'npc_dhl_client',
     dialogue: [
-      { speaker: 'DHL Manager', text: 'The translator app is saving us hours every shift.' },
-      { speaker: 'JP', text: 'That was the whole point.' },
-      { speaker: 'DHL Manager', text: 'Our warehouse team actually understands the safety protocols now.' },
+      { speaker: 'DHL Manager', text: 'We need a translator app for the warehouse.',
+        choices: [
+          { text: 'I can have a demo by end of week.',
+            next: [
+              { speaker: 'JP', text: 'I\'ll scope it tonight and have something running by Friday.' },
+            ] },
+          { text: 'That sounds complicated. Let me look into it.',
+            next: [
+              { speaker: 'JP', text: 'Give me a day to research. I\'ll figure it out.' },
+            ] },
+        ] },
+      { speaker: 'DHL Manager', text: 'We\'ll pay whatever it takes.' },
+      { speaker: 'DHL Manager', text: 'Our warehouse team needs to understand the safety protocols. Lives depend on it.' },
       { speaker: 'JP', text: 'Enterprise problems, enterprise solutions.' },
     ],
   },
@@ -471,8 +504,8 @@ export const chapter5OutroText: string[] = [
 
 export const chapter6IntroText: string[] = [
   'Operator Mode',
-  'COO at Pomaika\'i Co. Office Kult. Enterprise clients. Vegas meetings.',
-  'The kid from Santa Barbara was gone. The operator showed up.',
+  'LA. Vegas. Home.',
+  'Full circle.',
 ];
 
 export const chapter6NPCs: NPCData[] = [
@@ -559,6 +592,75 @@ export const chapter6NPCs: NPCData[] = [
     dialogue: [
       { speaker: 'Team Member', text: 'JP, the dashboard you built is saving us 10 hours a week minimum.' },
       { speaker: 'JP', text: 'That\'s the point. Automate the boring stuff so you can focus on closing.' },
+    ],
+  },
+  {
+    id: 'ch6_vegas_contact',
+    x: 12,
+    y: 26,
+    sprite: 'npc_suit',
+    dialogue: [
+      { speaker: 'Vegas Contact', text: 'JP. We heard about the Pomaika\'i system. Word travels fast in this town.' },
+      { speaker: 'JP', text: 'Good. I want it to.' },
+      { speaker: 'Vegas Contact', text: 'We\'ve got three properties that need what you built. Can you handle the volume?' },
+      { speaker: 'JP', text: 'I built the first one in a weekend. What do you think?' },
+      { speaker: 'Vegas Contact', text: 'I think we need to talk numbers over dinner.' },
+    ],
+  },
+  {
+    id: 'ch6_casino_host',
+    x: 16,
+    y: 26,
+    sprite: 'npc_business',
+    dialogue: [
+      { speaker: 'Casino Host', text: 'You\'re the kid Tony brought in? You look young.' },
+      { speaker: 'JP', text: 'I am young. That\'s not the problem you think it is.' },
+      { speaker: 'Casino Host', text: 'Fair enough. Show me this promoter bot.' },
+      { speaker: 'JP', text: 'Already running. Check your phone. I sent you a demo five minutes ago.' },
+      { speaker: 'Casino Host', text: '...You\'re serious.' },
+      { speaker: 'JP', text: 'Always.' },
+    ],
+  },
+  {
+    id: 'ch6_pops_home',
+    x: 32,
+    y: 28,
+    sprite: 'npc_pops',
+    dialogue: [
+      { speaker: 'Pops', text: 'Son.' },
+      { speaker: 'JP', text: 'Pops.' },
+      { speaker: 'Pops', text: 'I saw the website you built. The business stuff. Your mom showed me.' },
+      { speaker: 'JP', text: 'Yeah?' },
+      { speaker: 'Pops', text: 'I don\'t understand half of it. But I know you built it yourself. And I know you didn\'t quit.' },
+      { speaker: 'JP', text: '...' },
+      { speaker: 'Pops', text: 'That\'s all I ever wanted for you, JP. To not quit.' },
+    ],
+  },
+  {
+    id: 'ch6_sister_home',
+    x: 35,
+    y: 26,
+    sprite: 'npc_sister',
+    dialogue: [
+      { speaker: 'Sister', text: 'JP! You\'re home!' },
+      { speaker: 'JP', text: 'Hey, kid. Miss me?' },
+      { speaker: 'Sister', text: 'Mom says you\'re like a CEO now or something.' },
+      { speaker: 'JP', text: 'COO. Close enough.' },
+      { speaker: 'Sister', text: 'Can you build me a website?' },
+      { speaker: 'JP', text: 'What for?' },
+      { speaker: 'Sister', text: 'I don\'t know yet. But if you can do it, I want one too.' },
+    ],
+  },
+  {
+    id: 'ch6_ivy_home',
+    x: 33,
+    y: 30,
+    sprite: 'npc_frenchie',
+    dialogue: [
+      { speaker: 'Narrator', text: 'Ivy sprints across the yard the second she hears JP\'s voice.' },
+      { speaker: 'Narrator', text: 'She doesn\'t care about the clients. The revenue. The title.' },
+      { speaker: 'Narrator', text: 'She just knows her person is home.' },
+      { speaker: 'JP', text: 'Hey girl. I missed you too.' },
     ],
   },
 ];
@@ -1037,8 +1139,8 @@ const ch3Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'For a minute, it\'s just JP and the beat.' },
   ],
   ch3_bed: [
-    { speaker: 'JP\'s Mind', text: 'Hard mattress. Thin blanket.' },
-    { speaker: 'JP\'s Mind', text: 'But JP sleeps clear. No guilt. He earned this rest.' },
+    { speaker: 'JP\'s Mind', text: 'Hard mattress. Thin blanket. JP lies down and closes his eyes.' },
+    { speaker: 'JP\'s Mind', text: 'The days start to blur together...' },
   ],
   ch3_toilet: [
     { speaker: 'JP\'s Mind', text: 'Prison toilet. Rock bottom looks like this.' },
@@ -1054,6 +1156,27 @@ const ch3Extras: Record<string, DialogueLine[]> = {
   ch3_fight_watch: [
     { speaker: 'JP\'s Mind', text: 'Two guys going at it over nothing. Guard doesn\'t even flinch.' },
     { speaker: 'JP\'s Mind', text: 'This is normal here.' },
+  ],
+  ch3_birthday: [
+    { speaker: 'JP\'s Mind', text: 'It\'s July. JP turns 21 today.' },
+    { speaker: 'JP\'s Mind', text: 'His friends are at bars. He\'s staring at a concrete ceiling.' },
+    { speaker: 'JP\'s Mind', text: 'No call from Mom.' },
+  ],
+  ch3_psych_course: [
+    { speaker: 'JP\'s Mind', text: 'Psychology 101. College credit from behind bars.' },
+    { speaker: 'JP\'s Mind', text: 'JP reads about behavioral patterns. Addiction. Identity formation.' },
+    { speaker: 'JP\'s Mind', text: 'He sees himself in every chapter.' },
+  ],
+  ch3_transformation: [
+    { speaker: 'JP\'s Mind', text: 'JP looks in the mirror.' },
+    { speaker: 'JP\'s Mind', text: 'Six months ago he couldn\'t look at himself.' },
+    { speaker: 'JP\'s Mind', text: 'Now he sees someone he respects.' },
+  ],
+  ch3_letter_home: [
+    { speaker: 'JP', text: 'Dear Pops,' },
+    { speaker: 'JP', text: 'I\'m doing good in here. Finishing a college course. Reading every day.' },
+    { speaker: 'JP', text: 'I\'ll be home soon.' },
+    { speaker: 'JP', text: '- JP' },
   ],
 };
 
@@ -1184,6 +1307,17 @@ const ch5Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'Next.js. React. Tailwind. Supabase. Vercel. Claude.' },
     { speaker: 'JP\'s Mind', text: 'The stack that changed everything.' },
   ],
+  ch5_doubt: [
+    { text: 'Phone buzzes. It\'s a client.' },
+    { text: '"Hey, I found someone cheaper. We\'re going with them."' },
+    { text: 'JP stares at the phone.' },
+    { speaker: 'JP\'s Mind', text: 'Maybe I\'m not cut out for this.' },
+    { speaker: 'JP\'s Mind', text: 'Everyone else has a degree. A portfolio. Experience.' },
+    { speaker: 'JP\'s Mind', text: 'I have... a laptop and six months of YouTube tutorials.' },
+    { text: '...' },
+    { speaker: 'JP\'s Mind', text: 'But I have something they don\'t.' },
+    { speaker: 'JP\'s Mind', text: 'I have nothing to lose.' },
+  ],
 };
 
 // ─── Chapter 6 extras ──────────────────────────────────────────────────
@@ -1250,6 +1384,26 @@ const ch6Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP', text: 'How\'s it going?' },
     { speaker: 'Security', text: 'All clear. Your 2 o\'clock is here.' },
     { speaker: 'JP', text: 'Send them in.' },
+  ],
+  ch6_vegas_table: [
+    { speaker: 'Narrator', text: 'Conference table. Malachi on one side, a seven-figure client on the other.' },
+    { speaker: 'Narrator', text: 'JP presents the system. Clean. Fast. No filler.' },
+    { speaker: 'Narrator', text: 'They sign.' },
+    { speaker: 'JP\'s Mind', text: 'Six months ago I was mowing lawns. Now I\'m closing deals in Vegas.' },
+  ],
+  ch6_home_return: [
+    { speaker: 'Narrator', text: 'JP walks through the front door.' },
+    { speaker: 'Narrator', text: 'Pops doesn\'t say anything. Just hugs him.' },
+    { speaker: 'JP\'s Mind', text: 'This is why I do all of it. This right here.' },
+  ],
+  ch6_vineyard_view: [
+    { speaker: 'JP\'s Mind', text: 'Caymus vineyards in the distance. I used to mow these fields.' },
+    { speaker: 'JP\'s Mind', text: 'Now I drive past them.' },
+    { speaker: 'JP\'s Mind', text: 'The rows haven\'t changed. I have.' },
+  ],
+  ch6_vegas_sign: [
+    { speaker: 'JP\'s Mind', text: 'Las Vegas. 270 miles from LA. A whole different world.' },
+    { speaker: 'JP\'s Mind', text: 'But the hustle is the same everywhere.' },
   ],
 };
 

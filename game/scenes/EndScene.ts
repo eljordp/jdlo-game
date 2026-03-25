@@ -246,7 +246,12 @@ export class EndScene extends Phaser.Scene {
       delay: 7000,
     });
 
+    // Track if player has interacted (space/tap to replay)
+    let playerInteracted = false;
+
     this.input.keyboard!.on('keydown-SPACE', () => {
+      if (playerInteracted) return;
+      playerInteracted = true;
       this.cameras.main.fadeOut(1000, 0, 0, 0);
       this.cameras.main.once('camerafadeoutcomplete', () => {
         this.scene.start('IntroScene');
@@ -255,6 +260,172 @@ export class EndScene extends Phaser.Scene {
 
     this.input.on('pointerdown', () => {
       // Mobile tap to replay (only if tapping empty area, not a link)
+    });
+
+    // ── POST-CREDITS SEQUENCE ──────────────────────────────────────────
+    // If the player hasn't pressed space after 8 seconds, trigger cliffhanger
+    this.time.delayedCall(8000, () => {
+      if (playerInteracted) return;
+      this.startPostCredits();
+    });
+  }
+
+  private startPostCredits() {
+    // Fade everything to black
+    const blackOverlay = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000)
+      .setDepth(200).setAlpha(0);
+
+    this.tweens.add({
+      targets: blackOverlay,
+      alpha: 1,
+      duration: 2000,
+      onComplete: () => {
+        this.postCreditsSequence();
+      },
+    });
+  }
+
+  private postCreditsSequence() {
+    const baseDepth = 300;
+
+    // "Meanwhile..."
+    const meanwhile = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'Meanwhile...', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '18px',
+      color: '#ffffff',
+    }).setOrigin(0.5).setDepth(baseDepth).setAlpha(0);
+
+    this.tweens.add({
+      targets: meanwhile,
+      alpha: 1,
+      duration: 1000,
+    });
+
+    // After 2s, fade "Meanwhile..." and show JP at computer
+    this.time.delayedCall(3000, () => {
+      this.tweens.add({
+        targets: meanwhile,
+        alpha: 0,
+        duration: 600,
+        onComplete: () => meanwhile.destroy(),
+      });
+
+      // Show JP sprite at computer
+      const jpSprite = this.add.sprite(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 40, 'player-ch6', 0)
+        .setScale(5).setDepth(baseDepth).setAlpha(0);
+
+      // Desk/computer underneath
+      const desk = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 40, 120, 16, 0x604830)
+        .setDepth(baseDepth).setAlpha(0);
+      const monitor = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 10, 48, 36, 0x304060)
+        .setDepth(baseDepth - 1).setAlpha(0);
+      // Monitor glow
+      const glow = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 10, 44, 32, 0x4080c0)
+        .setDepth(baseDepth - 1).setAlpha(0);
+
+      this.tweens.add({ targets: [jpSprite, desk, monitor], alpha: 1, duration: 800, delay: 400 });
+      this.tweens.add({ targets: glow, alpha: 0.6, duration: 800, delay: 400 });
+
+      // Monitor pulse
+      this.tweens.add({
+        targets: glow,
+        alpha: 0.3,
+        duration: 1500,
+        yoyo: true,
+        repeat: -1,
+        delay: 1200,
+      });
+
+      // Text sequence
+      const line1 = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 90, 'JP opens his laptop. A new message.', {
+        fontFamily: '"Press Start 2P", monospace',
+        fontSize: '11px',
+        color: '#aaaacc',
+      }).setOrigin(0.5).setDepth(baseDepth).setAlpha(0);
+
+      this.tweens.add({ targets: line1, alpha: 1, duration: 800, delay: 1600 });
+
+      // "I need someone who can build what nobody else can."
+      const line2 = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 130,
+        '"I need someone who can build\nwhat nobody else can."', {
+        fontFamily: '"Press Start 2P", monospace',
+        fontSize: '11px',
+        color: '#f0c040',
+        align: 'center',
+        lineSpacing: 8,
+      }).setOrigin(0.5).setDepth(baseDepth).setAlpha(0);
+
+      this.tweens.add({ targets: line2, alpha: 1, duration: 800, delay: 4000 });
+
+      // "He smiles. Types back..."
+      const line3 = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 185,
+        'He smiles. Types back:\n"When do we start?"', {
+        fontFamily: '"Press Start 2P", monospace',
+        fontSize: '11px',
+        color: '#aaaacc',
+        align: 'center',
+        lineSpacing: 8,
+      }).setOrigin(0.5).setDepth(baseDepth).setAlpha(0);
+
+      this.tweens.add({ targets: line3, alpha: 1, duration: 800, delay: 7000 });
+
+      // "To be continued..." in yellow
+      const tbc = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 250, 'To be continued...', {
+        fontFamily: '"Press Start 2P", monospace',
+        fontSize: '16px',
+        color: '#f0c040',
+      }).setOrigin(0.5).setDepth(baseDepth).setAlpha(0);
+
+      this.tweens.add({ targets: tbc, alpha: 1, duration: 1000, delay: 9500 });
+
+      // Pulse the "To be continued..."
+      this.tweens.add({
+        targets: tbc,
+        alpha: 0.5,
+        duration: 1500,
+        yoyo: true,
+        repeat: -1,
+        delay: 11000,
+      });
+
+      // "Follow the story → @jdlo"
+      const follow = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 290, 'Follow the story  @jdlo', {
+        fontFamily: '"Press Start 2P", monospace',
+        fontSize: '10px',
+        color: '#6688cc',
+      }).setOrigin(0.5).setDepth(baseDepth).setAlpha(0)
+        .setInteractive({ useHandCursor: true });
+
+      follow.on('pointerdown', () => window.open('https://instagram.com/jdlo', '_blank'));
+      follow.on('pointerover', () => follow.setColor('#88aaee'));
+      follow.on('pointerout', () => follow.setColor('#6688cc'));
+
+      this.tweens.add({ targets: follow, alpha: 1, duration: 800, delay: 11500 });
+
+      // "SPACE to play again" at bottom
+      const replayHint = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 40, 'SPACE to play again', {
+        fontFamily: '"Press Start 2P", monospace',
+        fontSize: '9px',
+        color: '#333355',
+      }).setOrigin(0.5).setDepth(baseDepth).setAlpha(0);
+
+      this.tweens.add({ targets: replayHint, alpha: 1, duration: 800, delay: 12500 });
+      this.tweens.add({
+        targets: replayHint,
+        alpha: 0.2,
+        duration: 1200,
+        yoyo: true,
+        repeat: -1,
+        delay: 13500,
+      });
+
+      // Re-enable replay from post-credits
+      this.input.keyboard!.on('keydown-SPACE', () => {
+        this.cameras.main.fadeOut(1000, 0, 0, 0);
+        this.cameras.main.once('camerafadeoutcomplete', () => {
+          this.scene.start('IntroScene');
+        });
+      });
     });
   }
 

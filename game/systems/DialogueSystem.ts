@@ -1,8 +1,14 @@
 import { GAME_WIDTH, GAME_HEIGHT, FONT_STYLE, SPEAKER_FONT_STYLE } from '../config';
 
+export interface DialogueChoice {
+  text: string;
+  next?: DialogueLine[];
+}
+
 export interface DialogueLine {
   speaker?: string;
   text: string;
+  choices?: DialogueChoice[];
 }
 
 export class DialogueSystem {
@@ -27,6 +33,13 @@ export class DialogueSystem {
 
   private inputCooldown = 0;
   private readonly COOLDOWN_MS = 200;
+
+  // Choice system
+  private choiceMode = false;
+  private choices: DialogueChoice[] = [];
+  private selectedChoice = 0;
+  private choiceTexts: Phaser.GameObjects.Text[] = [];
+  private choiceCursor: Phaser.GameObjects.Text | null = null;
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
@@ -77,6 +90,7 @@ export class DialogueSystem {
     this.inputCooldown = this.scene.time.now + this.COOLDOWN_MS;
     this.container.setVisible(true);
     this.arrow.setVisible(false);
+    this.clearChoiceUI();
 
     this.startLine(0);
   }
@@ -90,6 +104,8 @@ export class DialogueSystem {
     this.currentCharIndex = 0;
     this.charTimer = 0;
     this.isTyping = true;
+    this.choiceMode = false;
+    this.clearChoiceUI();
 
     // Speaker name
     if (line.speaker) {
@@ -110,18 +126,146 @@ export class DialogueSystem {
     }
   }
 
+  private finishTyping(): void {
+    this.displayedText = this.fullCurrentText;
+    this.textObject.setText(this.displayedText);
+    this.isTyping = false;
+
+    const line = this.lines[this.currentLineIndex];
+    if (line && line.choices && line.choices.length > 0) {
+      this.enterChoiceMode(line.choices);
+    } else {
+      this.showArrow();
+    }
+  }
+
+  private enterChoiceMode(choices: DialogueChoice[]): void {
+    this.choiceMode = true;
+    this.choices = choices;
+    this.selectedChoice = 0;
+
+    // Calculate choice positioning — below the main text, inside the dialogue box
+    const startY = 80;
+    const choiceSpacing = 22;
+
+    // Choice cursor (Pokemon-style triangle)
+    this.choiceCursor = this.scene.add.text(40, startY, '\u25b6', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '12px',
+      color: '#f0c040',
+    }).setScrollFactor(0);
+    this.container.add(this.choiceCursor);
+
+    for (let i = 0; i < choices.length; i++) {
+      const y = startY + i * choiceSpacing;
+      const isSelected = i === this.selectedChoice;
+      const choiceText = this.scene.add.text(60, y, choices[i].text, {
+        fontFamily: '"Press Start 2P", monospace',
+        fontSize: '11px',
+        color: isSelected ? '#f0c040' : '#888888',
+        wordWrap: { width: 1100, useAdvancedWrap: true },
+      }).setScrollFactor(0);
+      this.choiceTexts.push(choiceText);
+      this.container.add(choiceText);
+    }
+
+    this.updateChoiceHighlight();
+
+    // Listen for arrow keys to navigate choices
+    this.scene.input.keyboard!.on('keydown-UP', this.choiceUp, this);
+    this.scene.input.keyboard!.on('keydown-DOWN', this.choiceDown, this);
+    this.scene.input.keyboard!.on('keydown-W', this.choiceUp, this);
+    this.scene.input.keyboard!.on('keydown-S', this.choiceDown, this);
+  }
+
+  private choiceUp = (): void => {
+    if (!this.choiceMode) return;
+    this.selectedChoice = (this.selectedChoice - 1 + this.choices.length) % this.choices.length;
+    this.updateChoiceHighlight();
+  };
+
+  private choiceDown = (): void => {
+    if (!this.choiceMode) return;
+    this.selectedChoice = (this.selectedChoice + 1) % this.choices.length;
+    this.updateChoiceHighlight();
+  };
+
+  private updateChoiceHighlight(): void {
+    const startY = 80;
+    const choiceSpacing = 22;
+
+    for (let i = 0; i < this.choiceTexts.length; i++) {
+      const isSelected = i === this.selectedChoice;
+      this.choiceTexts[i].setColor(isSelected ? '#f0c040' : '#888888');
+    }
+
+    if (this.choiceCursor) {
+      this.choiceCursor.setY(startY + this.selectedChoice * choiceSpacing);
+    }
+  }
+
+  private confirmChoice(): void {
+    const chosen = this.choices[this.selectedChoice];
+    this.clearChoiceUI();
+    this.choiceMode = false;
+
+    // Remove key listeners
+    this.scene.input.keyboard!.off('keydown-UP', this.choiceUp, this);
+    this.scene.input.keyboard!.off('keydown-DOWN', this.choiceDown, this);
+    this.scene.input.keyboard!.off('keydown-W', this.choiceUp, this);
+    this.scene.input.keyboard!.off('keydown-S', this.choiceDown, this);
+
+    if (chosen.next && chosen.next.length > 0) {
+      // Splice the choice's follow-up lines into the dialogue right after current line
+      const remaining = this.lines.slice(this.currentLineIndex + 1);
+      this.lines = [
+        ...this.lines.slice(0, this.currentLineIndex + 1),
+        ...chosen.next,
+        ...remaining,
+      ];
+    }
+
+    // Advance to next line
+    this.currentLineIndex++;
+    if (this.currentLineIndex >= this.lines.length) {
+      this.hide();
+      if (this.onComplete) {
+        this.onComplete();
+      }
+      return;
+    }
+
+    this.startLine(this.currentLineIndex);
+  }
+
+  private clearChoiceUI(): void {
+    for (const t of this.choiceTexts) {
+      t.destroy();
+    }
+    this.choiceTexts = [];
+    if (this.choiceCursor) {
+      this.choiceCursor.destroy();
+      this.choiceCursor = null;
+    }
+    this.choices = [];
+    this.selectedChoice = 0;
+  }
+
   advance(): void {
     if (!this.active) return;
     if (this.scene.time.now < this.inputCooldown) return;
 
     this.inputCooldown = this.scene.time.now + this.COOLDOWN_MS;
 
+    // If in choice mode, confirm the selection
+    if (this.choiceMode) {
+      this.confirmChoice();
+      return;
+    }
+
     if (this.isTyping) {
       // Complete the current line instantly
-      this.displayedText = this.fullCurrentText;
-      this.textObject.setText(this.displayedText);
-      this.isTyping = false;
-      this.showArrow();
+      this.finishTyping();
       return;
     }
 
@@ -137,6 +281,17 @@ export class DialogueSystem {
     }
 
     this.startLine(this.currentLineIndex);
+  }
+
+  /** Handle mobile choice navigation — called from scene for virtual D-pad */
+  choiceNavigate(direction: 'up' | 'down'): void {
+    if (!this.choiceMode) return;
+    if (direction === 'up') this.choiceUp();
+    else this.choiceDown();
+  }
+
+  isInChoiceMode(): boolean {
+    return this.choiceMode;
   }
 
   private showArrow(): void {
@@ -155,6 +310,14 @@ export class DialogueSystem {
   private hide(): void {
     this.active = false;
     this.container.setVisible(false);
+    this.clearChoiceUI();
+
+    // Clean up key listeners just in case
+    this.scene.input.keyboard!.off('keydown-UP', this.choiceUp, this);
+    this.scene.input.keyboard!.off('keydown-DOWN', this.choiceDown, this);
+    this.scene.input.keyboard!.off('keydown-W', this.choiceUp, this);
+    this.scene.input.keyboard!.off('keydown-S', this.choiceDown, this);
+
     if (this.arrowTween) {
       this.arrowTween.stop();
       this.arrowTween = null;
@@ -175,7 +338,14 @@ export class DialogueSystem {
 
     if (this.currentCharIndex >= this.fullCurrentText.length) {
       this.isTyping = false;
-      this.showArrow();
+
+      // Check if this line has choices
+      const line = this.lines[this.currentLineIndex];
+      if (line && line.choices && line.choices.length > 0) {
+        this.enterChoiceMode(line.choices);
+      } else {
+        this.showArrow();
+      }
     }
   }
 
@@ -184,6 +354,11 @@ export class DialogueSystem {
   }
 
   destroy(): void {
+    this.clearChoiceUI();
+    this.scene.input.keyboard!.off('keydown-UP', this.choiceUp, this);
+    this.scene.input.keyboard!.off('keydown-DOWN', this.choiceDown, this);
+    this.scene.input.keyboard!.off('keydown-W', this.choiceUp, this);
+    this.scene.input.keyboard!.off('keydown-S', this.choiceDown, this);
     if (this.arrowTween) {
       this.arrowTween.stop();
     }
