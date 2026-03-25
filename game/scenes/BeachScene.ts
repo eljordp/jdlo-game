@@ -10,6 +10,10 @@ export class BeachScene extends BaseChapterScene {
     this.nextScene = 'WrongCrowdScene';
   }
 
+  protected getPlayerTexture(): string {
+    return 'player-ch1';
+  }
+
   getMapData(): MapData {
     return beachMap;
   }

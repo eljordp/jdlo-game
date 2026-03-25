@@ -529,6 +529,86 @@ const ch1Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'Beautiful place to waste your life.' },
     { speaker: 'JP\'s Mind', text: 'Everybody visits Santa Barbara and says they wish they lived here. I live here and I\'m going nowhere.' },
   ],
+  ch1_car: [
+    { speaker: 'JP\'s Mind', text: 'Same car. Same drive. Same nothing.' },
+    { speaker: 'JP\'s Mind', text: 'I could do this route blindfolded. That\'s not a flex. That\'s a problem.' },
+  ],
+  ch1_sunset: [
+    { speaker: 'JP\'s Mind', text: 'Santa Barbara sunsets hit different. Too bad I was too high to appreciate them.' },
+    { speaker: 'JP\'s Mind', text: 'One day I\'ll watch one of these sober. Maybe then I\'ll actually feel something.' },
+  ],
+  ch1_money: [
+    { speaker: 'JP\'s Mind', text: 'Made $200 today. Gone by tomorrow. The cycle never stops.' },
+    { speaker: 'JP\'s Mind', text: 'I\'m not building anything. I\'m just... surviving. And barely.' },
+  ],
+  ch1_bench: [
+    { speaker: 'JP\'s Mind', text: 'Used to sit here and think I had it all figured out.' },
+    { speaker: 'JP\'s Mind', text: 'Ocean right there. Beautiful. And I couldn\'t see past the end of the week.' },
+  ],
+};
+
+// ─── Chapter 2 extras ──────────────────────────────────────────────────
+
+const ch2Extras: Record<string, DialogueLine[]> = {
+  ch2_alley: [
+    { speaker: 'JP\'s Mind', text: 'This is where bad decisions happen at 2 AM.' },
+    { speaker: 'JP\'s Mind', text: 'Dark alley. No cameras. No witnesses. The kind of place where your life changes in one second.' },
+  ],
+  ch2_phone: [
+    { speaker: 'JP\'s Mind', text: '12 missed calls from Pops. I\'ll call him back. Tomorrow.' },
+    { speaker: 'JP\'s Mind', text: 'He knows. He always knows. And I keep dodging because I don\'t want to hear the truth.' },
+  ],
+  ch2_graffiti: [
+    { speaker: 'JP\'s Mind', text: 'Someone tagged \'NO WAY OUT\'. Felt that.' },
+    { speaker: 'JP\'s Mind', text: 'Whoever wrote this probably believed it. I\'m starting to.' },
+  ],
+};
+
+// ─── Chapter 3 inmate dialogue + interactables ──────────────────────
+
+const ch3InmateDialogue: Record<string, DialogueLine[]> = {
+  ch3_inmate1: [
+    { speaker: 'Inmate', text: 'Two years in here, man. Two years.' },
+    { speaker: 'Inmate', text: 'My lawyer says we got a shot at appeal but I don\'t even believe him anymore.' },
+    { speaker: 'Inmate', text: 'I keep replaying that night in my head. One stupid decision.' },
+    { speaker: 'JP', text: '...' },
+    { speaker: 'Inmate', text: 'You\'re smart not to talk much. Just do your time and get out.' },
+  ],
+  ch3_inmate2: [
+    { speaker: 'Tatted Inmate', text: 'Yo new fish. You look stressed.' },
+    { speaker: 'Tatted Inmate', text: 'I got something that\'ll take the edge off. Just a little something. Everybody does it in here.' },
+    { speaker: 'JP', text: 'Nah, I\'m good.' },
+    { speaker: 'Tatted Inmate', text: 'For real? You sure? It makes the time go by, trust me.' },
+    { speaker: 'JP', text: 'I said I\'m good.' },
+    { speaker: 'Tatted Inmate', text: 'Suit yourself, homie. Offer\'s always open.' },
+  ],
+  ch3_inmate3: [
+    { speaker: 'Big Inmate', text: 'You see that dude at lunch? Tried to get tough with me.' },
+    { speaker: 'Big Inmate', text: 'I put him on the floor in two seconds. Two seconds. Ask anybody.' },
+    { speaker: 'Big Inmate', text: 'Nobody in here messes with me. You understand? Nobody.' },
+    { speaker: 'JP\'s Mind', text: 'This dude\'s been in here so long he thinks this is his kingdom. Sad.' },
+  ],
+  ch3_inmate4: [
+    { speaker: 'Quiet Inmate', text: '...' },
+    { speaker: 'JP', text: 'How long you been here?' },
+    { speaker: 'Quiet Inmate', text: 'Eight years.' },
+    { speaker: 'JP', text: 'Damn.' },
+    { speaker: 'Quiet Inmate', text: 'I\'ve seen hundreds of guys come through. Most of them come back.' },
+    { speaker: 'Quiet Inmate', text: 'The ones who make it? They\'re the ones who use the time. Read. Work out. Plan.' },
+    { speaker: 'Quiet Inmate', text: 'Don\'t just survive in here. Prepare for out there.' },
+    { speaker: 'JP', text: 'I hear you.' },
+    { speaker: 'Quiet Inmate', text: 'I hope you do, young man. I really hope you do.' },
+  ],
+  ch3_book: [
+    { speaker: 'JP\'s Mind', text: 'Someone left a book behind. Some self-help thing. Normally I\'d never touch this.' },
+    { speaker: 'JP\'s Mind', text: 'But what else am I gonna do in here? Stare at the wall?' },
+    { speaker: 'JP\'s Mind', text: 'JP picks it up and starts reading. First book he\'s finished in years.' },
+  ],
+  ch3_pushups: [
+    { speaker: 'JP\'s Mind', text: 'JP drops and does fifty pushups. No excuses.' },
+    { speaker: 'JP\'s Mind', text: 'Clear mind. Strong body. That\'s the only way out of here as a better person.' },
+    { speaker: 'JP\'s Mind', text: 'Forty-eight... forty-nine... fifty. Done. Tomorrow it\'s sixty.' },
+  ],
 };
 
 // ─── Chapter 3 extras ──────────────────────────────────────────────────
@@ -576,6 +656,22 @@ const ch4Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'They think I\'m crazy. Maybe I am. But I built my first page today. On a phone. On a lunch break. At a vineyard.' },
     { speaker: 'JP\'s Mind', text: 'If that\'s crazy then I don\'t want to be sane.' },
   ],
+  ch4_sunrise: [
+    { speaker: 'JP\'s Mind', text: '5:30 AM. Sun coming up over Napa Valley. This is honest.' },
+    { speaker: 'JP\'s Mind', text: 'Cold morning. Dirt road. Nobody out here but me and the vines. First time in years I feel clean.' },
+  ],
+  ch4_lunch: [
+    { speaker: 'JP\'s Mind', text: 'Everyone else eats and scrolls. I eat and study.' },
+    { speaker: 'JP\'s Mind', text: 'Thirty minutes. That\'s all I get. But thirty minutes a day adds up when you\'re hungry.' },
+  ],
+  ch4_paycheck: [
+    { speaker: 'JP\'s Mind', text: '$12/hr. Not much, but it\'s mine. Earned clean.' },
+    { speaker: 'JP\'s Mind', text: 'Used to make more in a day on the block. But this doesn\'t come with handcuffs.' },
+  ],
+  ch4_d8_seat: [
+    { speaker: 'JP\'s Mind', text: 'Yellow D8 Caterpillar. Loud as hell. You learn to think in the noise.' },
+    { speaker: 'JP\'s Mind', text: 'Eight hours on this thing and my back is done. But my mind is sharper than it\'s ever been.' },
+  ],
 };
 
 // ─── Chapter 5 extras ──────────────────────────────────────────────────
@@ -596,6 +692,19 @@ const ch5Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'Enterprise client. Different league. They needed something their team of devs couldn\'t figure out.' },
     { speaker: 'JP\'s Mind', text: 'I built it in a week.' },
   ],
+  ch5_first_dollar: [
+    { speaker: 'JP\'s Mind', text: 'Payment received: $300. First real dollar from something I BUILT.' },
+    { speaker: 'JP\'s Mind', text: 'Not hustled. Not finessed. Built. With my hands and my brain. This feeling is different.' },
+  ],
+  ch5_late_night: [
+    { speaker: 'JP\'s Mind', text: 'Everyone\'s asleep. I\'m shipping a client site. This is the grind they don\'t show.' },
+    { speaker: 'JP\'s Mind', text: '3 AM. Eyes burning. But the site is live. And the client doesn\'t know I just pulled an all-nighter for them.' },
+  ],
+  ch5_review: [
+    { speaker: 'JP\'s Mind', text: 'First 5-star review.' },
+    { speaker: 'JP\'s Mind', text: '\'JP delivered in 3 days what our last agency couldn\'t in 3 months.\'' },
+    { speaker: 'JP\'s Mind', text: 'Screenshot that. Frame it. That\'s proof. That\'s not luck. That\'s work.' },
+  ],
 };
 
 // ─── Chapter 6 extras ──────────────────────────────────────────────────
@@ -612,13 +721,28 @@ const ch6Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'Sticker Smith. WCT. DHL. Vacaville Appliance. fw.wheels. And it\'s still just the beginning.' },
     { speaker: 'JP\'s Mind', text: 'People doing $400K a month treat me like an equal. Because I earned it.' },
   ],
+  ch6_vegas: [
+    { speaker: 'JP\'s Mind', text: 'Flew to Vegas for a business meeting. Six months ago I was on a tractor.' },
+    { speaker: 'JP\'s Mind', text: 'Sitting across from people closing million-dollar deals. And they\'re asking ME for advice.' },
+    { speaker: 'JP\'s Mind', text: 'Life doesn\'t change slowly. It waits until you\'re ready, then it hits you all at once.' },
+  ],
+  ch6_team: [
+    { speaker: 'JP\'s Mind', text: 'Three people count on me now. Can\'t let them down.' },
+    { speaker: 'JP\'s Mind', text: 'Used to only worry about myself. Now there\'s a team. Responsibilities. People who trust me.' },
+    { speaker: 'JP\'s Mind', text: 'That weight? I\'d carry it twice over. This is what purpose feels like.' },
+  ],
+  ch6_mirror: [
+    { speaker: 'JP\'s Mind', text: 'The kid from Santa Barbara would never believe this.' },
+    { speaker: 'JP\'s Mind', text: 'COO. Operator. Builder. The guy people call when they need it done right.' },
+    { speaker: 'JP\'s Mind', text: 'Same face. Different person behind it. And I\'m just getting started.' },
+  ],
 };
 
 // ─── Build bridge exports ──────────────────────────────────────────────
 
 export const beachDialogue = buildChapterDialogue(chapter1IntroText, chapter1NPCs, chapter1OutroText, ch1Extras);
-export const wrongCrowdDialogue = buildChapterDialogue(chapter2IntroText, chapter2NPCs, chapter2OutroText);
-export const jailDialogue = buildChapterDialogue(chapter3IntroText, chapter3NPCs, chapter3OutroText, ch3Extras);
+export const wrongCrowdDialogue = buildChapterDialogue(chapter2IntroText, chapter2NPCs, chapter2OutroText, ch2Extras);
+export const jailDialogue = buildChapterDialogue(chapter3IntroText, chapter3NPCs, chapter3OutroText, { ...ch3Extras, ...ch3InmateDialogue });
 export const tractorDialogue = buildChapterDialogue(chapter4IntroText, chapter4NPCs, chapter4OutroText, ch4Extras);
 export const comeUpDialogue = buildChapterDialogue(chapter5IntroText, chapter5NPCs, chapter5OutroText, ch5Extras);
 export const operatorDialogue = buildChapterDialogue(chapter6IntroText, chapter6NPCs, chapter6OutroText, ch6Extras);

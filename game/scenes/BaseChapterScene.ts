@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { virtualInput } from '../../components/GameCanvas';
 import { GAME_WIDTH, GAME_HEIGHT, SCALED_TILE, SCALE } from '../config';
 import { DialogueSystem, DialogueLine } from '../systems/DialogueSystem';
 import { MapBuilder } from '../systems/MapBuilder';
@@ -36,6 +37,11 @@ export abstract class BaseChapterScene extends Phaser.Scene {
   abstract getMapData(): MapData;
   abstract getChapterDialogue(): { intro: DialogueLine[]; npcs: Record<string, DialogueLine[]> };
 
+  // Override in subclasses to use chapter-specific player outfit
+  protected getPlayerTexture(): string {
+    return 'player';
+  }
+
   // Override in subclasses to provide showcase data
   getShowcaseData(): Record<string, { title: string; description: string; revenue: string }> {
     return {};
@@ -70,10 +76,11 @@ export abstract class BaseChapterScene extends Phaser.Scene {
 
     // Create player at spawn point
     const spawn = mapData.spawns.player;
+    const playerTexture = this.getPlayerTexture();
     this.player = this.add.sprite(
       spawn.x * SCALED_TILE + SCALED_TILE / 2,
       spawn.y * SCALED_TILE + SCALED_TILE / 2,
-      'player', 0
+      playerTexture, 0
     ).setScale(SCALE).setDepth(10);
 
     // Create NPCs
@@ -156,7 +163,7 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     });
   }
 
-  private handleInteract() {
+  protected handleInteract() {
     // If dialogue is active, advance it
     if (this.dialogue.isActive()) {
       this.dialogue.advance();
@@ -196,7 +203,7 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     }
   }
 
-  private handleInteractable(interactable: { id: string; type: string; consumed?: boolean }) {
+  protected handleInteractable(interactable: { id: string; type: string; consumed?: boolean }) {
     const chapterDialogue = this.getChapterDialogue();
     const showcaseData = this.getShowcaseData();
 
@@ -263,15 +270,21 @@ export abstract class BaseChapterScene extends Phaser.Scene {
   }
 
   update(_time: number, _delta: number) {
+    // Check mobile action button
+    if (virtualInput.actionJustPressed) {
+      virtualInput.actionJustPressed = false;
+      this.handleInteract();
+    }
+
     if (this.frozen || this.dialogue.isActive() || this.isMoving) return;
 
     let dx = 0;
     let dy = 0;
 
-    if (this.cursors.left.isDown || this.wasd.A.isDown) { dx = -1; this.facing = 'left'; }
-    else if (this.cursors.right.isDown || this.wasd.D.isDown) { dx = 1; this.facing = 'right'; }
-    else if (this.cursors.up.isDown || this.wasd.W.isDown) { dy = -1; this.facing = 'up'; }
-    else if (this.cursors.down.isDown || this.wasd.S.isDown) { dy = 1; this.facing = 'down'; }
+    if (this.cursors.left.isDown || this.wasd.A.isDown || virtualInput.left) { dx = -1; this.facing = 'left'; }
+    else if (this.cursors.right.isDown || this.wasd.D.isDown || virtualInput.right) { dx = 1; this.facing = 'right'; }
+    else if (this.cursors.up.isDown || this.wasd.W.isDown || virtualInput.up) { dy = -1; this.facing = 'up'; }
+    else if (this.cursors.down.isDown || this.wasd.S.isDown || virtualInput.down) { dy = 1; this.facing = 'down'; }
 
     const frameMap = { down: 0, up: 2, left: 4, right: 6 };
     this.player.setFrame(frameMap[this.facing]);

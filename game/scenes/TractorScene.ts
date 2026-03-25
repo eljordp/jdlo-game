@@ -10,6 +10,10 @@ export class TractorScene extends BaseChapterScene {
     this.nextScene = 'ComeUpScene';
   }
 
+  protected getPlayerTexture(): string {
+    return 'player-ch4';
+  }
+
   getMapData(): MapData {
     return tractorMap;
   }

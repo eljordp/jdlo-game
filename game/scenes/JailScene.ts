@@ -10,6 +10,10 @@ export class JailScene extends BaseChapterScene {
     this.nextScene = 'TractorScene';
   }
 
+  protected getPlayerTexture(): string {
+    return 'player-ch3';
+  }
+
   getMapData(): MapData {
     return jailMap;
   }

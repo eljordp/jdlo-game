@@ -71,21 +71,30 @@ function pxG(
 // 8 frames: down-idle, down-step, up-idle, up-step, left-idle, left-step, right-idle, right-step
 // Each frame is 16x16, sheet is 128x16
 
+type OutfitColors = {
+  shirt: number;
+  shirtLight: number;
+  pants: number;
+  pantsLight: number;
+  shoe: number;
+};
+
 function drawPlayerFrame(
   g: DrawContext | CanvasRenderingContext2D,
   offsetX: number,
   direction: 'down' | 'up' | 'left' | 'right',
-  stepping: boolean
+  stepping: boolean,
+  outfit?: OutfitColors
 ) {
   const ox = offsetX;
   const skin = COLORS.skinTone;
   const skinS = COLORS.skinShadow;
   const hair = COLORS.hairDark;
-  const shirt = COLORS.shirtBlue;
-  const shirtLight = 0x5070d0;
-  const pants = COLORS.pantsGrey;
-  const pantsLight = 0x606878;
-  const shoe = COLORS.shoeDark;
+  const shirt = outfit?.shirt ?? COLORS.shirtBlue;
+  const shirtLight = outfit?.shirtLight ?? 0x5070d0;
+  const pants = outfit?.pants ?? COLORS.pantsGrey;
+  const pantsLight = outfit?.pantsLight ?? 0x606878;
+  const shoe = outfit?.shoe ?? COLORS.shoeDark;
   const eyeWhite = 0xffffff;
   const eyeBlack = 0x202020;
 
@@ -557,6 +566,82 @@ function generateAllNPCs(scene: Phaser.Scene) {
     0xd07020, // matching pants
     0xe0b080,
     0xc09060
+  );
+
+  // Inmate 2 — tatted, bald
+  generateNPC(
+    scene,
+    'npc_inmate2',
+    0x303030,
+    'bald',
+    0xd07020,
+    0xc06018,
+    0xd07020,
+    0xd0a070, // slightly different skin
+    0xb08858,
+    (g) => {
+      // Face tats — teardrop under left eye, cross on forehead, neck tats
+      px(g, 5, 5, 0x304030, 1, 1); // teardrop under left eye
+      px(g, 5, 6, 0x304030, 1, 1); // teardrop drip
+      px(g, 7, 2, 0x304030, 2, 1); // cross on forehead (horizontal)
+      px(g, 7, 1, 0x304030, 1, 2); // cross on forehead (vertical)
+      px(g, 11, 4, 0x304030, 1, 2); // tat near right eye
+      px(g, 5, 7, 0x304030, 3, 1); // neck tat left
+      px(g, 9, 7, 0x304030, 3, 1); // neck tat right
+      px(g, 3, 8, 0x304030, 1, 2); // arm sleeve tat
+      px(g, 12, 8, 0x304030, 1, 2); // arm sleeve tat
+    }
+  );
+
+  // Inmate 3 — big/tough, face scar + tats
+  generateNPC(
+    scene,
+    'npc_inmate3',
+    0x202020,
+    'short',
+    0xd07020,
+    0xc06018,
+    0xd07020,
+    0xc09060,
+    0xa07848,
+    (g) => {
+      // Wider shoulders
+      px(g, 1, 8, 0xd07020, 1, 2);
+      px(g, 14, 8, 0xd07020, 1, 2);
+      px(g, 1, 10, 0xc09060, 1, 1);
+      px(g, 14, 10, 0xc09060, 1, 1);
+      // Face scar across right cheek
+      px(g, 9, 4, 0x805040, 3, 1);
+      px(g, 10, 5, 0x805040, 2, 1);
+      // Neck tattoo — thick
+      px(g, 5, 7, 0x304030, 6, 1);
+      // Arm tats
+      px(g, 2, 9, 0x304030, 1, 2);
+      px(g, 13, 9, 0x304030, 1, 2);
+    }
+  );
+
+  // Inmate 4 — skinny, tired, face tat "13" on cheek
+  generateNPC(
+    scene,
+    'npc_inmate4',
+    0x504030,
+    'short',
+    0xd07020,
+    0xc06018,
+    0xd07020,
+    0xe8c898,
+    0xc8a878,
+    (g) => {
+      // Dark circles under eyes
+      px(g, 5, 5, 0x907060, 2, 1);
+      px(g, 9, 5, 0x907060, 2, 1);
+      // Face tat dots near eye
+      px(g, 4, 4, 0x405040, 1, 1);
+      px(g, 3, 5, 0x405040, 1, 1);
+      // Neck tat
+      px(g, 6, 7, 0x405040, 4, 1);
+    }
   );
 
   // Guard (underscore alias)
@@ -1133,10 +1218,71 @@ function generateUI(scene: Phaser.Scene) {
   });
 }
 
+// ─── CHAPTER PLAYER OUTFITS ─────────────────────────────────────────
+
+function generateChapterOutfits(scene: Phaser.Scene) {
+  const frameW = TILE_SIZE;
+  const frameH = TILE_SIZE;
+  const sheetW = frameW * 8;
+
+  const outfits: { key: string; colors: OutfitColors }[] = [
+    {
+      key: 'player-ch1',
+      colors: { shirt: 0xf0f0f0, shirtLight: 0xe0e0e0, pants: 0x303038, pantsLight: 0x404048, shoe: 0x303030 },
+    },
+    {
+      key: 'player-ch2',
+      colors: { shirt: 0x202028, shirtLight: 0x2a2a32, pants: 0x1a1a20, pantsLight: 0x242428, shoe: 0x303030 },
+    },
+    {
+      key: 'player-ch3',
+      colors: { shirt: 0xd07020, shirtLight: 0xc06018, pants: 0xd07020, pantsLight: 0xc06018, shoe: 0x606060 },
+    },
+    {
+      key: 'player-ch4',
+      colors: { shirt: 0x8a7a50, shirtLight: 0x9a8a60, pants: 0x5a6a80, pantsLight: 0x6a7a90, shoe: 0x504030 },
+    },
+    {
+      key: 'player-ch5',
+      colors: { shirt: 0x606068, shirtLight: 0x707078, pants: 0x383840, pantsLight: 0x484850, shoe: 0x303030 },
+    },
+    {
+      key: 'player-ch6',
+      colors: { shirt: 0x1a2040, shirtLight: 0x243050, pants: 0x181820, pantsLight: 0x222230, shoe: 0x202020 },
+    },
+  ];
+
+  const directions: Array<'down' | 'up' | 'left' | 'right'> = ['down', 'up', 'left', 'right'];
+
+  for (const { key, colors } of outfits) {
+    const canvas = document.createElement('canvas');
+    canvas.width = sheetW;
+    canvas.height = frameH;
+    const rawCtx = canvas.getContext('2d')!;
+    rawCtx.clearRect(0, 0, sheetW, frameH);
+    const dc = new DrawContext(rawCtx);
+
+    let frameIndex = 0;
+    for (const dir of directions) {
+      drawPlayerFrame(dc, frameIndex * frameW, dir, false, colors);
+      frameIndex++;
+      drawPlayerFrame(dc, frameIndex * frameW, dir, true, colors);
+      frameIndex++;
+    }
+
+    scene.textures.addCanvas(key, canvas);
+    const texture = scene.textures.get(key);
+    for (let i = 0; i < 8; i++) {
+      texture.add(i, 0, i * frameW, 0, frameW, frameH);
+    }
+  }
+}
+
 // ─── MAIN EXPORT ────────────────────────────────────────────────────
 
 export function generateAllSprites(scene: Phaser.Scene): void {
   generatePlayer(scene);
+  generateChapterOutfits(scene);
   generateAllNPCs(scene);
   generateTiles(scene);
   generateUI(scene);

@@ -1,11 +1,11 @@
 // Core game constants — shared across all systems and scenes
 
 export const TILE_SIZE = 16;
-export const SCALE = 3;
-export const SCALED_TILE = TILE_SIZE * SCALE; // 48px per tile on screen
+export const SCALE = 4;
+export const SCALED_TILE = TILE_SIZE * SCALE; // 64px per tile on screen
 
-export const GAME_WIDTH = 960;
-export const GAME_HEIGHT = 720;
+export const GAME_WIDTH = 1280;
+export const GAME_HEIGHT = 960;
 
 export const MOVEMENT_SPEED = 120;
 
@@ -57,7 +57,7 @@ export const FONT_STYLE = {
   fontFamily: '"Press Start 2P", monospace',
   fontSize: '14px',
   color: COLORS.dialogueText,
-  wordWrap: { width: 880, useAdvancedWrap: true },
+  wordWrap: { width: 1160, useAdvancedWrap: true },
   lineSpacing: 8,
 };
 

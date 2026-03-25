@@ -119,6 +119,10 @@ export const beachMap: MapData = {
     { id: 'ch1_joint', x: 8, y: 12, type: 'examine', glow: true },
     { id: 'ch1_stash', x: 3, y: 8, type: 'examine', glow: true },
     { id: 'ch1_view', x: 22, y: 5, type: 'examine', glow: true },
+    { id: 'ch1_car', x: 7, y: 7, type: 'examine', glow: true },
+    { id: 'ch1_sunset', x: 14, y: 17, type: 'examine', glow: true },
+    { id: 'ch1_money', x: 2, y: 10, type: 'examine', glow: true },
+    { id: 'ch1_bench', x: 17, y: 10, type: 'examine', glow: true },
   ],
 };
 
@@ -164,12 +168,16 @@ export const wrongCrowdMap: MapData = {
     ],
   },
   triggers: [
-    { x: 13, y: 21, action: 'scene', target: 'JailScene' },
-    { x: 14, y: 21, action: 'scene', target: 'JailScene' },
-    { x: 15, y: 21, action: 'scene', target: 'JailScene' },
-    { x: 16, y: 21, action: 'scene', target: 'JailScene' },
+    { x: 13, y: 21, action: 'scene', target: 'CourtScene' },
+    { x: 14, y: 21, action: 'scene', target: 'CourtScene' },
+    { x: 15, y: 21, action: 'scene', target: 'CourtScene' },
+    { x: 16, y: 21, action: 'scene', target: 'CourtScene' },
   ],
-  interactables: [],
+  interactables: [
+    { id: 'ch2_alley', x: 10, y: 10, type: 'examine', glow: true },
+    { id: 'ch2_phone', x: 5, y: 14, type: 'examine', glow: true },
+    { id: 'ch2_graffiti', x: 2, y: 7, type: 'examine', glow: true },
+  ],
 };
 
 // ---------------------------------------------------------------------------
@@ -199,6 +207,10 @@ export const jailMap: MapData = {
     npcs: [
       { id: 'ch3_cellmate', x: 3, y: 5, sprite: 'npc_inmate' },
       { id: 'ch3_guard',    x: 8, y: 5, sprite: 'npc_guard' },
+      { id: 'ch3_inmate1',  x: 7, y: 3, sprite: 'npc_inmate' },
+      { id: 'ch3_inmate2',  x: 10, y: 4, sprite: 'npc_inmate2' },
+      { id: 'ch3_inmate3',  x: 9, y: 7, sprite: 'npc_inmate3' },
+      { id: 'ch3_inmate4',  x: 6, y: 7, sprite: 'npc_inmate4' },
     ],
   },
   triggers: [
@@ -209,6 +221,8 @@ export const jailMap: MapData = {
     { id: 'ch3_wall_2', x: 4, y: 3, type: 'scratch', glow: true },
     { id: 'ch3_wall_3', x: 5, y: 3, type: 'scratch', glow: true },
     { id: 'ch3_wall_4', x: 3, y: 4, type: 'scratch', glow: true },
+    { id: 'ch3_book',    x: 5, y: 5, type: 'examine', glow: true },
+    { id: 'ch3_pushups', x: 5, y: 4, type: 'examine', glow: true },
   ],
 };
 
@@ -260,6 +274,10 @@ export const tractorMap: MapData = {
     { id: 'ch4_vines', x: 18, y: 8, type: 'examine', glow: true },
     { id: 'ch4_phone', x: 6, y: 8, type: 'examine', glow: true },
     { id: 'ch4_ai_discovery', x: 5, y: 4, type: 'evolve', glow: true },
+    { id: 'ch4_sunrise', x: 24, y: 1, type: 'examine', glow: true },
+    { id: 'ch4_lunch', x: 2, y: 7, type: 'examine', glow: true },
+    { id: 'ch4_paycheck', x: 24, y: 11, type: 'examine', glow: true },
+    { id: 'ch4_d8_seat', x: 15, y: 5, type: 'examine', glow: true },
   ],
 };
 
@@ -308,12 +326,15 @@ export const comeUpMap: MapData = {
     ],
   },
   triggers: [
-    { x: 27, y: 23, action: 'scene', target: 'OperatorScene' },
+    { x: 27, y: 23, action: 'scene', target: 'LAScene' },
   ],
   interactables: [
     { id: 'ch5_wct_showcase', x: 3, y: 14, type: 'showcase', glow: true },
     { id: 'ch5_sticker_showcase', x: 19, y: 14, type: 'showcase', glow: true },
     { id: 'ch5_dhl_showcase', x: 13, y: 17, type: 'showcase', glow: true },
+    { id: 'ch5_first_dollar', x: 6, y: 3, type: 'examine', glow: true },
+    { id: 'ch5_late_night', x: 7, y: 3, type: 'examine', glow: true },
+    { id: 'ch5_review', x: 24, y: 9, type: 'examine', glow: true },
   ],
 };
 
@@ -367,6 +388,9 @@ export const operatorMap: MapData = {
   interactables: [
     { id: 'ch6_dashboard', x: 8, y: 5, type: 'examine', glow: true },
     { id: 'ch6_portfolio', x: 14, y: 10, type: 'examine', glow: true },
+    { id: 'ch6_vegas', x: 5, y: 8, type: 'examine', glow: true },
+    { id: 'ch6_team', x: 11, y: 14, type: 'examine', glow: true },
+    { id: 'ch6_mirror', x: 5, y: 22, type: 'examine', glow: true },
   ],
 };
 

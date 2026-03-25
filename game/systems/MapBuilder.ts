@@ -21,6 +21,35 @@ const TILE_TEXTURE_MAP: Record<number, string> = {
   [TILE_IDS.BUILDING_WALL]: 'tile-building-wall',
 };
 
+// Detail tiles that need a ground tile rendered underneath
+const OVERLAY_TILES = new Set<number>([
+  TILE_IDS.TREE,
+  TILE_IDS.PALM,
+  TILE_IDS.FENCE,
+  TILE_IDS.TRACTOR,
+  TILE_IDS.COMPUTER,
+  TILE_IDS.DOOR,
+]);
+
+// What ground tile to put under each overlay, based on nearby tiles
+function findNearbyGround(tiles: number[][], x: number, y: number, width: number, height: number): string {
+  // Check adjacent tiles for a ground type
+  const neighbors = [
+    [x - 1, y], [x + 1, y], [x, y - 1], [x, y + 1],
+    [x - 1, y - 1], [x + 1, y + 1], [x - 1, y + 1], [x + 1, y - 1],
+  ];
+  for (const [nx, ny] of neighbors) {
+    if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+      const nTile = tiles[ny][nx];
+      if (!OVERLAY_TILES.has(nTile) && nTile !== TILE_IDS.WATER && nTile !== 0) {
+        const tex = TILE_TEXTURE_MAP[nTile];
+        if (tex) return tex;
+      }
+    }
+  }
+  return 'tile-grass'; // fallback
+}
+
 export class MapBuilder {
   private scene: Phaser.Scene;
 
@@ -28,10 +57,6 @@ export class MapBuilder {
     this.scene = scene;
   }
 
-  /**
-   * Build the tile map from a MapData definition.
-   * Returns a Set of "x,y" strings for collision tiles, and map bounds in tile units.
-   */
   buildMap(mapData: MapData): { collisions: Set<string>; bounds: { width: number; height: number } } {
     const collisions = new Set<string>();
     const collisionTileIds = new Set(mapData.collisions);
@@ -42,20 +67,26 @@ export class MapBuilder {
     let waterFrame = 0;
     const waterSprites: Phaser.GameObjects.Sprite[] = [];
 
-    // Place tiles
     for (let y = 0; y < mapHeight; y++) {
       for (let x = 0; x < mapWidth; x++) {
         const tileId = mapData.tiles[y][x];
         const textureKey = TILE_TEXTURE_MAP[tileId];
 
-        // EMPTY (0) or unmapped tiles get nothing rendered
         if (!textureKey) continue;
 
         const pixelX = x * SCALED_TILE + SCALED_TILE / 2;
         const pixelY = y * SCALED_TILE + SCALED_TILE / 2;
 
+        // If this is an overlay tile, render a ground tile underneath first
+        if (OVERLAY_TILES.has(tileId)) {
+          const groundTexture = findNearbyGround(mapData.tiles, x, y, mapWidth, mapHeight);
+          const ground = this.scene.add.sprite(pixelX, pixelY, groundTexture);
+          ground.setScale(SCALE);
+          ground.setDepth(0);
+          ground.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+        }
+
         if (tileId === TILE_IDS.WATER) {
-          // Water uses a 2-frame texture (32x16), we crop to show one frame at a time
           const sprite = this.scene.add.sprite(pixelX, pixelY, textureKey);
           sprite.setScale(SCALE);
           sprite.setDepth(0);
@@ -65,12 +96,13 @@ export class MapBuilder {
         } else {
           const sprite = this.scene.add.sprite(pixelX, pixelY, textureKey);
           sprite.setScale(SCALE);
-          // Trees render above the player
-          sprite.setDepth(tileId === TILE_IDS.TREE || tileId === TILE_IDS.PALM ? 50 : 0);
+          // Overlay tiles render above ground, trees/palms above player
+          const depth = (tileId === TILE_IDS.TREE || tileId === TILE_IDS.PALM) ? 50
+            : OVERLAY_TILES.has(tileId) ? 1 : 0;
+          sprite.setDepth(depth);
           sprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
         }
 
-        // Mark collision
         if (collisionTileIds.has(tileId)) {
           collisions.add(`${x},${y}`);
         }

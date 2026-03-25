@@ -10,6 +10,10 @@ export class OperatorScene extends BaseChapterScene {
     this.nextScene = 'EndScene';
   }
 
+  protected getPlayerTexture(): string {
+    return 'player-ch6';
+  }
+
   getMapData(): MapData {
     return operatorMap;
   }

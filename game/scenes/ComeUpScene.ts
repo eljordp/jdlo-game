@@ -7,7 +7,11 @@ export class ComeUpScene extends BaseChapterScene {
   constructor() {
     super({ key: 'ComeUpScene' });
     this.chapterTitle = 'Chapter 5: The Come Up';
-    this.nextScene = 'OperatorScene';
+    this.nextScene = 'LAScene';
+  }
+
+  protected getPlayerTexture(): string {
+    return 'player-ch5';
   }
 
   getMapData(): MapData {
