@@ -314,6 +314,12 @@ export const wrongCrowdMap: MapData = {
     { id: 'ch2_store',     x: 7, y: 18, type: 'examine', glow: true },
     { id: 'ch2_nervous',   x: 12, y: 18, type: 'examine', glow: true },
     { id: 'ch2_streetlight', x: 16, y: 17, type: 'examine', glow: true },
+    { id: 'ch2_hottub_night', x: 23, y: 3, type: 'examine', glow: true },
+    { id: 'ch2_fridge',       x: 17, y: 2, type: 'examine', glow: true, sprite: 'item-fridge' },
+    { id: 'ch2_front_door',   x: 11, y: 8, type: 'examine', glow: true },
+    { id: 'ch2_street_walk',  x: 14, y: 13, type: 'examine', glow: true },
+    { id: 'ch2_parking_lot',  x: 20, y: 21, type: 'examine', glow: true },
+    { id: 'ch2_pops_missed',  x: 10, y: 5, type: 'examine', glow: true, sprite: 'item-phone' },
   ],
 };
 

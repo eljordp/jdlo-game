@@ -261,9 +261,23 @@ export const chapter2NPCs: NPCData[] = [
     y: 7,
     sprite: 'npc_kid',
     dialogue: [
-      { speaker: 'Marcus', text: 'Ayo be safe out there.' },
-      { speaker: 'JP', text: 'Always.' },
-      { speaker: 'Marcus', text: 'Text me when you\'re back.' },
+      { speaker: 'Marcus', text: 'Bro. It\'s 3 in the morning.' },
+      { speaker: 'JP', text: 'I know.' },
+      { speaker: 'Marcus', text: 'You going to dude\'s spot again?' },
+      { speaker: 'JP', text: '', choices: [
+        { text: '"Last time. I\'m done after this."', next: [
+          { speaker: 'Marcus', text: 'You said that three drops ago, bro.' },
+          { speaker: 'Marcus', text: 'I\'m serious. Something don\'t feel right tonight.' },
+        ]},
+        { text: '"Don\'t worry about it."', next: [
+          { speaker: 'Marcus', text: 'See, that\'s what worries me. You used to tell me everything.' },
+          { speaker: 'Marcus', text: 'Now you just... disappear at 3 AM and come back different.' },
+        ]},
+      ]},
+      { speaker: 'JP', text: 'I\'ll be fine. I\'m always fine.' },
+      { speaker: 'Marcus', text: 'Nah. You\'re always lucky. That\'s different.' },
+      { speaker: 'Marcus', text: 'Just... text me when you\'re back. For real this time.' },
+      { speaker: 'JP\'s Mind', text: 'Marcus is the only one who still checks. Everyone else stopped asking.' },
     ],
   },
   {
@@ -272,13 +286,19 @@ export const chapter2NPCs: NPCData[] = [
     y: 21,
     sprite: 'npc_shady',
     dialogue: [
-      { speaker: '???', text: 'You JP?' },
+      { speaker: '???', text: 'Yo. Stop.' },
       { speaker: 'JP', text: '', choices: [
-        { text: '"Yeah. He inside?"', next: [
-          { speaker: '???', text: 'Yeah. Make it quick.' },
+        { text: '"I\'m here for the pickup."', next: [
+          { speaker: '???', text: '...' },
+          { speaker: '???', text: 'How many times you been here?' },
+          { speaker: 'JP', text: 'Enough.' },
+          { speaker: '???', text: 'Aight. He\'s inside. Don\'t take long.' },
+          { speaker: '???', text: 'And don\'t be coming back here every week. People notice.' },
         ]},
-        { text: '"Who\'s asking?"', next: [
-          { speaker: '???', text: 'Relax. He\'s inside. Go.' },
+        { text: '"Who are you?"', next: [
+          { speaker: '???', text: 'I\'m the reason nobody\'s run up on this spot yet.' },
+          { speaker: '???', text: 'He\'s inside. Go.' },
+          { speaker: 'JP\'s Mind', text: 'Something about the way he said that. Like a warning.' },
         ]},
       ]},
     ],
@@ -289,9 +309,30 @@ export const chapter2NPCs: NPCData[] = [
     y: 23,
     sprite: 'npc_generic',
     dialogue: [
-      { speaker: 'Buyer', text: 'You got that zip?' },
+      { speaker: 'Buyer', text: 'You\'re late.' },
+      { speaker: 'JP', text: 'Traffic.' },
+      { speaker: 'Buyer', text: 'At 3 AM? Whatever. You got it?' },
       { speaker: 'JP', text: 'Right here.' },
-      { speaker: 'Buyer', text: 'Cool cool. Lemme get—' },
+      { speaker: 'Buyer', text: 'Let me see.' },
+      { speaker: 'Narrator', text: 'The buyer takes his time. Weighs it. Smells it. Looks at JP.' },
+      { speaker: 'Buyer', text: 'This is light.' },
+      { speaker: 'JP', text: 'It\'s not light. That\'s a full zip.' },
+      { speaker: 'Buyer', text: 'Nah. I\'m saying the quality. Last batch was better.' },
+      { speaker: 'JP', text: '', choices: [
+        { text: '"Same stuff. Same price. Take it or leave it."', next: [
+          { speaker: 'Buyer', text: 'Relax. I\'m taking it.' },
+          { speaker: 'Buyer', text: 'You always this tense?' },
+          { speaker: 'JP\'s Mind', text: 'Yes.' },
+        ]},
+        { text: '"Then go somewhere else."', next: [
+          { speaker: 'Buyer', text: 'Easy, easy. I didn\'t say I don\'t want it.' },
+          { speaker: 'Buyer', text: 'Just making conversation.' },
+          { speaker: 'JP\'s Mind', text: 'Nobody makes conversation at a deal. Something\'s off.' },
+        ]},
+      ]},
+      { speaker: 'Buyer', text: 'Aight. We good. Same time next week?' },
+      { speaker: 'JP', text: 'We\'ll see.' },
+      { speaker: 'JP\'s Mind', text: 'That took too long. He was stalling.' },
     ],
   },
 ];
@@ -1077,8 +1118,10 @@ const ch2Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'Same routine. Didn\'t even think about it anymore.' },
   ],
   ch2_car: [
-    { speaker: 'JP\'s Mind', text: 'Black 2008 BMW 335i. Not flashy. Just enough.' },
-    { speaker: 'JP\'s Mind', text: 'JP gets in and drives down the block.' },
+    { speaker: 'JP\'s Mind', text: 'Black 2008 BMW 335i. N54 twin turbo.' },
+    { speaker: 'JP\'s Mind', text: 'Catless downpipes, intake, tuned. This car is the one thing that\'s actually his.' },
+    { speaker: 'JP\'s Mind', text: 'He bought it with cash. Didn\'t ask where the cash came from.' },
+    { speaker: 'JP\'s Mind', text: 'Keys in the ignition. Deep breath. Let\'s go.' },
   ],
   ch2_mirror: [
     { speaker: 'JP\'s Mind', text: 'JP checks the rearview. Nothing behind him.' },
@@ -1097,8 +1140,10 @@ const ch2Extras: Record<string, DialogueLine[]> = {
   ],
   ch2_gun: [
     { speaker: 'JP\'s Mind', text: 'Glock on the dresser. Right next to the weed.' },
-    { speaker: 'JP\'s Mind', text: 'Never fired it. Never plan to. But in this life, you don\'t get to choose.' },
-    { speaker: 'JP\'s Mind', text: 'The fact that it\'s there means something went wrong a long time ago.' },
+    { speaker: 'JP\'s Mind', text: 'Never fired it. Never plan to.' },
+    { speaker: 'JP\'s Mind', text: 'But in this life, you don\'t get to choose when it becomes real.' },
+    { speaker: 'JP\'s Mind', text: 'The fact that it\'s here means something went wrong a long time ago.' },
+    { speaker: 'JP\'s Mind', text: 'JP leaves it. He always leaves it.' },
   ],
   ch2_computer: [
     { speaker: 'Narrator', text: 'JP opens his laptop. The spreadsheet loads.' },
@@ -1120,9 +1165,10 @@ const ch2Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'I know I can build something real. I just need the right path.' },
   ],
   ch2_bed: [
+    { speaker: 'JP\'s Mind', text: 'Unmade bed. Hasn\'t slept in it in two days.' },
     { speaker: 'JP\'s Mind', text: 'Bags under the bed. Bags in the closet. Bags on the desk.' },
-    { speaker: 'JP\'s Mind', text: 'This room smells like money and bad decisions.' },
-    { speaker: 'JP\'s Mind', text: 'Can\'t sleep. Keep thinking about what happens if I get caught.' },
+    { speaker: 'JP\'s Mind', text: 'This room used to feel like freedom. Now it feels like a trap he built himself.' },
+    { speaker: 'JP\'s Mind', text: 'Can\'t sleep. Can\'t stop. Can\'t tell anyone why.' },
   ],
   ch2_graffiti: [
     { speaker: 'JP\'s Mind', text: 'Someone tagged \'NO WAY OUT\' on the wall. Felt that.' },
@@ -1160,7 +1206,9 @@ const ch2Extras: Record<string, DialogueLine[]> = {
   ],
   ch2_money_stack: [
     { speaker: 'JP\'s Mind', text: 'Stacks on the dresser. More than a 20-year-old should have in cash.' },
-    { speaker: 'JP\'s Mind', text: 'None of it legal.' },
+    { speaker: 'JP\'s Mind', text: 'None of it legal. None of it safe.' },
+    { speaker: 'JP\'s Mind', text: 'He counts it every night. Not because he needs to. Because it\'s the only thing that makes this feel worth it.' },
+    { speaker: 'JP\'s Mind', text: 'One day this money runs out. Then what?' },
   ],
   ch2_designer: [
     { speaker: 'JP\'s Mind', text: 'Designer bags. Gucci. Louis. All bought with drug money.' },
@@ -1169,6 +1217,33 @@ const ch2Extras: Record<string, DialogueLine[]> = {
   ch2_mirror_room: [
     { speaker: 'Narrator', text: 'JP looks at himself. Shaggy hair. Bags under his eyes.' },
     { speaker: 'JP\'s Mind', text: 'When\'s the last time he slept a full night?' },
+  ],
+  ch2_hottub_night: [
+    { speaker: 'JP\'s Mind', text: 'Hot tub\'s off. Water\'s cold and still.' },
+    { speaker: 'JP\'s Mind', text: '12 hours ago this place was full of people. Music. Laughing.' },
+    { speaker: 'JP\'s Mind', text: 'Now it\'s just me. And whatever\'s in the duffel bag.' },
+  ],
+  ch2_fridge: [
+    { speaker: 'JP\'s Mind', text: 'Fridge is empty except for beer and a Gatorade from last week.' },
+    { speaker: 'JP\'s Mind', text: 'Nobody in this house eats real food.' },
+  ],
+  ch2_front_door: [
+    { speaker: 'JP\'s Mind', text: 'Deep breath.' },
+    { speaker: 'JP\'s Mind', text: 'Every time he walks out this door at 3 AM, he knows it could be the last time.' },
+    { speaker: 'JP\'s Mind', text: 'But he opens it anyway.' },
+  ],
+  ch2_street_walk: [
+    { speaker: 'JP\'s Mind', text: 'Street is dead. Not a single car.' },
+    { speaker: 'JP\'s Mind', text: 'That\'s either really good or really bad.' },
+  ],
+  ch2_parking_lot: [
+    { speaker: 'JP\'s Mind', text: 'Buyer\'s driveway has three cars in it. There\'s usually one.' },
+    { speaker: 'JP\'s Mind', text: 'Don\'t overthink it. Just make the drop.' },
+  ],
+  ch2_pops_missed: [
+    { speaker: 'JP\'s Mind', text: 'Pops called again. Twice.' },
+    { speaker: 'JP\'s Mind', text: 'He doesn\'t leave voicemails anymore. He just calls. And waits.' },
+    { speaker: 'JP\'s Mind', text: 'I\'ll call him tomorrow. That\'s what I said yesterday.' },
   ],
 };
 
