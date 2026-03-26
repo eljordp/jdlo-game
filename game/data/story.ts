@@ -165,9 +165,15 @@ export const chapter1NPCs: NPCData[] = [
         { text: '"That\'s not networking, that\'s burning money."', next: [
           { speaker: 'Nolan', text: 'You sound like your pops right now.' },
           { speaker: 'JP', text: 'Maybe he was right about some things.' },
+          { speaker: 'Nolan', text: 'Don\'t start. We\'re 20. We\'re supposed to blow money on dumb shit.' },
+          { speaker: 'JP', text: 'I\'m supposed to be building something.' },
+          { speaker: 'Nolan', text: 'Building what? Bro you don\'t even have a plan.' },
+          { speaker: 'JP\'s Mind', text: 'He\'s not wrong. But hearing it out loud stings.' },
         ]},
         { text: '"Alright. One more time."', next: [
           { speaker: 'Nolan', text: 'That\'s my boy. I\'ll drive.' },
+          { speaker: 'Nolan', text: 'We should bring Cooper. He always knows somebody.' },
+          { speaker: 'JP\'s Mind', text: 'Same plan. Same weekend. Same nothing at the end of it.' },
         ]},
       ]},
     ],
@@ -181,7 +187,22 @@ export const chapter1NPCs: NPCData[] = [
       { speaker: 'David', text: 'Hot tub\'s heated up. Girls are coming over later.' },
       { speaker: 'JP', text: 'Again?' },
       { speaker: 'David', text: 'What else we gonna do?' },
-      { speaker: 'Narrator', text: 'This is the cycle.' },
+      { speaker: 'JP', text: '', choices: [
+        { text: '"Something productive?"', next: [
+          { speaker: 'David', text: 'Bro. We live in Santa Barbara. By the beach. With a hot tub.' },
+          { speaker: 'David', text: 'What\'s more productive than enjoying life?' },
+          { speaker: 'JP', text: 'I don\'t know. Something that lasts longer than tonight.' },
+          { speaker: 'David', text: '...you good?' },
+          { speaker: 'JP\'s Mind', text: 'No. But he can\'t explain it to someone who doesn\'t feel it.' },
+        ]},
+        { text: '"Who\'s coming?"', next: [
+          { speaker: 'David', text: 'Ashley. Her friends. That girl from the volleyball game.' },
+          { speaker: 'David', text: 'She was asking about you, by the way.' },
+          { speaker: 'JP', text: 'Cool.' },
+          { speaker: 'David', text: 'Cool? That\'s it? Bro she\'s bad.' },
+          { speaker: 'JP\'s Mind', text: 'He\'s trying to keep me here. Keep me happy. Keep me distracted.' },
+        ]},
+      ]},
     ],
   },
   {
@@ -194,6 +215,20 @@ export const chapter1NPCs: NPCData[] = [
       { speaker: 'JP', text: 'It\'s alright.' },
       { speaker: 'Cooper', text: 'Alright? We got a hot tub and no landlord checking on us.' },
       { speaker: 'JP', text: 'That\'s the problem.' },
+      { speaker: 'Cooper', text: 'What do you mean?' },
+      { speaker: 'JP', text: 'Nobody checking on us means nobody stopping us.' },
+      { speaker: 'Cooper', text: '...isn\'t that the point?' },
+      { speaker: 'JP', text: '', choices: [
+        { text: '"Yeah. I guess."', next: [
+          { speaker: 'Cooper', text: 'Don\'t overthink it, bro. We\'re living.' },
+          { speaker: 'JP\'s Mind', text: 'Living. Is that what this is?' },
+        ]},
+        { text: '"Nah. That\'s the problem."', next: [
+          { speaker: 'Cooper', text: 'You always get like this. Just relax.' },
+          { speaker: 'Cooper', text: 'Go hit the hot tub. Get out of your head.' },
+          { speaker: 'JP\'s Mind', text: 'Everyone\'s answer is the same. Stop thinking. Have fun. Repeat.' },
+        ]},
+      ]},
     ],
   },
   {
@@ -206,6 +241,18 @@ export const chapter1NPCs: NPCData[] = [
       { speaker: 'JP', text: 'Yeah.' },
       { speaker: 'Girl', text: 'This place is crazy. Who\'s throwing tonight?' },
       { speaker: 'JP', text: 'We always throwing.' },
+      { speaker: 'Girl', text: 'Must be nice. I wish I had a spot like this.' },
+      { speaker: 'JP', text: '', choices: [
+        { text: '"It\'s not as cool as it looks."', next: [
+          { speaker: 'Girl', text: 'Boy please. You\'re on the beach with a hot tub and cute friends.' },
+          { speaker: 'Girl', text: 'What\'s not cool about that?' },
+          { speaker: 'JP\'s Mind', text: 'She sees the highlight reel. Not the 3 AM version.' },
+        ]},
+        { text: '"Yeah. It\'s not bad."', next: [
+          { speaker: 'Girl', text: 'Not bad? You\'re funny. I like that.' },
+          { speaker: 'JP\'s Mind', text: 'She\'s cool. But she\'ll be gone by tomorrow. They all are.' },
+        ]},
+      ]},
     ],
   },
   {
@@ -217,11 +264,15 @@ export const chapter1NPCs: NPCData[] = [
       { speaker: 'Girl', text: 'You got a light?' },
       { speaker: 'JP', text: '', choices: [
         { text: '"Yeah, here."', next: [
-          { speaker: 'Girl', text: 'Thanks. You live here?' },
-          { speaker: 'JP', text: 'For now.' },
+          { speaker: 'Girl', text: 'Thanks. You seem different from the other guys here.' },
+          { speaker: 'JP', text: 'Different how?' },
+          { speaker: 'Girl', text: 'I don\'t know. Like you\'re here but you\'re not really here.' },
+          { speaker: 'JP', text: 'Yeah. I get that a lot.' },
+          { speaker: 'JP\'s Mind', text: 'She clocked it in five minutes. These guys I live with still haven\'t.' },
         ]},
         { text: '"Nah."', next: [
           { speaker: 'Girl', text: 'Whatever.' },
+          { speaker: 'JP\'s Mind', text: 'Didn\'t feel like talking. That\'s becoming more frequent.' },
         ]},
       ]},
     ],
@@ -237,6 +288,13 @@ export const chapter1NPCs: NPCData[] = [
       { speaker: 'Terrell', text: 'Working on what? We don\'t have jobs.' },
       { speaker: 'JP', text: 'Exactly. That\'s the problem.' },
       { speaker: 'Terrell', text: '...that\'s deep for a Tuesday morning.' },
+      { speaker: 'JP', text: 'You ever think about what happens after this?' },
+      { speaker: 'Terrell', text: 'After what?' },
+      { speaker: 'JP', text: 'After SB. After the parties. After the money runs out.' },
+      { speaker: 'Terrell', text: 'Nah. I try not to think about that.' },
+      { speaker: 'JP', text: 'I can\'t stop thinking about it.' },
+      { speaker: 'Terrell', text: 'That\'s your problem, bro. You think too much.' },
+      { speaker: 'JP\'s Mind', text: 'Or maybe he doesn\'t think enough.' },
     ],
   },
 ];
