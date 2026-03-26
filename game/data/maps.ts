@@ -291,7 +291,7 @@ export const wrongCrowdMap: MapData = {
   spawns: {
     player: { x: 11, y: 3 },  // JP starts in his room (same position as beachMap JP room)
     npcs: [
-      { id: 'ch2_homie_door', x: 14, y: 9, sprite: 'npc_kid' },     // Marcus waiting outside
+      { id: 'ch2_homie_door', x: 14, y: 9, sprite: 'npc_jose' },    // Jose waiting outside
       { id: 'ch2_corner_guy', x: 6, y: 18, sprite: 'npc_generic' }, // guy at corner store
       { id: 'ch2_street_kid', x: 10, y: 17, sprite: 'npc_shady' },  // kid on the street
       { id: 'ch2_lookout',    x: 18, y: 20, sprite: 'npc_shady' },   // outside buyer's house

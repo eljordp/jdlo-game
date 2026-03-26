@@ -903,6 +903,28 @@ function generateAllNPCs(scene: Phaser.Scene) {
     0xd0a070
   );
 
+  // Jose — Mexican, tan, black hair, bigger build — 32x32
+  generateNPC32(
+    scene,
+    'npc_jose',
+    0x101010, // black hair
+    'short',
+    0x404040, // dark grey shirt
+    0x4a4a4a,
+    0x303038, // dark jeans
+    0xc89860, // tan skin
+    0xb08050, // tan shadow
+    (g) => {
+      // Wider shoulders (bigger build)
+      px(g, 3, 14, 0x404040, 2, 4);
+      px(g, 27, 14, 0x404040, 2, 4);
+      // Slight stubble
+      px(g, 12, 11, 0x908068, 2, 1);
+      px(g, 18, 11, 0x908068, 2, 1);
+      px(g, 14, 12, 0x908068, 4, 1);
+    }
+  );
+
   // Shady (underscore alias) — 32x32
   generateNPC32(
     scene,

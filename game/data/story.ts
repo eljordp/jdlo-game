@@ -261,23 +261,23 @@ export const chapter2NPCs: NPCData[] = [
     y: 7,
     sprite: 'npc_kid',
     dialogue: [
-      { speaker: 'Marcus', text: 'Bro. It\'s 3 in the morning.' },
+      { speaker: 'Jose', text: 'Bro. It\'s 3 in the morning.' },
       { speaker: 'JP', text: 'I know.' },
-      { speaker: 'Marcus', text: 'You going to dude\'s spot again?' },
+      { speaker: 'Jose', text: 'You going to dude\'s spot again?' },
       { speaker: 'JP', text: '', choices: [
         { text: '"Last time. I\'m done after this."', next: [
-          { speaker: 'Marcus', text: 'You said that three drops ago, bro.' },
-          { speaker: 'Marcus', text: 'I\'m serious. Something don\'t feel right tonight.' },
+          { speaker: 'Jose', text: 'You said that three drops ago, bro.' },
+          { speaker: 'Jose', text: 'I\'m serious. Something don\'t feel right tonight.' },
         ]},
         { text: '"Don\'t worry about it."', next: [
-          { speaker: 'Marcus', text: 'See, that\'s what worries me. You used to tell me everything.' },
-          { speaker: 'Marcus', text: 'Now you just... disappear at 3 AM and come back different.' },
+          { speaker: 'Jose', text: 'See, that\'s what worries me. You used to tell me everything.' },
+          { speaker: 'Jose', text: 'Now you just... disappear at 3 AM and come back different.' },
         ]},
       ]},
       { speaker: 'JP', text: 'I\'ll be fine. I\'m always fine.' },
-      { speaker: 'Marcus', text: 'Nah. You\'re always lucky. That\'s different.' },
-      { speaker: 'Marcus', text: 'Just... text me when you\'re back. For real this time.' },
-      { speaker: 'JP\'s Mind', text: 'Marcus is the only one who still checks. Everyone else stopped asking.' },
+      { speaker: 'Jose', text: 'Nah. You\'re always lucky. That\'s different.' },
+      { speaker: 'Jose', text: 'Just... text me when you\'re back. For real this time.' },
+      { speaker: 'JP\'s Mind', text: 'Jose is the only one who still checks. Everyone else stopped asking.' },
     ],
   },
   {
@@ -393,7 +393,7 @@ export const chapter3NPCs: NPCData[] = [
     sprite: 'npc_mirror',
     dialogue: [
       { speaker: 'JP\'s Mind', text: 'Look at where you are.' },
-      { speaker: 'JP\'s Mind', text: 'Pops tried to tell you. Marcus tried to tell you. You didn\'t listen.' },
+      { speaker: 'JP\'s Mind', text: 'Pops tried to tell you. Jose tried to tell you. You didn\'t listen.' },
       { speaker: 'JP\'s Mind', text: 'Time you\'ll never get back. People who stopped picking up the phone. A reputation you gotta rebuild from scratch.' },
       { speaker: 'JP\'s Mind', text: 'So what now? Feel sorry for yourself? Blame somebody?' },
       { speaker: 'JP\'s Mind', text: 'Nah. That\'s done.' },
