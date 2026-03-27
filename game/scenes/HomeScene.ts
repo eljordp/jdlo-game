@@ -27,7 +27,7 @@ export class HomeScene extends BaseChapterScene {
 
   create() {
     super.create();
-    this.addNavArrow(10, 23, 'Leave home');
+    this.addNavArrow(10, 29, 'Leave home');
   }
 
   protected getObjectiveHint(): string {
@@ -639,294 +639,422 @@ export class HomeScene extends BaseChapterScene {
     let totalCaught = 0;
     let round = 0;
     const totalRounds = 3;
+    let gameOver = false;
 
     // Dark overlay
-    const overlay = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.7)
-      .setScrollFactor(0).setDepth(300);
-    objects.push(overlay);
+    objects.push(this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.7)
+      .setScrollFactor(0).setDepth(300));
+
+    // Scenery — grass bank at top
+    objects.push(this.add.rectangle(GAME_WIDTH / 2, 130, GAME_WIDTH - 100, 160, 0x4a8c3f)
+      .setScrollFactor(0).setDepth(300));
+
+    // JP sprite on bank
+    const jpSprite = this.add.sprite(300, 160, this.getPlayerTexture(), 0)
+      .setScale(4).setScrollFactor(0).setDepth(302);
+    objects.push(jpSprite);
+
+    // Pops sprite nearby
+    const popsSprite = this.add.sprite(180, 170, 'npc_pops', 0)
+      .setScale(3.5).setScrollFactor(0).setDepth(302);
+    objects.push(popsSprite);
+
+    // Pond — deeper blue with gradient
+    const pondY = GAME_HEIGHT / 2 + 120;
+    const pondW = GAME_WIDTH - 100;
+    const pondH = 380;
+    objects.push(this.add.rectangle(GAME_WIDTH / 2, pondY, pondW, pondH, 0x1a4878)
+      .setScrollFactor(0).setDepth(300));
+    objects.push(this.add.rectangle(GAME_WIDTH / 2, pondY - 60, pondW, 80, 0x2060a0)
+      .setScrollFactor(0).setDepth(300).setAlpha(0.5));
+
+    // Water ripple animations
+    for (let i = 0; i < 6; i++) {
+      const ripple = this.add.circle(200 + Math.random() * 900, pondY - 80 + Math.random() * 300, 15 + Math.random() * 20, 0x3080c0, 0.15)
+        .setScrollFactor(0).setDepth(301);
+      objects.push(ripple);
+      this.tweens.add({ targets: ripple, scaleX: 1.5, scaleY: 1.5, alpha: 0, duration: 2000 + Math.random() * 2000, repeat: -1, delay: Math.random() * 2000 });
+    }
 
     // Title
-    const title = this.add.text(GAME_WIDTH / 2, 50, 'FISHING WITH POPS', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '18px',
-      color: '#f0c040',
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+    const title = this.add.text(GAME_WIDTH / 2, 30, 'FISHING WITH POPS', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '16px', color: '#f0c040',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(310);
     objects.push(title);
 
     // Exit button
-    const exitBtn = this.add.text(80, 50, '< EXIT', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '10px',
-      color: '#ff6666',
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(301).setInteractive({ useHandCursor: true });
+    const exitBtn = this.add.text(80, 30, '< EXIT', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#ff6666',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(310).setInteractive({ useHandCursor: true });
     objects.push(exitBtn);
-    exitBtn.on('pointerdown', () => finishFishing());
-    const escExit = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
-    escExit.on('down', () => finishFishing());
 
     // Score
-    const scoreText = this.add.text(GAME_WIDTH - 120, 50, 'Caught: 0', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '11px',
-      color: '#ffffff',
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+    const scoreText = this.add.text(GAME_WIDTH - 100, 30, 'Caught: 0', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(310);
     objects.push(scoreText);
 
-    // Pond — blue rectangle in bottom half
-    const pondY = GAME_HEIGHT / 2 + 80;
-    const pondW = GAME_WIDTH - 200;
-    const pondH = 340;
-    const pond = this.add.rectangle(GAME_WIDTH / 2, pondY, pondW, pondH, 0x2060a0)
-      .setScrollFactor(0).setDepth(300);
-    objects.push(pond);
-
-    // Pond surface shimmer
-    const shimmer = this.add.rectangle(GAME_WIDTH / 2, pondY - 40, pondW - 40, 8, 0x3080c0, 0.4)
-      .setScrollFactor(0).setDepth(301);
-    objects.push(shimmer);
-    this.tweens.add({
-      targets: shimmer,
-      alpha: 0.15,
-      duration: 2000,
-      yoyo: true,
-      repeat: -1,
-    });
-
-    // Fishing line — thin white line from top center
-    const lineTopX = GAME_WIDTH / 2;
-    const lineTopY = pondY - pondH / 2 - 30;
-    const bobberRestY = pondY - pondH / 2 + 20;
-    const line = this.add.line(0, 0, lineTopX, lineTopY, lineTopX, bobberRestY, 0xffffff, 0.6)
-      .setScrollFactor(0).setDepth(302).setLineWidth(1);
-    objects.push(line);
-
-    // Bobber — small red circle
-    const bobber = this.add.circle(lineTopX, bobberRestY, 6, 0xff3030)
-      .setScrollFactor(0).setDepth(303);
+    // Bobber
+    const bobberX = GAME_WIDTH / 2 + 50;
+    const bobberRestY = pondY - pondH / 2 + 40;
+    const bobber = this.add.circle(bobberX, bobberRestY, 6, 0xff3030).setScrollFactor(0).setDepth(303);
     objects.push(bobber);
-    // White top half of bobber
-    const bobberTop = this.add.circle(lineTopX, bobberRestY - 3, 3, 0xffffff)
-      .setScrollFactor(0).setDepth(304);
-    objects.push(bobberTop);
+    objects.push(this.add.circle(bobberX, bobberRestY - 3, 3, 0xffffff).setScrollFactor(0).setDepth(304));
 
-    // Fish swimming under the surface — barely visible
-    const fishArr: Phaser.GameObjects.Rectangle[] = [];
+    // Fishing line from JP to bobber
+    const fishLine = this.add.line(0, 0, 320, 140, bobberX, bobberRestY, 0xffffff, 0.4)
+      .setScrollFactor(0).setDepth(302).setLineWidth(1);
+    objects.push(fishLine);
+
+    // Fish shadows (ellipse bodies + tail ellipses)
+    const fishBodies: Phaser.GameObjects.Ellipse[] = [];
+    const fishTails: Phaser.GameObjects.Ellipse[] = [];
     const fishSpeeds: number[] = [];
-    for (let i = 0; i < 5; i++) {
-      const fx = 200 + Math.random() * (GAME_WIDTH - 400);
-      const fy = pondY - 40 + Math.random() * (pondH - 100);
-      const fishW = 10 + Math.random() * 8;
-      const fish = this.add.rectangle(fx, fy, fishW, 4, 0x183050, 0.25)
+    for (let i = 0; i < 7; i++) {
+      const sx = 150 + Math.random() * 1000;
+      const sy = pondY - 60 + Math.random() * 250;
+      const bodyW = 16 + Math.random() * 16; // varied sizes
+      const bodyH = 6 + Math.random() * 4;
+      const speed = (0.4 + Math.random() * 0.6) * (Math.random() > 0.5 ? 1 : -1);
+      const tailOffsetX = speed > 0 ? -(bodyW / 2 + 3) : (bodyW / 2 + 3);
+      const body = this.add.ellipse(sx, sy, bodyW, bodyH, 0x0a2040, 0.3)
         .setScrollFactor(0).setDepth(301);
-      objects.push(fish);
-      fishArr.push(fish);
-      fishSpeeds.push((0.3 + Math.random() * 0.5) * (Math.random() > 0.5 ? 1 : -1));
+      const tail = this.add.ellipse(sx + tailOffsetX, sy, bodyW * 0.35, bodyH * 0.7, 0x0a2040, 0.25)
+        .setScrollFactor(0).setDepth(301);
+      objects.push(body); objects.push(tail);
+      fishBodies.push(body); fishTails.push(tail);
+      fishSpeeds.push(speed);
     }
-
-    // Fish movement update
     const fishUpdate = () => {
-      for (let i = 0; i < fishArr.length; i++) {
-        const f = fishArr[i];
-        if (!f.active) continue;
-        f.x += fishSpeeds[i];
-        const leftBound = GAME_WIDTH / 2 - pondW / 2 + 20;
-        const rightBound = GAME_WIDTH / 2 + pondW / 2 - 20;
-        if (f.x < leftBound) { f.x = leftBound; fishSpeeds[i] *= -1; }
-        if (f.x > rightBound) { f.x = rightBound; fishSpeeds[i] *= -1; }
+      for (let i = 0; i < fishBodies.length; i++) {
+        const b = fishBodies[i]; if (!b.active) continue;
+        b.x += fishSpeeds[i];
+        const tailOff = fishSpeeds[i] > 0 ? -(b.width / 2 + 3) : (b.width / 2 + 3);
+        fishTails[i].x = b.x + tailOff;
+        fishTails[i].y = b.y;
+        if (b.x < 100 || b.x > GAME_WIDTH - 100) fishSpeeds[i] *= -1;
       }
     };
     this.events.on('update', fishUpdate);
 
-    // Instruction text
-    const instr = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 50, 'Waiting...', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '11px',
-      color: '#aaaacc',
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+    // Reel progress bar (hidden until bite)
+    const barX = GAME_WIDTH / 2;
+    const barY = pondY - pondH / 2 - 20;
+    const barW = 300;
+    const barBg = this.add.rectangle(barX, barY, barW, 20, 0x1a1a2a).setScrollFactor(0).setDepth(305).setVisible(false);
+    const barFill = this.add.rectangle(barX - barW / 2, barY, 0, 16, 0x40c060).setOrigin(0, 0.5).setScrollFactor(0).setDepth(306).setVisible(false);
+    const barBorder = this.add.rectangle(barX, barY, barW, 20).setStrokeStyle(2, 0x4060a0).setScrollFactor(0).setDepth(307).setVisible(false).setFillStyle(0, 0);
+    objects.push(barBg, barFill, barBorder);
+
+    // Instructions
+    const instr = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 40, 'Waiting for a bite...', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#aaaacc',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(310);
     objects.push(instr);
 
     // State
-    let waiting = false;
-    let biteActive = false;
-    let biteTimer: Phaser.Time.TimerEvent | null = null;
-    let missTimer: Phaser.Time.TimerEvent | null = null;
+    let phase: 'waiting' | 'bite' | 'reeling' | 'done' = 'waiting';
+    let reelProgress = 0;
+    let reelDecay = 0;
+
+    const fishData = [
+      { name: 'Largemouth Bass', size: '3.2 lbs', color: 0x408040 },
+      { name: 'Rainbow Trout', size: '1.8 lbs', color: 0xc06080 },
+      { name: 'Channel Catfish', size: '5.1 lbs', color: 0x706050 },
+    ];
 
     const startRound = () => {
-      waiting = true;
-      biteActive = false;
-      instr.setText(`Round ${round + 1}/${totalRounds} — Wait for a bite...`);
-      bobber.setPosition(lineTopX, bobberRestY);
-      bobberTop.setPosition(lineTopX, bobberRestY - 3);
-      line.setTo(lineTopX, lineTopY, lineTopX, bobberRestY);
+      phase = 'waiting';
+      reelProgress = 0;
+      barFill.displayWidth = 0;
+      barBg.setVisible(false); barFill.setVisible(false); barBorder.setVisible(false);
+      instr.setText(`Round ${round + 1}/${totalRounds} — Casting...`);
 
-      // Random wait 2-5 seconds before bite
-      const waitTime = 2000 + Math.random() * 3000;
-      biteTimer = this.time.delayedCall(waitTime, () => {
-        triggerBite();
+      // --- Cast animation ---
+      // Start bobber near JP, animate it to the pond
+      bobber.setPosition(340, 160);
+      fishLine.setTo(320, 140, 340, 160);
+
+      // "Cast!" text
+      const castText = this.add.text(GAME_WIDTH / 2, pondY - 120, 'Cast!', {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '12px', color: '#f0c040',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(310).setAlpha(1);
+      objects.push(castText);
+      this.tweens.add({ targets: castText, alpha: 0, y: pondY - 160, duration: 800, ease: 'Quad.easeOut' });
+
+      // Tween bobber to pond
+      this.tweens.add({
+        targets: bobber,
+        x: bobberX,
+        y: bobberRestY,
+        duration: 500,
+        ease: 'Quad.easeOut',
+        onUpdate: () => {
+          fishLine.setTo(320, 140, bobber.x, bobber.y);
+        },
+        onComplete: () => {
+          // Splash circle at landing
+          const splash = this.add.circle(bobberX, bobberRestY, 4, 0x80c0ff, 0.7)
+            .setScrollFactor(0).setDepth(303);
+          objects.push(splash);
+          this.tweens.add({ targets: splash, radius: 20, alpha: 0, scaleX: 3, scaleY: 2, duration: 500, onComplete: () => splash.destroy() });
+
+          instr.setText(`Round ${round + 1}/${totalRounds} — Wait for a bite...`);
+
+          // Gentle bobber float
+          this.tweens.add({ targets: bobber, y: bobberRestY + 4, duration: 1500, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+
+          this.time.delayedCall(2000 + Math.random() * 3000, () => {
+            if (gameOver || phase !== 'waiting') return;
+            triggerBite();
+          });
+        },
       });
     };
 
     const triggerBite = () => {
-      biteActive = true;
-      waiting = false;
+      phase = 'bite';
+      this.tweens.killTweensOf(bobber);
+      this.tweens.add({ targets: bobber, y: bobberRestY + 20, duration: 100, yoyo: true, repeat: 5, ease: 'Bounce.easeOut' });
+      this.cameras.main.shake(150, 0.006);
+      instr.setText('MASH SPACE to reel it in!');
+      instr.setColor('#ff4444');
 
-      // Bobber dips down
-      this.tweens.add({
-        targets: bobber,
-        y: bobberRestY + 14,
-        duration: 150,
-        yoyo: true,
-        repeat: 2,
-        ease: 'Bounce.easeOut',
-      });
-      this.tweens.add({
-        targets: bobberTop,
-        y: bobberRestY + 11,
-        duration: 150,
-        yoyo: true,
-        repeat: 2,
-        ease: 'Bounce.easeOut',
-      });
-
-      // Flash BITE! text
-      const biteText = this.add.text(GAME_WIDTH / 2, pondY - pondH / 2 - 10, 'BITE!', {
-        fontFamily: '"Press Start 2P", monospace',
-        fontSize: '20px',
-        color: '#ff4444',
-      }).setOrigin(0.5).setScrollFactor(0).setDepth(305);
+      // "BITE!" flash text
+      const biteText = this.add.text(bobberX, pondY - 20, 'BITE!', {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '22px', color: '#ff2222',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(312).setScale(0.3);
       objects.push(biteText);
+      this.tweens.add({ targets: biteText, scale: 1.4, alpha: 0, duration: 300, ease: 'Quad.easeOut', onComplete: () => biteText.destroy() });
 
-      // Blink the text
-      this.tweens.add({
-        targets: biteText,
-        alpha: 0.3,
-        duration: 200,
-        yoyo: true,
-        repeat: 4,
-      });
+      // Show reel bar
+      barBg.setVisible(true); barFill.setVisible(true); barBorder.setVisible(true);
+      reelProgress = 0;
+      reelDecay = 0.4 + round * 0.15; // harder each round
+      phase = 'reeling';
 
-      instr.setText('SPACE to reel in!');
+      // Fish fights back — progress decays over time
+      const reelUpdate = () => {
+        if (phase !== 'reeling' || gameOver) { this.events.off('update', reelUpdate); return; }
+        reelProgress -= reelDecay;
+        if (reelProgress < 0) reelProgress = 0;
+        barFill.displayWidth = (reelProgress / 100) * barW;
+        // Color gradient: green → yellow → full
+        if (reelProgress > 70) barFill.setFillStyle(0x40f060);
+        else if (reelProgress > 40) barFill.setFillStyle(0xf0c040);
+        else barFill.setFillStyle(0x40c060);
 
-      // 1 second window to react
-      missTimer = this.time.delayedCall(1000, () => {
-        if (!biteActive) return;
-        biteActive = false;
-        biteText.destroy();
+        if (reelProgress >= 100) {
+          phase = 'done';
+          this.events.off('update', reelUpdate);
+          catchFish();
+        }
+      };
+      this.events.on('update', reelUpdate);
 
-        const missText = this.add.text(GAME_WIDTH / 2, pondY - 30, 'It got away.', {
-          fontFamily: '"Press Start 2P", monospace',
-          fontSize: '14px',
-          color: '#ff8888',
-        }).setOrigin(0.5).setScrollFactor(0).setDepth(305);
-        objects.push(missText);
-
-        this.time.delayedCall(1500, () => {
-          missText.destroy();
-          round++;
-          if (round < totalRounds) {
-            startRound();
-          } else {
-            finishFishing();
-          }
-        });
+      // Timeout — 5 seconds to reel it in
+      this.time.delayedCall(5000, () => {
+        if (phase === 'reeling') {
+          phase = 'done';
+          missRound();
+        }
       });
     };
 
-    const reelIn = () => {
-      if (biteActive) {
-        biteActive = false;
-        if (missTimer) { missTimer.remove(); missTimer = null; }
-        totalCaught++;
-        scoreText.setText(`Caught: ${totalCaught}`);
+    const catchPhrases = ["That's a keeper!", "Nice one, son!", "Just like when you were little."];
+    const missPhrases = ["Almost had it.", "They're fighters today.", "Patience, JP."];
 
-        // Destroy the BITE text if it exists
-        const biteTexts = objects.filter(o => o.active && o instanceof Phaser.GameObjects.Text && (o as Phaser.GameObjects.Text).text === 'BITE!');
-        biteTexts.forEach(t => t.destroy());
+    const showPopsComment = (caught: boolean) => {
+      const phrases = caught ? catchPhrases : missPhrases;
+      const line = phrases[Math.floor(Math.random() * phrases.length)];
+      const bubble = this.add.text(popsSprite.x + 40, popsSprite.y - 40, line, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#ffffff',
+        backgroundColor: '#333355', padding: { x: 6, y: 4 },
+      }).setOrigin(0, 1).setScrollFactor(0).setDepth(312);
+      objects.push(bubble);
+      this.tweens.add({ targets: bubble, alpha: 0, delay: 1200, duration: 300, onComplete: () => bubble.destroy() });
+    };
 
-        // Fish caught message
-        const fishNames = ['a bass', 'a trout', 'a catfish'];
-        const caughtText = this.add.text(GAME_WIDTH / 2, pondY - 60, `JP caught ${fishNames[round] || 'a fish'}!`, {
-          fontFamily: '"Press Start 2P", monospace',
-          fontSize: '14px',
-          color: '#40c040',
-        }).setOrigin(0.5).setScrollFactor(0).setDepth(305);
-        objects.push(caughtText);
-
-        // Show caught fish sprite (a visible shape)
-        const caughtFish = this.add.rectangle(GAME_WIDTH / 2, pondY - 30, 24, 10, 0x4090c0)
-          .setScrollFactor(0).setDepth(305);
-        objects.push(caughtFish);
+    const spawnSplashParticles = () => {
+      for (let i = 0; i < 9; i++) {
+        const angle = (Math.PI * 2 / 9) * i + (Math.random() - 0.5) * 0.4;
+        const dist = 30 + Math.random() * 30;
+        const p = this.add.circle(bobber.x, bobber.y, 2 + Math.random() * 3, 0x60a0e0, 0.8)
+          .setScrollFactor(0).setDepth(309);
+        objects.push(p);
         this.tweens.add({
-          targets: caughtFish,
-          y: pondY - 80,
-          alpha: 0,
-          duration: 1500,
-          ease: 'Quad.easeOut',
-        });
-
-        this.time.delayedCall(2000, () => {
-          caughtText.destroy();
-          round++;
-          if (round < totalRounds) {
-            startRound();
-          } else {
-            finishFishing();
-          }
+          targets: p,
+          x: bobber.x + Math.cos(angle) * dist,
+          y: bobber.y + Math.sin(angle) * dist,
+          alpha: 0, scale: 0.3, duration: 400 + Math.random() * 200, ease: 'Quad.easeOut',
+          onComplete: () => p.destroy(),
         });
       }
     };
 
-    const finishFishing = () => {
-      this.events.off('update', fishUpdate);
-      spaceKey.off('down', reelListener);
-      this.input.off('pointerdown', reelListener);
+    const catchFish = () => {
+      totalCaught++;
+      scoreText.setText(`Caught: ${totalCaught}`);
+      barBg.setVisible(false); barFill.setVisible(false); barBorder.setVisible(false);
+      this.cameras.main.flash(300, 255, 255, 255);
 
-      instr.setText(`Total catch: ${totalCaught}/${totalRounds}`);
+      // Splash particles
+      spawnSplashParticles();
+
+      const fish = fishData[round] || fishData[0];
+      const caughtText = this.add.text(GAME_WIDTH / 2, pondY - 100, `${fish.name}\n${fish.size}`, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '14px', color: '#40f060', align: 'center', lineSpacing: 8,
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(310);
+      objects.push(caughtText);
+
+      // Fish shape flies up
+      const fishShape = this.add.rectangle(GAME_WIDTH / 2, pondY - 40, 30, 12, fish.color).setScrollFactor(0).setDepth(308);
+      objects.push(fishShape);
+      this.tweens.add({ targets: fishShape, y: pondY - 140, alpha: 0, duration: 1200, ease: 'Quad.easeOut' });
+
+      instr.setText('Nice catch!');
+      instr.setColor('#40f060');
+
+      // Pops commentary
+      this.time.delayedCall(600, () => showPopsComment(true));
+
+      this.time.delayedCall(2500, () => {
+        caughtText.destroy();
+        round++;
+        if (round < totalRounds) startRound();
+        else finishFishing();
+      });
+    };
+
+    const missRound = () => {
+      barBg.setVisible(false); barFill.setVisible(false); barBorder.setVisible(false);
+      const miss = this.add.text(GAME_WIDTH / 2, pondY - 80, 'It got away!', {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '14px', color: '#ff6666',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(310);
+      objects.push(miss);
+      instr.setText('Too slow...');
+      instr.setColor('#ff6666');
+
+      // Pops commentary
+      this.time.delayedCall(600, () => showPopsComment(false));
+
+      this.time.delayedCall(2500, () => {
+        miss.destroy();
+        round++;
+        if (round < totalRounds) startRound();
+        else finishFishing();
+      });
+    };
+
+    // Space = reel (add progress)
+    const reelInput = () => {
+      if (phase === 'reeling') {
+        reelProgress += 8;
+        // Bobber jerks up
+        this.tweens.add({ targets: bobber, y: bobberRestY - 5, duration: 50, yoyo: true });
+      }
+    };
+
+    const finishFishing = () => {
+      gameOver = true;
+      this.events.off('update', fishUpdate);
+      spaceKey.off('down', reelInput);
+      this.input.off('pointerdown', reelInput);
+      escKey.off('down', exitHandler);
+
       title.setText(totalCaught === totalRounds ? 'FULL BUCKET!' : totalCaught > 0 ? 'NOT BAD' : 'SKUNKED');
+      instr.setText(`Total: ${totalCaught}/${totalRounds}`);
+      instr.setColor('#ffffff');
 
       this.time.delayedCall(2000, () => {
-        // Cleanup mini-game visuals
-        for (const obj of objects) {
-          if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
-        }
-
-        // Post-fishing dialogue from Pops
+        for (const obj of objects) { if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy(); }
         this.dialogue.show([
           { speaker: 'Pops', text: 'Not bad. Remember when we used to do this every weekend?' },
           { speaker: 'JP', text: 'Yeah. I miss that.' },
           { speaker: 'Pops', text: 'We\'ll do it again. When you come back.' },
-        ], () => {
-          this.frozen = false;
-        });
+        ], () => { this.frozen = false; });
       });
     };
 
-    // Input
     const spaceKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-    const reelListener = () => reelIn();
-    spaceKey.on('down', reelListener);
-    this.input.on('pointerdown', reelListener);
+    spaceKey.on('down', reelInput);
+    this.input.on('pointerdown', reelInput);
+    const escKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+    const exitHandler = () => finishFishing();
+    escKey.on('down', exitHandler);
+    exitBtn.on('pointerdown', exitHandler);
 
-    // Start first round
     startRound();
   }
 
   private playGoodbyeCutscene() {
     this.frozen = true;
 
-    // Step 1: JP looks around
+    // Step 1: Ask if ready to leave
     this.dialogue.show([
-      { speaker: 'Narrator', text: 'JP looks around his room one last time.' },
+      { speaker: 'Narrator', text: 'Ready to head to Santa Barbara?' },
     ], () => {
-      // Step 2: Walk automatically toward the door (south a couple tiles)
-      const doorY = this.player.y + SCALED_TILE * 2;
+      // Show yes/no choice
+      const cx = GAME_WIDTH / 2;
+      const cy = GAME_HEIGHT / 2;
+
+      const yesBg = this.add.rectangle(cx - 80, cy, 120, 40, 0x30a040)
+        .setScrollFactor(0).setDepth(200).setInteractive({ useHandCursor: true });
+      const yesText = this.add.text(cx - 80, cy, 'Yeah', {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '12px', color: '#ffffff',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(201);
+
+      const noBg = this.add.rectangle(cx + 80, cy, 120, 40, 0xa03030)
+        .setScrollFactor(0).setDepth(200).setInteractive({ useHandCursor: true });
+      const noText = this.add.text(cx + 80, cy, 'Not yet', {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '12px', color: '#ffffff',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(201);
+
+      yesBg.on('pointerover', () => yesBg.setFillStyle(0x40c050));
+      yesBg.on('pointerout', () => yesBg.setFillStyle(0x30a040));
+      noBg.on('pointerover', () => noBg.setFillStyle(0xc04040));
+      noBg.on('pointerout', () => noBg.setFillStyle(0xa03030));
+
+      const cleanup = () => {
+        yesBg.destroy(); yesText.destroy();
+        noBg.destroy(); noText.destroy();
+      };
+
+      noBg.on('pointerdown', () => {
+        cleanup();
+        this.frozen = false;
+      });
+
+      yesBg.on('pointerdown', () => {
+        cleanup();
+        this.runGoodbyeSequence();
+      });
+
+      // Space = yes by default
+      const spaceKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+      const spaceHandler = () => {
+        spaceKey.off('down', spaceHandler);
+        cleanup();
+        this.runGoodbyeSequence();
+      };
+      spaceKey.on('down', spaceHandler);
+    });
+  }
+
+  private runGoodbyeSequence() {
+    // JP takes one last look
+    this.dialogue.show([
+      { speaker: 'Narrator', text: 'JP takes one last look around. This is home.' },
+    ], () => {
+      // Walk south toward the street
+      const exitY = this.player.y + SCALED_TILE * 2;
       this.tweens.add({
         targets: this.player,
-        y: doorY,
+        y: exitY,
         duration: 800,
         ease: 'Linear',
         onComplete: () => {
-          // Step 3: Screen dims slightly
+          // Screen dims
           const dim = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000)
             .setScrollFactor(0).setDepth(50).setAlpha(0);
           this.tweens.add({
@@ -934,19 +1062,16 @@ export class HomeScene extends BaseChapterScene {
             alpha: 0.3,
             duration: 400,
             onComplete: () => {
-              // Step 4: Emotional dialogue
               this.dialogue.show([
                 { speaker: 'Narrator', text: 'He grabs his bag. Hugs his sister. Daps up Pops.' },
                 { speaker: 'Narrator', text: 'Ivy whines at the door. She knows.' },
               ], () => {
-                // Step 5: Walk south toward exit
                 this.tweens.add({
                   targets: this.player,
                   y: this.player.y + SCALED_TILE * 2,
                   duration: 1000,
                   ease: 'Linear',
                   onComplete: () => {
-                    // Fade dim back out, unfreeze, trigger transition
                     this.tweens.add({
                       targets: dim,
                       alpha: 0,
@@ -972,6 +1097,7 @@ export class HomeScene extends BaseChapterScene {
     let score = 0;
     let round = 0;
     const totalRounds = 3;
+    let gameEnded = false;
 
     // Dark overlay
     const overlay = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.6)
@@ -1018,29 +1144,46 @@ export class HomeScene extends BaseChapterScene {
     // Ivy sprite (near JP)
     const frenchie = this.npcs.find(n => n.id === 'ch0_frenchie');
     const ivyTexture = frenchie ? 'npc_frenchie' : this.getPlayerTexture();
-    const ivy = this.add.sprite(260, GAME_HEIGHT / 2 + 140, ivyTexture, 0)
+    const ivyStartX = 260;
+    const ivyStartY = GAME_HEIGHT / 2 + 140;
+    const ivy = this.add.sprite(ivyStartX, ivyStartY, ivyTexture, 0)
       .setScale(4).setScrollFactor(0).setDepth(302);
     objects.push(ivy);
+
+    // Idle tail wag animation
+    this.tweens.add({ targets: ivy, angle: 3, duration: 200, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
 
     // Aim line (oscillating angle indicator)
     const aimLine = this.add.line(0, 0, 200, GAME_HEIGHT / 2 + 80, 500, GAME_HEIGHT / 2 - 100, 0xffffff, 0.6)
       .setScrollFactor(0).setDepth(301).setLineWidth(2);
     objects.push(aimLine);
 
+    // Power bar (vertical, near JP)
+    const powerBarX = 120;
+    const powerBarY = GAME_HEIGHT / 2 - 20;
+    const powerBarH = 200;
+    const powerBarW = 16;
+    const powerBg = this.add.rectangle(powerBarX, powerBarY, powerBarW, powerBarH, 0x1a1a2a)
+      .setScrollFactor(0).setDepth(303);
+    objects.push(powerBg);
+    const powerFill = this.add.rectangle(powerBarX, powerBarY + powerBarH / 2, powerBarW - 4, 0, 0x40c060)
+      .setOrigin(0.5, 1).setScrollFactor(0).setDepth(304);
+    objects.push(powerFill);
+    const powerBorder = this.add.rectangle(powerBarX, powerBarY, powerBarW, powerBarH)
+      .setStrokeStyle(2, 0x4060a0).setFillStyle(0, 0).setScrollFactor(0).setDepth(305);
+    objects.push(powerBorder);
+    const powerLabel = this.add.text(powerBarX, powerBarY - powerBarH / 2 - 14, 'PWR', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#aaaacc',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(305);
+    objects.push(powerLabel);
+
     // Instruction
-    const instr = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 60, 'SPACE to throw!', {
+    const instr = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 60, 'Hold SPACE to charge, release to throw!', {
       fontFamily: '"Press Start 2P", monospace',
-      fontSize: '11px',
+      fontSize: '9px',
       color: '#ffffff',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
     objects.push(instr);
-
-    // Obstacles — trees/walls on edges of yard
-    const wallZones = [
-      { x: 100, y: 300, w: 40, h: 500 },  // left wall
-      { x: GAME_WIDTH - 100, y: 300, w: 40, h: 500 },  // right wall
-      { x: GAME_WIDTH / 2, y: 150, w: 800, h: 40 },  // top wall
-    ];
 
     // Aim angle oscillation
     let aimAngle = 0;
@@ -1048,41 +1191,90 @@ export class HomeScene extends BaseChapterScene {
     let aiming = true;
     const aimSpeed = 0.03;
 
-    const startRound = () => {
+    // Power charge state
+    let charging = false;
+    let power = 0;
+    const maxPower = 100;
+    const chargeSpeed = 1.8; // per frame
+    let powerOscDir = 1;
+
+    const startRound = (animate: boolean) => {
+      if (animate && (ivy.x !== ivyStartX || ivy.y !== ivyStartY)) {
+        // Animate Ivy running back to JP
+        aiming = false;
+        aimLine.setVisible(false);
+        this.tweens.add({
+          targets: ivy,
+          x: ivyStartX,
+          y: ivyStartY,
+          duration: 500,
+          ease: 'Quad.easeInOut',
+          onComplete: () => {
+            ivy.setAngle(0);
+            beginAiming();
+          },
+        });
+      } else {
+        ivy.setPosition(ivyStartX, ivyStartY);
+        beginAiming();
+      }
+    };
+
+    const beginAiming = () => {
       aiming = true;
+      charging = false;
+      power = 0;
+      powerFill.displayHeight = 0;
       aimAngle = 0;
       aimDir = 1;
       aimLine.setVisible(true);
-      instr.setText(`Round ${round + 1}/${totalRounds} — SPACE to throw!`);
-      ivy.setPosition(260, GAME_HEIGHT / 2 + 140);
+      instr.setText(`Round ${round + 1}/${totalRounds} — Hold SPACE to charge!`);
     };
 
-    // Update aim line
+    // Update aim line + power
     const updateHandler = () => {
-      if (!aiming) return;
-      aimAngle += aimSpeed * aimDir;
-      if (aimAngle > 1.2) aimDir = -1;
-      if (aimAngle < -1.2) aimDir = 1;
+      if (gameEnded) return;
+      if (aiming) {
+        aimAngle += aimSpeed * aimDir;
+        if (aimAngle > 1.2) aimDir = -1;
+        if (aimAngle < -1.2) aimDir = 1;
 
-      // Update line end point based on angle
-      const throwDist = 500;
-      const endX = 200 + Math.cos(-0.3 + aimAngle * 0.8) * throwDist;
-      const endY = (GAME_HEIGHT / 2 + 80) + Math.sin(-0.3 + aimAngle * 0.8) * throwDist;
-      aimLine.setTo(200, GAME_HEIGHT / 2 + 80, endX, endY);
+        // Aim line length based on current power (min 150, max 500)
+        const throwDist = 150 + (power / maxPower) * 350;
+        const endX = 200 + Math.cos(-0.3 + aimAngle * 0.8) * throwDist;
+        const endY = (GAME_HEIGHT / 2 + 80) + Math.sin(-0.3 + aimAngle * 0.8) * throwDist;
+        aimLine.setTo(200, GAME_HEIGHT / 2 + 80, endX, endY);
+      }
+
+      // Charge power while holding
+      if (charging && aiming) {
+        power += chargeSpeed * powerOscDir;
+        if (power >= maxPower) { power = maxPower; powerOscDir = -1; }
+        if (power <= 30 && powerOscDir === -1) { powerOscDir = 1; }
+        powerFill.displayHeight = (power / maxPower) * (powerBarH - 4);
+
+        // Color: green → yellow → red at max
+        if (power > 80) powerFill.setFillStyle(0xf04040);
+        else if (power > 50) powerFill.setFillStyle(0xf0c040);
+        else powerFill.setFillStyle(0x40c060);
+      }
     };
 
     this.events.on('update', updateHandler);
 
-    // Throw handler
     const throwBall = () => {
-      if (!aiming) return;
+      if (!aiming || !charging) return;
+      charging = false;
       aiming = false;
       aimLine.setVisible(false);
 
-      // Calculate throw direction
-      const throwDist = 500;
+      const throwPower = Math.max(power, 20); // minimum throw
+      const throwDist = 150 + (throwPower / maxPower) * 350;
       const endX = 200 + Math.cos(-0.3 + aimAngle * 0.8) * throwDist;
       const endY = (GAME_HEIGHT / 2 + 80) + Math.sin(-0.3 + aimAngle * 0.8) * throwDist;
+
+      // JP throw animation
+      this.tweens.add({ targets: jpSprite, scaleX: 5.5, duration: 80, yoyo: true });
 
       // Create ball
       const ball = this.add.circle(200, GAME_HEIGHT / 2 + 80, 8, 0xc0d030)
@@ -1094,21 +1286,53 @@ export class HomeScene extends BaseChapterScene {
         targets: ball,
         x: endX,
         y: endY,
-        duration: 600,
+        duration: 400 + (throwDist / 500) * 300,
         ease: 'Quad.easeOut',
         onComplete: () => {
-          // Check if ball landed in yard (not hitting walls)
           const inYard = endX > 140 && endX < GAME_WIDTH - 140 &&
                          endY > 180 && endY < GAME_HEIGHT - 80;
 
+          // Ball bounce on landing
+          this.tweens.add({
+            targets: ball,
+            y: ball.y - 20,
+            duration: 120,
+            yoyo: true,
+            ease: 'Quad.easeOut',
+          });
+
+          // Dust puff at landing
+          for (let d = 0; d < 3; d++) {
+            const dust = this.add.circle(
+              endX + Phaser.Math.Between(-15, 15),
+              endY + Phaser.Math.Between(-5, 5),
+              3 + Math.random() * 3, 0x8a7a5a, 0.5
+            ).setScrollFactor(0).setDepth(302);
+            objects.push(dust);
+            this.tweens.add({
+              targets: dust,
+              y: dust.y - 10 - Math.random() * 10,
+              alpha: 0,
+              scale: 2,
+              duration: 400,
+              delay: d * 60,
+              onComplete: () => dust.destroy(),
+            });
+          }
+
           if (inYard) {
             // Ivy chases ball
+            this.tweens.killTweensOf(ivy);
             this.tweens.add({
               targets: ivy,
               x: endX,
               y: endY,
-              duration: 700,
+              duration: 500 + throwDist * 0.5,
               ease: 'Quad.easeInOut',
+              onUpdate: () => {
+                // Flip Ivy to face direction of travel
+                ivy.setFlipX(ivy.x > endX);
+              },
               onComplete: () => {
                 ball.destroy();
                 score++;
@@ -1122,24 +1346,26 @@ export class HomeScene extends BaseChapterScene {
                 }).setOrigin(0.5).setScrollFactor(0).setDepth(303);
                 objects.push(good);
 
-                // Wiggle
+                // Wiggle celebration
                 this.tweens.add({
                   targets: ivy,
-                  angle: 8,
-                  duration: 100,
+                  angle: 10,
+                  duration: 80,
                   yoyo: true,
-                  repeat: 3,
+                  repeat: 4,
                   onComplete: () => {
-                    ivy.setAngle(0);
                     this.tweens.add({
                       targets: good,
                       alpha: 0,
+                      y: good.y - 20,
                       duration: 500,
                       onComplete: () => {
                         good.destroy();
+                        // Restart tail wag
+                        this.tweens.add({ targets: ivy, angle: 3, duration: 200, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
                         round++;
                         if (round < totalRounds) {
-                          startRound();
+                          startRound(true);
                         } else {
                           finishGame();
                         }
@@ -1150,7 +1376,7 @@ export class HomeScene extends BaseChapterScene {
               },
             });
           } else {
-            // Missed — ball hit a wall
+            // Missed — ball out of bounds
             ball.setFillStyle(0xff4444);
             const miss = this.add.text(endX, endY - 30, 'Out of bounds!', {
               fontFamily: '"Press Start 2P", monospace',
@@ -1159,12 +1385,15 @@ export class HomeScene extends BaseChapterScene {
             }).setOrigin(0.5).setScrollFactor(0).setDepth(303);
             objects.push(miss);
 
-            this.time.delayedCall(1000, () => {
+            // Ivy looks confused (tilts head)
+            this.tweens.add({ targets: ivy, angle: -15, duration: 200, yoyo: true, hold: 400 });
+
+            this.time.delayedCall(1200, () => {
               ball.destroy();
               miss.destroy();
               round++;
               if (round < totalRounds) {
-                startRound();
+                startRound(true);
               } else {
                 finishGame();
               }
@@ -1174,13 +1403,28 @@ export class HomeScene extends BaseChapterScene {
       });
     };
 
+    // Charge start (space down)
+    const startCharge = () => {
+      if (!aiming || gameEnded) return;
+      charging = true;
+      power = 0;
+      powerOscDir = 1;
+    };
+
+    // Release throw (space up)
+    const releaseThrow = () => {
+      if (charging && aiming) throwBall();
+    };
+
     const finishGame = () => {
+      gameEnded = true;
       this.events.off('update', updateHandler);
-      spaceKey.off('down', throwListener);
-      this.input.off('pointerdown', throwListener);
+      spaceKey.off('down', startCharge);
+      spaceKey.off('up', releaseThrow);
+      this.input.off('pointerdown', tapThrow);
 
       instr.setText(`Ivy fetched ${score}/${totalRounds} balls!`);
-      title.setText(score === totalRounds ? 'PERFECT!' : score > 0 ? 'GOOD BOY JP!' : 'TRY AGAIN...');
+      title.setText(score === totalRounds ? 'PERFECT!' : score > 0 ? 'GOOD GIRL IVY!' : 'NEXT TIME...');
 
       const resultMsg = score === totalRounds
         ? 'Ivy is the happiest dog alive.'
@@ -1196,21 +1440,40 @@ export class HomeScene extends BaseChapterScene {
       }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
       objects.push(result);
 
-      this.time.delayedCall(3000, () => {
+      const finalScore = score;
+      this.time.delayedCall(2500, () => {
         for (const obj of objects) {
           if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
         }
-        this.frozen = false;
+        // Post-game dialogue
+        const dialogueLines = finalScore === totalRounds
+          ? [{ speaker: 'Narrator', text: 'Ivy drops the ball at JP\'s feet. Tail going crazy.' }]
+          : finalScore > 0
+          ? [{ speaker: 'Narrator', text: 'Ivy rolls onto her back. She doesn\'t care about the score.' }]
+          : [{ speaker: 'Narrator', text: 'Ivy stares at JP. Still the best girl.' }];
+        this.dialogue.show(dialogueLines, () => { this.frozen = false; });
       });
     };
 
-    // Input
+    // Input — hold space to charge, release to throw
     const spaceKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-    const throwListener = () => throwBall();
-    spaceKey.on('down', throwListener);
-    this.input.on('pointerdown', throwListener);
+    spaceKey.on('down', startCharge);
+    spaceKey.on('up', releaseThrow);
+    // Touch/click: tap to start charge, tap again to throw
+    let tapCharging = false;
+    const tapThrow = () => {
+      if (gameEnded) return;
+      if (!tapCharging) {
+        startCharge();
+        tapCharging = true;
+      } else {
+        releaseThrow();
+        tapCharging = false;
+      }
+    };
+    this.input.on('pointerdown', tapThrow);
 
     // Start first round
-    startRound();
+    startRound(false);
   }
 }

@@ -100,15 +100,15 @@ export const homeMap: MapData = {
     [ G, G, T, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, T, G ], // 1  scattered trees
     [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 2  open grass
     [ G, G, G, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, G, G, G ], // 3  roof line
-    [ G, G, G, K, A, A, A, A, A, A, K, A, A, A, A, A, K, A, A, A, A, A, A, A, K, A, A, A, A, A, A, K, F, F, F, F, K, G, G, G ], // 4  JP room (carpet) | sister (carpet) | parents (carpet) | bathroom (tile)
-    [ G, G, G, K, A, A, A, A, A, A, K, A, A, A, A, A, K, A, A, A, A, A, A, A, K, A, A, A, A, A, A, K, F, F, F, F, K, G, G, G ], // 5
-    [ G, G, G, K, A, A, A, A, A, A, K, A, A, A, A, A, K, A, A, A, A, A, A, A, K, A, A, A, A, A, A, K, F, F, F, F, K, G, G, G ], // 6
-    [ G, G, G, K, A, A, A, A, A, A, K, A, A, A, A, A, K, A, A, A, A, A, A, A, K, A, A, A, A, A, A, K, F, F, F, F, K, G, G, G ], // 7
-    [ G, G, G, K, A, A, A, A, A, A, K, A, A, A, A, A, K, A, A, A, A, A, A, A, K, A, A, A, A, A, A, K, F, F, F, F, K, G, G, G ], // 8
+    [ G, G, G, K, A, A, A, A, A, A, K, A, A, A, A, A, K, A, A, A, A, A, A, A, A, A, A, A, A, A, A, K, F, F, F, F, K, G, G, G ], // 4  JP room | sister | parents (master) | bathroom
+    [ G, G, G, K, A, A, A, A, A, A, K, A, A, A, A, A, K, A, A, A, A, A, A, A, A, A, A, A, A, A, A, K, F, F, F, F, K, G, G, G ], // 5
+    [ G, G, G, K, A, A, A, A, A, A, K, A, A, A, A, A, K, A, A, A, A, A, A, A, A, A, A, A, A, A, A, K, F, F, F, F, K, G, G, G ], // 6
+    [ G, G, G, K, A, A, A, A, A, A, K, A, A, A, A, A, K, A, A, A, A, A, A, A, A, A, A, A, A, A, A, K, F, F, F, F, K, G, G, G ], // 7
+    [ G, G, G, K, A, A, A, A, A, A, K, A, A, A, A, A, K, A, A, A, A, A, A, A, A, A, A, A, A, A, A, K, F, F, F, F, K, G, G, G ], // 8
     [ G, G, G, K, K, K, K, K, O, K, K, K, K, O, K, K, K, K, K, K, O, K, K, K, K, K, K, K, O, K, K, K, K, O, K, K, K, G, G, G ], // 9  doors to hallway
     [ G, G, G, K, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, K, G, G, G ], // 10 hallway (hardwood)
     [ G, G, G, K, K, K, K, O, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, G, G, G ], // 11 door to living area
-    [ G, G, G, K, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, N, N, N, J, J, J, J, J, J, J, J, J, J, J, J, J, J, K, G, G, G ], // 12 living + kitchen (marble island)
+    [ G, G, G, K, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, N, N, N, J, J, J, N, N, N, N, J, J, J, J, J, J, J, K, G, G, G ], // 12 living + kitchen island + dining table
     [ G, G, G, K, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, K, G, G, G ], // 13
     [ G, G, G, K, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, N, N, N, N, J, K, G, G, G ], // 14 marble wall counters (kitchen right side)
     [ G, G, G, K, K, K, K, K, K, K, K, K, K, O, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, O, K, K, K, K, K, K, G, G, G ], // 15 front door + backyard door (col 30, kitchen side)
@@ -116,36 +116,42 @@ export const homeMap: MapData = {
     [ G, G, E, E, E, E, E, E, E, E, E, E, E, C, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, C, B, C, C, C, C, B, E, G, G ], // 17 fence + garage interior
     [ G, G, E, G, G, I, T, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, I, G, G, G, G, G, G, G, G, B, C, C, C, C, B, E, G, G ], // 18 yard + garage interior
     [ G, G, E, G, G, G, I, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, B, B, B, O, B, B, E, G, G ], // 19 yard + garage door (south)
-    [ G, G, E, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, W, W, W, W, W, G, G, G, G, L, G, G, E, G, G ], // 20 pond + palm
+    [ G, G, E, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, W, W, W, W, W, G, G, G, G, G, G, G, E, G, G ], // 20 pond (palm removed for garage access)
     [ G, G, E, G, T, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, T, W, W, W, W, G, G, G, G, G, G, G, E, G, G ], // 21 tree near pond
     [ G, G, E, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, I, W, W, G, G, G, G, G, G, G, G, E, G, G ], // 22 dirt near pond edge
     [ G, G, E, G, G, G, T, G, G, L, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, T, G, G, E, G, G ], // 23 trees + palm
-    [ G, G, E, E, E, E, E, E, E, E, E, E, E, C, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, G, G ], // 24 fence bottom
-    [ E, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, E ], // 25 curb + driveway
-    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 26 road
-    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 27 road (solid concrete)
-    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 28 road (solid concrete)
-    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 29
+    [ G, G, E, G, G, G, G, G, G, G, G, G, G, C, G, G, G, I, I, I, I, I, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, E, G, G ], // 24 garden plot top
+    [ G, G, E, G, G, G, G, G, G, G, G, G, G, C, G, G, G, I, G, G, G, I, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, E, G, G ], // 25 garden interior
+    [ G, G, E, G, G, G, G, G, G, G, G, G, G, C, G, G, G, I, I, I, I, I, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, E, G, G ], // 26 garden plot bottom
+    [ G, G, E, G, G, G, G, T, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, L, G, G, G, G, G, G, G, E, G, G ], // 27 tree + palm
+    [ G, G, E, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, E, G, G ], // 28 open grass
+    [ G, G, E, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, E, G, G ], // 29 open grass
+    [ G, G, E, E, E, E, E, E, E, E, E, E, E, C, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, G, G ], // 30 fence bottom
+    [ E, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, E ], // 31 curb + driveway
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 32 road
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 33 road
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 34 road
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 35 road
   ],
   collisions: [...STANDARD_COLLISIONS],
   spawns: {
     player: { x: 7, y: 6 },
     npcs: [
       { id: 'ch0_pops',    x: 8,  y: 13, sprite: 'npc_pops' },
-      { id: 'ch0_mom',     x: 28, y: 13, sprite: 'npc_female' },
+      { id: 'ch0_mom',     x: 26, y: 13, sprite: 'npc_female' },
       { id: 'ch0_sister',  x: 13, y: 6,  sprite: 'npc_sister' },
       { id: 'ch0_frenchie', x: 18, y: 20, sprite: 'npc_frenchie' },
     ],
   },
   triggers: [
-    { x: 11, y: 29, action: 'scene', target: 'TransitionScene', data: { text: 'Three weeks later...', nextScene: 'BeachScene' } },
-    { x: 12, y: 29, action: 'scene', target: 'TransitionScene', data: { text: 'Three weeks later...', nextScene: 'BeachScene' } },
-    { x: 13, y: 29, action: 'scene', target: 'TransitionScene', data: { text: 'Three weeks later...', nextScene: 'BeachScene' } },
-    { x: 14, y: 29, action: 'scene', target: 'TransitionScene', data: { text: 'Three weeks later...', nextScene: 'BeachScene' } },
-    { x: 15, y: 29, action: 'scene', target: 'TransitionScene', data: { text: 'Three weeks later...', nextScene: 'BeachScene' } },
-    { x: 16, y: 29, action: 'scene', target: 'TransitionScene', data: { text: 'Three weeks later...', nextScene: 'BeachScene' } },
-    { x: 17, y: 29, action: 'scene', target: 'TransitionScene', data: { text: 'Three weeks later...', nextScene: 'BeachScene' } },
-    { x: 18, y: 29, action: 'scene', target: 'TransitionScene', data: { text: 'Three weeks later...', nextScene: 'BeachScene' } },
+    { x: 11, y: 35, action: 'scene', target: 'TransitionScene', data: { text: 'Three weeks later...', nextScene: 'BeachScene' } },
+    { x: 12, y: 35, action: 'scene', target: 'TransitionScene', data: { text: 'Three weeks later...', nextScene: 'BeachScene' } },
+    { x: 13, y: 35, action: 'scene', target: 'TransitionScene', data: { text: 'Three weeks later...', nextScene: 'BeachScene' } },
+    { x: 14, y: 35, action: 'scene', target: 'TransitionScene', data: { text: 'Three weeks later...', nextScene: 'BeachScene' } },
+    { x: 15, y: 35, action: 'scene', target: 'TransitionScene', data: { text: 'Three weeks later...', nextScene: 'BeachScene' } },
+    { x: 16, y: 35, action: 'scene', target: 'TransitionScene', data: { text: 'Three weeks later...', nextScene: 'BeachScene' } },
+    { x: 17, y: 35, action: 'scene', target: 'TransitionScene', data: { text: 'Three weeks later...', nextScene: 'BeachScene' } },
+    { x: 18, y: 35, action: 'scene', target: 'TransitionScene', data: { text: 'Three weeks later...', nextScene: 'BeachScene' } },
   ],
   interactables: [
     // JP's Room (cols 4-9, rows 4-8) — laid out like a real bedroom
@@ -165,10 +171,9 @@ export const homeMap: MapData = {
     { id: 'ch0_parents_bed',   x: 19, y: 4,  type: 'examine', glow: true, sprite: 'item-bed' },
     { id: 'ch0_family_photo',  x: 22, y: 4,  type: 'examine', glow: true, sprite: 'item-photo' },
     { id: 'ch0_parents_tv',    x: 17, y: 7,  type: 'examine', glow: true, sprite: 'item-tv' },
-    // Office / Spare Room (cols 25-30, rows 4-8) — Pops' workspace
-    { id: 'ch0_office_desk',   x: 27, y: 4,  type: 'examine', glow: true, sprite: 'item-desk' },
-    { id: 'ch0_office_books',  x: 29, y: 4,  type: 'examine', glow: true, sprite: 'item-bookshelf' },
-    { id: 'ch0_office_photo',  x: 25, y: 7,  type: 'examine', glow: true, sprite: 'item-photo' },
+    // Parents Master — expanded (cols 17-30, rows 4-8)
+    { id: 'ch0_parents_closet', x: 27, y: 4, type: 'examine', glow: true, sprite: 'item-bookshelf' },
+    { id: 'ch0_parents_dresser', x: 29, y: 7, type: 'examine', glow: true },
     // Bathroom (cols 32-35, rows 4-8)
     { id: 'ch0_mirror',        x: 34, y: 4,  type: 'examine', glow: true, sprite: 'item-mirror' },
     { id: 'ch0_toilet',        x: 32, y: 7,  type: 'examine', glow: true, sprite: 'item-toilet' },
@@ -191,7 +196,7 @@ export const homeMap: MapData = {
     // ch0_nolan_call removed — now triggers automatically as a surprise phone ring
     { id: 'ch0_frenchie_ball', x: 16, y: 21, type: 'examine', glow: true },
     { id: 'ch0_fishing',       x: 24, y: 20, type: 'examine', glow: true },
-    { id: 'ch0_goodbye',       x: 13, y: 23, type: 'examine', glow: true },
+    { id: 'ch0_goodbye',       x: 13, y: 29, type: 'examine', glow: true },
   ],
 };
 

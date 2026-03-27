@@ -1112,18 +1112,13 @@ const ch0Extras: Record<string, DialogueLine[]> = {
     { speaker: 'Narrator', text: 'Pops pretends he doesn\'t like them. He does.' },
   ],
   // --- Office (was spare room) ---
-  ch0_office_desk: [
-    { speaker: 'Narrator', text: 'Pops\' desk. Tax returns, car insurance forms, a calculator.' },
-    { speaker: 'Narrator', text: 'This is where he runs the household from.' },
+  ch0_parents_closet: [
+    { speaker: 'Narrator', text: 'Mom\'s side is organized. Pops\' side... not so much.' },
+    { speaker: 'Narrator', text: 'A couple suits in the back. Never worn.' },
   ],
-  ch0_office_books: [
-    { speaker: 'Narrator', text: 'Rich Dad Poor Dad. The Compound Effect. Think and Grow Rich.' },
-    { speaker: 'Narrator', text: 'Pops reads these but never talks about them.' },
-    { speaker: 'JP\'s Mind', text: 'JP borrowed a few. Never gave them back.' },
-  ],
-  ch0_office_photo: [
-    { speaker: 'Narrator', text: 'Framed photo of Pops at his old job. Hard hat. Work boots. Sun-burnt.' },
-    { speaker: 'Narrator', text: 'He built things his whole life. Now his son builds different things.' },
+  ch0_parents_dresser: [
+    { speaker: 'Narrator', text: 'Family photos on the dresser. JP as a baby. First day of school.' },
+    { speaker: 'Narrator', text: 'Back when everything was simple.' },
   ],
   // --- Bathroom ---
   ch0_mirror: [
