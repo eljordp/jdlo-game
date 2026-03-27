@@ -176,7 +176,7 @@ export const homeMap: MapData = {
     { id: 'ch0_parents_dresser', x: 29, y: 7, type: 'examine', glow: true },
     // Bathroom (cols 32-35, rows 4-8)
     { id: 'ch0_mirror',        x: 34, y: 4,  type: 'examine', glow: true, sprite: 'item-mirror' },
-    { id: 'ch0_toilet',        x: 32, y: 7,  type: 'examine', glow: true, sprite: 'item-toilet' },
+    { id: 'ch0_toilet',        x: 32, y: 7,  type: 'examine', glow: false, sprite: 'item-toilet' },
     { id: 'ch0_shower',        x: 35, y: 7,  type: 'examine', glow: true, sprite: 'item-shower' },
     // Hallway (row 10)
     { id: 'ch0_hallway_photo', x: 20, y: 10, type: 'examine', glow: true, sprite: 'item-photo' },

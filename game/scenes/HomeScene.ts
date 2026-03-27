@@ -707,6 +707,90 @@ export class HomeScene extends BaseChapterScene {
       this.trackForPhoneCall(interactable.id);
       return;
     }
+    // Shower — JP hops in, hits the cart, smoke comes out
+    if (interactable.id === 'ch0_shower') {
+      Analytics.trackInteraction(interactable.id);
+      this.frozen = true;
+      this.interactions.consume(interactable.id);
+
+      // Move JP to shower tile
+      const showerX = 35 * SCALED_TILE + SCALED_TILE / 2;
+      const showerY = 7 * SCALED_TILE + SCALED_TILE / 2;
+      this.tweens.add({
+        targets: this.player,
+        x: showerX,
+        y: showerY,
+        duration: 300,
+        onComplete: () => {
+          // Player disappears behind shower
+          this.player.setAlpha(0.4);
+
+          // Steam particles rising
+          const steamTimer = this.time.addEvent({
+            delay: 300,
+            repeat: 12,
+            callback: () => {
+              const steam = this.add.circle(
+                showerX + Phaser.Math.Between(-15, 15),
+                showerY - 10,
+                3 + Math.random() * 4,
+                0xffffff, 0.2
+              ).setDepth(12);
+              this.tweens.add({
+                targets: steam,
+                y: steam.y - 40,
+                alpha: 0,
+                scaleX: 2,
+                scaleY: 2,
+                duration: 1500,
+                onComplete: () => steam.destroy(),
+              });
+            },
+          });
+
+          // After 1.5 sec — hits the cart
+          this.time.delayedCall(1500, () => {
+            this.dialogue.show([
+              { speaker: 'Narrator', text: 'JP hits the cart in the shower. Classic.' },
+            ], () => {
+              // Cart smoke — thicker, denser puffs
+              for (let i = 0; i < 8; i++) {
+                this.time.delayedCall(i * 200, () => {
+                  const smoke = this.add.text(
+                    showerX + Phaser.Math.Between(-10, 10),
+                    showerY - 20,
+                    '~',
+                    { fontFamily: 'monospace', fontSize: '16px', color: '#cccccc' }
+                  ).setDepth(20).setAlpha(0.8);
+                  this.tweens.add({
+                    targets: smoke,
+                    y: smoke.y - 50,
+                    x: smoke.x + Phaser.Math.Between(-20, 20),
+                    alpha: 0,
+                    duration: 1800,
+                    onComplete: () => smoke.destroy(),
+                  });
+                });
+              }
+
+              // Dialogue after smoking
+              this.time.delayedCall(2000, () => {
+                this.dialogue.show([
+                  { speaker: 'JP\'s Mind', text: 'Needed that.' },
+                ], () => {
+                  steamTimer.remove();
+                  this.player.setAlpha(1);
+                  this.frozen = false;
+                });
+              });
+            });
+          });
+        },
+      });
+      this.trackForPhoneCall(interactable.id);
+      return;
+    }
+
     // Deep mirror reflection (replaces generic mirror dialogue)
     if (interactable.id === 'ch0_mirror') {
       Analytics.trackInteraction(interactable.id);

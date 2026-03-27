@@ -4826,27 +4826,34 @@ function generateMoreItems(scene: Phaser.Scene) {
     px(g, 7, 7, 0xfffff0, 1, 1);
   });
 
-  // --- item-toilet ---
+  // --- item-toilet --- proper porcelain toilet
   makeTexture(scene, 'item-toilet', TILE_SIZE, TILE_SIZE, (g) => {
-    // Bowl (white porcelain)
-    px(g, 4, 7, 0xe8e8e8, 8, 6);
-    px(g, 5, 6, 0xe8e8e8, 6, 1);
-    // Bowl shadow
-    px(g, 4, 12, 0xc8c8c8, 8, 1);
-    px(g, 11, 8, 0xd0d0d0, 1, 4);
-    // Water inside
-    px(g, 5, 9, 0x80c0e0, 6, 3);
-    px(g, 6, 9, 0xa0d8f0, 4, 2);
-    // Tank (back)
-    px(g, 5, 2, 0xe0e0e0, 6, 5);
-    px(g, 5, 2, 0xf0f0f0, 6, 1);
-    // Flush handle
-    px(g, 10, 3, 0xc0c0c0, 2, 1);
-    px(g, 11, 3, 0xd0d0d0, 1, 1);
-    // Seat rim
-    px(g, 4, 7, 0xd8d8d8, 8, 1);
-    // Shadow
-    px(g, 5, 13, 0xa0a0a0, 7, 1);
+    // Tank (back, rectangular, slightly rounded feel)
+    px(g, 5, 1, 0xf0f0f0, 6, 4);  // tank body
+    px(g, 5, 1, 0xf8f8f8, 6, 1);  // top highlight
+    px(g, 4, 2, 0xe0e0e0, 1, 2);  // left shadow
+    px(g, 11, 2, 0xe8e8e8, 1, 2); // right edge
+    // Flush lever
+    px(g, 11, 2, 0xb0b0b0, 2, 1); // chrome lever
+    px(g, 12, 2, 0xc8c8c8, 1, 1); // lever highlight
+    // Lid (connects tank to bowl)
+    px(g, 4, 5, 0xe8e8e8, 8, 1);
+    // Bowl — oval shape
+    px(g, 4, 6, 0xf0f0f0, 8, 5);  // bowl outer
+    px(g, 3, 7, 0xe8e8e8, 1, 3);  // left curve
+    px(g, 12, 7, 0xe8e8e8, 1, 3); // right curve
+    px(g, 5, 11, 0xe8e8e8, 6, 1); // bottom curve
+    // Seat ring (darker outline on top of bowl)
+    px(g, 4, 6, 0xd8d8d8, 8, 1);  // seat rim top
+    px(g, 4, 10, 0xd0d0d0, 8, 1); // seat rim bottom
+    px(g, 3, 7, 0xd8d8d8, 1, 3);  // seat rim left
+    px(g, 12, 7, 0xd8d8d8, 1, 3); // seat rim right
+    // Water inside (blue tint)
+    px(g, 5, 7, 0x90c8e8, 6, 3);  // water
+    px(g, 6, 7, 0xa8d8f0, 4, 2);  // water highlight
+    // Base shadow
+    px(g, 4, 12, 0xb0b0b0, 8, 1);
+    px(g, 5, 13, 0x909090, 6, 1);
   });
 
   // --- item-scratch ---
@@ -5067,20 +5074,33 @@ function generateMoreItems(scene: Phaser.Scene) {
 
   // Shower head + water
   makeTexture(scene, 'item-shower', TILE_SIZE, TILE_SIZE, (g) => {
-    // Shower arm (horizontal pipe)
-    px(g, 6, 2, 0xc0c0c0, 8, 2);
-    // Shower head (wider, angled down)
-    px(g, 8, 4, 0xa8a8a8, 6, 3);
-    px(g, 9, 4, 0xb8b8b8, 4, 1);
-    // Water droplets
-    px(g, 9, 8, 0x60a0e0, 1, 2);
-    px(g, 11, 9, 0x60a0e0, 1, 3);
-    px(g, 13, 8, 0x60a0e0, 1, 2);
-    px(g, 10, 12, 0x4888c8, 1, 2);
-    px(g, 12, 11, 0x4888c8, 1, 3);
-    px(g, 8, 13, 0x4888c8, 1, 2);
-    // Pipe mount
-    px(g, 6, 1, 0x909090, 2, 2);
+    // Glass shower panel (left side)
+    px(g, 2, 1, 0xc0d0e0, 2, 14);  // glass panel
+    px(g, 2, 1, 0xd0e0f0, 1, 14);  // glass highlight
+    // Shower wall tiles (back wall, subtle grid)
+    px(g, 4, 1, 0xe0e0e0, 10, 14); // tile wall
+    px(g, 4, 4, 0xd8d8d8, 10, 1);  // grout line
+    px(g, 4, 8, 0xd8d8d8, 10, 1);  // grout line
+    px(g, 4, 12, 0xd8d8d8, 10, 1); // grout line
+    px(g, 8, 1, 0xd8d8d8, 1, 14);  // vertical grout
+    px(g, 12, 1, 0xd8d8d8, 1, 14); // vertical grout
+    // Shower head (chrome, mounted high)
+    px(g, 10, 1, 0xb0b0b0, 3, 1);  // mounting bracket
+    px(g, 10, 2, 0xa0a0a0, 4, 2);  // head body
+    px(g, 11, 2, 0xc0c0c0, 2, 1);  // chrome highlight
+    // Water stream (falling droplets)
+    px(g, 10, 4, 0x70b0e0, 1, 2);
+    px(g, 12, 5, 0x70b0e0, 1, 3);
+    px(g, 9, 6, 0x60a0d0, 1, 2);
+    px(g, 11, 7, 0x60a0d0, 1, 3);
+    px(g, 10, 9, 0x5090c0, 1, 2);
+    px(g, 13, 6, 0x5090c0, 1, 2);
+    // Drain (floor)
+    px(g, 7, 14, 0x808088, 3, 1);
+    px(g, 8, 14, 0x909098, 1, 1);
+    // Faucet handle
+    px(g, 13, 3, 0xb0b0b0, 1, 2);  // handle
+    px(g, 13, 3, 0xc8c8c8, 1, 1);  // knob
   });
 
   // Car (top-down, small sedan)
