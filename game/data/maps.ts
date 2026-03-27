@@ -93,7 +93,7 @@ export const homeMap: MapData = {
     [ T, G, G, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, G, G, T ], // 0  roof
     [ G, G, G, K, J, J, J, J, J, K, J, J, J, J, K, J, J, J, J, J, J, K, F, F, F, F, K, G, G, G ], // 1  rooms
     [ G, G, G, K, J, M, J, J, J, K, J, J, J, J, K, J, M, J, J, J, J, K, F, F, F, F, K, G, G, G ], // 2  JP room (M=computer) | sister | parents (M=TV) | bathroom
-    [ G, G, G, K, J, J, J, J, J, K, J, M, J, J, K, J, J, J, J, J, J, K, F, F, F, F, K, G, G, G ], // 3
+    [ G, G, G, K, J, J, J, J, J, K, J, J, J, J, K, J, J, J, J, J, J, K, F, F, F, F, K, G, G, G ], // 3
     [ G, G, G, K, J, J, J, J, J, K, J, J, J, J, K, J, J, J, J, J, J, K, F, F, F, F, K, G, G, G ], // 4
     [ G, G, G, K, K, K, K, O, K, K, K, K, O, K, K, K, K, O, K, K, K, K, K, O, K, K, K, G, G, G ], // 5  doors
     [ G, G, G, K, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, K, G, G, G ], // 6  hallway
@@ -105,15 +105,15 @@ export const homeMap: MapData = {
     [ G, G, G, K, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, K, G, G, G ], // 12
     [ G, G, G, K, K, K, K, K, K, K, O, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, G, G, G ], // 13 front door
     [ G, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 14 yard
-    [ G, G, E, E, E, E, E, E, E, E, P, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, G, G ], // 15 fence top
-    [ G, G, E, G, G, T, G, G, G, G, P, G, G, G, G, G, T, G, G, G, G, G, G, G, T, G, G, E, G, G ], // 16
-    [ G, G, E, G, G, G, G, G, G, G, P, G, G, L, G, G, G, G, G, G, W, W, W, G, G, G, G, E, G, G ], // 17
-    [ G, G, E, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, T, W, W, W, G, G, G, G, E, G, G ], // 18
-    [ G, G, E, T, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, L, G, G, G, G, E, G, G ], // 19
-    [ G, G, E, E, E, E, E, E, E, E, P, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, G, G ], // 20 fence bottom
-    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 21
-    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 22
-    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 23
+    [ G, G, V, E, E, E, E, E, E, E, P, E, E, V, E, E, E, E, E, V, E, E, E, E, E, E, E, V, G, G ], // 15 fence top + vine accents
+    [ G, G, E, G, I, T, G, G, L, G, P, G, G, G, G, G, T, G, G, G, I, G, G, G, T, G, G, E, G, G ], // 16 mulch near trees, palm
+    [ G, G, E, G, G, I, G, G, G, G, P, G, G, L, G, G, G, G, G, W, W, W, W, G, G, G, G, E, G, G ], // 17 pond expanded slightly
+    [ G, G, E, G, G, G, G, G, G, G, P, G, G, G, G, I, G, G, G, T, W, W, W, G, G, L, G, E, G, G ], // 18 mulch, palm added
+    [ G, G, E, T, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, I, G, G, L, G, G, G, G, E, G, G ], // 19 dirt near pond
+    [ G, G, V, E, E, E, E, E, E, E, P, E, E, E, V, E, E, E, E, E, E, E, E, E, E, V, E, E, G, G ], // 20 fence bottom + vine
+    [ E, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, E ], // 21 curb (fence segments) + driveway
+    [ C, C, C, P, P, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, P, P, C ], // 22 road markings (PATH)
+    [ C, C, C, C, C, C, C, P, C, C, P, C, C, P, C, C, C, P, C, C, C, C, P, C, C, C, C, C, C, C ], // 23 dashed center lane
     [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 24
   ],
   collisions: [...STANDARD_COLLISIONS],
@@ -183,17 +183,17 @@ export const beachMap: MapData = {
     [ B, B, B, B, O, B, B, B, B, B, B, O, B, B, B, B, O, B, B, B, B, B, B, O, B, B, B, B ], // 7  house bottom wall with doors
     [ G, G, G, G, P, G, G, G, G, G, G, P, G, G, G, G, P, G, G, G, G, G, G, P, G, G, G, G ], // 8  paths from house doors
     [ G, G, G, G, P, G, G, G, G, G, G, P, G, G, G, G, P, G, G, G, G, G, G, P, G, G, G, G ], // 9
-    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 10 concrete walkway
-    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 11
-    [ G, G, T, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, T, G, G ], // 12 grass transition + trees
-    [ G, G, L, G, G, G, L, G, G, G, G, G, G, G, G, G, G, G, G, G, G, L, G, G, G, L, G, G ], // 13 more palms
-    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 14 sand starts
-    [ S, S, S, S, S, S, S, S, L, S, S, S, S, S, S, S, S, S, S, L, S, S, S, S, S, S, S, S ], // 15
-    [ S, S, S, L, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, L, S, S, S ], // 16 extra palms on beach
-    [ S, S, S, S, S, L, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, L, S, S, S, S, S ], // 17
+    [ C, C, C, P, C, C, P, C, C, C, C, C, C, P, C, C, C, C, P, C, C, C, C, C, C, P, C, C ], // 10 concrete + crosswalk PATH
+    [ C, C, C, C, C, P, C, C, C, C, C, C, P, C, C, C, C, P, C, C, C, C, C, P, C, C, C, C ], // 11 offset crosswalk
+    [ G, G, T, G, I, G, G, V, G, G, G, G, G, G, G, I, G, G, G, G, G, G, V, G, G, T, G, G ], // 12 grass transition + dirt + vine
+    [ G, I, L, G, G, G, L, G, G, I, G, G, G, V, G, G, G, G, G, I, G, L, G, G, G, L, G, G ], // 13 more palms + dirt + vine
+    [ S, S, S, S, S, P, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, P, S, S, S, S, S ], // 14 sand + footpath
+    [ S, S, S, I, S, P, S, S, L, S, S, S, E, S, S, S, S, S, S, L, S, S, P, S, S, S, I, S ], // 15 wet sand (I), volleyball post (E)
+    [ S, S, S, L, S, P, S, I, S, S, S, S, S, S, S, S, E, S, S, S, S, S, P, S, L, S, S, S ], // 16 volleyball post, footpath
+    [ S, S, I, S, S, L, S, S, S, I, S, S, S, S, S, S, S, S, S, S, I, S, L, S, S, S, S, S ], // 17 wet sand scattered
     [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 18
-    [ W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W ], // 19 ocean
-    [ W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W ], // 20
+    [ S, S, S, W, S, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, S, W, S, S, S, S ], // 19 shore break — sand in water
+    [ W, W, W, W, W, W, W, W, W, W, W, W, P, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W ], // 20 rocks (PATH) in water
     [ W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W ], // 21
   ],
   collisions: STANDARD_COLLISIONS,
@@ -257,19 +257,19 @@ export const wrongCrowdMap: MapData = {
     [ X, B, D, D, D, D, D, D, B, D, D, D, D, D, B, D, D, D, D, B, C, C, C, C, C, C, C, B, X, X ], // 6
     [ X, B, B, B, O, B, B, B, B, B, B, O, B, B, B, B, O, B, B, B, B, B, B, O, B, B, B, B, X, X ], // 7  house bottom wall with doors
 
-    // --- DARK YARD (rows 8-9) ---
-    [ X, G, G, G, P, G, T, G, G, G, G, P, G, G, G, G, P, G, G, G, G, G, G, P, G, T, G, G, X, X ], // 8  paths from house doors + trees
-    [ X, G, G, G, P, G, G, G, G, G, G, P, G, G, G, G, P, G, G, G, G, G, G, P, G, G, G, G, X, X ], // 9  yard
+    // --- DARK YARD (rows 8-9) + vine and dirt detail ---
+    [ X, G, G, I, P, G, T, G, G, V, G, P, G, G, G, G, P, G, G, G, G, G, G, P, G, T, G, G, X, X ], // 8  paths + dirt + vine on fence
+    [ X, G, G, G, P, G, G, I, G, G, G, P, G, G, G, G, P, G, I, G, G, G, G, P, G, G, G, G, X, X ], // 9  yard + dirt patches
 
-    // --- STREET (rows 10-12) ---
-    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 10 concrete street
-    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 11 BMW parked here (sprite overlay)
-    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 12 street
+    // --- STREET (rows 10-12) + lane markings ---
+    [ C, C, C, C, C, C, P, C, C, C, C, C, C, P, C, C, C, C, P, C, C, C, C, C, C, P, C, C, C, C ], // 10 crosswalk pattern
+    [ C, C, C, C, C, P, C, C, C, C, C, C, P, C, C, C, C, P, C, C, C, C, C, P, C, C, C, C, C, C ], // 11 BMW parked here (sprite overlay)
+    [ C, I, C, C, C, C, C, C, I, C, C, C, C, C, C, C, C, C, C, C, I, C, C, C, C, C, C, I, C, C ], // 12 street + gritty dirt patches
 
-    // --- STREET + APPROACH (rows 13-16) ---
-    [ C, C, C, C, E, E, E, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, E, E, E, C, C, C, C, C ], // 13 parked cars (fences)
-    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 14 road with path
-    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 15 road
+    // --- STREET + APPROACH (rows 13-16) + lane markings ---
+    [ C, C, C, C, E, E, E, C, C, P, C, C, C, C, P, C, C, C, C, C, C, C, E, E, E, C, C, C, C, C ], // 13 parked cars (fences) + lane marks
+    [ C, C, C, C, C, C, C, C, C, C, C, I, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 14 road with path + dirt
+    [ C, C, I, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, I, C, C, C, C, C, C, C, C, C, C, C ], // 15 road + grit
     [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 16 road continues
 
     // --- BUYER'S BLOCK (rows 17-22) ---
@@ -280,10 +280,10 @@ export const wrongCrowdMap: MapData = {
     [ X, X, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, P, G, B, D, D, D, D, D, B, G, X, X ], // 21 inside visible through wall
     [ X, X, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, P, P, P, P, O, D, D, D, B, G, X, X ], // 22 path leads directly to door
 
-    // --- INSIDE BUYER'S HOUSE (rows 23-27) ---
-    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, B, D, D, D, D, D, B, X, X, X ], // 23 inside buyer house
+    // --- INSIDE BUYER'S HOUSE (rows 23-27) + detail ---
+    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, B, D, D, F, D, D, B, X, X, X ], // 23 floor variation inside
     [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, B, D, D, D, D, D, B, X, X, X ], // 24 sale spot area
-    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, B, D, D, D, M, D, B, X, X, X ], // 25 table (M) in back
+    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, B, D, F, D, M, D, B, X, X, X ], // 25 table (M) + floor mix
     [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, B, B, B, B, B, B, B, X, X, X ], // 26 back wall
     [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 27 bottom border
   ],
@@ -335,12 +335,12 @@ export const jailMap: MapData = {
     [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 1
 
     // --- CELL BLOCK (rows 2-10) left side + COMMON AREA right side ---
-    [ X, X, F, F, F, X, X, F, F, F, X, X, D, D, D, D, X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 2  cell1 | cell2 | hall | common area
-    [ X, X, F, F, F, X, X, F, F, F, X, X, D, D, D, D, X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 3
-    [ X, X, F, F, F, X, X, F, F, F, X, X, D, D, D, D, X, X, D, D, D, M, D, D, D, D, D, D, M, D, D, D, D, X, X ], // 4  tables in common area
+    [ X, X, F, F, F, X, X, F, F, F, X, X, D, D, D, D, X, X, D, D, D, D, F, F, D, D, D, D, D, D, D, D, D, X, X ], // 2  cell1 | cell2 | hall | common (floor cluster = table area)
+    [ X, X, F, F, F, X, X, F, F, F, X, X, D, D, D, D, X, X, D, D, D, D, F, F, D, D, D, D, D, D, D, D, D, X, X ], // 3
+    [ X, X, F, F, F, X, X, F, F, F, X, X, D, D, D, D, X, X, D, D, D, M, F, F, D, D, D, D, M, D, D, D, D, X, X ], // 4  tables in common area
     [ X, X, X, O, X, X, X, X, O, X, X, X, D, D, D, D, X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 5  cell doors
-    [ X, X, F, F, F, X, X, F, F, F, X, X, D, D, D, D, X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 6  cell3 (JP's) | cell4
-    [ X, X, F, F, F, X, X, F, F, F, X, X, D, D, D, D, X, X, D, D, D, D, D, D, M, D, D, D, D, D, D, D, D, X, X ], // 7
+    [ X, X, F, F, F, X, X, F, F, F, X, X, D, D, D, D, X, X, D, D, D, D, D, D, D, D, F, F, D, D, D, D, D, X, X ], // 6  cell3 (JP's) | cell4 | another table zone
+    [ X, X, F, F, F, X, X, F, F, F, X, X, D, D, D, D, X, X, D, D, D, D, D, D, M, D, F, F, D, D, D, D, D, X, X ], // 7
     [ X, X, F, F, F, X, X, F, F, F, X, X, D, D, D, D, X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 8
     [ X, X, X, O, X, X, X, X, O, X, X, X, D, D, D, D, X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 9  cell doors
     [ X, X, F, F, F, X, X, F, F, F, X, X, D, D, D, D, X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 10 cell5 | cell6 (extra)
@@ -351,22 +351,22 @@ export const jailMap: MapData = {
     [ X, X, D, D, D, D, D, D, D, D, D, D, D, D, F, M, F, F, F, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 13 guard desk
     [ X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 14
 
-    // --- YARD / EXERCISE AREA (rows 15-22) ---
-    [ X, X, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, X, X ], // 15
-    [ X, X, C, C, C, C, E, E, E, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, X, X ], // 16 pull-up bars
-    [ X, X, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, X, X ], // 17
-    [ X, X, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, F, F, F, C, X, X ], // 18 JP's study corner
-    [ X, X, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, F, F, F, C, X, X ], // 19
-    [ X, X, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, X, X ], // 20
-    [ X, X, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, X, X ], // 21
-    [ X, X, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, X, X ], // 22
+    // --- YARD / EXERCISE AREA (rows 15-22) — more varied ---
+    [ X, X, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, P, P, C, C, C, C, C, C, C, C, C, X, X ], // 15 worn walkway (P)
+    [ X, X, C, C, I, C, E, E, E, C, C, I, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, X, X ], // 16 pull-up bars + dirt
+    [ X, X, C, C, C, C, C, C, C, C, I, C, C, C, C, P, P, P, C, C, C, C, P, C, C, E, E, C, C, C, C, C, C, X, X ], // 17 worn path + weight rack (E)
+    [ X, X, C, I, C, C, C, C, C, C, C, C, C, C, C, P, F, F, F, C, C, C, P, C, C, C, C, C, C, F, F, F, C, X, X ], // 18 covered area (F) + study corner
+    [ X, X, C, C, C, C, C, C, I, C, C, C, C, C, C, P, F, F, F, C, C, C, P, P, P, P, C, C, C, F, F, F, C, X, X ], // 19 covered area
+    [ X, X, C, C, C, C, C, C, C, C, C, C, I, C, C, C, C, C, C, C, C, C, C, C, C, C, I, C, C, C, C, C, C, X, X ], // 20 dirt exercise area
+    [ X, X, C, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, X, X ], // 21 worn walkway
+    [ X, X, C, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, X, X ], // 22
 
     // --- BOTTOM COMMON AREA (rows 23-25) ---
     [ X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 23
     [ X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 24
     [ X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 25
 
-    // --- BOTTOM WALLS (rows 26-29) ---
+    // --- BOTTOM WALLS (rows 26-29) — reduced padding ---
     [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 26
     [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 27
     [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 28
@@ -435,28 +435,28 @@ export const jailMap: MapData = {
 export const tractorMap: MapData = {
   tiles: [
     //0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
-    [ T, T, T, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, T, T, T ], // 0
-    [ T, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, T ], // 1
+    [ T, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, T ], // 0  reduced borders
+    [ G, G, G, G, I, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 1  dirt patch
     [ G, G, G, B, B, B, B, B, G, G, E, E, E, E, E, E, E, E, E, E, E, E, E, G, G, G, G, G ], // 2
-    [ G, G, G, B, F, F, F, B, G, G, E, I, I, I, I, I, I, I, I, I, I, I, E, G, G, G, G, G ], // 3
-    [ G, G, G, B, F, F, M, B, G, G, E, I, V, I, V, I, V, I, V, I, V, I, E, G, G, G, G, G ], // 4  vineyard row
-    [ G, G, G, B, F, F, F, B, G, G, E, I, I, I, I, I, R, I, I, I, I, I, E, G, G, G, G, G ], // 5
+    [ G, G, C, B, F, F, F, B, C, G, E, I, G, I, I, I, I, I, I, I, G, I, E, G, G, G, G, G ], // 3  concrete pad + weedy vineyard
+    [ G, G, C, B, F, F, M, B, C, G, E, I, V, I, V, I, V, I, V, I, V, I, E, G, G, G, G, G ], // 4  vineyard row
+    [ G, G, C, B, F, F, F, B, C, G, E, I, I, G, I, I, R, I, I, G, I, I, E, G, G, G, G, G ], // 5  grass weeds in dirt
     [ G, G, G, B, B, O, B, B, G, G, E, I, V, I, V, I, V, I, V, I, V, I, E, G, G, G, G, G ], // 6  vineyard row
-    [ G, G, G, G, G, P, G, G, G, G, E, I, I, I, I, I, I, I, I, I, I, I, E, G, G, G, G, G ], // 7
-    [ G, G, G, G, G, P, G, G, G, G, E, I, V, I, V, I, V, I, V, I, V, I, E, G, G, T, G, G ], // 8  vineyard row
-    [ G, P, P, P, P, P, P, P, P, P, E, I, I, I, I, I, I, I, I, I, I, I, E, G, G, G, G, G ], // 9
-    [ G, G, G, G, G, P, G, G, G, G, E, E, E, E, E, P, E, E, E, E, E, E, E, G, G, G, G, G ], // 10
-    [ G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G ], // 11
-    [ G, G, T, G, G, P, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, T, G, G ], // 12
-    [ G, G, G, G, G, P, G, G, E, E, E, E, E, E, E, P, E, E, E, E, E, E, E, G, G, G, G, G ], // 13
+    [ G, G, G, G, G, P, G, G, G, G, E, I, I, I, I, G, I, I, I, G, I, I, E, G, G, G, G, G ], // 7  weeds
+    [ G, G, I, G, G, P, G, G, G, G, E, I, V, I, V, I, V, I, V, I, V, I, E, G, G, T, G, G ], // 8  vineyard row
+    [ G, P, P, P, P, P, P, P, P, P, E, I, P, I, P, I, P, I, P, I, P, I, E, G, G, G, G, G ], // 9  tractor tracks through vineyard
+    [ G, G, G, G, G, P, G, W, G, G, E, E, E, E, E, P, E, E, E, E, E, E, E, G, G, G, G, G ], // 10 irrigation puddle (W)
+    [ G, G, I, G, G, P, G, G, G, G, G, G, I, G, G, P, G, G, G, I, G, G, G, G, G, G, G, G ], // 11 dirt path variations
+    [ G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, T, G, G ], // 12
+    [ G, G, E, G, G, P, G, G, E, E, E, E, E, E, E, P, E, E, E, E, E, E, E, G, G, G, G, G ], // 13 fence property boundary
     [ G, G, G, G, G, P, G, G, E, I, V, I, V, I, E, P, I, V, I, V, I, V, E, G, G, G, G, G ], // 14  vineyard row
-    [ G, G, G, G, G, P, G, G, E, I, I, I, I, I, I, I, I, I, I, I, I, I, E, G, G, G, G, G ], // 15
+    [ G, W, G, G, G, P, G, G, E, I, G, I, I, I, I, I, I, I, G, I, I, I, E, G, G, G, G, G ], // 15 irrigation puddle + weeds
     [ G, G, G, G, G, P, G, G, E, I, V, I, V, I, V, I, V, I, V, I, V, I, E, G, G, G, G, G ], // 16  vineyard row
-    [ G, G, G, G, G, P, G, G, E, I, I, I, I, I, I, I, I, I, I, I, I, I, E, G, G, G, G, G ], // 17
+    [ G, G, G, I, G, P, G, G, E, I, I, I, I, G, I, I, I, I, I, G, I, I, E, G, G, G, G, G ], // 17 weeds in dirt
     [ G, G, G, G, G, P, G, G, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, G, G, G, G, G ], // 18
-    [ G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 19
-    [ T, G, G, G, G, P, P, P, P, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, T ], // 20
-    [ T, T, T, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, T, T, T, T ], // 21
+    [ G, G, G, G, G, P, G, G, G, I, G, G, G, G, G, G, G, G, G, G, G, I, G, G, G, G, G, G ], // 19 dirt edge
+    [ G, G, G, G, G, P, P, P, P, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 20
+    [ T, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, T ], // 21 reduced borders
   ],
   collisions: STANDARD_COLLISIONS,
   spawns: {
@@ -494,25 +494,25 @@ export const tractorMap: MapData = {
 export const comeUpMap: MapData = {
   tiles: [
     //0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
-    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 0
-    [ X, X, X, X, B, B, B, B, B, B, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 1
-    [ X, X, X, X, B, F, F, F, M, B, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 2
-    [ X, X, X, X, B, F, F, F, F, B, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 3
-    [ X, X, X, X, B, F, F, F, F, B, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 4
-    [ X, X, X, X, B, B, B, O, B, B, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 5
-    [ G, G, T, G, G, G, G, P, G, G, G, G, T, G, G, G, G, G, G, G, G, T, G, G, G, G, G, G ], // 6  trees along path
+    [ G, G, T, G, G, G, G, G, G, T, G, G, G, G, G, G, G, T, G, G, G, G, G, G, T, G, G, G ], // 0  open feel — trees + grass
+    [ G, G, G, G, B, B, B, B, B, B, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 1
+    [ G, G, G, G, B, J, J, J, M, B, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 2  HARDWOOD office floor
+    [ G, G, G, G, B, J, J, J, J, B, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 3
+    [ G, G, G, G, B, J, J, J, J, B, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 4
+    [ G, G, G, G, B, B, B, O, B, B, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 5
+    [ G, G, T, G, G, I, G, P, G, G, G, G, T, G, G, I, G, G, G, G, G, T, G, G, G, G, G, G ], // 6  trees + worn dirt along path
     [ G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 7
     [ G, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, G ], // 8
-    [ G, G, G, G, G, G, G, P, G, G, T, G, G, G, G, G, G, G, G, G, G, G, G, G, T, G, G, G ], // 9  trees
+    [ G, G, G, I, G, G, G, P, G, G, T, G, G, G, G, G, G, G, G, I, G, G, G, G, T, G, G, G ], // 9  dirt patches
     [ G, G, B, B, B, B, G, P, G, G, G, G, G, G, G, G, G, B, B, B, B, B, B, G, G, G, G, G ], // 10
     [ G, G, B, F, F, B, G, P, G, G, T, G, G, G, G, G, G, B, F, F, F, F, B, G, G, T, G, G ], // 11
     [ G, G, B, F, F, B, G, P, G, G, G, G, G, G, G, G, G, B, F, F, F, F, B, G, G, G, G, G ], // 12
     [ G, G, B, B, O, B, G, P, G, G, G, G, G, G, G, G, G, B, B, B, O, B, B, G, G, G, G, G ], // 13
-    [ G, G, G, G, P, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G ], // 14
+    [ G, G, I, G, P, G, G, P, G, G, G, I, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G ], // 14 worn dirt near paths
     [ G, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, G ], // 15
     [ G, G, G, G, G, G, G, P, G, G, T, G, G, G, G, T, G, G, G, G, G, G, G, G, G, T, G, G ], // 16 trees
     [ G, G, B, B, B, B, B, P, G, E, B, B, B, B, G, G, G, E, B, B, B, B, B, B, G, G, G, G ], // 17  print shop + DHL (E = signposts)
-    [ G, G, B, F, F, F, B, P, G, B, F, M, F, B, G, G, G, B, D, D, D, D, D, B, G, G, G, G ], // 18  M=press in shop, D=dark warehouse
+    [ G, G, B, F, N, F, B, P, G, B, F, M, F, B, G, G, G, B, D, D, D, D, D, B, G, G, G, G ], // 18  N=counter in print shop, M=press, D=dark warehouse
     [ G, G, B, F, F, F, B, P, G, B, F, F, F, B, G, P, G, B, D, D, M, D, D, B, G, G, G, G ], // 19  M=shipping terminal
     [ G, G, B, B, O, B, B, P, G, B, B, O, B, B, G, P, G, B, B, B, O, B, B, B, G, G, G, G ], // 20
     [ G, G, G, G, P, G, G, P, G, G, G, P, G, G, G, P, G, G, G, G, P, G, G, G, G, G, G, G ], // 21
@@ -567,39 +567,43 @@ export const comeUpMap: MapData = {
 export const operatorMap: MapData = {
   tiles: [
     //0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39
-    [ T, T, G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G, T, T ], // 0  LA — top edge
-    [ T, G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G, T ], // 1
+    [ T, G, G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G, G, T ], // 0  LA — top edge
+    [ G, G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G, G ], // 1
     [ G, C, C, B, B, B, B, B, B, B, B, C, C, T, C, C, C, C, C, B, B, B, B, B, B, B, B, C, C, C, B, B, B, B, B, B, C, C, C, G ], // 2  offices + Pomaikai
-    [ G, C, C, B, F, F, F, F, F, F, B, C, C, C, C, C, C, C, C, B, F, F, F, F, F, F, B, C, C, C, B, F, F, M, F, B, C, C, C, G ], // 3
-    [ G, C, C, B, F, F, F, F, F, F, B, C, C, C, C, C, C, C, C, B, F, F, F, F, F, F, B, C, C, C, B, F, F, F, F, B, C, C, C, G ], // 4
-    [ G, C, C, B, F, F, M, F, F, F, B, C, C, C, C, C, C, C, C, B, F, F, M, F, F, F, B, C, C, C, B, F, F, F, F, B, C, C, C, G ], // 5  M=computers
-    [ G, C, C, B, F, F, F, F, F, F, B, C, C, C, C, C, C, C, C, B, F, F, F, F, F, F, B, C, C, C, B, B, B, O, B, B, C, C, C, G ], // 6
+    [ G, C, C, B, J, J, J, J, J, J, B, C, C, C, C, C, C, C, C, B, J, J, J, J, J, J, B, C, C, C, B, F, F, M, F, B, C, C, C, G ], // 3  HARDWOOD in LA offices
+    [ G, C, C, B, J, J, J, J, J, J, B, C, C, C, C, C, C, C, C, B, J, J, J, J, J, J, B, C, C, C, B, F, F, F, F, B, C, C, C, G ], // 4
+    [ G, C, C, B, J, J, M, J, J, J, B, C, C, C, C, C, C, C, C, B, J, J, M, J, J, J, B, C, C, C, B, F, F, F, F, B, C, C, C, G ], // 5  M=computers
+    [ G, C, C, B, J, J, J, J, J, J, B, C, C, C, C, C, C, C, C, B, J, J, J, J, J, J, B, C, C, C, B, B, B, O, B, B, C, C, C, G ], // 6
     [ G, C, C, B, B, B, B, O, B, B, B, C, C, T, C, C, C, C, C, B, B, B, B, O, B, B, B, C, C, C, C, C, C, C, C, C, C, C, C, G ], // 7  doors
     [ G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G ], // 8
     [ G, C, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, C, G ], // 9  main LA street
     [ T, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, T ], // 10
     [ G, C, C, C, C, C, C, C, C, T, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, T, C, C, C, C, C, C, C, C, C, C, C, C, C, G ], // 11
     [ G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G ], // 12
-    [ G, G, T, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, T, G, G ], // 13 ── TRANSITION ZONE ──
-    [ G, T, G, C, C, C, C, C, C, T, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, T, C, C, C, C, C, C, G, T, G, G ], // 14
-    [ G, G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G, G, G ], // 15
-    [ G, G, T, C, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, C, T, G, G, G ], // 16 cross street
-    [ G, G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G, G, G ], // 17
-    [ G, T, G, C, C, C, C, C, T, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, T, C, C, C, C, C, C, C, G, T, G, G ], // 18
-    [ G, G, T, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, T, G, G, G ], // 19
-    [ G, G, G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G, G, G, G ], // 20
-    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, P, P, P, P, P, P, P, P, P, P, C, C, G, G, G, G, G, G, G, G, G, G ], // 21 ── VEGAS (left) + HOME (right) ──
+
+    // ── TRANSITION ZONE (rows 13-20) — downtown feel with buildings + tree-lined streets ──
+    [ G, G, T, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, T, G, G ], // 13
+    [ G, T, C, B, B, B, B, B, C, T, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, B, B, B, B, T, C, C, C, C, C, C, C, T, G, G ], // 14 shop buildings
+    [ G, G, C, B, F, F, F, B, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, B, F, F, B, C, C, C, C, C, C, C, C, G, G, G ], // 15 shop interiors
+    [ G, G, T, B, B, O, B, B, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, B, B, O, B, P, P, P, P, P, P, C, T, G, G, G ], // 16 cross street + shop doors
+    [ G, G, C, C, C, C, C, C, C, C, C, C, T, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, T, C, C, C, C, C, G, G, G ], // 17
+    [ G, T, C, B, B, B, B, C, T, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, T, C, C, C, C, C, C, C, C, T, G, G ], // 18 another building
+    [ G, G, T, B, F, F, B, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, T, G, G, G ], // 19
+    [ G, G, G, B, B, O, B, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G, G, G, G ], // 20
+
+    // ── VEGAS (left) + HOME (right) ──
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, P, P, P, P, P, P, P, P, P, P, C, C, G, G, G, G, G, G, G, G, G, G ], // 21
     [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G, G, E, E, E, E, E, E, E, G, G ], // 22
     [ C, C, B, B, B, B, B, B, B, B, B, B, B, B, B, C, C, C, C, C, C, C, C, C, C, C, C, C, G, G, E, G, G, G, G, T, G, E, G, G ], // 23 Vegas hotel/casino     Home fence
-    [ C, C, B, F, F, F, F, F, F, F, F, F, F, F, B, C, C, T, C, C, C, C, C, C, T, C, C, C, G, G, E, G, B, B, B, B, G, E, G, G ], // 24                        Home house
-    [ C, C, B, F, F, F, F, F, F, F, F, F, F, F, B, C, C, C, C, C, C, C, C, C, C, C, C, P, P, P, P, G, B, F, F, B, G, E, G, G ], // 25 casino floor           path to home
-    [ C, C, B, F, F, M, F, F, F, F, F, M, F, F, B, C, C, C, C, C, C, C, C, C, C, C, C, C, G, G, E, G, B, F, F, B, G, E, G, G ], // 26 M=conference desks
-    [ C, C, B, F, F, F, F, F, F, F, F, F, F, F, B, C, C, C, C, C, C, C, C, C, C, C, C, C, G, G, E, G, B, B, O, B, G, E, G, G ], // 27
+    [ C, C, B, D, D, D, D, D, D, D, D, D, D, D, B, C, C, T, C, C, C, C, C, C, T, C, C, C, G, G, E, G, B, B, B, B, G, E, G, G ], // 24  DARK_FLOOR casino
+    [ C, C, B, D, D, D, E, D, D, D, D, E, D, D, B, C, C, C, C, C, C, C, C, C, C, C, C, P, P, P, P, G, B, F, F, B, G, E, G, G ], // 25 velvet ropes (E) + casino
+    [ C, C, B, D, D, M, D, D, D, D, D, M, D, D, B, C, C, C, C, C, C, C, C, C, C, C, C, C, G, G, E, G, B, F, F, B, G, E, G, G ], // 26 M=conference desks
+    [ C, C, B, D, D, D, D, D, D, D, D, D, D, D, B, C, C, C, C, C, C, C, C, C, C, C, C, C, G, G, E, G, B, B, O, B, G, E, G, G ], // 27
     [ C, C, B, B, B, B, B, B, O, B, B, B, B, B, B, C, C, T, C, C, C, C, C, T, C, C, C, C, G, G, E, G, G, G, P, G, G, E, G, G ], // 28 casino door
     [ C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G, G, E, G, G, G, P, G, G, E, G, G ], // 29
     [ C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, P, P, P, P, P, P, P, P, P, G, G, E, T, G, G, P, G, T, E, G, G ], // 30 path connecting Vegas to home
-    [ C, C, C, C, C, C, C, C, P, P, P, P, P, P, P, P, P, P, P, P, C, C, C, C, C, C, C, C, G, G, E, G, V, G, P, G, V, E, G, G ], // 31 vineyard tiles
-    [ C, C, C, C, T, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, T, C, C, C, C, C, G, G, E, G, V, G, P, G, V, E, G, G ], // 32
+    [ C, C, C, C, C, C, C, C, P, P, P, P, P, P, P, P, P, P, P, P, C, C, C, C, C, C, C, C, G, G, V, G, V, G, P, G, V, E, G, G ], // 31 vine on home fence
+    [ C, C, C, C, T, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, T, C, C, C, C, C, G, G, E, I, V, G, P, G, V, E, G, G ], // 32 dirt in yard + vine
     [ G, G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G, G, G, E, E, E, E, P, E, E, E, G, G ], // 33 home fence bottom
     [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 34
   ],
