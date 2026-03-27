@@ -96,16 +96,17 @@ const STANDARD_COLLISIONS = [
 export const homeMap: MapData = {
   tiles: [
     //0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39
-    [ T, G, G, G, G, T, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, T, G, G, G, G, T ], // 0  trees + neighborhood top
-    [ G, G, T, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, T, G ], // 1  scattered trees
-    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 2  open grass
-    [ G, G, G, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, G, G, G ], // 3  roof line
-    [ G, G, G, K, A, A, A, A, A, A, K, A, A, A, A, A, K, A, A, A, A, A, A, A, A, A, A, A, A, A, A, K, F, F, F, F, K, G, G, G ], // 4  JP room | sister | parents (master) | bathroom
-    [ G, G, G, K, A, A, A, A, A, A, K, A, A, A, A, A, K, A, A, A, A, A, A, A, A, A, A, A, A, A, A, K, F, F, F, F, K, G, G, G ], // 5
-    [ G, G, G, K, A, A, A, A, A, A, K, A, A, A, A, A, K, A, A, A, A, A, A, A, A, A, A, A, A, A, A, K, F, F, F, F, K, G, G, G ], // 6
-    [ G, G, G, K, A, A, A, A, A, A, K, A, A, A, A, A, K, A, A, A, A, A, A, A, A, A, A, A, A, A, A, K, F, F, F, F, K, G, G, G ], // 7
-    [ G, G, G, K, A, A, A, A, A, A, K, A, A, A, A, A, K, A, A, A, A, A, A, A, A, A, A, A, A, A, A, K, F, F, F, F, K, G, G, G ], // 8
-    [ G, G, G, K, K, K, K, K, O, K, K, K, K, O, K, K, K, K, K, K, O, K, K, K, K, K, K, K, O, K, K, K, K, O, K, K, K, G, G, G ], // 9  doors to hallway
+    // === ROWS 0-2: SECOND FLOOR (upstairs — JP's room, sister's room, bathroom) ===
+    [ K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K ], // 0  upstairs walls
+    [ K, A, A, A, A, A, A, K, A, A, A, A, A, A, K, J, J, J, O, J, J, K, A, A, A, A, A, A, K, F, F, F, F, K, G, G, G, G, G, G ], // 1  JP room | stairs landing | sister room | bath | outside
+    [ K, A, A, A, A, A, A, K, A, A, A, A, A, A, K, J, J, J, J, J, J, K, A, A, A, A, A, A, K, F, F, F, F, K, G, G, G, G, G, G ], // 2  rooms + landing
+    [ K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, G, G, G, G, G, G ], // 3  downstairs roof / upstairs floor boundary
+    [ G, G, G, K, A, A, A, A, A, A, A, A, A, A, A, K, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, K, G, G, G ], // 4  parents master (left) | open living extension (right)
+    [ G, G, G, K, A, A, A, A, A, A, A, A, A, A, A, K, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, K, G, G, G ], // 5
+    [ G, G, G, K, A, A, A, A, A, A, A, A, A, A, A, K, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, K, G, G, G ], // 6
+    [ G, G, G, K, A, A, A, A, A, A, A, A, A, A, A, K, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, K, G, G, G ], // 7
+    [ G, G, G, K, A, A, A, A, A, A, A, A, A, A, A, K, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, K, G, G, G ], // 8
+    [ G, G, G, K, K, K, K, K, O, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, G, G, G ], // 9  parents door + wall
     [ G, G, G, K, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, K, G, G, G ], // 10 hallway (hardwood)
     [ G, G, G, K, K, K, K, O, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, O, K, K, K, G, G, G ], // 11 door to living area + bathroom door (col 33)
     [ G, G, G, K, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, N, N, N, J, J, J, N, N, N, N, J, J, J, J, J, J, J, K, G, G, G ], // 12 living + kitchen island + dining table
@@ -137,11 +138,11 @@ export const homeMap: MapData = {
   ],
   collisions: [...STANDARD_COLLISIONS],
   spawns: {
-    player: { x: 7, y: 6 },
+    player: { x: 4, y: 1 },  // JP wakes up in his room UPSTAIRS
     npcs: [
       { id: 'ch0_pops',    x: 8,  y: 13, sprite: 'npc_pops' },
       { id: 'ch0_mom',     x: 26, y: 13, sprite: 'npc_female' },
-      { id: 'ch0_sister',  x: 13, y: 6,  sprite: 'npc_sister' },
+      { id: 'ch0_sister',  x: 25, y: 1,  sprite: 'npc_sister' },  // sister upstairs in her room
       { id: 'ch0_frenchie', x: 10, y: 23, sprite: 'npc_frenchie' },
     ],
   },
@@ -156,37 +157,37 @@ export const homeMap: MapData = {
     { x: 18, y: 35, action: 'scene', target: 'TransitionScene', data: { text: 'Three weeks later...', nextScene: 'BeachScene' } },
   ],
   interactables: [
-    // JP's Room (cols 4-9, rows 4-8)
-    { id: 'ch0_bed',           x: 5,  y: 4,  type: 'examine', glow: false, sprite: 'item-bed' },        // bed — just furniture
-    { id: 'ch0_nightstand',    x: 7,  y: 4,  type: 'examine', glow: false, sprite: 'item-nightstand' }, // furniture
-    { id: 'ch0_computer',      x: 9,  y: 5,  type: 'examine', glow: true, sprite: 'item-desk' },        // MacBook — interactive
-    { id: 'ch0_college',       x: 9,  y: 6,  type: 'examine', glow: true, sprite: 'item-letter' },      // college letters — story
-    { id: 'ch0_poster',        x: 4,  y: 4,  type: 'examine', glow: false, sprite: 'item-poster' },     // poster on back wall (left side)
-    { id: 'ch0_hidden_stash',  x: 9,  y: 7,  type: 'examine', glow: true, sprite: 'item-weed-bag' },    // easter egg
-    { id: 'ch0_journal',       x: 7,  y: 8,  type: 'examine', glow: true, sprite: 'item-book' },        // journal — full UI
-    { id: 'ch0_crypto',        x: 8,  y: 4,  type: 'examine', glow: false, sprite: 'item-phone' },      // phone — points to computer
-    // Sister's Room (cols 11-15, rows 4-8)
-    { id: 'ch0_sister_bed',    x: 12, y: 4,  type: 'examine', glow: false, sprite: 'item-bed-pink' },   // furniture
-    { id: 'ch0_sister_toys',   x: 14, y: 5,  type: 'examine', glow: false },                            // scenery
-    { id: 'ch0_sister_mirror', x: 11, y: 4,  type: 'examine', glow: false, sprite: 'item-mirror' },     // mirror on back wall
+    // JP's Room — UPSTAIRS (cols 1-6, rows 1-2)
+    { id: 'ch0_bed',           x: 2,  y: 1,  type: 'examine', glow: false, sprite: 'item-bed' },        // bed
+    { id: 'ch0_nightstand',    x: 4,  y: 1,  type: 'examine', glow: false, sprite: 'item-nightstand' }, // furniture
+    { id: 'ch0_computer',      x: 6,  y: 1,  type: 'examine', glow: true, sprite: 'item-desk' },        // MacBook
+    { id: 'ch0_college',       x: 6,  y: 2,  type: 'examine', glow: true, sprite: 'item-letter' },      // college letters
+    { id: 'ch0_poster',        x: 1,  y: 1,  type: 'examine', glow: false, sprite: 'item-poster' },     // poster on wall
+    { id: 'ch0_hidden_stash',  x: 1,  y: 2,  type: 'examine', glow: true, sprite: 'item-weed-bag' },    // hidden stash
+    { id: 'ch0_journal',       x: 5,  y: 2,  type: 'examine', glow: true, sprite: 'item-book' },        // journal
+    { id: 'ch0_crypto',        x: 5,  y: 1,  type: 'examine', glow: false, sprite: 'item-phone' },      // phone
+    // Sister's Room — UPSTAIRS (cols 22-27, rows 1-2)
+    { id: 'ch0_sister_bed',    x: 23, y: 1,  type: 'examine', glow: false, sprite: 'item-bed-pink' },   // furniture
+    { id: 'ch0_sister_toys',   x: 26, y: 2,  type: 'examine', glow: false },                            // scenery
+    { id: 'ch0_sister_mirror', x: 22, y: 1,  type: 'examine', glow: false, sprite: 'item-mirror' },     // mirror
     // Parents' Room (cols 17-30, rows 4-8)
-    { id: 'ch0_parents_bed',   x: 19, y: 4,  type: 'examine', glow: false, sprite: 'item-bed' },        // furniture
-    { id: 'ch0_family_photo',  x: 24, y: 4,  type: 'examine', glow: true, sprite: 'item-photo' },       // photo on back wall — story
-    { id: 'ch0_parents_tv',    x: 17, y: 7,  type: 'examine', glow: false, sprite: 'item-tv' },         // furniture
-    { id: 'ch0_parents_bookshelf', x: 25, y: 4, type: 'examine', glow: false, sprite: 'item-bookshelf' }, // bookshelf on back wall
-    { id: 'ch0_parents_closet', x: 29, y: 4, type: 'examine', glow: false },                             // walk-in closet door (back wall)
-    { id: 'ch0_parents_dresser', x: 27, y: 7, type: 'examine', glow: false },                            // dresser
-    // Parents — cool interactions
-    { id: 'ch0_parents_safe',   x: 30, y: 7,  type: 'examine', glow: true },                             // hidden safe behind dresser
-    // Sister — cool interactions
-    { id: 'ch0_sister_drawing_wall', x: 14, y: 4, type: 'examine', glow: true },                         // her drawings on the wall
-    // Kitchen — cool interactions
-    { id: 'ch0_kitchen_knife',  x: 32, y: 14, type: 'examine', glow: false },                            // knife block
-    { id: 'ch0_cookie_jar',    x: 34, y: 14, type: 'examine', glow: true },                              // cookie jar — mom's
-    // Bathroom (cols 32-35, rows 4-8)
-    { id: 'ch0_mirror',        x: 34, y: 4,  type: 'examine', glow: true, sprite: 'item-mirror' },      // deep reflection — interactive
-    { id: 'ch0_toilet',        x: 32, y: 7,  type: 'examine', glow: false, sprite: 'item-toilet' },     // furniture
-    { id: 'ch0_shower',        x: 35, y: 7,  type: 'examine', glow: true, sprite: 'item-shower' },      // cart scene — interactive
+    // Parents' Room — DOWNSTAIRS (rows 4-8, they keep the master)
+    { id: 'ch0_parents_bed',   x: 5,  y: 4,  type: 'examine', glow: false, sprite: 'item-bed' },
+    { id: 'ch0_family_photo',  x: 8,  y: 4,  type: 'examine', glow: true, sprite: 'item-photo' },
+    { id: 'ch0_parents_tv',    x: 12, y: 7,  type: 'examine', glow: false, sprite: 'item-tv' },
+    { id: 'ch0_parents_bookshelf', x: 10, y: 4, type: 'examine', glow: false, sprite: 'item-bookshelf' },
+    { id: 'ch0_parents_closet', x: 13, y: 4, type: 'examine', glow: false },
+    { id: 'ch0_parents_dresser', x: 6, y: 7, type: 'examine', glow: false },
+    { id: 'ch0_parents_safe',   x: 14, y: 7,  type: 'examine', glow: true },
+    // Sister drawings — UPSTAIRS
+    { id: 'ch0_sister_drawing_wall', x: 24, y: 1, type: 'examine', glow: true },
+    // Kitchen (rows 12-14)
+    { id: 'ch0_kitchen_knife',  x: 32, y: 14, type: 'examine', glow: false },
+    { id: 'ch0_cookie_jar',    x: 34, y: 14, type: 'examine', glow: true },
+    // Bathroom — UPSTAIRS (cols 29-33, rows 1-2)
+    { id: 'ch0_mirror',        x: 30, y: 1,  type: 'examine', glow: true, sprite: 'item-mirror' },
+    { id: 'ch0_toilet',        x: 32, y: 2,  type: 'examine', glow: false, sprite: 'item-toilet' },
+    { id: 'ch0_shower',        x: 29, y: 2,  type: 'examine', glow: true, sprite: 'item-shower' },
     // Hallway (row 10)
     { id: 'ch0_hallway_photo', x: 20, y: 10, type: 'examine', glow: false, sprite: 'item-photo' },      // decoration
     // Living Room (left side, row 12-14)
@@ -212,7 +213,10 @@ export const homeMap: MapData = {
     { id: 'ch0_patio',         x: 19, y: 29, type: 'examine', glow: false },                             // patio seating area
 
     // Surprise elements
-    { id: 'ch0_rooftop',       x: 3,  y: 2,  type: 'examine', glow: true },                              // easter egg — climb from back of house
+    { id: 'ch0_rooftop',       x: 34, y: 1,  type: 'examine', glow: true },                              // easter egg — from upstairs bathroom window
+    // Stairs
+    { id: 'ch0_stairs_up',    x: 18, y: 10, type: 'examine', glow: true },                              // stairs in hallway → go upstairs
+    { id: 'ch0_stairs_down',  x: 18, y: 1,  type: 'examine', glow: true },                              // stairs upstairs → go back down
     { id: 'ch0_shoebox',       x: 4,  y: 5,  type: 'examine', glow: true },                              // easter egg
     // tv_sitdown removed — Pops already has fishing moment
 

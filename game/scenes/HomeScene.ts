@@ -45,46 +45,34 @@ export class HomeScene extends BaseChapterScene {
     super.create();
     this.addNavArrow(14, 34, 'Leave home');
 
-    // Sister's crayon drawings on walls (cols 11-15, rows 4-8)
-    const drawingColors = [0xff69b4, 0xf0c040, 0x40c060, 0x4080e0, 0xff4444, 0xc040f0];
+    // Sister's crayon drawings on walls — UPSTAIRS (cols 22-27, row 0-1)
     // Drawing 1: Sun on back wall
-    this.add.circle(12 * SCALED_TILE + 20, 4 * SCALED_TILE + 20, 8, 0xf0c040).setDepth(1);
+    this.add.circle(23 * SCALED_TILE + 20, 0 * SCALED_TILE + 40, 8, 0xf0c040).setDepth(1);
     for (let i = 0; i < 6; i++) {
       const angle = (Math.PI * 2 / 6) * i;
       this.add.rectangle(
-        12 * SCALED_TILE + 20 + Math.cos(angle) * 12,
-        4 * SCALED_TILE + 20 + Math.sin(angle) * 12,
+        23 * SCALED_TILE + 20 + Math.cos(angle) * 12,
+        0 * SCALED_TILE + 40 + Math.sin(angle) * 12,
         3, 6, 0xf0c040
       ).setDepth(1).setAngle(angle * 180 / Math.PI);
     }
-    // Drawing 2: Heart on side wall
-    this.add.rectangle(11 * SCALED_TILE + 20, 5 * SCALED_TILE + 20, 6, 6, 0xff69b4).setDepth(1);
-    this.add.rectangle(11 * SCALED_TILE + 17, 5 * SCALED_TILE + 17, 4, 4, 0xff69b4).setDepth(1);
-    this.add.rectangle(11 * SCALED_TILE + 23, 5 * SCALED_TILE + 17, 4, 4, 0xff69b4).setDepth(1);
-    // Drawing 3: Flower on back wall
-    this.add.circle(14 * SCALED_TILE + 30, 4 * SCALED_TILE + 25, 4, 0xf0c040).setDepth(1); // center
-    for (let i = 0; i < 5; i++) {
-      const a = (Math.PI * 2 / 5) * i;
-      this.add.circle(
-        14 * SCALED_TILE + 30 + Math.cos(a) * 7,
-        4 * SCALED_TILE + 25 + Math.sin(a) * 7,
-        3, 0xff69b4
-      ).setDepth(1);
-    }
-    // Drawing 4: Rainbow stripes
+    // Drawing 2: Heart
+    this.add.rectangle(26 * SCALED_TILE + 20, 0 * SCALED_TILE + 40, 6, 6, 0xff69b4).setDepth(1);
+    this.add.rectangle(26 * SCALED_TILE + 17, 0 * SCALED_TILE + 37, 4, 4, 0xff69b4).setDepth(1);
+    this.add.rectangle(26 * SCALED_TILE + 23, 0 * SCALED_TILE + 37, 4, 4, 0xff69b4).setDepth(1);
+    // Drawing 3: Rainbow stripes
     const rainbowColors = [0xff4444, 0xf0a030, 0xf0f040, 0x40c060, 0x4080e0, 0xc040f0];
     for (let i = 0; i < 6; i++) {
-      this.add.rectangle(13 * SCALED_TILE + 10, 4 * SCALED_TILE + 10 + i * 3, 20, 2, rainbowColors[i])
+      this.add.rectangle(24 * SCALED_TILE + 30, 0 * SCALED_TILE + 30 + i * 4, 20, 2, rainbowColors[i])
         .setDepth(1).setAlpha(0.7);
     }
 
     // Render windows directly on wall tiles (not floating sprites)
     const windowPositions = [
-      { x: 6, y: 3 },   // JP's room
-      { x: 13, y: 3 },  // Sister's room
-      { x: 22, y: 3 },  // Parents' room
-      { x: 34, y: 3 },  // Bathroom
-      { x: 30, y: 15 }, // Kitchen (south wall)
+      { x: 4, y: 0 },   // JP's room (upstairs back wall)
+      { x: 25, y: 0 },  // Sister's room (upstairs back wall)
+      { x: 31, y: 0 },  // Bathroom (upstairs back wall)
+      { x: 8, y: 3 },   // Parents' room (downstairs)
     ];
     for (const pos of windowPositions) {
       const wx = pos.x * SCALED_TILE + SCALED_TILE / 2;
@@ -777,6 +765,28 @@ export class HomeScene extends BaseChapterScene {
       this.trackForPhoneCall(interactable.id);
       return;
     }
+    // Stairs — teleport between floors
+    if (interactable.id === 'ch0_stairs_up') {
+      this.frozen = true;
+      this.cameras.main.fadeOut(300, 0, 0, 0);
+      this.cameras.main.once('camerafadeoutcomplete', () => {
+        this.player.setPosition(18 * SCALED_TILE + SCALED_TILE / 2, 1 * SCALED_TILE + SCALED_TILE / 2);
+        this.cameras.main.fadeIn(300, 0, 0, 0);
+        this.frozen = false;
+      });
+      return;
+    }
+    if (interactable.id === 'ch0_stairs_down') {
+      this.frozen = true;
+      this.cameras.main.fadeOut(300, 0, 0, 0);
+      this.cameras.main.once('camerafadeoutcomplete', () => {
+        this.player.setPosition(18 * SCALED_TILE + SCALED_TILE / 2, 10 * SCALED_TILE + SCALED_TILE / 2);
+        this.cameras.main.fadeIn(300, 0, 0, 0);
+        this.frozen = false;
+      });
+      return;
+    }
+
     // Basketball — quick shoot animation
     if (interactable.id === 'ch0_basketball') {
       Analytics.trackInteraction(interactable.id);
@@ -2161,26 +2171,53 @@ export class HomeScene extends BaseChapterScene {
           { speaker: 'Pops', text: 'Alright, I gotta head to work. Early shift.' },
           { speaker: 'Narrator', text: 'Pops daps up JP and walks toward the truck.' },
         ], () => {
-          // Pops walks to garage and "drives to work"
+          // Pops walks to garage
           this.moveNPCTo('ch0_pops', 34, 20, 2500, () => {
-            const pops = this.findNPC('ch0_pops');
-            if (pops) {
-              // Pops disappears (drove away)
-              this.tweens.add({
-                targets: pops.sprite,
-                alpha: 0,
-                duration: 800,
-                onComplete: () => {
-                  // Remove collision
-                  this.collisionTiles.delete('34,18');
-                  // Update dialogue if player finds him somehow
-                  pops.dialogue = [
-                    { speaker: 'Narrator', text: 'Pops already left for work.' },
-                  ];
-                },
-              });
-            }
-            this.frozen = false;
+            // Garage door opens — white folding panels roll up
+            const doorX = 35 * SCALED_TILE + SCALED_TILE / 2;
+            const doorY = 22 * SCALED_TILE + SCALED_TILE / 2;
+
+            // Door panels that slide up (like a real garage door)
+            const panel1 = this.add.rectangle(doorX, doorY, SCALED_TILE * 3, SCALED_TILE * 0.25, 0xe8e0d4).setDepth(6);
+            const panel2 = this.add.rectangle(doorX, doorY - 8, SCALED_TILE * 3, SCALED_TILE * 0.25, 0xd8d0c4).setDepth(6);
+            const panel3 = this.add.rectangle(doorX, doorY + 8, SCALED_TILE * 3, SCALED_TILE * 0.25, 0xe0d8cc).setDepth(6);
+
+            // Roll them up with a slight delay between each
+            this.cameras.main.shake(100, 0.002); // rumble as door opens
+            this.tweens.add({ targets: panel3, y: doorY - SCALED_TILE, alpha: 0, duration: 400 });
+            this.tweens.add({ targets: panel2, y: doorY - SCALED_TILE - 8, alpha: 0, duration: 400, delay: 100 });
+            this.tweens.add({ targets: panel1, y: doorY - SCALED_TILE - 16, alpha: 0, duration: 400, delay: 200 });
+
+            // Remove door collision so it's now open
+            this.collisionTiles.delete('35,22');
+
+            // Cover the door tile with concrete (open garage)
+            const openDoor = this.add.rectangle(doorX, doorY, SCALED_TILE * 3, SCALED_TILE, 0x505058).setDepth(0);
+
+            // After door opens, Pops drives out
+            this.time.delayedCall(800, () => {
+              const pops = this.findNPC('ch0_pops');
+              if (pops) {
+                // Pops moves out through the open door and down the driveway
+                this.moveNPCTo('ch0_pops', 35, 23, 600, () => {
+                  this.moveNPCTo('ch0_pops', 35, 31, 1500, () => {
+                    // Pops disappears (drove away)
+                    this.tweens.add({
+                      targets: pops.sprite,
+                      alpha: 0,
+                      duration: 500,
+                      onComplete: () => {
+                        this.collisionTiles.delete('35,31');
+                        pops.dialogue = [
+                          { speaker: 'Narrator', text: 'Pops already left for work.' },
+                        ];
+                      },
+                    });
+                  });
+                });
+              }
+              this.frozen = false;
+            });
           });
         });
       });
