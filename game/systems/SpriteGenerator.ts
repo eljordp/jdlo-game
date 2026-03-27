@@ -4332,6 +4332,32 @@ function generateMoreItems(scene: Phaser.Scene) {
     px(g, 27, 9, 0x5a3018, 1, 16); // right frame
   });
 
+  // --- item-bed-pink --- (sister's room)
+  makeTexture(scene, 'item-bed-pink', TILE_SIZE, TILE_SIZE, (g) => {
+    // Headboard (white painted wood)
+    px(g, 4, 7, 0xe0d8d0, 24, 2);
+    px(g, 4, 7, 0xf0e8e0, 24, 1);
+    // Bed frame (white)
+    px(g, 4, 9, 0xe0d8d0, 24, 16);
+    px(g, 4, 9, 0xf0e8e0, 24, 1);
+    px(g, 4, 24, 0xc8c0b8, 24, 1);
+    // Mattress
+    px(g, 5, 10, 0xf8f0e8, 22, 14);
+    // Pillow (pink)
+    px(g, 6, 10, 0xf0b0c0, 8, 4);
+    px(g, 7, 11, 0xf8c0d0, 6, 2);
+    // Pink comforter
+    px(g, 5, 15, 0xe87098, 22, 9);
+    px(g, 5, 15, 0xf080a8, 22, 1);
+    px(g, 5, 18, 0xd06088, 22, 1);
+    // Hearts/pattern on comforter
+    px(g, 12, 17, 0xf090b0, 2, 2);
+    px(g, 20, 19, 0xf090b0, 2, 2);
+    // Frame edges
+    px(g, 4, 9, 0xc8c0b8, 1, 16);
+    px(g, 27, 9, 0xc8c0b8, 1, 16);
+  });
+
   // --- item-mirror ---
   makeTexture(scene, 'item-mirror', TILE_SIZE, TILE_SIZE, (g) => {
     // Frame (gold/bronze)

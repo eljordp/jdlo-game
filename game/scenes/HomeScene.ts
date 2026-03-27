@@ -44,6 +44,12 @@ export class HomeScene extends BaseChapterScene {
 
   // Override to add computer interface, fetch, goodbye, phone ring
   protected handleInteractable(interactable: { id: string; type: string; consumed?: boolean }) {
+    if (interactable.id === 'ch0_journal') {
+      Analytics.trackInteraction(interactable.id);
+      this.showJournal();
+      this.trackForPhoneCall(interactable.id);
+      return;
+    }
     if (interactable.id === 'ch0_computer') {
       if (this.frozen) return; // prevent re-opening while interface is up
       Analytics.trackInteraction(interactable.id);
@@ -213,6 +219,94 @@ export class HomeScene extends BaseChapterScene {
     const spaceKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     const spaceHandler = () => answer();
     spaceKey.on('down', spaceHandler);
+  }
+
+  private showJournal() {
+    this.frozen = true;
+    const objects: Phaser.GameObjects.GameObject[] = [];
+
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+
+    // Dark overlay
+    objects.push(this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.7)
+      .setScrollFactor(0).setDepth(300));
+
+    // Journal notebook — cream/tan paper
+    const bookW = 500;
+    const bookH = 440;
+    // Leather cover visible on edges
+    objects.push(this.add.rectangle(cx, cy, bookW + 16, bookH + 16, 0x5a3a20)
+      .setScrollFactor(0).setDepth(301));
+    // Spine
+    objects.push(this.add.rectangle(cx - bookW / 2 - 4, cy, 8, bookH + 16, 0x4a2a18)
+      .setScrollFactor(0).setDepth(302));
+    // Paper pages
+    objects.push(this.add.rectangle(cx + 4, cy, bookW, bookH, 0xf5edd8)
+      .setScrollFactor(0).setDepth(302));
+
+    // Ruled lines
+    for (let i = 0; i < 14; i++) {
+      const lineY = cy - bookH / 2 + 50 + i * 28;
+      objects.push(this.add.rectangle(cx + 4, lineY, bookW - 40, 1, 0xc8c0b0)
+        .setScrollFactor(0).setDepth(303).setAlpha(0.5));
+    }
+
+    // Red margin line
+    objects.push(this.add.rectangle(cx - bookW / 2 + 60, cy, 1, bookH - 20, 0xd08080)
+      .setScrollFactor(0).setDepth(303).setAlpha(0.6));
+
+    // Date at top
+    objects.push(this.add.text(cx - bookW / 2 + 70, cy - bookH / 2 + 24, 'June 14', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#8a7a6a',
+    }).setScrollFactor(0).setDepth(304));
+
+    // Journal entries — handwritten feel
+    const entries = [
+      'I\'m going to be somebody.',
+      'I just don\'t know how yet.',
+      '',
+      'Everyone around me has a plan.',
+      'College, job, whatever.',
+      'I don\'t have a plan.',
+      'I just know this isn\'t it.',
+      '',
+      'Pops says "do it all the way."',
+      'But what is "it"?',
+      '',
+      'Something\'s coming. I can feel it.',
+    ];
+
+    let entryY = cy - bookH / 2 + 52;
+    for (const line of entries) {
+      if (line === '') { entryY += 14; continue; }
+      objects.push(this.add.text(cx - bookW / 2 + 70, entryY, line, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#3a3028',
+      }).setScrollFactor(0).setDepth(304));
+      entryY += 28;
+    }
+
+    // Close hint
+    objects.push(this.add.text(cx, cy + bookH / 2 + 20, 'Press SPACE to close', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#666666',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(304));
+
+    // Close on Space or click
+    const closeJournal = () => {
+      spaceKey.off('down', closeJournal);
+      this.input.off('pointerdown', closeJournal);
+      for (const obj of objects) {
+        if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
+      }
+      this.frozen = false;
+    };
+
+    const spaceKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    // Delay input registration so it doesn't immediately close
+    this.time.delayedCall(300, () => {
+      spaceKey.on('down', closeJournal);
+      this.input.on('pointerdown', closeJournal);
+    });
   }
 
   private showComputerInterface() {

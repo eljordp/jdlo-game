@@ -158,7 +158,7 @@ export const homeMap: MapData = {
     { id: 'ch0_journal',       x: 7,  y: 8,  type: 'examine', glow: true, sprite: 'item-book' },        // journal near door
     { id: 'ch0_crypto',        x: 4,  y: 8,  type: 'examine', glow: true, sprite: 'item-phone' },       // phone on floor by bed
     // Sister's Room (cols 11-15, rows 4-8) — pink girly room
-    { id: 'ch0_sister_bed',    x: 12, y: 4,  type: 'examine', glow: true, sprite: 'item-bed' },
+    { id: 'ch0_sister_bed',    x: 12, y: 4,  type: 'examine', glow: true, sprite: 'item-bed-pink' },
     { id: 'ch0_sister_toys',   x: 14, y: 5,  type: 'examine', glow: true },
     { id: 'ch0_sister_mirror', x: 11, y: 7,  type: 'examine', glow: true, sprite: 'item-mirror' },
     // Parents' Room (cols 17-23, rows 4-8) — clean, mature
