@@ -42,6 +42,20 @@ export const virtualInput = {
   gameSpeed: 1,
 };
 
+// Expose to window for Playwright/automation testing
+if (typeof window !== 'undefined') {
+  (window as unknown as Record<string, unknown>).vi = virtualInput;
+  (window as unknown as Record<string, unknown>).move = (dir: string, ms = 300) => {
+    virtualInput[dir as 'up' | 'down' | 'left' | 'right'] = true;
+    setTimeout(() => { virtualInput[dir as 'up' | 'down' | 'left' | 'right'] = false; }, ms);
+  };
+  (window as unknown as Record<string, unknown>).act = () => {
+    virtualInput.action = true;
+    virtualInput.actionJustPressed = true;
+    setTimeout(() => { virtualInput.actionJustPressed = false; virtualInput.action = false; }, 150);
+  };
+}
+
 export default function GameCanvas() {
   const gameRef = useRef<Phaser.Game | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
