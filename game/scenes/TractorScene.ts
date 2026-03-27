@@ -7,6 +7,9 @@ import { SCALED_TILE, GAME_WIDTH, GAME_HEIGHT } from '../config';
 import { Analytics } from '../systems/Analytics';
 
 export class TractorScene extends BaseChapterScene {
+  private phoneExaminedFirst = false;
+  private tractorPlayed = false;
+
   constructor() {
     super({ key: 'TractorScene' });
     this.chapterTitle = 'Chapter 5: Caymus Vineyards';
@@ -44,10 +47,48 @@ export class TractorScene extends BaseChapterScene {
     return tractorDialogue;
   }
 
+  // Juan shakes head if you looked at phone first
+  protected handleNPCDialogue(npcId: string, dialogue: DialogueLine[]): void {
+    if (npcId === 'ch4_coworker' && this.phoneExaminedFirst) {
+      const chapterDialogue = this.getChapterDialogue();
+      const lines = chapterDialogue.npcs['ch4_phone_first'];
+      if (lines) {
+        this.dialogue.show(lines, () => {
+          // Then show normal dialogue
+          this.dialogue.show(dialogue);
+        });
+        return;
+      }
+    }
+
+    // After crash, Ernesto walks over
+    if (npcId === 'ch4_boss' && this.tractorPlayed) {
+      const ernesto = this.npcs.find(n => n.id === 'ch4_boss');
+      if (ernesto) {
+        // Ernesto walks toward player
+        const targetX = this.player.x + SCALED_TILE;
+        this.tweens.add({
+          targets: ernesto.sprite,
+          x: targetX,
+          duration: 800,
+          ease: 'Linear',
+        });
+      }
+    }
+
+    this.dialogue.show(dialogue);
+  }
+
   // Override to add tractor mini-game and post-evolution cutscene
   protected handleInteractable(interactable: { id: string; type: string; consumed?: boolean }) {
+    // Track if phone was examined before tractor
+    if (interactable.id === 'ch4_phone' && !this.tractorPlayed) {
+      this.phoneExaminedFirst = true;
+    }
+
     if (interactable.id === 'ch4_tractor' || interactable.id === 'ch4_crash') {
       Analytics.trackInteraction(interactable.id);
+      this.tractorPlayed = true;
       this.playTractorMinigame();
       this.interactions.consume(interactable.id);
       return;

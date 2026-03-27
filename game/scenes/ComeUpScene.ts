@@ -6,6 +6,12 @@ import { GAME_WIDTH, GAME_HEIGHT } from '../config';
 import { Analytics } from '../systems/Analytics';
 
 export class ComeUpScene extends BaseChapterScene {
+  private typingPlayed = false;
+  private clientReturned = false;
+  private ghostMoved = false;
+  private stickerTalked = false;
+  private lateNightActive = false;
+
   constructor() {
     super({ key: 'ComeUpScene' });
     this.chapterTitle = 'Chapter 6: The Come Up';
@@ -63,6 +69,75 @@ export class ComeUpScene extends BaseChapterScene {
     };
   }
 
+  // Ghost prospect walks away when you approach
+  protected onPlayerMove(tileX: number, tileY: number): void {
+    if (!this.ghostMoved) {
+      const ghost = this.npcs.find(n => n.id === 'ch5_ghost');
+      if (ghost) {
+        const ghostTX = Math.round((ghost.sprite.x - 32) / 64);
+        const ghostTY = Math.round((ghost.sprite.y - 32) / 64);
+        const dist = Math.abs(ghostTX - tileX) + Math.abs(ghostTY - tileY);
+        if (dist <= 3) {
+          this.ghostMoved = true;
+          // Ghost walks away
+          this.collisionTiles.delete(`${ghostTX},${ghostTY}`);
+          this.tweens.add({
+            targets: ghost.sprite,
+            x: ghost.sprite.x + 64 * 4,
+            alpha: 0.3,
+            duration: 1500,
+            ease: 'Linear',
+            onComplete: () => {
+              // Update dialogue
+              ghost.dialogue = [
+                { speaker: 'Narrator', text: 'He\'s gone. Some people just waste your time.' },
+                { speaker: 'JP\'s Mind', text: 'Learn to spot them.' },
+              ];
+            },
+          });
+        }
+      }
+    }
+
+    // Late night dim effect after examining 3am interactable
+    if (this.lateNightActive) return;
+  }
+
+  // Sticker Smith triggers referral chain to Manza
+  protected handleNPCDialogue(npcId: string, dialogue: DialogueLine[]): void {
+    if (npcId === 'ch5_sticker' && !this.stickerTalked) {
+      this.stickerTalked = true;
+      this.dialogue.show(dialogue, () => {
+        // After talking to Sticker, Manza gets a referral indicator
+        const manza = this.npcs.find(n => n.id === 'ch5_manza');
+        if (manza) {
+          // Sparkle effect on Manza
+          const sparkle = this.add.text(
+            manza.sprite.x, manza.sprite.y - 40, 'NEW!',
+            { fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#f0c040' }
+          ).setOrigin(0.5).setDepth(15);
+          this.tweens.add({
+            targets: sparkle,
+            y: sparkle.y - 8,
+            duration: 800,
+            yoyo: true,
+            repeat: -1,
+          });
+          // Update Manza dialogue to reference Sticker
+          manza.dialogue = [
+            { speaker: 'Manza', text: 'Yo, Sticker just told me about you.' },
+            { speaker: 'Manza', text: 'I got like five friends who need sites. You ready?' },
+            { speaker: 'JP', text: 'Send them all.' },
+            { speaker: 'JP\'s Mind', text: 'Word of mouth. The best kind of marketing.' },
+          ];
+        }
+      });
+      return;
+    }
+
+    this.dialogue.show(dialogue);
+  }
+
   // Override to add typing mini-game and payment cutscene
   protected handleInteractable(interactable: { id: string; type: string; consumed?: boolean }) {
     if (interactable.id === 'ch5_stack' || interactable.id === 'ch5_github') {
@@ -72,11 +147,49 @@ export class ComeUpScene extends BaseChapterScene {
       return;
     }
 
+    // Late night coding dim
+    if (interactable.id === 'ch5_3am' && !this.lateNightActive) {
+      this.lateNightActive = true;
+      const nightOverlay = this.add.rectangle(
+        GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH * 3, GAME_HEIGHT * 3, 0x0a0820, 0
+      ).setDepth(8).setAlpha(0);
+      this.tweens.add({ targets: nightOverlay, alpha: 0.3, duration: 2000 });
+    }
+
     if (interactable.id === 'ch5_first_dollar') {
       Analytics.trackInteraction(interactable.id);
       this.requiredDone = true;
       this.playPaymentCutscene();
       this.interactions.consume(interactable.id);
+
+      // First client returns after payment (delayed)
+      if (!this.clientReturned) {
+        this.clientReturned = true;
+        this.time.delayedCall(8000, () => {
+          if (!this.scene.isActive()) return;
+          const firstClient = this.npcs.find(n => n.id === 'ch5_first_client');
+          if (firstClient) {
+            // Client walks toward player
+            const chapterDialogue = this.getChapterDialogue();
+            const lines = chapterDialogue.npcs['ch5_client_returns'];
+            if (lines) {
+              firstClient.dialogue = lines;
+              // Visual indicator
+              const returnText = this.add.text(
+                firstClient.sprite.x, firstClient.sprite.y - 40, '!',
+                { fontFamily: '"Press Start 2P", monospace', fontSize: '14px', color: '#40c040' }
+              ).setOrigin(0.5).setDepth(15);
+              this.tweens.add({
+                targets: returnText,
+                y: returnText.y - 8,
+                duration: 600,
+                yoyo: true,
+                repeat: -1,
+              });
+            }
+          }
+        });
+      }
       return;
     }
     super.handleInteractable(interactable);

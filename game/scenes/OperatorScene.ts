@@ -4,6 +4,7 @@ import { operatorDialogue } from '../data/story';
 import type { DialogueLine } from '../systems/DialogueSystem';
 import { GAME_WIDTH, GAME_HEIGHT, SCALE, TILE_SIZE, SCALED_TILE } from '../config';
 import { Analytics } from '../systems/Analytics';
+import { BalanceSystem } from '../systems/BalanceSystem';
 
 export class OperatorScene extends BaseChapterScene {
   private npcsTalkedTo = new Set<string>();

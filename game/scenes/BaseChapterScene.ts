@@ -11,6 +11,7 @@ import { SaveSystem } from '../systems/SaveSystem';
 import { SoundEffects } from '../systems/SoundEffects';
 import { Analytics } from '../systems/Analytics';
 import { EmoteSystem } from '../systems/EmoteSystem';
+import { PhoneSystem } from '../systems/PhoneSystem';
 import type { MapData } from '../data/maps';
 
 type NPCObject = {
@@ -192,6 +193,9 @@ export abstract class BaseChapterScene extends Phaser.Scene {
 
     // Emote system — press E to open emote wheel
     EmoteSystem.init(this);
+
+    // Phone system — press P or TAB to open phone
+    PhoneSystem.init(this);
   }
 
   private showChapterTitle() {

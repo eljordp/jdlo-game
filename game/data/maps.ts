@@ -624,9 +624,9 @@ export const comeUpMap: MapData = {
     // --- CLIENT DISTRICT 1 (rows 9-15): 3 buildings with 3 interior rows each ---
     [ G, G, G, I, G, G, G, G, G, C, G, G, T, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 9  near building
     [ G, G, B, B, B, B, B, B, G, C, G, G, G, B, B, B, B, B, B, B, B, G, G, G, G, B, B, B, B, B, B, B, B, B, G, G, G, G, G, G ], // 10 3 client buildings
-    [ G, G, B, F, F, F, F, B, G, C, G, G, G, B, F, F, F, F, F, F, B, G, G, G, G, B, F, F, F, F, F, F, F, B, G, G, G, G, G, G ], // 11 interior row 1
+    [ G, G, B, F, F, F, F, B, G, C, G, G, G, B, F, F, F, F, F, F, B, G, G, G, G, B, F, F, N, N, F, F, F, B, G, G, G, G, G, G ], // 11 interior row 1 (print counter)
     [ G, G, B, F, N, F, F, B, G, C, G, G, G, B, F, F, F, F, F, F, B, G, G, G, G, B, F, F, F, F, F, F, F, B, G, G, G, G, G, G ], // 12 interior row 2 (N=counter)
-    [ G, G, B, F, F, F, F, B, G, C, G, G, G, B, F, F, F, F, F, F, B, G, G, G, G, B, F, F, F, F, F, F, F, B, G, G, G, G, G, G ], // 13 interior row 3 (new)
+    [ G, G, B, F, F, F, F, B, G, C, G, G, G, B, F, F, F, F, F, F, B, G, G, G, G, B, F, N, N, F, F, N, N, B, G, G, G, G, G, G ], // 13 interior row 3 (sticker display tables)
     [ G, G, B, B, B, O, B, B, G, C, G, G, G, B, B, B, B, O, B, B, B, G, G, G, G, B, B, B, B, O, B, B, B, B, G, G, G, G, G, G ], // 14 doors
     [ G, G, I, G, G, C, G, G, G, C, G, G, I, G, G, G, G, C, G, G, G, G, G, G, I, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G ], // 15 worn dirt near walks
 
@@ -678,6 +678,7 @@ export const comeUpMap: MapData = {
     { id: 'ch5_github', x: 12, y: 4, type: 'examine', glow: true },
     // Street — minimal items, no unnecessary sprites
     { id: 'ch5_review', x: 35, y: 9, type: 'examine', glow: true },
+    { id: 'ch5_sticker_wall', x: 27, y: 11, type: 'examine', glow: false, sprite: 'item-poster' },
     { id: 'ch5_print_shop', x: 5, y: 16, type: 'examine', glow: true },
     { id: 'ch5_dhl_building', x: 28, y: 24, type: 'examine', glow: true },
     // Invisible "!" markers — no sprites
@@ -791,6 +792,7 @@ export const operatorMap: MapData = {
     npcs: [
       // Pomaikai HQ
       { id: 'ch6_malachi',      x: 7,  y: 5,  sprite: 'npc_malachi' },
+      { id: 'ch6_elijah',       x: 12, y: 5,  sprite: 'npc_elijah' },
       { id: 'ch6_office_kult',  x: 5,  y: 4,  sprite: 'npc_tech' },
       // Office 2 — big client
       { id: 'ch6_big_client',   x: 24, y: 5,  sprite: 'npc_suit' },

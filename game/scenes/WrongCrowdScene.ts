@@ -13,6 +13,10 @@ export class WrongCrowdScene extends BaseChapterScene {
   private heartbeatOverlay?: Phaser.GameObjects.Rectangle;
   private windowLights: Phaser.GameObjects.Rectangle[] = [];
   private dogBarkShown = false;
+  private joseGrabbed = false;
+  private lookoutWarned = false;
+  private buyerNervousStarted = false;
+  private unmarkedCarSpawned = false;
 
   constructor() {
     super({ key: 'WrongCrowdScene' });
@@ -62,8 +66,49 @@ export class WrongCrowdScene extends BaseChapterScene {
     // --- Tension building: edge darkening overlays ---
     this.createTensionOverlays();
 
+    // Unmarked car — foreshadowing the cops
+    this.spawnUnmarkedCar();
+
+    // Buyer nervous leg bounce
+    this.startBuyerNervous();
+
     // 3:33 AM wake up cutscene at start
     this.play333Cutscene();
+  }
+
+  private spawnUnmarkedCar() {
+    // Black sedan on the street, no plates — subtle foreshadowing
+    const carX = 30 * SCALED_TILE + SCALED_TILE / 2;
+    const carY = 14 * SCALED_TILE + SCALED_TILE / 2;
+    const sedan = this.add.rectangle(carX, carY, SCALED_TILE * 2, SCALED_TILE, 0x101018)
+      .setDepth(5);
+    // Tinted windows
+    this.add.rectangle(carX, carY - 6, SCALED_TILE * 1.5, SCALED_TILE * 0.4, 0x1a1a2a)
+      .setDepth(6);
+    // No headlights — it's just sitting there
+    this.collisionTiles.add('29,14');
+    this.collisionTiles.add('30,14');
+    this.collisionTiles.add('31,14');
+    this.unmarkedCarSpawned = true;
+  }
+
+  private startBuyerNervous() {
+    // Buyer's leg bouncing — subtle nervous tell
+    const buyer = this.npcs.find(n => n.id === 'ch2_buyer');
+    if (!buyer) return;
+    // Start after a delay (buyer is already inside waiting)
+    this.time.delayedCall(2000, () => {
+      if (!this.scene.isActive()) return;
+      this.buyerNervousStarted = true;
+      this.tweens.add({
+        targets: buyer.sprite,
+        y: buyer.sprite.y + 2,
+        duration: 200,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+      });
+    });
   }
 
   /**
@@ -127,8 +172,8 @@ export class WrongCrowdScene extends BaseChapterScene {
    */
   private increaseTension() {
     this.interactionCount++;
-    // ~10 interactions to reach max tension of 0.2
-    const targetAlpha = Math.min(0.2, this.interactionCount * 0.025);
+    // ~10 interactions to reach max tension of 0.35
+    const targetAlpha = Math.min(0.35, this.interactionCount * 0.04);
     for (const overlay of this.tensionOverlays) {
       this.tweens.add({
         targets: overlay,
@@ -285,15 +330,129 @@ export class WrongCrowdScene extends BaseChapterScene {
     return dialogue;
   }
 
+  // Reactive NPC dialogue
+  protected handleNPCDialogue(npcId: string, dialogue: DialogueLine[]): void {
+    // Jose grabs JP's arm before he leaves
+    if (npcId === 'ch2_homie_door' && !this.joseGrabbed) {
+      this.joseGrabbed = true;
+      const jose = this.npcs.find(n => n.id === 'ch2_homie_door');
+
+      this.dialogue.show(dialogue, () => {
+        // Jose grabs arm — camera shake + extra line
+        this.frozen = true;
+        this.cameras.main.shake(150, 0.003);
+
+        if (jose) {
+          // Jose steps toward player
+          this.tweens.add({
+            targets: jose.sprite,
+            x: this.player.x - SCALED_TILE,
+            duration: 300,
+            ease: 'Quad.easeOut',
+          });
+        }
+
+        this.time.delayedCall(400, () => {
+          this.dialogue.show([
+            { speaker: 'Jose', text: 'Hey.' },
+            { speaker: 'Narrator', text: 'He grabs JP\'s arm.' },
+            { speaker: 'Jose', text: 'Text me when you\'re back. For real this time.' },
+            { speaker: 'Narrator', text: 'His eyes say what his mouth won\'t.' },
+          ], () => {
+            this.frozen = false;
+            // Update Jose's dialogue for future interactions
+            if (jose) {
+              jose.dialogue = [
+                { speaker: 'Jose', text: '...just be careful, bro.' },
+              ];
+            }
+          });
+        });
+      });
+      return;
+    }
+
+    // Lookout blocks and warns
+    if (npcId === 'ch2_lookout' && !this.lookoutWarned) {
+      this.lookoutWarned = true;
+      const lookout = this.npcs.find(n => n.id === 'ch2_lookout');
+
+      // Lookout steps closer
+      if (lookout) {
+        this.tweens.add({
+          targets: lookout.sprite,
+          x: this.player.x + SCALED_TILE,
+          duration: 400,
+          ease: 'Quad.easeOut',
+        });
+      }
+
+      this.dialogue.show([
+        { speaker: 'Lookout', text: '...' },
+        { speaker: 'Narrator', text: 'He doesn\'t blink. Just stares.' },
+        { speaker: 'Lookout', text: 'Straight back. Don\'t look around.' },
+        { speaker: 'JP\'s Mind', text: 'Something\'s off. But you\'re already here.' },
+      ], () => {
+        // Lookout steps back
+        if (lookout) {
+          const lookoutData = this.getMapData().spawns.npcs.find(n => n.id === 'ch2_lookout');
+          if (lookoutData) {
+            this.tweens.add({
+              targets: lookout.sprite,
+              x: lookoutData.x * SCALED_TILE + SCALED_TILE / 2,
+              duration: 400,
+            });
+          }
+        }
+        // Update lookout dialogue
+        if (lookout) {
+          lookout.dialogue = [
+            { speaker: 'Narrator', text: 'He won\'t look at you now.' },
+          ];
+        }
+      });
+      return;
+    }
+
+    // Unmarked car interaction (player walks near it)
+    if (npcId === 'ch2_corner_guy') {
+      // After corner guy dialogue, hint about the car
+      this.dialogue.show(dialogue, () => {
+        if (this.unmarkedCarSpawned && !this.frozen) {
+          this.time.delayedCall(1000, () => {
+            if (this.scene.isActive() && !this.frozen) {
+              this.dialogue.show([
+                { speaker: 'JP\'s Mind', text: 'That black sedan wasn\'t here before.' },
+                { speaker: 'JP\'s Mind', text: '...probably nothing.' },
+              ]);
+            }
+          });
+        }
+      });
+      return;
+    }
+
+    // Default
+    this.dialogue.show(dialogue);
+  }
+
   protected handleInteractable(interactable: { id: string; type: string; consumed?: boolean }) {
     // Increase tension on every interaction
     this.increaseTension();
 
-    // Car interaction — driving cutscene
+    // Car interaction — driving cutscene (bumps tension extra to compensate for skipped walking)
     if (interactable.id === 'ch2_car') {
       Analytics.trackInteraction(interactable.id);
       this.frozen = true;
       this.interactions.consume(interactable.id);
+      // Driving = 4 extra tension bumps (you skipped the walk)
+      for (let i = 0; i < 4; i++) {
+        this.interactionCount++;
+      }
+      const targetAlpha = Math.min(0.35, this.interactionCount * 0.04);
+      for (const overlay of this.tensionOverlays) {
+        this.tweens.add({ targets: overlay, alpha: targetAlpha, duration: 2000 });
+      }
       this.playDrivingCutscene();
       return;
     }
@@ -488,6 +647,34 @@ export class WrongCrowdScene extends BaseChapterScene {
   private triggerRaid() {
     this.frozen = true;
 
+    // THE SILENCE — 1.5 seconds of nothing before everything breaks
+    // Stop all tweens on buyer (leg bounce stops)
+    const buyer = this.npcs.find(n => n.id === 'ch2_buyer');
+    if (buyer) {
+      this.tweens.killTweensOf(buyer.sprite);
+    }
+
+    // Brief flash of awareness text
+    const awarenessText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 80, '...', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '20px',
+      color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(199).setAlpha(0);
+
+    this.tweens.add({
+      targets: awarenessText,
+      alpha: 0.6,
+      duration: 400,
+      hold: 800,
+      yoyo: true,
+      onComplete: () => {
+        awarenessText.destroy();
+        this.executeRaid();
+      },
+    });
+  }
+
+  private executeRaid() {
     // --- Red/blue alternating police flashes on screen edges ---
     const redFlash = this.add.rectangle(
       60, GAME_HEIGHT / 2, 120, GAME_HEIGHT, 0xff0000

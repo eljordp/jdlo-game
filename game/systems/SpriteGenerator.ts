@@ -2066,10 +2066,22 @@ function generateAllNPCs(scene: Phaser.Scene) {
       px(g, 13, 12, 0xd0b040, 6, 1);
       px(g, 14, 13, 0xd0b040, 4, 1);
       px(g, 15, 14, 0xc0a030, 2, 1); // pendant
-      // Camera strap diagonal hint
-      px(g, 22, 14, 0x404040, 2, 1);
-      px(g, 23, 15, 0x404040, 2, 1);
-      px(g, 24, 16, 0x404040, 2, 1);
+      // Shoulder-mounted camera — big time filmmaker
+      // Camera body on right shoulder (large, professional)
+      px(g, 23, 8, 0x1a1a1a, 6, 4);  // main camera body on shoulder
+      px(g, 22, 8, 0x2a2a2a, 1, 4);  // left grip
+      px(g, 29, 8, 0x2a2a2a, 1, 4);  // right edge
+      // Lens barrel extending forward
+      px(g, 29, 9, 0x303030, 3, 2);  // lens tube
+      px(g, 30, 9, 0x505058, 2, 2);  // lens glass ring
+      px(g, 31, 10, 0x707078, 1, 1); // lens highlight
+      // Viewfinder on top
+      px(g, 24, 7, 0x2a2a2a, 3, 1);  // viewfinder box
+      px(g, 25, 7, 0x404048, 1, 1);  // viewfinder screen
+      // Red record light
+      px(g, 27, 7, 0xff2020, 1, 1);  // recording indicator
+      // Hand gripping camera (skin tone)
+      px(g, 23, 11, 0xa07848, 2, 1); // right hand on camera
     }
   );
 
@@ -2113,6 +2125,40 @@ function generateAllNPCs(scene: Phaser.Scene) {
       // Nike swoosh hint
       px(g, 9, 29, 0xc0c0c0, 3, 1);
       px(g, 20, 29, 0xc0c0c0, 3, 1);
+    }
+  );
+
+  // Elijah — Pomaikai team, clean-cut, tech startup energy. Dark skin, short fade, dark button-up — 32x32
+  generateNPC32(
+    scene,
+    'npc_elijah',
+    0x181010,   // dark hair (tight fade)
+    'short',
+    0x2a2a3a,   // dark navy button-up shirt
+    0x343445,   // shirt accent
+    0x282830,   // dark slacks
+    0x905838,   // dark skin tone
+    0x704828,   // skin shadow
+    (g) => {
+      // Clean fade edges — tighter on sides
+      px(g, 7, 3, 0x703828, 2, 1);  // left fade blend into skin
+      px(g, 23, 3, 0x703828, 2, 1); // right fade blend into skin
+      px(g, 7, 4, 0x804830, 1, 1);  // left fade lower
+      px(g, 24, 4, 0x804830, 1, 1); // right fade lower
+      // Clean stubble/beard — subtle, just a hint
+      px(g, 11, 10, 0x302018, 3, 1);
+      px(g, 18, 10, 0x302018, 3, 1);
+      px(g, 12, 11, 0x302018, 8, 1); // jawline stubble
+      // Button-up shirt details — button line down center
+      px(g, 15, 14, 0x505068, 2, 1); // button 1
+      px(g, 15, 16, 0x505068, 2, 1); // button 2
+      px(g, 15, 18, 0x505068, 2, 1); // button 3
+      px(g, 15, 20, 0x505068, 2, 1); // button 4
+      // Collar — open collar, creative professional
+      px(g, 11, 12, 0x343445, 3, 1); // left collar
+      px(g, 18, 12, 0x343445, 3, 1); // right collar
+      px(g, 12, 13, 0x343445, 2, 1); // left collar inner
+      px(g, 18, 13, 0x343445, 2, 1); // right collar inner
     }
   );
 }
@@ -3319,6 +3365,304 @@ function generateTiredPlayer(scene: Phaser.Scene) {
   const texture = scene.textures.get('player-ch3-tired');
   for (let i = 0; i < 8; i++) {
     texture.add(i, 0, i * frameW, 0, frameW, frameW);
+  }
+}
+
+// ─── JAIL SPRITE EVOLUTION (day1 → day2 → day3 → shirtless) ─────────
+
+function generateJailSprites(scene: Phaser.Scene) {
+  const frameW = CHAR_SIZE;
+  const sheetW = frameW * 8;
+  const sheetH = frameW;
+  const directions: Array<'down' | 'up' | 'left' | 'right'> = ['down', 'up', 'left', 'right'];
+
+  const skin = 0xd4a870;
+  const skinS = 0xb88850;
+  const skinH = 0xf8d0a0;
+  const hair = 0x302020;
+  const hairH = 0x483030;
+  const eyeWhite = 0xffffff;
+  const eyeBlack = 0x3a2010;
+  const eyebrow = 0x281818;
+  const mouth = 0xc07060;
+  const noseShadow = 0xd8a878;
+  const belt = 0x403830;
+  const beltBuckle = 0x908070;
+
+  // Grey prison outfit colors
+  const prisonShirt = 0x808088;
+  const prisonShirtLight = 0x909098;
+  const prisonPants = 0x606068;
+  const prisonPantsLight = 0x707078;
+  const prisonShoe = 0x505050;
+
+  // Tired overlay colors (same as generateTiredPlayer)
+  const bagColor = 0x604850;
+
+  // ─── PLAYER-JAIL-DAY1 — Just arrested, same as ch3-tired but grey prison outfit ───
+  if (!scene.textures.exists('player-jail-day1')) {
+    const canvas = document.createElement('canvas');
+    canvas.width = sheetW;
+    canvas.height = sheetH;
+    const rawCtx = canvas.getContext('2d')!;
+    rawCtx.clearRect(0, 0, sheetW, sheetH);
+    const dc = new DrawContext(rawCtx);
+
+    const outfit: OutfitColors = {
+      shirt: prisonShirt, shirtLight: prisonShirtLight,
+      pants: prisonPants, pantsLight: prisonPantsLight,
+      shoe: prisonShoe,
+    };
+
+    let fi = 0;
+    for (const dir of directions) {
+      drawPlayerFrame32(dc, fi * frameW, dir, false, outfit);
+      fi++;
+      drawPlayerFrame32(dc, fi * frameW, dir, true, outfit);
+      fi++;
+    }
+
+    // Overlay messy hair + tired eyes (same as generateTiredPlayer)
+    for (let f = 0; f < 8; f++) {
+      const ox = f * frameW;
+      const dir = (['down', 'down', 'up', 'up', 'left', 'left', 'right', 'right'] as const)[f];
+
+      // Extra shaggy hair
+      px(dc, ox + 7, 5, hair, 4, 1);
+      px(dc, ox + 21, 5, hair, 4, 1);
+      px(dc, ox + 10, 5, hair, 2, 1);
+      px(dc, ox + 9, 4, hair, 8, 1);
+      px(dc, ox + 5, 6, hair, 2, 1);
+      px(dc, ox + 25, 6, hair, 2, 1);
+      px(dc, ox + 8, 3, hair, 4, 1);
+      px(dc, ox + 18, 3, hair, 3, 1);
+
+      if (dir === 'down') {
+        px(dc, ox + 10, 9, bagColor, 4, 1);
+        px(dc, ox + 18, 9, bagColor, 4, 1);
+        px(dc, ox + 10, 7, 0x181818, 1, 1);
+        px(dc, ox + 21, 7, 0x181818, 1, 1);
+      } else if (dir === 'left') {
+        px(dc, ox + 10, 9, bagColor, 4, 1);
+        px(dc, ox + 10, 7, 0x181818, 1, 1);
+      } else if (dir === 'right') {
+        px(dc, ox + 18, 9, bagColor, 4, 1);
+        px(dc, ox + 21, 7, 0x181818, 1, 1);
+      }
+    }
+
+    scene.textures.addCanvas('player-jail-day1', canvas);
+    const texture = scene.textures.get('player-jail-day1');
+    for (let i = 0; i < 8; i++) {
+      texture.add(i, 0, i * frameW, 0, frameW, frameW);
+    }
+  }
+
+  // ─── PLAYER-JAIL-DAY2 — Eyes clearing, slightly wider shoulders ───
+  if (!scene.textures.exists('player-jail-day2')) {
+    const canvas = document.createElement('canvas');
+    canvas.width = sheetW;
+    canvas.height = sheetH;
+    const rawCtx = canvas.getContext('2d')!;
+    rawCtx.clearRect(0, 0, sheetW, sheetH);
+    const dc = new DrawContext(rawCtx);
+
+    const outfit: OutfitColors = {
+      shirt: prisonShirt, shirtLight: prisonShirtLight,
+      pants: prisonPants, pantsLight: prisonPantsLight,
+      shoe: prisonShoe,
+    };
+
+    let fi = 0;
+    for (const dir of directions) {
+      drawPlayerFrame32(dc, fi * frameW, dir, false, outfit);
+      fi++;
+      drawPlayerFrame32(dc, fi * frameW, dir, true, outfit);
+      fi++;
+    }
+
+    // Wider shoulders overlay — extend shirt 1px on each side (rows 15-20)
+    for (let f = 0; f < 8; f++) {
+      const ox = f * frameW;
+      // Extend arms/shoulders 1px wider on each side
+      px(dc, ox + 5, 15, prisonShirt, 1, 1);
+      px(dc, ox + 26, 15, prisonShirt, 1, 1);
+      px(dc, ox + 5, 16, prisonShirt, 1, 1);
+      px(dc, ox + 26, 16, prisonShirt, 1, 1);
+      px(dc, ox + 5, 17, prisonShirt, 1, 1);
+      px(dc, ox + 26, 17, prisonShirt, 1, 1);
+      // Skin on extended arms
+      px(dc, ox + 3, 19, skin, 1, 2);
+      px(dc, ox + 27, 19, skin, 1, 2);
+      px(dc, ox + 3, 21, skinS, 1, 1);
+      px(dc, ox + 27, 21, skinS, 1, 1);
+    }
+
+    scene.textures.addCanvas('player-jail-day2', canvas);
+    const texture = scene.textures.get('player-jail-day2');
+    for (let i = 0; i < 8; i++) {
+      texture.add(i, 0, i * frameW, 0, frameW, frameW);
+    }
+  }
+
+  // ─── PLAYER-JAIL-DAY3 — Healthy, visibly bigger arms, confident ───
+  if (!scene.textures.exists('player-jail-day3')) {
+    const canvas = document.createElement('canvas');
+    canvas.width = sheetW;
+    canvas.height = sheetH;
+    const rawCtx = canvas.getContext('2d')!;
+    rawCtx.clearRect(0, 0, sheetW, sheetH);
+    const dc = new DrawContext(rawCtx);
+
+    const outfit: OutfitColors = {
+      shirt: prisonShirt, shirtLight: prisonShirtLight,
+      pants: prisonPants, pantsLight: prisonPantsLight,
+      shoe: prisonShoe,
+    };
+
+    let fi = 0;
+    for (const dir of directions) {
+      drawPlayerFrame32(dc, fi * frameW, dir, false, outfit);
+      fi++;
+      drawPlayerFrame32(dc, fi * frameW, dir, true, outfit);
+      fi++;
+    }
+
+    // Bigger arms — extend shirt and arms 2px wider on each side
+    for (let f = 0; f < 8; f++) {
+      const ox = f * frameW;
+      const dir = (['down', 'down', 'up', 'up', 'left', 'left', 'right', 'right'] as const)[f];
+
+      // Wider shoulders (2px each side)
+      px(dc, ox + 4, 14, prisonShirt, 2, 1);
+      px(dc, ox + 26, 14, prisonShirt, 2, 1);
+      px(dc, ox + 4, 15, prisonShirt, 2, 1);
+      px(dc, ox + 26, 15, prisonShirt, 2, 1);
+      px(dc, ox + 3, 16, prisonShirt, 3, 1);
+      px(dc, ox + 26, 16, prisonShirt, 3, 1);
+      px(dc, ox + 3, 17, prisonShirt, 3, 1);
+      px(dc, ox + 26, 17, prisonShirt, 3, 1);
+      px(dc, ox + 3, 18, prisonShirtLight, 3, 1);
+      px(dc, ox + 26, 18, prisonShirtLight, 3, 1);
+
+      // Thicker arms below shirt
+      if (dir === 'left' || dir === 'right') {
+        px(dc, ox + 3, 18, skin, 3, 3);
+        px(dc, ox + 26, 18, skin, 3, 3);
+        px(dc, ox + 3, 21, skinS, 3, 1);
+        px(dc, ox + 26, 21, skinS, 3, 1);
+      } else {
+        px(dc, ox + 3, 19, skin, 3, 2);
+        px(dc, ox + 26, 19, skin, 3, 2);
+        px(dc, ox + 3, 21, skinS, 3, 1);
+        px(dc, ox + 26, 21, skinS, 3, 1);
+      }
+
+      // Arm muscle shadow on outer edge
+      px(dc, ox + 3, 19, skinS, 1, 2);
+      px(dc, ox + 28, 19, skinS, 1, 2);
+    }
+
+    scene.textures.addCanvas('player-jail-day3', canvas);
+    const texture = scene.textures.get('player-jail-day3');
+    for (let i = 0; i < 8; i++) {
+      texture.add(i, 0, i * frameW, 0, frameW, frameW);
+    }
+  }
+
+  // ─── PLAYER-JAIL-SHIRTLESS — Buff, no shirt, visible muscles ───
+  if (!scene.textures.exists('player-jail-shirtless')) {
+    const canvas = document.createElement('canvas');
+    canvas.width = sheetW;
+    canvas.height = sheetH;
+    const rawCtx = canvas.getContext('2d')!;
+    rawCtx.clearRect(0, 0, sheetW, sheetH);
+    const dc = new DrawContext(rawCtx);
+
+    // Use skin tone as shirt (shirtless), prison pants remain
+    const outfit: OutfitColors = {
+      shirt: skin, shirtLight: skinH,
+      pants: prisonPants, pantsLight: prisonPantsLight,
+      shoe: prisonShoe,
+    };
+
+    let fi = 0;
+    for (const dir of directions) {
+      drawPlayerFrame32(dc, fi * frameW, dir, false, outfit);
+      fi++;
+      drawPlayerFrame32(dc, fi * frameW, dir, true, outfit);
+      fi++;
+    }
+
+    // Muscle detail overlays on each frame
+    for (let f = 0; f < 8; f++) {
+      const ox = f * frameW;
+      const dir = (['down', 'down', 'up', 'up', 'left', 'left', 'right', 'right'] as const)[f];
+
+      // Remove the collar line (row 13) — shirtless has no collar
+      px(dc, ox + 11, 13, skinS, 2, 1);
+      px(dc, ox + 19, 13, skinS, 2, 1);
+
+      // Wider shoulders / bigger arms (2-3px each side)
+      px(dc, ox + 4, 14, skin, 2, 1);
+      px(dc, ox + 26, 14, skin, 2, 1);
+      px(dc, ox + 4, 15, skin, 2, 1);
+      px(dc, ox + 26, 15, skin, 2, 1);
+      px(dc, ox + 3, 16, skin, 3, 1);
+      px(dc, ox + 26, 16, skin, 3, 1);
+      px(dc, ox + 3, 17, skin, 3, 1);
+      px(dc, ox + 26, 17, skin, 3, 1);
+      px(dc, ox + 3, 18, skinH, 3, 1);
+      px(dc, ox + 26, 18, skinH, 3, 1);
+
+      // Thicker arms below shoulders
+      if (dir === 'left' || dir === 'right') {
+        px(dc, ox + 3, 18, skin, 3, 3);
+        px(dc, ox + 26, 18, skin, 3, 3);
+        px(dc, ox + 3, 21, skinS, 3, 1);
+        px(dc, ox + 26, 21, skinS, 3, 1);
+      } else {
+        px(dc, ox + 3, 19, skin, 3, 2);
+        px(dc, ox + 26, 19, skin, 3, 2);
+        px(dc, ox + 3, 21, skinS, 3, 1);
+        px(dc, ox + 26, 21, skinS, 3, 1);
+      }
+
+      // Arm muscle shadow on outer edge (darker skin on outside of arms)
+      px(dc, ox + 3, 17, skinS, 1, 4);
+      px(dc, ox + 28, 17, skinS, 1, 4);
+
+      if (dir === 'down') {
+        // Chest/pec definition — subtle shadow lines
+        px(dc, ox + 10, 15, skinS, 5, 1);  // left pec line
+        px(dc, ox + 17, 15, skinS, 5, 1);  // right pec line
+        px(dc, ox + 11, 16, skinS, 1, 1);  // left pec shadow
+        px(dc, ox + 20, 16, skinS, 1, 1);  // right pec shadow
+
+        // Subtle six-pack lines (2 horizontal lines in skin shadow)
+        px(dc, ox + 13, 18, skinS, 6, 1);  // upper ab line
+        px(dc, ox + 13, 20, skinS, 6, 1);  // lower ab line
+        // Center line
+        px(dc, ox + 15, 16, skinS, 2, 5);  // vertical center
+      } else if (dir === 'left') {
+        // Side torso definition
+        px(dc, ox + 10, 16, skinS, 1, 4);  // side muscle shadow
+        px(dc, ox + 13, 18, skinS, 4, 1);  // ab line
+        px(dc, ox + 13, 20, skinS, 4, 1);  // ab line
+      } else if (dir === 'right') {
+        // Side torso definition
+        px(dc, ox + 21, 16, skinS, 1, 4);  // side muscle shadow
+        px(dc, ox + 15, 18, skinS, 4, 1);  // ab line
+        px(dc, ox + 15, 20, skinS, 4, 1);  // ab line
+      }
+      // 'up' direction: back view — no muscle detail needed on front
+    }
+
+    scene.textures.addCanvas('player-jail-shirtless', canvas);
+    const texture = scene.textures.get('player-jail-shirtless');
+    for (let i = 0; i < 8; i++) {
+      texture.add(i, 0, i * frameW, 0, frameW, frameW);
+    }
   }
 }
 
@@ -4870,6 +5214,7 @@ export function generateAllSprites(scene: Phaser.Scene): void {
   generatePlayer(scene);
   generateChapterOutfits(scene);
   generateTiredPlayer(scene);
+  generateJailSprites(scene);
   generateAllNPCs(scene);
   generateTiles(scene);
   generateUI(scene);

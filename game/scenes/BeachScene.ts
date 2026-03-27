@@ -9,6 +9,11 @@ import { Analytics } from '../systems/Analytics';
 export class BeachScene extends BaseChapterScene {
   private inHotTub = false;
   private bmwInteracted = false;
+  private volleyballPlayed = false;
+  private volleyballWon = false;
+  private cooperPassedOut = false;
+  private hotTubReacted = false;
+  private davidPhoneDown = false;
 
   constructor() {
     super({ key: 'BeachScene' });
@@ -28,7 +33,7 @@ export class BeachScene extends BaseChapterScene {
   create() {
     super.create();
     // Exit triggers at y=18, x=12-15
-    this.addNavArrow(13, 17, 'Next chapter');
+    this.addNavArrow(18, 24, 'Next chapter');
 
     // Place the BMW 335i in the driveway (right next to house, row 8-9 area)
     const carX = 4 * SCALED_TILE + SCALED_TILE / 2;
@@ -87,8 +92,8 @@ export class BeachScene extends BaseChapterScene {
   }
 
   private createHotTubBubbles() {
-    // Hot tub is at cols 21-25, rows 2-5 in the beachMap
-    const tubCenterX = 23 * SCALED_TILE;
+    // Hot tub is at cols 31-34, rows 2-4 in the beachMap
+    const tubCenterX = 32.5 * SCALED_TILE;
     const tubCenterY = 3.5 * SCALED_TILE;
     const tubWidth = 5 * SCALED_TILE;
     const tubHeight = 4 * SCALED_TILE;
@@ -162,10 +167,73 @@ export class BeachScene extends BaseChapterScene {
     if (onHotTub && !this.inHotTub) {
       this.inHotTub = true;
       this.player.setTexture('player-swim');
+
+      // Girls in hot tub react when JP gets in
+      if (!this.hotTubReacted) {
+        this.hotTubReacted = true;
+        this.time.delayedCall(500, () => {
+          if (!this.frozen && this.scene.isActive()) {
+            this.dialogue.show([
+              { speaker: 'Girl', text: 'Oh heyyy. Room for one more?' },
+              { speaker: 'JP', text: 'What\'s good.' },
+              { speaker: 'Narrator', text: 'The water\'s too hot. JP doesn\'t care.' },
+            ]);
+          }
+        });
+      }
     } else if (!onHotTub && this.inHotTub) {
       this.inHotTub = false;
       this.player.setTexture(this.getPlayerTexture());
     }
+
+    // Cooper passes out after enough exploration (8+ tiles moved)
+    if (!this.cooperPassedOut) {
+      this.cooperPassedOut = true;
+      // Delayed — Cooper passes out after player has been exploring
+      this.time.delayedCall(30000, () => {
+        const cooper = this.npcs.find(n => n.id === 'ch1_cooper');
+        if (cooper && this.scene.isActive()) {
+          // Cooper breathing animation (sleeping)
+          this.tweens.add({
+            targets: cooper.sprite,
+            scaleY: SCALE * 0.92,
+            duration: 1200,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut',
+          });
+          // Update Cooper's dialogue
+          cooper.dialogue = [
+            { speaker: 'Narrator', text: 'Cooper passed out. Beer still in his hand.' },
+            { speaker: 'JP\'s Mind', text: 'Lightweight.' },
+          ];
+        }
+      });
+    }
+  }
+
+  // David puts his phone down when you talk to him
+  protected handleNPCDialogue(npcId: string, dialogue: DialogueLine[]): void {
+    if (npcId === 'ch1_david' && !this.davidPhoneDown) {
+      this.davidPhoneDown = true;
+      // Show normal dialogue, then David reacts
+      this.dialogue.show(dialogue, () => {
+        const david = this.npcs.find(n => n.id === 'ch1_david');
+        if (david) {
+          // Quick phone-pocket animation
+          this.tweens.add({
+            targets: david.sprite,
+            scaleX: SCALE * 0.9,
+            duration: 150,
+            yoyo: true,
+          });
+        }
+      });
+      return;
+    }
+
+    // Default
+    this.dialogue.show(dialogue);
   }
 
   protected getObjectiveHint(): string {
@@ -595,6 +663,22 @@ export class BeachScene extends BaseChapterScene {
 
         this.dialogue.show(postGameLines, () => {
           this.frozen = false;
+          // Update Nolan's dialogue based on volleyball result
+          this.volleyballPlayed = true;
+          this.volleyballWon = jpWon;
+          const nolan = this.npcs.find(n => n.id === 'ch1_nolan');
+          if (nolan) {
+            nolan.dialogue = jpWon
+              ? [
+                  { speaker: 'Nolan', text: 'Bro you killed it out there.' },
+                  { speaker: 'Nolan', text: 'Where\'d you learn to spike like that?' },
+                  { speaker: 'JP', text: 'Natural talent.' },
+                ]
+              : [
+                  { speaker: 'Nolan', text: 'Don\'t even trip bro. We go again later.' },
+                  { speaker: 'JP', text: 'Yeah yeah.' },
+                ];
+          }
         });
       });
     };

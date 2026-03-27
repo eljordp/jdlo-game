@@ -7,6 +7,11 @@ import type { DialogueLine } from '../systems/DialogueSystem';
 
 export class JailScene extends BaseChapterScene {
   private currentDay = 1;
+  private battleWon: boolean | null = null; // null = not fought, true/false = outcome
+  private pushupDominated = false; // won by 10+
+  private diceBroke = false; // went to 0 in dice
+  private shirtOff = false;
+  private guardPatrolTimer?: Phaser.Time.TimerEvent;
 
   constructor() {
     super({ key: 'JailScene' });
@@ -16,7 +21,10 @@ export class JailScene extends BaseChapterScene {
   }
 
   protected getPlayerTexture(): string {
-    return 'player-ch3';
+    // Sprite evolves each day
+    if (this.currentDay >= 3) return this.shirtOff ? 'player-jail-shirtless' : 'player-jail-day3';
+    if (this.currentDay >= 2) return 'player-jail-day2';
+    return 'player-jail-day1';
   }
 
   protected getMusicTrack(): string {
@@ -25,9 +33,125 @@ export class JailScene extends BaseChapterScene {
 
   create() {
     this.currentDay = 1;
+    this.battleWon = null;
+    this.pushupDominated = false;
+    this.diceBroke = false;
+    this.shirtOff = false;
     super.create();
     // Exit triggers at y=25, x=17-18
     this.addNavArrow(17, 24, 'Freedom');
+
+    // Guard patrol — walks between guard station and cells
+    this.startGuardPatrol();
+
+    // Shirt toggle button (Day 2+)
+    this.createShirtToggle();
+  }
+
+  private startGuardPatrol() {
+    const guard = this.npcs.find(n => n.id === 'ch3_guard');
+    if (!guard) return;
+
+    let patrolForward = true;
+    const startX = guard.sprite.x;
+    const patrolEndX = 10 * 64 + 32; // tile 10
+
+    this.guardPatrolTimer = this.time.addEvent({
+      delay: 6000,
+      loop: true,
+      callback: () => {
+        if (!this.scene.isActive() || this.frozen) return;
+        const guard = this.npcs.find(n => n.id === 'ch3_guard');
+        if (!guard) return;
+
+        const targetX = patrolForward ? patrolEndX : startX;
+        patrolForward = !patrolForward;
+
+        // Remove old collision
+        const oldTX = Math.round((guard.sprite.x - 32) / 64);
+        const oldTY = Math.round((guard.sprite.y - 32) / 64);
+        this.collisionTiles.delete(`${oldTX},${oldTY}`);
+
+        this.tweens.add({
+          targets: guard.sprite,
+          x: targetX,
+          duration: 3000,
+          ease: 'Linear',
+          onComplete: () => {
+            const newTX = Math.round((guard.sprite.x - 32) / 64);
+            this.collisionTiles.add(`${newTX},${oldTY}`);
+          },
+        });
+      },
+    });
+  }
+
+  private createShirtToggle() {
+    const btn = this.add.text(GAME_WIDTH - 120, GAME_HEIGHT - 30, '', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '7px',
+      color: '#808090',
+      backgroundColor: '#1a1a2a',
+      padding: { x: 6, y: 3 },
+    }).setScrollFactor(0).setDepth(200).setInteractive({ useHandCursor: true });
+
+    const updateBtn = () => {
+      if (this.currentDay >= 2) {
+        btn.setText(this.shirtOff ? 'Shirt On' : 'Shirt Off');
+        btn.setVisible(true);
+      } else {
+        btn.setVisible(false);
+      }
+    };
+    updateBtn();
+
+    btn.on('pointerdown', () => {
+      if (this.currentDay < 2) return;
+      this.shirtOff = !this.shirtOff;
+      this.player.setTexture(this.getPlayerTexture());
+      updateBtn();
+    });
+
+    // Store reference to update on day change
+    (this as any)._shirtBtn = btn;
+    (this as any)._updateShirtBtn = updateBtn;
+  }
+
+  // NPC dialogue reacts to minigame outcomes
+  protected handleNPCDialogue(npcId: string, dialogue: DialogueLine[]): void {
+    // Fighter reacts based on battle outcome
+    if ((npcId === 'ch3_fighter1' || npcId === 'ch3_fighter2') && this.battleWon !== null && this.currentDay >= 2) {
+      const chapterDialogue = this.getChapterDialogue();
+      const key = this.battleWon ? 'ch3_battle_won' : 'ch3_battle_lost';
+      const reactiveLines = chapterDialogue.npcs[key];
+      if (reactiveLines) {
+        this.dialogue.show(reactiveLines);
+        return;
+      }
+    }
+
+    // Pullups guy reacts to pushup domination
+    if (npcId === 'ch3_pullups' && this.pushupDominated && this.currentDay >= 2) {
+      const chapterDialogue = this.getChapterDialogue();
+      const lines = chapterDialogue.npcs['ch3_pushup_beast'];
+      if (lines) {
+        this.dialogue.show(lines);
+        return;
+      }
+    }
+
+    // Bird warns about dice
+    if (npcId === 'ch3_bird' && this.diceBroke) {
+      const chapterDialogue = this.getChapterDialogue();
+      const lines = chapterDialogue.npcs['ch3_dice_broke'];
+      if (lines) {
+        this.dialogue.show(lines);
+        this.diceBroke = false; // only warn once
+        return;
+      }
+    }
+
+    this.dialogue.show(dialogue);
   }
 
   protected getObjectiveHint(): string {
@@ -85,8 +209,12 @@ export class JailScene extends BaseChapterScene {
         this.dialogue.show(bedLines, () => {
           this.playDayTransition('3 months later...', () => {
             this.currentDay = 2;
+            this.player.setTexture(this.getPlayerTexture());
+            // Scale up slightly — Day 2 JP is filling out
+            this.player.setScale(2.03);
             this.refreshDayDialogue();
             this.interactions.resetAll();
+            if ((this as any)._updateShirtBtn) (this as any)._updateShirtBtn();
           });
         });
       }
@@ -96,8 +224,12 @@ export class JailScene extends BaseChapterScene {
         this.dialogue.show(bedLines, () => {
           this.playDayTransition('6 months later...', () => {
             this.currentDay = 3;
+            this.player.setTexture(this.getPlayerTexture());
+            // Scale up more — Day 3 JP is built
+            this.player.setScale(2.06);
             this.refreshDayDialogue();
             this.interactions.resetAll();
+            if ((this as any)._updateShirtBtn) (this as any)._updateShirtBtn();
           });
         });
       }
@@ -567,6 +699,9 @@ export class JailScene extends BaseChapterScene {
           }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
           objects.push(scoreResult);
 
+          // Track pushup outcome for reactive NPC dialogue
+          if (diff > 10) this.pushupDominated = true;
+
           // Clean up after 3 seconds
           this.time.delayedCall(3000, () => {
             for (const obj of objects) {
@@ -729,6 +864,7 @@ export class JailScene extends BaseChapterScene {
         finalMsg = "Down bad. But it's just soup.";
       } else {
         finalMsg = 'JP walks away empty.';
+        this.diceBroke = true; // Track for Bird's warning
       }
 
       if (reason) {
@@ -1572,6 +1708,7 @@ export class JailScene extends BaseChapterScene {
     const endBattle = (jpWon: boolean) => {
       state = 'end';
       inputEnabled = false;
+      this.battleWon = jpWon; // Track for reactive NPC dialogue
 
       // Hide menu
       for (const t of menuTexts) t.setAlpha(0);

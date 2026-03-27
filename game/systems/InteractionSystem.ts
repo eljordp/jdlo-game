@@ -150,6 +150,59 @@ export class InteractionSystem {
     }
   }
 
+  /** Dynamically add a new interactable at runtime (for surprise events) */
+  addInteractable(obj: Interactable): void {
+    this.interactables.push(obj);
+
+    if (obj.sprite) {
+      const worldX = obj.x * SCALED_TILE + SCALED_TILE / 2;
+      const worldY = obj.y * SCALED_TILE + SCALED_TILE / 2;
+
+      const sprite = this.scene.add.sprite(worldX, worldY, obj.sprite);
+      const smallItems = ['item-joint', 'item-pencil', 'item-keys', 'item-dice'];
+      const itemScale = smallItems.includes(obj.sprite) ? SCALE * 0.6 : SCALE;
+      sprite.setScale(itemScale);
+      sprite.setDepth(5);
+      this.sprites.set(obj.id, sprite);
+
+      const skipGlow = InteractionSystem.NO_GLOW_SPRITES.has(obj.sprite);
+      if (obj.glow && !skipGlow) {
+        const tween = this.scene.tweens.add({
+          targets: sprite,
+          alpha: { from: 0.7, to: 1.0 },
+          duration: 800,
+          yoyo: true,
+          repeat: -1,
+          ease: 'Sine.easeInOut',
+        });
+        this.glowTweens.set(obj.id, tween);
+      }
+    }
+
+    if (obj.glow) {
+      const markerX = obj.x * SCALED_TILE + SCALED_TILE / 2;
+      const markerY = obj.y * SCALED_TILE - 4;
+
+      const marker = this.scene.add.text(markerX, markerY, '!', {
+        fontFamily: '"Press Start 2P", monospace',
+        fontSize: '10px',
+        color: '#f0c040',
+      }).setOrigin(0.5, 1).setDepth(50);
+
+      this.markers.set(obj.id, marker);
+
+      const bounce = this.scene.tweens.add({
+        targets: marker,
+        y: markerY - 6,
+        duration: 800,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+      });
+      this.markerTweens.set(obj.id, bounce);
+    }
+  }
+
   getSprite(id: string): Phaser.GameObjects.Sprite | undefined {
     return this.sprites.get(id);
   }

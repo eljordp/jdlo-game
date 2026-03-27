@@ -1,14 +1,15 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, CHAR_SCALE } from '../config';
 import { SoundEffects } from './SoundEffects';
+import { InventorySystem } from './InventorySystem';
 
 // ── Emote Definition ──────────────────────────────────────────────
 
 interface EmoteDef {
   id: string;
   name: string;
-  locked: boolean;
-  price: number;
+  requiredItem: string | null; // inventory item id needed, or null if always available
+  requiredItemName: string;    // display name of required item (for "Need: X" text)
   animation: (scene: Phaser.Scene, player: Phaser.GameObjects.Sprite) => number; // returns duration ms
 }
 
@@ -312,31 +313,35 @@ function animFlex(scene: Phaser.Scene, player: Phaser.GameObjects.Sprite): numbe
 // ── Emote Registry ────────────────────────────────────────────────
 
 const ALL_EMOTES: EmoteDef[] = [
-  { id: 'hit_cart',        name: 'Hit Cart',        locked: false, price: 0,   animation: animHitCart },
-  { id: 'nod',             name: 'Nod',             locked: false, price: 0,   animation: animNod },
-  { id: 'smoke_za',        name: 'Smoke Za',        locked: true,  price: 500, animation: animSmokeZa },
-  { id: 'rip_bong',        name: 'Rip Bong',        locked: true,  price: 750, animation: animRipBong },
-  { id: 'shoulder_dance',  name: 'Drop Shoulder',   locked: true,  price: 400, animation: animShoulderDance },
-  { id: 'gooning',         name: 'Gooning',         locked: true,  price: 600, animation: animGooning },
-  { id: 'sixty_seven',     name: '67',              locked: true,  price: 300, animation: animSixtySeven },
-  { id: 'flex',            name: 'Flex',            locked: true,  price: 200, animation: animFlex },
+  { id: 'hit_cart',        name: 'Hit Cart',        requiredItem: 'cart', requiredItemName: 'Blinker',  animation: animHitCart },
+  { id: 'nod',             name: 'Nod',             requiredItem: null,   requiredItemName: '',         animation: animNod },
+  { id: 'smoke_za',        name: 'Smoke Za',        requiredItem: 'za',   requiredItemName: 'Za',       animation: animSmokeZa },
+  { id: 'rip_bong',        name: 'Rip Bong',        requiredItem: 'bong', requiredItemName: 'Bong',     animation: animRipBong },
+  { id: 'shoulder_dance',  name: 'Drop Shoulder',   requiredItem: null,   requiredItemName: '',         animation: animShoulderDance },
+  { id: 'gooning',         name: 'Gooning',         requiredItem: null,   requiredItemName: '',         animation: animGooning },
+  { id: 'sixty_seven',     name: '67',              requiredItem: null,   requiredItemName: '',         animation: animSixtySeven },
+  { id: 'flex',            name: 'Flex',             requiredItem: null,   requiredItemName: '',         animation: animFlex },
 ];
 
 // ── Emote System (Singleton) ─────────────────────────────────────
 
-const SAVE_KEY = 'jdlo-emotes-unlocked';
-
 export class EmoteSystem {
   private static scene: Phaser.Scene | null = null;
   private static player: Phaser.GameObjects.Sprite | null = null;
-  private static unlockedIds: Set<string> = new Set();
   private static wheelOpen = false;
   private static wheelObjects: Phaser.GameObjects.GameObject[] = [];
-  private static shopOpen = false;
   private static playing = false;
   private static eKey: Phaser.Input.Keyboard.Key | null = null;
   private static escKey: Phaser.Input.Keyboard.Key | null = null;
   private static numberKeys: Phaser.Input.Keyboard.Key[] = [];
+
+  /** Check if an emote is available (has required item or no item needed) */
+  static isAvailable(emoteId: string): boolean {
+    const emote = ALL_EMOTES.find(e => e.id === emoteId);
+    if (!emote) return false;
+    if (emote.requiredItem === null) return true;
+    return InventorySystem.hasItem(emote.requiredItem);
+  }
 
   /** Initialize the emote system for the current scene */
   static init(scene: Phaser.Scene) {
@@ -344,17 +349,8 @@ export class EmoteSystem {
     // Player is always `this.player` on BaseChapterScene
     this.player = (scene as unknown as { player: Phaser.GameObjects.Sprite }).player;
     this.wheelOpen = false;
-    this.shopOpen = false;
     this.playing = false;
     this.wheelObjects = [];
-
-    // Load saved unlocks
-    this.loadUnlocks();
-
-    // Default emotes are always unlocked
-    for (const e of ALL_EMOTES) {
-      if (!e.locked) this.unlockedIds.add(e.id);
-    }
 
     // Register E key
     this.eKey = scene.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.E);
@@ -398,7 +394,7 @@ export class EmoteSystem {
         const visibleEmotes = this.getVisibleEmotes();
         if (idx < visibleEmotes.length) {
           const emote = visibleEmotes[idx];
-          if (this.isUnlocked(emote.id)) {
+          if (this.isAvailable(emote.id)) {
             this.closeWheel();
             this.playEmote(scene, this.player!, emote.id);
           }
@@ -411,7 +407,7 @@ export class EmoteSystem {
   static playEmote(scene: Phaser.Scene, player: Phaser.GameObjects.Sprite, emoteId: string): void {
     const emote = ALL_EMOTES.find(e => e.id === emoteId);
     if (!emote) return;
-    if (!this.isUnlocked(emoteId)) return;
+    if (!this.isAvailable(emoteId)) return;
     if (this.playing) return;
 
     this.playing = true;
@@ -430,17 +426,6 @@ export class EmoteSystem {
     });
   }
 
-  /** Check if an emote is unlocked */
-  static isUnlocked(emoteId: string): boolean {
-    return this.unlockedIds.has(emoteId);
-  }
-
-  /** Unlock an emote */
-  static unlock(emoteId: string): void {
-    this.unlockedIds.add(emoteId);
-    this.saveUnlocks();
-  }
-
   /** Get all emote definitions */
   static getEmotes(): EmoteDef[] {
     return ALL_EMOTES;
@@ -449,10 +434,10 @@ export class EmoteSystem {
   // ── Emote Wheel ──────────────────────────────────────────────
 
   private static getVisibleEmotes(): EmoteDef[] {
-    // Show unlocked first, then locked
-    const unlocked = ALL_EMOTES.filter(e => this.isUnlocked(e.id));
-    const locked = ALL_EMOTES.filter(e => !this.isUnlocked(e.id));
-    return [...unlocked, ...locked];
+    // Show available first, then locked
+    const available = ALL_EMOTES.filter(e => this.isAvailable(e.id));
+    const locked = ALL_EMOTES.filter(e => !this.isAvailable(e.id));
+    return [...available, ...locked];
   }
 
   private static openWheel() {
@@ -499,23 +484,23 @@ export class EmoteSystem {
       const row = Math.floor(i / cols);
       const cx = startX + col * cellW;
       const cy = startY + row * cellH;
-      const unlocked = this.isUnlocked(emote.id);
+      const available = this.isAvailable(emote.id);
 
       // Cell background
-      const bg = scene.add.rectangle(cx, cy, cellW - 16, cellH - 12, unlocked ? 0x1a1a2e : 0x0e0e18, 0.9)
-        .setScrollFactor(0).setDepth(402).setStrokeStyle(2, unlocked ? 0x3a3a5e : 0x2a2a3e);
+      const bg = scene.add.rectangle(cx, cy, cellW - 16, cellH - 12, available ? 0x1a1a2e : 0x0e0e18, 0.9)
+        .setScrollFactor(0).setDepth(402).setStrokeStyle(2, available ? 0x3a3a5e : 0x2a2a3e);
       this.wheelObjects.push(bg);
 
       // Number badge
       const numBadge = scene.add.text(cx - (cellW / 2) + 18, cy - 20, `${i + 1}`, {
         fontFamily: '"Press Start 2P", monospace',
         fontSize: '10px',
-        color: unlocked ? '#f0c040' : '#444444',
+        color: available ? '#f0c040' : '#444444',
       }).setOrigin(0.5).setScrollFactor(0).setDepth(403);
       this.wheelObjects.push(numBadge);
 
       // Emote name
-      const nameColor = unlocked ? '#ffffff' : '#555555';
+      const nameColor = available ? '#ffffff' : '#555555';
       const nameText = scene.add.text(cx + 8, cy - 18, emote.name, {
         fontFamily: '"Press Start 2P", monospace',
         fontSize: '10px',
@@ -524,7 +509,7 @@ export class EmoteSystem {
       this.wheelObjects.push(nameText);
 
       // Status line
-      if (unlocked) {
+      if (available) {
         const ready = scene.add.text(cx, cy + 14, 'READY', {
           fontFamily: '"Press Start 2P", monospace',
           fontSize: '8px',
@@ -537,47 +522,29 @@ export class EmoteSystem {
         }).setOrigin(0.5).setScrollFactor(0).setDepth(403);
         this.wheelObjects.push(lockText);
 
-        const priceText = scene.add.text(cx, cy + 26, `$${emote.price}`, {
+        const needText = scene.add.text(cx, cy + 26, `Need: ${emote.requiredItemName}`, {
           fontFamily: '"Press Start 2P", monospace',
           fontSize: '8px',
           color: '#f0c040',
         }).setOrigin(0.5).setScrollFactor(0).setDepth(403);
-        this.wheelObjects.push(priceText);
+        this.wheelObjects.push(needText);
       }
 
       // Click handler
       bg.setInteractive({ useHandCursor: true });
       bg.on('pointerover', () => {
-        bg.setStrokeStyle(2, unlocked ? 0xf0c040 : 0x605020);
+        bg.setStrokeStyle(2, available ? 0xf0c040 : 0x605020);
       });
       bg.on('pointerout', () => {
-        bg.setStrokeStyle(2, unlocked ? 0x3a3a5e : 0x2a2a3e);
+        bg.setStrokeStyle(2, available ? 0x3a3a5e : 0x2a2a3e);
       });
       bg.on('pointerdown', () => {
-        if (unlocked) {
+        if (available) {
           this.closeWheel();
           this.playEmote(scene, this.player!, emote.id);
-        } else {
-          this.openShop(emote.id);
         }
       });
     }
-
-    // Shop button at bottom
-    const shopBg = scene.add.rectangle(GAME_WIDTH / 2, startY + Math.ceil(emotes.length / cols) * cellH + 30, 200, 40, 0x2a1a3e, 0.9)
-      .setScrollFactor(0).setDepth(402).setStrokeStyle(2, 0x604080).setInteractive({ useHandCursor: true });
-    this.wheelObjects.push(shopBg);
-
-    const shopLabel = scene.add.text(GAME_WIDTH / 2, startY + Math.ceil(emotes.length / cols) * cellH + 30, 'SHOP', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '12px',
-      color: '#c080f0',
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(403);
-    this.wheelObjects.push(shopLabel);
-
-    shopBg.on('pointerover', () => shopBg.setStrokeStyle(2, 0xc080f0));
-    shopBg.on('pointerout', () => shopBg.setStrokeStyle(2, 0x604080));
-    shopBg.on('pointerdown', () => this.openShop());
 
     // Close when clicking overlay (not cells)
     overlay.on('pointerdown', () => this.closeWheel());
@@ -586,7 +553,6 @@ export class EmoteSystem {
   private static closeWheel() {
     if (!this.wheelOpen) return;
     this.wheelOpen = false;
-    this.shopOpen = false;
 
     for (const obj of this.wheelObjects) {
       if (obj && obj.active) obj.destroy();
@@ -597,160 +563,6 @@ export class EmoteSystem {
     if (!this.playing && this.scene) {
       const baseScene = this.scene as unknown as { frozen: boolean };
       baseScene.frozen = false;
-    }
-  }
-
-  // ── Emote Shop ──────────────────────────────────────────────
-
-  private static openShop(focusId?: string) {
-    if (!this.scene) return;
-
-    // Clear current wheel objects and rebuild as shop
-    for (const obj of this.wheelObjects) {
-      if (obj && obj.active) obj.destroy();
-    }
-    this.wheelObjects = [];
-    this.shopOpen = true;
-
-    const scene = this.scene;
-
-    // Dark overlay
-    const overlay = scene.add.rectangle(
-      GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.8,
-    ).setScrollFactor(0).setDepth(400).setInteractive();
-    this.wheelObjects.push(overlay);
-
-    // Shop title
-    const shopTitle = scene.add.text(GAME_WIDTH / 2, 70, 'EMOTE SHOP', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '18px',
-      color: '#c080f0',
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(401);
-    this.wheelObjects.push(shopTitle);
-
-    const subtext = scene.add.text(GAME_WIDTH / 2, 100, 'Click to unlock  |  ESC to go back', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '8px',
-      color: '#888888',
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(401);
-    this.wheelObjects.push(subtext);
-
-    // List purchasable emotes
-    const purchasable = ALL_EMOTES.filter(e => e.locked);
-    const startY = 150;
-    const rowH = 70;
-
-    for (let i = 0; i < purchasable.length; i++) {
-      const emote = purchasable[i];
-      const cy = startY + i * rowH;
-      const unlocked = this.isUnlocked(emote.id);
-      const highlighted = focusId === emote.id;
-
-      const rowBg = scene.add.rectangle(
-        GAME_WIDTH / 2, cy, 600, rowH - 8,
-        highlighted ? 0x2a1a3e : 0x1a1a2e, 0.9,
-      ).setScrollFactor(0).setDepth(402)
-        .setStrokeStyle(2, highlighted ? 0xc080f0 : 0x3a3a5e);
-      this.wheelObjects.push(rowBg);
-
-      // Name
-      const name = scene.add.text(GAME_WIDTH / 2 - 220, cy, emote.name, {
-        fontFamily: '"Press Start 2P", monospace',
-        fontSize: '11px',
-        color: unlocked ? '#60c060' : '#ffffff',
-      }).setOrigin(0, 0.5).setScrollFactor(0).setDepth(403);
-      this.wheelObjects.push(name);
-
-      // Price or "OWNED"
-      if (unlocked) {
-        const owned = scene.add.text(GAME_WIDTH / 2 + 200, cy, 'OWNED', {
-          fontFamily: '"Press Start 2P", monospace',
-          fontSize: '10px',
-          color: '#60c060',
-        }).setOrigin(0.5).setScrollFactor(0).setDepth(403);
-        this.wheelObjects.push(owned);
-      } else {
-        const price = scene.add.text(GAME_WIDTH / 2 + 160, cy, `$${emote.price}`, {
-          fontFamily: '"Press Start 2P", monospace',
-          fontSize: '10px',
-          color: '#f0c040',
-        }).setOrigin(0, 0.5).setScrollFactor(0).setDepth(403);
-        this.wheelObjects.push(price);
-
-        // Buy button
-        const buyBg = scene.add.rectangle(GAME_WIDTH / 2 + 250, cy, 80, 30, 0x306030, 0.9)
-          .setScrollFactor(0).setDepth(403).setStrokeStyle(1, 0x60c060)
-          .setInteractive({ useHandCursor: true });
-        this.wheelObjects.push(buyBg);
-
-        const buyText = scene.add.text(GAME_WIDTH / 2 + 250, cy, 'BUY', {
-          fontFamily: '"Press Start 2P", monospace',
-          fontSize: '9px',
-          color: '#ffffff',
-        }).setOrigin(0.5).setScrollFactor(0).setDepth(404);
-        this.wheelObjects.push(buyText);
-
-        buyBg.on('pointerover', () => buyBg.setFillStyle(0x408040, 1));
-        buyBg.on('pointerout', () => buyBg.setFillStyle(0x306030, 0.9));
-        buyBg.on('pointerdown', () => {
-          this.unlock(emote.id);
-          SoundEffects.playCash();
-
-          // Refresh shop
-          this.openShop();
-        });
-      }
-
-      rowBg.setInteractive();
-    }
-
-    // Back button
-    const backBg = scene.add.rectangle(GAME_WIDTH / 2, startY + purchasable.length * rowH + 30, 200, 40, 0x1a1a2e, 0.9)
-      .setScrollFactor(0).setDepth(402).setStrokeStyle(2, 0x3a3a5e).setInteractive({ useHandCursor: true });
-    this.wheelObjects.push(backBg);
-
-    const backLabel = scene.add.text(GAME_WIDTH / 2, startY + purchasable.length * rowH + 30, 'BACK', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '12px',
-      color: '#ffffff',
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(403);
-    this.wheelObjects.push(backLabel);
-
-    backBg.on('pointerover', () => backBg.setStrokeStyle(2, 0xf0c040));
-    backBg.on('pointerout', () => backBg.setStrokeStyle(2, 0x3a3a5e));
-    backBg.on('pointerdown', () => {
-      // Go back to emote wheel
-      this.shopOpen = false;
-      for (const obj of this.wheelObjects) {
-        if (obj && obj.active) obj.destroy();
-      }
-      this.wheelObjects = [];
-      this.wheelOpen = false;
-      this.openWheel();
-    });
-
-    overlay.on('pointerdown', () => this.closeWheel());
-  }
-
-  // ── Persistence ─────────────────────────────────────────────
-
-  private static loadUnlocks() {
-    try {
-      const saved = localStorage.getItem(SAVE_KEY);
-      if (saved) {
-        const ids: string[] = JSON.parse(saved);
-        for (const id of ids) this.unlockedIds.add(id);
-      }
-    } catch {
-      // Silent fail
-    }
-  }
-
-  private static saveUnlocks() {
-    try {
-      localStorage.setItem(SAVE_KEY, JSON.stringify([...this.unlockedIds]));
-    } catch {
-      // Silent fail
     }
   }
 }

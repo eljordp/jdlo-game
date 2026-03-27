@@ -918,6 +918,27 @@ export const chapter6NPCs: NPCData[] = [
       { speaker: 'JP\'s Mind', text: 'First time someone in this industry looked at me like an equal. Not a kid. Not a project. An equal.' },
     ],
   },
+  {
+    id: 'ch6_elijah',
+    x: 12,
+    y: 5,
+    sprite: 'npc_elijah',
+    dialogue: [
+      { speaker: 'Elijah', text: 'The API integration is live. Pushed it this morning.' },
+      { speaker: 'JP', text: 'Already? I just sent you the spec yesterday.' },
+      { speaker: 'Elijah', text: 'You write clean specs. Makes my job easy.' },
+      { speaker: 'JP', text: '', choices: [
+        { text: '"That\'s why I brought you on. You don\'t need babysitting."', next: [
+          { speaker: 'Elijah', text: 'Appreciate that. Most people micromanage.' },
+          { speaker: 'Elijah', text: 'You just say what you need and let me cook.' },
+        ]},
+        { text: '"We\'re building something real here."', next: [
+          { speaker: 'Elijah', text: 'I know. That\'s why I\'m here.' },
+          { speaker: 'Elijah', text: 'Lot of people talk. You actually ship.' },
+        ]},
+      ]},
+    ],
+  },
 ];
 
 export const chapter6OutroText: string[] = [
@@ -2263,6 +2284,10 @@ const ch6Extras: Record<string, DialogueLine[]> = {
   ch6_equal_moment: [
     { speaker: 'JP\'s Mind', text: 'A guy doing $400K a month just asked JP to build his AI system.' },
     { speaker: 'JP\'s Mind', text: 'Not as a favor. As a client. Because JP is that good.' },
+  ],
+  ch6_elijah_update: [
+    { speaker: 'Elijah', text: 'Dashboard metrics are up 40% since the redesign.' },
+    { speaker: 'JP', text: 'That\'s what happens when you build for the user, not the stakeholder.' },
   ],
   ch6_security: [
     { speaker: 'Security', text: 'JP.' },
