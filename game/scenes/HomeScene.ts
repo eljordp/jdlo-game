@@ -1279,86 +1279,93 @@ export class HomeScene extends BaseChapterScene {
     const monH = 520;
 
     // Dark overlay
-    const overlay = this.add.rectangle(cx, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.8)
+    const overlay = this.add.rectangle(cx, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.85)
       .setScrollFactor(0).setDepth(300);
     objects.push(overlay);
 
-    // MacBook body — silver bezel
-    objects.push(this.add.rectangle(cx, cy, monW + 24, monH + 24, 0xc0c0c0).setScrollFactor(0).setDepth(301));
-    objects.push(this.add.rectangle(cx, cy, monW + 20, monH + 20, 0xa0a0a0).setScrollFactor(0).setDepth(301));
+    // === MacBook Pro — space grey ===
+    // Aluminum outer shell
+    objects.push(this.add.rectangle(cx, cy, monW + 28, monH + 28, 0x8a8a8e).setScrollFactor(0).setDepth(301));
+    // Black bezel around screen
+    objects.push(this.add.rectangle(cx, cy, monW + 6, monH + 6, 0x0a0a0a).setScrollFactor(0).setDepth(301));
+    // Top bezel (camera notch)
+    objects.push(this.add.rectangle(cx, cy - monH / 2 - 1, monW + 6, 8, 0x0a0a0a).setScrollFactor(0).setDepth(301));
+    // Camera dot
+    objects.push(this.add.circle(cx, cy - monH / 2 - 1, 2, 0x1a3a1a).setScrollFactor(0).setDepth(302));
 
-    // Screen — macOS desktop gradient (dark blue/purple)
+    // Screen — macOS wallpaper (dark gradient)
     objects.push(this.add.rectangle(cx, cy, monW, monH, 0x1a1028).setScrollFactor(0).setDepth(302));
-    // Desktop gradient bands
-    objects.push(this.add.rectangle(cx, cy - 100, monW, 120, 0x2a1838).setScrollFactor(0).setDepth(302).setAlpha(0.5));
-    objects.push(this.add.rectangle(cx, cy + 80, monW, 160, 0x141020).setScrollFactor(0).setDepth(302).setAlpha(0.5));
+    objects.push(this.add.rectangle(cx - 80, cy - 60, monW * 0.6, 180, 0x2a1040).setScrollFactor(0).setDepth(302).setAlpha(0.5));
+    objects.push(this.add.rectangle(cx + 100, cy + 50, monW * 0.5, 160, 0x102030).setScrollFactor(0).setDepth(302).setAlpha(0.35));
+    objects.push(this.add.rectangle(cx, cy + 100, monW, 80, 0x141020).setScrollFactor(0).setDepth(302).setAlpha(0.4));
 
-    // Stand
-    objects.push(this.add.rectangle(cx, cy + monH / 2 + 18, 80, 16, 0xb0b0b0).setScrollFactor(0).setDepth(301));
-    objects.push(this.add.rectangle(cx, cy + monH / 2 + 30, 160, 8, 0xa0a0a0).setScrollFactor(0).setDepth(301));
+    // === Laptop base + keyboard ===
+    // Hinge
+    objects.push(this.add.rectangle(cx, cy + monH / 2 + 15, monW + 8, 5, 0x6a6a6e).setScrollFactor(0).setDepth(301));
+    // Keyboard deck
+    objects.push(this.add.rectangle(cx, cy + monH / 2 + 32, monW + 50, 28, 0x7a7a7e).setScrollFactor(0).setDepth(300));
+    objects.push(this.add.rectangle(cx, cy + monH / 2 + 32, monW + 46, 24, 0x6a6a6e).setScrollFactor(0).setDepth(300));
+    // Trackpad
+    objects.push(this.add.rectangle(cx, cy + monH / 2 + 34, 90, 12, 0x5a5a5e).setScrollFactor(0).setDepth(301));
+    // Key hints
+    for (let i = 0; i < 11; i++) {
+      objects.push(this.add.rectangle(cx - 160 + i * 32, cy + monH / 2 + 27, 18, 3, 0x555558)
+        .setScrollFactor(0).setDepth(301).setAlpha(0.4));
+    }
 
-    // Menu bar at top
-    objects.push(this.add.rectangle(cx, cy - monH / 2 + 10, monW, 20, 0x1a1a1a).setScrollFactor(0).setDepth(303).setAlpha(0.8));
-    objects.push(this.add.text(cx - monW / 2 + 15, cy - monH / 2 + 4, '  JP\'s MacBook', {
-      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#cccccc',
+    // === macOS Menu bar ===
+    const menuBarY = cy - monH / 2 + 10;
+    objects.push(this.add.rectangle(cx, menuBarY, monW, 20, 0x1a1a22, 0.85).setScrollFactor(0).setDepth(303));
+    // Menu items
+    const menuItems = ['Finder', 'File', 'Edit', 'View'];
+    for (let i = 0; i < menuItems.length; i++) {
+      objects.push(this.add.text(cx - monW / 2 + 14 + i * 48, menuBarY - 4, menuItems[i], {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '5px', color: '#b0b0b0',
+      }).setScrollFactor(0).setDepth(304));
+    }
+    // Right side status
+    objects.push(this.add.text(cx + monW / 2 - 50, menuBarY - 4, '11:42 PM', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '5px', color: '#b0b0b0',
     }).setScrollFactor(0).setDepth(304));
-    objects.push(this.add.text(cx + monW / 2 - 80, cy - monH / 2 + 4, '11:42 PM', {
-      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#cccccc',
-    }).setScrollFactor(0).setDepth(304));
 
-    // Dock at bottom — dark glass bar
-    const dockY = cy + monH / 2 - 40;
-    objects.push(this.add.rectangle(cx, dockY, 500, 50, 0x1a1a2a).setScrollFactor(0).setDepth(303).setAlpha(0.7));
-    objects.push(this.add.rectangle(cx, dockY - 25, 500, 1, 0x404060).setScrollFactor(0).setDepth(303).setAlpha(0.5));
+    // === macOS Dock ===
+    const dockY = cy + monH / 2 - 36;
+    const dockW = 420;
+    // Glass dock
+    objects.push(this.add.rectangle(cx, dockY, dockW, 50, 0x2a2a3a, 0.5).setScrollFactor(0).setDepth(303));
+    objects.push(this.add.rectangle(cx, dockY - 25, dockW, 1, 0x505070, 0.25).setScrollFactor(0).setDepth(304));
 
-    // App icons on dock
+    // Dock apps
     const apps = [
-      { name: 'Safari',    color: 0x2090e0, icon: 'S', x: cx - 180 },
-      { name: 'Mail',      color: 0x3080d0, icon: 'M', x: cx - 100 },
+      { name: 'Safari',    color: 0x2090e0, icon: 'S',  x: cx - 160 },
+      { name: 'Mail',      color: 0x3080d0, icon: 'M',  x: cx - 90 },
       { name: 'Instagram', color: 0xc040a0, icon: 'IG', x: cx - 20 },
-      { name: 'YouTube',   color: 0xe02020, icon: 'YT', x: cx + 60 },
-      { name: 'Close',     color: 0x606060, icon: 'X', x: cx + 180 },
+      { name: 'YouTube',   color: 0xe02020, icon: 'YT', x: cx + 50 },
+      { name: 'Close',     color: 0x505058, icon: 'X',  x: cx + 160 },
     ];
 
     const appButtons: Phaser.GameObjects.Rectangle[] = [];
     for (const app of apps) {
-      // App icon square
-      const btn = this.add.rectangle(app.x, dockY, 42, 42, app.color)
+      const btn = this.add.rectangle(app.x, dockY, 38, 38, app.color)
         .setScrollFactor(0).setDepth(304).setInteractive({ useHandCursor: true });
       objects.push(btn);
       appButtons.push(btn);
-
-      // Rounded corners feel — highlight
-      objects.push(this.add.rectangle(app.x, dockY - 8, 36, 4, 0xffffff).setScrollFactor(0).setDepth(305).setAlpha(0.15));
-
-      // App label
-      objects.push(this.add.text(app.x, dockY, app.icon, {
-        fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#ffffff',
+      // Gloss
+      objects.push(this.add.rectangle(app.x, dockY - 9, 32, 6, 0xffffff)
+        .setScrollFactor(0).setDepth(305).setAlpha(0.1));
+      // Letter
+      objects.push(this.add.text(app.x, dockY + 1, app.icon, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#ffffff',
       }).setOrigin(0.5).setScrollFactor(0).setDepth(305));
-
-      // App name below dock
-      objects.push(this.add.text(app.x, dockY + 30, app.name, {
-        fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#808090',
-      }).setOrigin(0.5).setScrollFactor(0).setDepth(304));
-
-      // Hover glow
-      btn.on('pointerover', () => btn.setAlpha(0.8));
-      btn.on('pointerout', () => btn.setAlpha(1));
+      // Hover scale
+      btn.on('pointerover', () => { this.tweens.add({ targets: btn, scaleX: 1.15, scaleY: 1.15, duration: 80 }); });
+      btn.on('pointerout', () => { this.tweens.add({ targets: btn, scaleX: 1, scaleY: 1, duration: 80 }); });
     }
 
-    // Desktop hint
-    objects.push(this.add.text(cx, cy - 40, 'Click an app to open', {
-      fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#606080',
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(303));
-
-    // ESC hint
-    objects.push(this.add.text(cx, cy + monH / 2 - 8, 'ESC to close', {
-      fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#404050',
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(303));
-
-    // Close handler
+    // === Close handler — works from any state ===
     const closeAll = () => {
-      if (!active) return;
+      // Close any open app window first
+      if (currentWinCleanup) currentWinCleanup();
       active = false;
       escKey.off('down', closeAll);
       for (const obj of objects) {
