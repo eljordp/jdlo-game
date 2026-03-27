@@ -99,6 +99,9 @@ export class ComeUpScene extends BaseChapterScene {
     let totalCharsTyped = 0;
     const startTime = Date.now();
 
+    // Streak tracking
+    let streak = 0;
+
     const monoStyle = {
       fontFamily: '"Press Start 2P", monospace',
     };
@@ -124,6 +127,39 @@ export class ComeUpScene extends BaseChapterScene {
     }).setOrigin(0.5).setScrollFactor(0).setDepth(302);
     objects.push(titleText);
 
+    // --- Clock / Timer (top-left of terminal) ---
+    const clockX = GAME_WIDTH / 2 - termW / 2 + 20;
+    const clockY = GAME_HEIGHT / 2 - termH / 2 + 14;
+    const clockText = this.add.text(clockX, clockY, '0:00', {
+      ...monoStyle, fontSize: '8px', color: '#aaaacc',
+    }).setOrigin(0, 0.5).setScrollFactor(0).setDepth(302);
+    objects.push(clockText);
+
+    const clientWaitingText = this.add.text(clockX, clockY + 14, '', {
+      ...monoStyle, fontSize: '6px', color: '#ff4444',
+    }).setOrigin(0, 0.5).setScrollFactor(0).setDepth(302);
+    objects.push(clientWaitingText);
+
+    const clockTimer = this.time.addEvent({
+      delay: 1000,
+      loop: true,
+      callback: () => {
+        if (!active) return;
+        const elapsed = Math.floor((Date.now() - startTime) / 1000);
+        const mins = Math.floor(elapsed / 60);
+        const secs = elapsed % 60;
+        clockText.setText(`${mins}:${secs.toString().padStart(2, '0')}`);
+
+        if (elapsed > 60) {
+          clockText.setColor('#ff4444');
+          clientWaitingText.setText('Client waiting...');
+        } else if (elapsed > 30) {
+          clockText.setColor('#f0c040');
+          clientWaitingText.setText('');
+        }
+      },
+    });
+
     // Progress bar background
     const barY = GAME_HEIGHT / 2 - termH / 2 + 44;
     const barW = termW - 60;
@@ -145,6 +181,12 @@ export class ComeUpScene extends BaseChapterScene {
       ...monoStyle, fontSize: '8px', color: '#aaaacc',
     }).setOrigin(1, 0.5).setScrollFactor(0).setDepth(302);
     objects.push(wpmText);
+
+    // --- Streak indicator (next to WPM) ---
+    const streakText = this.add.text(GAME_WIDTH / 2 + termW / 2 - 30, GAME_HEIGHT / 2 - termH / 2 + 26, '', {
+      ...monoStyle, fontSize: '7px', color: '#f0c040',
+    }).setOrigin(1, 0.5).setScrollFactor(0).setDepth(302);
+    objects.push(streakText);
 
     // Line number + prompt
     const lineY = GAME_HEIGHT / 2 - 20;
@@ -216,11 +258,31 @@ export class ComeUpScene extends BaseChapterScene {
 
     const updateWPM = () => {
       const elapsed = (Date.now() - startTime) / 1000 / 60; // minutes
-      if (elapsed <= 0) return;
+      if (elapsed <= 0) return 0;
       const words = totalCharsTyped / 5; // standard: 5 chars = 1 word
       const wpm = Math.round(words / elapsed);
       wpmText.setText(`${wpm} WPM`);
       return wpm;
+    };
+
+    const updateStreak = () => {
+      if (streak >= 30) {
+        streakText.setText('LOCKED IN');
+        streakText.setColor('#ffffff');
+      } else if (streak >= 10) {
+        streakText.setText('x' + streak);
+        streakText.setColor('#f0c040');
+      } else {
+        streakText.setText('');
+      }
+
+      // At 20+ streak, briefly glow the terminal border
+      if (streak === 20 || streak === 25 || streak === 30) {
+        terminal.setStrokeStyle(3, 0x60ff90);
+        this.time.delayedCall(200, () => {
+          if (terminal.active) terminal.setStrokeStyle(2, 0x30c060);
+        });
+      }
     };
 
     const loadLine = () => {
@@ -269,8 +331,61 @@ export class ComeUpScene extends BaseChapterScene {
       });
     };
 
+    // --- Confetti particle helper ---
+    const spawnConfetti = () => {
+      const confettiColors = [0x30c060, 0xf0c040, 0xffffff, 0x60ff90, 0xffdd00];
+      const cx = GAME_WIDTH / 2;
+      const cy = GAME_HEIGHT / 2 - 20;
+      for (let i = 0; i < 14; i++) {
+        const color = confettiColors[i % confettiColors.length];
+        const w = 4 + Math.random() * 6;
+        const h = 3 + Math.random() * 5;
+        const particle = this.add.rectangle(cx, cy, w, h, color)
+          .setScrollFactor(0).setDepth(310).setAlpha(1);
+        objects.push(particle);
+
+        const angle = -Math.PI / 2 + (Math.random() - 0.5) * Math.PI * 1.2;
+        const speed = 120 + Math.random() * 180;
+        const vx = Math.cos(angle) * speed;
+        const vy = Math.sin(angle) * speed;
+
+        // Animate: burst up then fall with gravity
+        this.tweens.add({
+          targets: particle,
+          x: cx + vx * 0.8,
+          y: cy + vy * 0.4,
+          duration: 400,
+          ease: 'Quad.easeOut',
+          onComplete: () => {
+            // Gravity fall
+            this.tweens.add({
+              targets: particle,
+              y: GAME_HEIGHT + 20,
+              x: cx + vx * 1.2,
+              alpha: 0,
+              duration: 800 + Math.random() * 400,
+              ease: 'Quad.easeIn',
+              onComplete: () => {
+                particle.destroy();
+              },
+            });
+          },
+        });
+
+        // Rotate effect via scale flip
+        this.tweens.add({
+          targets: particle,
+          scaleX: -1,
+          duration: 150 + Math.random() * 200,
+          yoyo: true,
+          repeat: 5,
+        });
+      }
+    };
+
     const finishGame = () => {
       active = false;
+      clockTimer.destroy();
       cursorBlink.destroy();
       this.input.keyboard!.off('keydown', keyHandler);
       this.input.off('pointerdown', pointerListener);
@@ -286,43 +401,97 @@ export class ComeUpScene extends BaseChapterScene {
       cursor.setAlpha(0);
       lineNumText.setText('');
       instrText.setText('');
+      streakText.setText('');
+      clientWaitingText.setText('');
+      clockText.setText('');
 
-      // Show results
-      titleText.setText('SITE DEPLOYED!');
-      titleText.setColor('#30c060');
+      // --- "SHIPPED!" celebration ---
 
-      const timeStr = elapsed < 60
-        ? `${elapsed.toFixed(1)}s`
-        : `${Math.floor(elapsed / 60)}m ${Math.round(elapsed % 60)}s`;
+      // Flash terminal green
+      const greenFlash = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, termW, termH, 0x30c060, 0.4)
+        .setScrollFactor(0).setDepth(305);
+      objects.push(greenFlash);
+      this.tweens.add({
+        targets: greenFlash,
+        alpha: 0,
+        duration: 400,
+      });
 
-      const resultText = this.add.text(GAME_WIDTH / 2, lineY - 10, `${wpm} WPM  //  ${timeStr}`, {
-        ...monoStyle, fontSize: '16px', color: '#ffffff',
-      }).setOrigin(0.5).setScrollFactor(0).setDepth(302);
-      objects.push(resultText);
+      // Confetti burst
+      spawnConfetti();
 
-      const flavor = wpm >= 60
-        ? 'Senior dev energy.'
-        : wpm >= 40
-        ? 'JP ships fast.'
-        : wpm >= 20
-        ? "Still learning. But it's live."
-        : 'Slow and steady. The site works.';
+      // "DEPLOYED!" text slam
+      const deployedText = this.add.text(GAME_WIDTH / 2, lineY - 50, 'DEPLOYED!', {
+        ...monoStyle, fontSize: '28px', color: '#30c060',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(306).setScale(2.5);
+      objects.push(deployedText);
 
-      const flavorText = this.add.text(GAME_WIDTH / 2, lineY + 30, flavor, {
-        ...monoStyle, fontSize: '10px', color: '#aaaacc',
-      }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
-      objects.push(flavorText);
+      this.tweens.add({
+        targets: deployedText,
+        scale: 1,
+        duration: 400,
+        ease: 'Back.easeOut',
+        onComplete: () => {
+          // After slam, show results
+          this.time.delayedCall(600, () => {
+            deployedText.setFontSize(14);
+            deployedText.setY(lineY - 60);
 
-      // Fill progress to 100%
-      barFill.setDisplaySize(barW, 12);
-      progressLabel.setText('100%');
-      wpmText.setText(`${wpm} WPM`);
+            // Show results
+            titleText.setText('SITE DEPLOYED!');
+            titleText.setColor('#30c060');
 
-      this.time.delayedCall(3000, () => {
-        for (const obj of objects) {
-          if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
-        }
-        this.frozen = false;
+            const timeStr = elapsed < 60
+              ? `${elapsed.toFixed(1)}s`
+              : `${Math.floor(elapsed / 60)}m ${Math.round(elapsed % 60)}s`;
+
+            const resultText = this.add.text(GAME_WIDTH / 2, lineY - 10, `${wpm} WPM  //  ${timeStr}`, {
+              ...monoStyle, fontSize: '16px', color: '#ffffff',
+            }).setOrigin(0.5).setScrollFactor(0).setDepth(302);
+            objects.push(resultText);
+
+            const flavor = wpm >= 60
+              ? 'Senior dev energy.'
+              : wpm >= 40
+              ? 'JP ships fast.'
+              : wpm >= 20
+              ? "Still learning. But it's live."
+              : 'Slow and steady. The site works.';
+
+            const flavorText = this.add.text(GAME_WIDTH / 2, lineY + 30, flavor, {
+              ...monoStyle, fontSize: '10px', color: '#aaaacc',
+            }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+            objects.push(flavorText);
+
+            // Fill progress to 100%
+            barFill.setDisplaySize(barW, 12);
+            progressLabel.setText('100%');
+            wpmText.setText(`${wpm} WPM`);
+
+            // After results display, cleanup and show post-game dialogue
+            this.time.delayedCall(3000, () => {
+              for (const obj of objects) {
+                if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
+              }
+              this.frozen = false;
+
+              // Post-game dialogue based on WPM
+              let postDialogue: DialogueLine[];
+              if (wpm >= 60) {
+                postDialogue = [{ speaker: 'Narrator', text: "JP's fingers moved like they always knew how." }];
+              } else if (wpm >= 40) {
+                postDialogue = [{ speaker: 'Narrator', text: "Not fast. But it works. And it's live." }];
+              } else {
+                postDialogue = [{ speaker: 'Narrator', text: "Slow. But he shipped it. That's what matters." }];
+              }
+
+              this.frozen = true;
+              this.dialogue.show(postDialogue, () => {
+                this.frozen = false;
+              });
+            });
+          });
+        },
       });
     };
 
@@ -331,6 +500,7 @@ export class ComeUpScene extends BaseChapterScene {
       typedText.setText(line.substring(0, charIndex + 1));
       charIndex++;
       totalCharsTyped++;
+      streak++;
 
       // Move cursor
       // Approximate character width for "Press Start 2P" at 14px
@@ -339,6 +509,7 @@ export class ComeUpScene extends BaseChapterScene {
 
       updateProgress();
       updateWPM();
+      updateStreak();
 
       // Check if line complete
       if (charIndex >= line.length) {
@@ -366,7 +537,10 @@ export class ComeUpScene extends BaseChapterScene {
           yoyo: true,
         });
       } else {
-        // Wrong key — red flash, don't advance
+        // Wrong key — reset streak, red flash, don't advance
+        streak = 0;
+        updateStreak();
+
         flash.setFillStyle(0xff4444, 0.2);
         flash.setAlpha(1);
         this.tweens.add({
@@ -407,6 +581,9 @@ export class ComeUpScene extends BaseChapterScene {
   private playPaymentCutscene() {
     this.frozen = true;
 
+    // --- Phone vibration (camera shake before anything appears) ---
+    this.cameras.main.shake(100, 0.003);
+
     // Dark overlay
     const overlay = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000)
       .setScrollFactor(0).setDepth(100).setAlpha(0);
@@ -434,69 +611,116 @@ export class ComeUpScene extends BaseChapterScene {
       color: '#ffffff',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(102).setAlpha(0);
 
-    // Fade in overlay and box
-    this.tweens.add({
-      targets: overlay,
-      alpha: 0.6,
-      duration: 300,
-    });
-    this.tweens.add({
-      targets: [box, label, amountText],
-      alpha: 1,
-      duration: 400,
-      delay: 200,
-      onComplete: () => {
-        // Count up from $0 to $300
-        let currentAmount = 0;
-        const targetAmount = 300;
-        const countDuration = 1200; // ms
-        const steps = 30;
-        const stepDelay = countDuration / steps;
-        const increment = targetAmount / steps;
+    // Fade in overlay and box (after shake)
+    this.time.delayedCall(120, () => {
+      this.tweens.add({
+        targets: overlay,
+        alpha: 0.6,
+        duration: 300,
+      });
+      this.tweens.add({
+        targets: [box, label, amountText],
+        alpha: 1,
+        duration: 400,
+        delay: 200,
+        onComplete: () => {
+          // Count up from $0 to $300
+          let currentAmount = 0;
+          const targetAmount = 300;
+          const countDuration = 1200; // ms
+          const steps = 30;
+          const stepDelay = countDuration / steps;
+          const increment = targetAmount / steps;
 
-        const counter = this.time.addEvent({
-          delay: stepDelay,
-          repeat: steps - 1,
-          callback: () => {
-            currentAmount += increment;
-            if (currentAmount > targetAmount) currentAmount = targetAmount;
-            amountText.setText('$' + currentAmount.toFixed(2));
-          },
-        });
-
-        // After counting finishes, show the thought
-        this.time.delayedCall(countDuration + 200, () => {
-          const thought = this.add.text(boxX, boxY + 45, 'First real dollar from\nsomething I BUILT.', {
-            fontFamily: '"Press Start 2P", monospace',
-            fontSize: '9px',
-            color: '#f0c040',
-            align: 'center',
-          }).setOrigin(0.5).setScrollFactor(0).setDepth(102).setAlpha(0);
-
-          this.tweens.add({
-            targets: thought,
-            alpha: 1,
-            duration: 400,
+          const counter = this.time.addEvent({
+            delay: stepDelay,
+            repeat: steps - 1,
+            callback: () => {
+              currentAmount += increment;
+              if (currentAmount > targetAmount) currentAmount = targetAmount;
+              amountText.setText('$' + currentAmount.toFixed(2));
+            },
           });
 
-          // Hold for 2 seconds, then dismiss
-          this.time.delayedCall(2000, () => {
+          // After counting finishes, show the thought
+          this.time.delayedCall(countDuration + 200, () => {
+            const thought = this.add.text(boxX, boxY + 45, 'First real dollar from\nsomething I BUILT.', {
+              fontFamily: '"Press Start 2P", monospace',
+              fontSize: '9px',
+              color: '#f0c040',
+              align: 'center',
+            }).setOrigin(0.5).setScrollFactor(0).setDepth(102).setAlpha(0);
+
             this.tweens.add({
-              targets: [overlay, box, label, amountText, thought],
-              alpha: 0,
+              targets: thought,
+              alpha: 1,
               duration: 400,
-              onComplete: () => {
-                overlay.destroy();
-                box.destroy();
-                label.destroy();
-                amountText.destroy();
-                thought.destroy();
-                this.frozen = false;
-              },
+            });
+
+            // --- Emotional beat: escalating amounts ---
+            this.time.delayedCall(1200, () => {
+              // Fade out the thought text first
+              this.tweens.add({
+                targets: thought,
+                alpha: 0,
+                duration: 300,
+              });
+
+              // Resize box to fit escalation
+              this.tweens.add({
+                targets: box,
+                displayHeight: 220,
+                duration: 300,
+              });
+
+              const escalationAmounts = ['$300.', '$500.', '$900.', '$1,000.'];
+              const escalationSizes = ['10px', '12px', '14px', '16px'];
+              const escalationColors = ['#888888', '#bbbbbb', '#f0c040', '#ffffff'];
+              const escalationObjects: Phaser.GameObjects.Text[] = [];
+              const baseY = boxY - 10;
+
+              escalationAmounts.forEach((amount, i) => {
+                this.time.delayedCall(600 * i, () => {
+                  // Hide the original amount text when escalation starts
+                  if (i === 0) {
+                    amountText.setAlpha(0);
+                  }
+
+                  const escalText = this.add.text(boxX, baseY + i * 28, amount, {
+                    fontFamily: '"Press Start 2P", monospace',
+                    fontSize: escalationSizes[i],
+                    color: escalationColors[i],
+                  }).setOrigin(0.5).setScrollFactor(0).setDepth(102).setAlpha(0);
+                  escalationObjects.push(escalText);
+
+                  this.tweens.add({
+                    targets: escalText,
+                    alpha: 1,
+                    duration: 300,
+                  });
+                });
+              });
+
+              // Hold final display for 2 seconds, then fade everything out
+              const totalEscalationTime = 600 * escalationAmounts.length;
+              this.time.delayedCall(totalEscalationTime + 2000, () => {
+                const allObjects = [overlay, box, label, amountText, thought, ...escalationObjects];
+                this.tweens.add({
+                  targets: allObjects,
+                  alpha: 0,
+                  duration: 400,
+                  onComplete: () => {
+                    allObjects.forEach((obj) => {
+                      if (obj && obj.active) obj.destroy();
+                    });
+                    this.frozen = false;
+                  },
+                });
+              });
             });
           });
-        });
-      },
+        },
+      });
     });
   }
 }

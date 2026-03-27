@@ -8,6 +8,7 @@ import { Analytics } from '../systems/Analytics';
 
 export class BeachScene extends BaseChapterScene {
   private inHotTub = false;
+  private bmwInteracted = false;
 
   constructor() {
     super({ key: 'BeachScene' });
@@ -41,6 +42,48 @@ export class BeachScene extends BaseChapterScene {
 
     // Hot tub bubble jets — active bubbles rising from the water
     this.createHotTubBubbles();
+
+    // Hot tub steam effect
+    this.createHotTubSteam();
+  }
+
+  private createHotTubSteam() {
+    // Hot tub is at cols 31-34, rows 2-4 in the beachMap
+    const tubCenterX = 32.5 * SCALED_TILE;
+    const tubTopY = 2 * SCALED_TILE;
+
+    // 4 steam columns that rise and fade infinitely
+    for (let i = 0; i < 4; i++) {
+      const offsetX = (i - 1.5) * SCALED_TILE * 0.8;
+      const baseDelay = i * 600;
+
+      this.time.addEvent({
+        delay: 1800,
+        loop: true,
+        startAt: baseDelay,
+        callback: () => {
+          const steam = this.add.circle(
+            tubCenterX + offsetX + (Math.random() - 0.5) * 12,
+            tubTopY,
+            4 + Math.random() * 4,
+            0xffffff,
+            0.15 + Math.random() * 0.1
+          ).setDepth(4);
+
+          this.tweens.add({
+            targets: steam,
+            y: tubTopY - 30 - Math.random() * 20,
+            x: steam.x + (Math.random() - 0.5) * 16,
+            alpha: 0,
+            scaleX: 2.5,
+            scaleY: 2.5,
+            duration: 2000 + Math.random() * 800,
+            ease: 'Sine.easeOut',
+            onComplete: () => steam.destroy(),
+          });
+        },
+      });
+    }
   }
 
   private createHotTubBubbles() {
@@ -137,7 +180,7 @@ export class BeachScene extends BaseChapterScene {
     return beachDialogue;
   }
 
-  // Override to add volleyball mini-game
+  // Override to add volleyball mini-game and BMW interaction
   protected handleInteractable(interactable: { id: string; type: string; consumed?: boolean }) {
     if (interactable.id === 'ch1_volleyball1') {
       Analytics.trackInteraction(interactable.id);
@@ -145,7 +188,43 @@ export class BeachScene extends BaseChapterScene {
       this.interactions.consume(interactable.id);
       return;
     }
+
+    // BMW interaction — check if player is adjacent to the car tiles (3-5, 9)
+    // We handle this via proximity in the interact handler below
     super.handleInteractable(interactable);
+  }
+
+  // Check for BMW interaction when player presses interact near the car
+  protected handleInteract(): void {
+    // Let dialogue advance / frozen checks happen in parent first
+    if (this.dialogue.isActive() || this.frozen) {
+      super.handleInteract();
+      return;
+    }
+
+    // Check if player is near the BMW (tiles 3-5, row 9)
+    if (!this.bmwInteracted && this.player) {
+      const playerTileX = Math.round((this.player.x - SCALED_TILE / 2) / SCALED_TILE);
+      const playerTileY = Math.round((this.player.y - SCALED_TILE / 2) / SCALED_TILE);
+
+      const nearBMW =
+        playerTileX >= 2 && playerTileX <= 6 &&
+        playerTileY >= 8 && playerTileY <= 10;
+
+      if (nearBMW) {
+        this.bmwInteracted = true;
+        this.frozen = true;
+        this.dialogue.show([
+          { speaker: "JP's Mind", text: '335i. Twin turbo. Catless downpipes.' },
+          { speaker: "JP's Mind", text: 'This car is trouble. But it sounds SO good.' },
+        ], () => {
+          this.frozen = false;
+        });
+        return;
+      }
+    }
+
+    super.handleInteract();
   }
 
   private playVolleyballMinigame() {
@@ -176,6 +255,10 @@ export class BeachScene extends BaseChapterScene {
     let waitingForServe = true;
     let oppReturning = false;
     let pointScored = false;
+    let isSpiking = false;
+
+    // Spike trail objects (cleaned up each frame)
+    const trailObjects: Phaser.GameObjects.GameObject[] = [];
 
     // Opponent return delay (gets faster each rally)
     let oppBaseDelay = 800;
@@ -224,6 +307,22 @@ export class BeachScene extends BaseChapterScene {
     }).setOrigin(0.5).setScrollFactor(0).setDepth(302);
     objects.push(rallyText);
 
+    // Crowd reaction text (for RALLY! / INSANE RALLY!)
+    const crowdText = this.add.text(GAME_WIDTH / 2, 50, '', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '16px',
+      color: '#ff6644',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303).setAlpha(0);
+    objects.push(crowdText);
+
+    // Score reaction text (NICE! / ...)
+    const scoreReactionText = this.add.text(0, 0, '', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '12px',
+      color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303).setAlpha(0);
+    objects.push(scoreReactionText);
+
     // Instructions
     const instr = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 50, 'UP/DOWN to move, SPACE to hit!', {
       fontFamily: '"Press Start 2P", monospace',
@@ -247,7 +346,7 @@ export class BeachScene extends BaseChapterScene {
       .setScrollFactor(0).setDepth(303);
     objects.push(ball);
 
-    // Ball shadow
+    // Ball shadow — ellipse on the ground that tracks ball X, scales with ball Y
     const shadow = this.add.ellipse(ballX, groundY + 10, 16, 6, 0x000000, 0.2)
       .setScrollFactor(0).setDepth(301);
     objects.push(shadow);
@@ -256,6 +355,92 @@ export class BeachScene extends BaseChapterScene {
     const upKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
     const downKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
     const spaceKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
+    // --- Helper: show crowd reaction text ---
+    const showCrowdReaction = () => {
+      if (rallyCount >= 8) {
+        crowdText.setText('INSANE RALLY!');
+        crowdText.setColor('#ff2222');
+        crowdText.setAlpha(1);
+        crowdText.setScale(1);
+        // Pulse effect
+        this.tweens.add({
+          targets: crowdText,
+          scale: 1.3,
+          duration: 150,
+          yoyo: true,
+          repeat: 2,
+        });
+        // Screen shake
+        this.cameras.main.shake(200, 0.01);
+      } else if (rallyCount >= 5) {
+        crowdText.setText('RALLY!');
+        crowdText.setColor('#ff6644');
+        crowdText.setAlpha(1);
+        crowdText.setScale(1);
+        // Pulse effect
+        this.tweens.add({
+          targets: crowdText,
+          scale: 1.2,
+          duration: 200,
+          yoyo: true,
+          repeat: 1,
+        });
+      } else {
+        crowdText.setAlpha(0);
+      }
+    };
+
+    // --- Helper: show score reaction near JP sprite ---
+    const showScoreReaction = (jpScored: boolean) => {
+      scoreReactionText.setText(jpScored ? 'NICE!' : '...');
+      scoreReactionText.setColor(jpScored ? '#40ff40' : '#ff4444');
+      scoreReactionText.setPosition(jpSprite.x, jpSprite.y - 40);
+      scoreReactionText.setAlpha(1);
+      scoreReactionText.setScale(1);
+      this.tweens.add({
+        targets: scoreReactionText,
+        y: scoreReactionText.y - 20,
+        alpha: 0,
+        duration: 1200,
+        ease: 'Quad.easeOut',
+      });
+    };
+
+    // --- Helper: net ripple when ball passes near ---
+    const triggerNetRipple = () => {
+      this.tweens.add({
+        targets: net,
+        scaleX: 1.6,
+        duration: 80,
+        yoyo: true,
+        repeat: 2,
+        ease: 'Sine.easeInOut',
+        onComplete: () => {
+          net.setScale(1, 1);
+        },
+      });
+    };
+
+    // --- Helper: spawn spike trail ---
+    const spawnSpikeTrail = () => {
+      const trail = this.add.circle(ballX, ballY, 6, 0xffffff, 0.6)
+        .setScrollFactor(0).setDepth(302);
+      trailObjects.push(trail);
+      objects.push(trail);
+      this.tweens.add({
+        targets: trail,
+        alpha: 0,
+        scale: 0.2,
+        duration: 200,
+        ease: 'Quad.easeOut',
+        onComplete: () => {
+          trail.destroy();
+          const idx = trailObjects.indexOf(trail);
+          if (idx >= 0) trailObjects.splice(idx, 1);
+        },
+      });
+    };
 
     const updateRallyDisplay = () => {
       if (rallyCount <= 1) {
@@ -269,6 +454,7 @@ export class BeachScene extends BaseChapterScene {
       } else {
         rallyText.setText('RALLY!');
       }
+      showCrowdReaction();
     };
 
     const serveBall = (toJP: boolean) => {
@@ -278,6 +464,8 @@ export class BeachScene extends BaseChapterScene {
       rallyCount = 0;
       ballSpeed = 5;
       oppBaseDelay = 800;
+      isSpiking = false;
+      crowdText.setAlpha(0);
       updateRallyDisplay();
 
       if (toJP) {
@@ -302,8 +490,13 @@ export class BeachScene extends BaseChapterScene {
     const scorePoint = (jpScored: boolean) => {
       if (pointScored) return;
       pointScored = true;
+      isSpiking = false;
       rallyCount = 0;
+      crowdText.setAlpha(0);
       updateRallyDisplay();
+
+      // Show score reaction near JP
+      showScoreReaction(jpScored);
 
       if (jpScored) {
         jpScore++;
@@ -363,6 +556,7 @@ export class BeachScene extends BaseChapterScene {
 
     const endGame = () => {
       active = false;
+      isSpiking = false;
       this.events.off('update', updateHandler);
 
       const jpWon = jpScore >= winScore;
@@ -387,7 +581,21 @@ export class BeachScene extends BaseChapterScene {
         for (const obj of objects) {
           if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
         }
-        this.frozen = false;
+
+        // Post-game dialogue
+        const postGameLines: DialogueLine[] = jpWon
+          ? [
+              { speaker: 'Nolan', text: "Bro you're NICE at this!" },
+              { speaker: 'JP', text: 'Run it back anytime.' },
+            ]
+          : [
+              { speaker: 'Nolan', text: "We'll get you next time bro." },
+              { speaker: 'JP', text: 'Whatever man.' },
+            ];
+
+        this.dialogue.show(postGameLines, () => {
+          this.frozen = false;
+        });
       });
     };
 
@@ -395,6 +603,9 @@ export class BeachScene extends BaseChapterScene {
     this.time.delayedCall(500, () => {
       serveBall(true);
     });
+
+    // Track previous ball position for net crossing detection
+    let prevBallX = ballX;
 
     const updateHandler = () => {
       if (!active || waitingForServe) return;
@@ -422,11 +633,34 @@ export class BeachScene extends BaseChapterScene {
         ballVX = -Math.abs(ballVX);
       }
 
+      // Net ripple — detect ball crossing near the net
+      if (Math.abs(ballX - netX) < 40 && Math.abs(prevBallX - netX) >= 40) {
+        triggerNetRipple();
+      }
+      // Also trigger if ball is very close and moving through
+      if (Math.abs(ballX - netX) < 20 && ((prevBallX < netX && ballX >= netX) || (prevBallX > netX && ballX <= netX))) {
+        triggerNetRipple();
+      }
+      prevBallX = ballX;
+
       // Track which side ball is on
       ballOnJPSide = ballX < netX;
 
       ball.setPosition(ballX, ballY);
+
+      // Update ball shadow — tracks X, scales with height
       shadow.setPosition(ballX, groundY + 10);
+      const heightFromGround = Math.max(0, groundY - ballY);
+      const maxHeight = groundY - courtTop;
+      const shadowScale = Math.max(0.3, 1 - (heightFromGround / maxHeight) * 0.7);
+      const shadowAlpha = Math.max(0.05, 0.25 - (heightFromGround / maxHeight) * 0.2);
+      shadow.setScale(shadowScale, shadowScale * 0.5);
+      shadow.setAlpha(shadowAlpha);
+
+      // Spike trail effect
+      if (isSpiking) {
+        spawnSpikeTrail();
+      }
 
       // Player hits ball when SPACE pressed and ball is near JP on JP's side
       if (spaceKey.isDown && ballOnJPSide && !pointScored) {
@@ -445,10 +679,33 @@ export class BeachScene extends BaseChapterScene {
           ballSpeed = Math.min(10, 5 + rallyCount * 0.4);
           updateRallyDisplay();
 
+          // Check for spike — ball is high (near top of court)
+          const isSpike = ballY < courtTop + 100;
+
           // Arc ball to opponent's side
           const targetX = GAME_WIDTH * 3 / 4 + Phaser.Math.Between(-80, 80);
-          ballVX = (targetX - ballX) / 40;
-          ballVY = -(5 + Math.random() * 2);
+
+          if (isSpike) {
+            // SPIKE! Faster ball, flatter arc, enable trail
+            const spikeSpeed = ballSpeed * 1.5;
+            ballVX = (targetX - ballX) / 25;
+            ballVY = -(2 + Math.random() * 1); // Flatter arc for spike
+            // Scale velocities to spike speed
+            const currentSpeed = Math.sqrt(ballVX * ballVX + ballVY * ballVY);
+            if (currentSpeed > 0) {
+              ballVX = (ballVX / currentSpeed) * spikeSpeed;
+              ballVY = (ballVY / currentSpeed) * spikeSpeed;
+            }
+            isSpiking = true;
+            // Turn off spike trail after a short time
+            this.time.delayedCall(300, () => {
+              isSpiking = false;
+            });
+          } else {
+            ballVX = (targetX - ballX) / 40;
+            ballVY = -(5 + Math.random() * 2);
+            isSpiking = false;
+          }
 
           ball.setFillStyle(0x40c040);
           this.time.delayedCall(150, () => {
@@ -459,6 +716,7 @@ export class BeachScene extends BaseChapterScene {
 
       // Ball hits ground — point scored
       if (ballY > groundY && !pointScored) {
+        isSpiking = false;
         if (ballOnJPSide) {
           // Ball hit JP's ground — opponent scores
           scorePoint(false);

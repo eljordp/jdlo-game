@@ -122,11 +122,22 @@ export class JailScene extends BaseChapterScene {
   }
 
   /**
-   * Show a black screen with white text (e.g., "3 months later...")
-   * then fade back to gameplay and call the callback.
+   * Calendar-style day transition with strikethrough and color progression.
+   * Day 1→2: white text, "3 MONTHS LATER..."
+   * Day 2→3: yellow text, "6 MONTHS LATER..."
+   * Each day's title card feels heavier.
    */
   private playDayTransition(text: string, callback: () => void) {
     this.frozen = true;
+
+    // Determine which day we're transitioning FROM
+    const fromDay = this.currentDay;
+    // Color progression: Day 1 = white, Day 2 = yellow, Day 3 = gold
+    const dayColors = ['#ffffff', '#f0c040', '#ffd700'];
+    const dayColor = dayColors[fromDay - 1] || '#ffffff';
+    const nextDayColor = dayColors[fromDay] || '#f0c040';
+    const dayLabel = `DAY ${fromDay}`;
+    const nextDayLabel = `DAY ${fromDay + 1}`;
 
     const bg = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000)
       .setScrollFactor(0).setDepth(200).setAlpha(0);
@@ -135,47 +146,118 @@ export class JailScene extends BaseChapterScene {
     this.tweens.add({
       targets: bg,
       alpha: 1,
-      duration: 800,
+      duration: 1000,
       ease: 'Quad.easeIn',
       onComplete: () => {
-        // Show transition text
-        const transText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2, text, {
+        // Show old day label — then strike it out
+        const oldDayText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 40, dayLabel, {
           fontFamily: '"Press Start 2P", monospace',
-          fontSize: '20px',
-          color: '#ffffff',
+          fontSize: '28px',
+          color: dayColor,
         }).setOrigin(0.5).setScrollFactor(0).setDepth(201).setAlpha(0);
 
-        // Fade in text
+        // Slow fade in old day
         this.tweens.add({
-          targets: transText,
+          targets: oldDayText,
           alpha: 1,
-          duration: 600,
+          duration: 800,
           ease: 'Quad.easeOut',
           onComplete: () => {
-            // Hold for 2 seconds
-            this.time.delayedCall(2000, () => {
-              // Fade out text
+            // Hold, then strikethrough line slides across
+            this.time.delayedCall(800, () => {
+              const strikeWidth = oldDayText.width + 20;
+              const strikeX = GAME_WIDTH / 2 - strikeWidth / 2;
+              const strikeY = GAME_HEIGHT / 2 - 40;
+              const strikeLine = this.add.rectangle(strikeX, strikeY, 0, 4, 0xff4444)
+                .setOrigin(0, 0.5).setScrollFactor(0).setDepth(202);
+
+              // Animate strikethrough growing across the text
               this.tweens.add({
-                targets: transText,
-                alpha: 0,
-                duration: 500,
-                ease: 'Quad.easeIn',
+                targets: strikeLine,
+                displayWidth: strikeWidth,
+                duration: 400,
+                ease: 'Quad.easeOut',
                 onComplete: () => {
-                  transText.destroy();
-
-                  // Run callback (changes day, resets interactions)
-                  callback();
-
-                  // Fade back to gameplay
+                  // Dim the old day text
                   this.tweens.add({
-                    targets: bg,
-                    alpha: 0,
-                    duration: 800,
+                    targets: oldDayText,
+                    alpha: 0.3,
+                    duration: 300,
+                  });
+
+                  // Show the time skip text below
+                  const timeText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 20, text, {
+                    fontFamily: '"Press Start 2P", monospace',
+                    fontSize: '14px',
+                    color: '#aaaacc',
+                  }).setOrigin(0.5).setScrollFactor(0).setDepth(201).setAlpha(0);
+
+                  this.tweens.add({
+                    targets: timeText,
+                    alpha: 1,
+                    duration: 600,
                     ease: 'Quad.easeOut',
-                    onComplete: () => {
-                      bg.destroy();
-                      this.frozen = false;
-                    },
+                  });
+
+                  // Hold, then show new day
+                  this.time.delayedCall(1500, () => {
+                    // Fade out old elements
+                    this.tweens.add({
+                      targets: [oldDayText, strikeLine, timeText],
+                      alpha: 0,
+                      duration: 500,
+                      onComplete: () => {
+                        oldDayText.destroy();
+                        strikeLine.destroy();
+                        timeText.destroy();
+
+                        // New day appears — heavier, larger
+                        const newDayText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2, nextDayLabel, {
+                          fontFamily: '"Press Start 2P", monospace',
+                          fontSize: '36px',
+                          color: nextDayColor,
+                        }).setOrigin(0.5).setScrollFactor(0).setDepth(201).setAlpha(0).setScale(0.6);
+
+                        // Slow dramatic fade in + scale up
+                        this.tweens.add({
+                          targets: newDayText,
+                          alpha: 1,
+                          scale: 1,
+                          duration: 1000,
+                          ease: 'Quad.easeOut',
+                          onComplete: () => {
+                            // Hold 2 seconds
+                            this.time.delayedCall(2000, () => {
+                              // Slow fade out
+                              this.tweens.add({
+                                targets: newDayText,
+                                alpha: 0,
+                                duration: 800,
+                                ease: 'Quad.easeIn',
+                                onComplete: () => {
+                                  newDayText.destroy();
+
+                                  // Run callback (changes day, resets interactions)
+                                  callback();
+
+                                  // Fade back to gameplay
+                                  this.tweens.add({
+                                    targets: bg,
+                                    alpha: 0,
+                                    duration: 800,
+                                    ease: 'Quad.easeOut',
+                                    onComplete: () => {
+                                      bg.destroy();
+                                      this.frozen = false;
+                                    },
+                                  });
+                                },
+                              });
+                            });
+                          },
+                        });
+                      },
+                    });
                   });
                 },
               });
@@ -304,17 +386,28 @@ export class JailScene extends BaseChapterScene {
     }).setOrigin(0.5).setScrollFactor(0).setDepth(302);
     objects.push(warningText);
 
+    // Crowd reaction text (hidden by default)
+    const crowdText = this.add.text(GAME_WIDTH / 2, 50, '', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '10px',
+      color: '#f0c040',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(302).setAlpha(0);
+    objects.push(crowdText);
+
     // JP pushup handler
     const doPushup = () => {
       if (!active) return;
       jpCount++;
       jpCounter.setText(String(jpCount));
 
-      // Squish animation
+      // Escalating squish — gets more exaggerated as count goes up
+      const intensity = Math.min(jpCount / 30, 1); // 0→1 over 30 pushups
+      const squishY = 3 - intensity * 1.5;   // 3 → 1.5
+      const squishX = 7 + intensity * 2;     // 7 → 9
       this.tweens.add({
         targets: jpSprite,
-        scaleY: 3,
-        scaleX: 7,
+        scaleY: squishY,
+        scaleX: squishX,
         duration: 80,
         yoyo: true,
         ease: 'Power1',
@@ -327,6 +420,52 @@ export class JailScene extends BaseChapterScene {
         duration: 60,
         yoyo: true,
       });
+
+      // Sweat particles every 3rd pushup
+      if (jpCount % 3 === 0) {
+        for (let s = 0; s < 2; s++) {
+          const sweatX = (GAME_WIDTH / 2 - 200) + Phaser.Math.Between(-20, 20);
+          const sweatY = GAME_HEIGHT / 2 + 60;
+          const sweat = this.add.circle(sweatX, sweatY, 3, 0x4488ff)
+            .setScrollFactor(0).setDepth(303).setAlpha(0.8);
+          objects.push(sweat);
+          this.tweens.add({
+            targets: sweat,
+            y: sweatY + 40 + Phaser.Math.Between(0, 20),
+            x: sweatX + Phaser.Math.Between(-10, 10),
+            alpha: 0,
+            duration: 500,
+            ease: 'Quad.easeIn',
+            onComplete: () => sweat.destroy(),
+          });
+        }
+      }
+
+      // Crowd reactions based on lead/deficit
+      const diff = jpCount - rivalCount;
+      if (diff >= 5) {
+        crowdText.setText('THE YARD IS WATCHING');
+        crowdText.setColor('#f0c040');
+        crowdText.setAlpha(1);
+        // Pulse effect
+        this.tweens.add({
+          targets: crowdText,
+          scale: 1.15,
+          duration: 200,
+          yoyo: true,
+          ease: 'Sine.easeInOut',
+        });
+      } else if (diff <= -3) {
+        crowdText.setText('COME ON!');
+        crowdText.setColor('#ff4444');
+        crowdText.setAlpha(1);
+        this.tweens.add({
+          targets: crowdText,
+          alpha: 0,
+          duration: 400,
+          delay: 200,
+        });
+      }
     };
 
     // Listen for space mashing
@@ -635,15 +774,37 @@ export class JailScene extends BaseChapterScene {
       leftArrow.setVisible(false);
       rightArrow.setVisible(false);
 
-      // Rapid random cycling for 1 second
+      // Dice tumble animation — full rotation spin
+      this.tweens.add({
+        targets: [die1Bg, die1Text],
+        angle: 360,
+        duration: 150,
+        repeat: 6,
+        ease: 'Linear',
+        onComplete: () => {
+          die1Bg.setAngle(0);
+          die1Text.setAngle(0);
+        },
+      });
+      this.tweens.add({
+        targets: [die2Bg, die2Text],
+        angle: -360,
+        duration: 150,
+        repeat: 6,
+        ease: 'Linear',
+        onComplete: () => {
+          die2Bg.setAngle(0);
+          die2Text.setAngle(0);
+        },
+      });
+
+      // Rapid random number cycling during tumble
       this.time.addEvent({
         delay: 60,
         repeat: 15,
         callback: () => {
           die1Text.setText(String(Phaser.Math.Between(1, 6)));
           die2Text.setText(String(Phaser.Math.Between(1, 6)));
-          die1Bg.setAngle(Phaser.Math.Between(-10, 10));
-          die2Bg.setAngle(Phaser.Math.Between(-10, 10));
         },
       });
 
@@ -681,11 +842,48 @@ export class JailScene extends BaseChapterScene {
           resultText.setText(`${total}! Win +${currentBet} pts`);
           resultText.setColor('#40c040');
           commentText.setText(winComments[Phaser.Math.Between(0, winComments.length - 1)]);
+
+          // Big win reaction (bet 5 and win)
+          if (currentBet === 5) {
+            const ohText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 50, 'OHHH!', {
+              fontFamily: '"Press Start 2P", monospace',
+              fontSize: '20px',
+              color: '#f0c040',
+            }).setOrigin(0.5).setScrollFactor(0).setDepth(303).setAlpha(1);
+            objects.push(ohText);
+            this.tweens.add({
+              targets: ohText,
+              y: GAME_HEIGHT / 2 - 80,
+              alpha: 0,
+              scale: 1.5,
+              duration: 800,
+              ease: 'Quad.easeOut',
+              onComplete: () => ohText.destroy(),
+            });
+          }
         } else {
           points -= currentBet;
           resultText.setText(`${total}. Lose -${currentBet} pts`);
           resultText.setColor('#ff4444');
           commentText.setText(loseComments[Phaser.Math.Between(0, loseComments.length - 1)]);
+
+          // Big loss reaction (bet 5 and lose)
+          if (currentBet === 5) {
+            const damnText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 50, 'DAMN.', {
+              fontFamily: '"Press Start 2P", monospace',
+              fontSize: '20px',
+              color: '#ff4444',
+            }).setOrigin(0.5).setScrollFactor(0).setDepth(303).setAlpha(1);
+            objects.push(damnText);
+            this.tweens.add({
+              targets: damnText,
+              y: GAME_HEIGHT / 2 - 70,
+              alpha: 0,
+              duration: 1000,
+              ease: 'Quad.easeOut',
+              onComplete: () => damnText.destroy(),
+            });
+          }
         }
 
         roundText.setText(`Round ${roundNum}/${maxRounds}  |  Commissary: ${points}`);
@@ -698,21 +896,126 @@ export class JailScene extends BaseChapterScene {
         }
 
         if (roundNum < maxRounds) {
-          // Next round — show bet selection again
-          this.time.delayedCall(1500, () => {
-            phase = 'betting';
-            roundText.setText(`Round ${roundNum + 1}/${maxRounds}  |  Commissary: ${points}`);
-            instr.setText('LEFT/RIGHT to bet, SPACE to roll');
-            betLabel.setVisible(true);
-            for (const b of betButtons) b.setVisible(true);
-            leftArrow.setVisible(true);
-            rightArrow.setVisible(true);
-            // Reset bet index if current bet is unaffordable
-            if (betOptions[betIndex] > points) {
-              betIndex = 0;
-            }
-            updateBetDisplay();
-          });
+          // Check for double-or-nothing dare on last round when JP is up
+          if (roundNum === maxRounds - 1 && points > 10) {
+            this.time.delayedCall(1500, () => {
+              // Show the dare
+              resultText.setText('');
+              commentText.setText('');
+              instr.setText('');
+              betLabel.setVisible(false);
+              for (const b of betButtons) b.setVisible(false);
+              leftArrow.setVisible(false);
+              rightArrow.setVisible(false);
+
+              const dareText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 50, 'DOUBLE OR NOTHING?', {
+                fontFamily: '"Press Start 2P", monospace',
+                fontSize: '18px',
+                color: '#f0c040',
+              }).setOrigin(0.5).setScrollFactor(0).setDepth(303);
+              objects.push(dareText);
+
+              // Pulse the dare text
+              this.tweens.add({
+                targets: dareText,
+                scale: 1.1,
+                duration: 400,
+                yoyo: true,
+                repeat: -1,
+                ease: 'Sine.easeInOut',
+              });
+
+              let dareChoice = 0; // 0 = YES, 1 = NO
+              const yesText = this.add.text(GAME_WIDTH / 2 - 80, GAME_HEIGHT / 2, '> YES', {
+                fontFamily: '"Press Start 2P", monospace',
+                fontSize: '14px',
+                color: '#f0c040',
+              }).setOrigin(0.5).setScrollFactor(0).setDepth(303);
+              const noText = this.add.text(GAME_WIDTH / 2 + 80, GAME_HEIGHT / 2, '  NO', {
+                fontFamily: '"Press Start 2P", monospace',
+                fontSize: '14px',
+                color: '#666666',
+              }).setOrigin(0.5).setScrollFactor(0).setDepth(303);
+              objects.push(yesText, noText);
+
+              const updateDareChoice = () => {
+                if (dareChoice === 0) {
+                  yesText.setText('> YES').setColor('#f0c040');
+                  noText.setText('  NO').setColor('#666666');
+                } else {
+                  yesText.setText('  YES').setColor('#666666');
+                  noText.setText('> NO').setColor('#f0c040');
+                }
+              };
+
+              // Temporary dare input — reuse existing keys
+              const dareInputHandler = (event?: { keyCode?: number }) => {
+                const keyCode = event?.keyCode;
+                if (keyCode === Phaser.Input.Keyboard.KeyCodes.LEFT || keyCode === Phaser.Input.Keyboard.KeyCodes.RIGHT) {
+                  dareChoice = dareChoice === 0 ? 1 : 0;
+                  updateDareChoice();
+                  return;
+                }
+                if (keyCode === Phaser.Input.Keyboard.KeyCodes.SPACE || !keyCode) {
+                  // Remove dare input
+                  spaceKey.off('down', dareSpaceWrap);
+                  leftKey.off('down', dareLeftWrap);
+                  rightKey.off('down', dareRightWrap);
+                  this.input.off('pointerdown', darePointerWrap);
+
+                  // Clean up dare UI
+                  dareText.destroy();
+                  yesText.destroy();
+                  noText.destroy();
+
+                  if (dareChoice === 0) {
+                    // YES — double or nothing: bet half of points
+                    currentBet = Math.floor(points / 2);
+                    roundText.setText(`FINAL ROUND  |  Commissary: ${points}  |  Bet: ${currentBet}`);
+                    phase = 'betting';
+                    rollDice();
+                  } else {
+                    // NO — normal last round
+                    phase = 'betting';
+                    roundText.setText(`Round ${roundNum + 1}/${maxRounds}  |  Commissary: ${points}`);
+                    instr.setText('LEFT/RIGHT to bet, SPACE to roll');
+                    betLabel.setVisible(true);
+                    for (const b of betButtons) b.setVisible(true);
+                    leftArrow.setVisible(true);
+                    rightArrow.setVisible(true);
+                    if (betOptions[betIndex] > points) betIndex = 0;
+                    updateBetDisplay();
+                  }
+                }
+              };
+
+              const dareSpaceWrap = (e: { keyCode: number }) => dareInputHandler(e);
+              const dareLeftWrap = (e: { keyCode: number }) => dareInputHandler(e);
+              const dareRightWrap = (e: { keyCode: number }) => dareInputHandler(e);
+              const darePointerWrap = () => dareInputHandler();
+
+              spaceKey.on('down', dareSpaceWrap);
+              leftKey.on('down', dareLeftWrap);
+              rightKey.on('down', dareRightWrap);
+              this.input.on('pointerdown', darePointerWrap);
+            });
+          } else {
+            // Normal next round
+            this.time.delayedCall(1500, () => {
+              phase = 'betting';
+              roundText.setText(`Round ${roundNum + 1}/${maxRounds}  |  Commissary: ${points}`);
+              instr.setText('LEFT/RIGHT to bet, SPACE to roll');
+              betLabel.setVisible(true);
+              for (const b of betButtons) b.setVisible(true);
+              leftArrow.setVisible(true);
+              rightArrow.setVisible(true);
+              // Reset bet index if current bet is unaffordable
+              if (betOptions[betIndex] > points) {
+                betIndex = 0;
+              }
+              updateBetDisplay();
+            });
+          }
         } else {
           endGame();
         }
@@ -1034,14 +1337,37 @@ export class JailScene extends BaseChapterScene {
     // === WHITE FLASH ON HIT ===
     const flashSprite = (target: Phaser.GameObjects.Sprite) => {
       target.setTint(0xffffff);
-      this.time.delayedCall(60, () => target.setTint(0xff4444));
-      this.time.delayedCall(120, () => target.setTint(0xffffff));
-      this.time.delayedCall(180, () => target.clearTint());
+      this.time.delayedCall(100, () => target.clearTint());
+
+      // Impact particles — 5 small circles burst from the hit point
+      const hitX = target.x;
+      const hitY = target.y;
+      for (let i = 0; i < 5; i++) {
+        const angle = (Math.PI * 2 / 5) * i + Math.random() * 0.5;
+        const speed = 60 + Math.random() * 40;
+        const particle = this.add.circle(hitX, hitY, 4 + Math.random() * 3, 0xffffff)
+          .setScrollFactor(0).setDepth(DEPTH + 20).setAlpha(0.9);
+        objects.push(particle);
+        this.tweens.add({
+          targets: particle,
+          x: hitX + Math.cos(angle) * speed,
+          y: hitY + Math.sin(angle) * speed,
+          alpha: 0,
+          scale: 0.2,
+          duration: 300 + Math.random() * 200,
+          ease: 'Quad.easeOut',
+          onComplete: () => particle.destroy(),
+        });
+      }
     };
 
-    // === SCREEN SHAKE ===
-    const screenShake = () => {
-      this.cameras.main.shake(200, 0.015);
+    // === SCREEN SHAKE (heavier for big hits) ===
+    const screenShake = (heavy = false) => {
+      if (heavy) {
+        this.cameras.main.shake(350, 0.025);
+      } else {
+        this.cameras.main.shake(200, 0.015);
+      }
     };
 
     // === SHOW BATTLE TEXT ===
@@ -1109,7 +1435,7 @@ export class JailScene extends BaseChapterScene {
         onComplete: () => {
           // Hit JP
           flashSprite(jpSprite);
-          screenShake();
+          screenShake(damage > 15);
           jpHP -= damage;
           updateJPHP();
 
@@ -1149,7 +1475,7 @@ export class JailScene extends BaseChapterScene {
         ease: 'Quad.easeIn',
         onComplete: () => {
           flashSprite(enemySprite);
-          screenShake();
+          screenShake(damage > 20);
           enemyHP -= damage;
           updateEnemyHP();
 
@@ -1262,6 +1588,25 @@ export class JailScene extends BaseChapterScene {
           ease: 'Quad.easeIn',
         });
 
+        // Screen shake on KO
+        screenShake(true);
+
+        // Crowd roar text
+        const roarText = this.add.text(GAME_WIDTH / 2, 180, 'K.O.', {
+          fontFamily: FONT, fontSize: '40px', color: '#ff4444',
+        }).setOrigin(0.5).setScrollFactor(0).setDepth(DEPTH + 30).setAlpha(0);
+        objects.push(roarText);
+        this.tweens.add({
+          targets: roarText,
+          alpha: 1,
+          scale: 1.3,
+          duration: 400,
+          yoyo: true,
+          hold: 600,
+          ease: 'Quad.easeOut',
+          onComplete: () => roarText.destroy(),
+        });
+
         showTextSequence([
           'The inmate hits the ground.',
           'Guard: "BREAK IT UP! Both of you, against the wall!"',
@@ -1290,6 +1635,25 @@ export class JailScene extends BaseChapterScene {
           angle: -90,
           duration: 600,
           ease: 'Quad.easeIn',
+        });
+
+        // Screen shake on JP going down
+        screenShake(true);
+
+        // Crowd roar
+        const lossRoar = this.add.text(GAME_WIDTH / 2, 180, 'K.O.', {
+          fontFamily: FONT, fontSize: '40px', color: '#ff4444',
+        }).setOrigin(0.5).setScrollFactor(0).setDepth(DEPTH + 30).setAlpha(0);
+        objects.push(lossRoar);
+        this.tweens.add({
+          targets: lossRoar,
+          alpha: 1,
+          scale: 1.3,
+          duration: 400,
+          yoyo: true,
+          hold: 600,
+          ease: 'Quad.easeOut',
+          onComplete: () => lossRoar.destroy(),
         });
 
         showTextSequence([

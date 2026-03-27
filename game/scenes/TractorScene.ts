@@ -114,11 +114,13 @@ export class TractorScene extends BaseChapterScene {
     // Lane centers sit between row lines (and above first / below last)
     const laneCenters = [140, 260, 380, 500, 620, 740];
     const vineElements: Phaser.GameObjects.Rectangle[] = [];
+    const rowLines: Phaser.GameObjects.Rectangle[] = [];
 
     for (const ry of rowYPositions) {
       const rowLine = this.add.rectangle(GAME_WIDTH / 2, ry, GAME_WIDTH, 12, 0x308030)
         .setScrollFactor(0).setDepth(301);
       objects.push(rowLine);
+      rowLines.push(rowLine);
 
       // Vine posts along the row
       for (let vx = 0; vx < GAME_WIDTH + 160; vx += 70) {
@@ -128,6 +130,53 @@ export class TractorScene extends BaseChapterScene {
         vineElements.push(vine);
       }
     }
+
+    // --- HEAT SHIMMER (upgrade #1) ---
+    const shimmerLines: Phaser.GameObjects.Rectangle[] = [];
+    const shimmerBaseY = [260, 400, 550, 700];
+    for (let i = 0; i < shimmerBaseY.length; i++) {
+      const shimmer = this.add.rectangle(GAME_WIDTH / 2, shimmerBaseY[i], GAME_WIDTH, 2, 0xf0d060)
+        .setScrollFactor(0).setDepth(301.5).setAlpha(0.1);
+      objects.push(shimmer);
+      shimmerLines.push(shimmer);
+
+      // Oscillate each shimmer line up/down with offset phase
+      this.tweens.add({
+        targets: shimmer,
+        y: shimmerBaseY[i] + 5,
+        duration: 2000,
+        ease: 'Sine.easeInOut',
+        yoyo: true,
+        repeat: -1,
+        delay: i * 500,
+      });
+    }
+
+    // --- ERNESTO REACTIONS (upgrade #2) ---
+    const ernestoYells = [
+      '\u00a1CUIDADO!',
+      '\u00a1NO MAMES!',
+      '\u00a1A LA VERGA!',
+    ];
+    // Ernesto text object — reusable, positioned top-left like a boss watching
+    const ernestoText = this.add.text(30, 110, '', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '14px',
+      color: '#ff8844',
+    }).setScrollFactor(0).setDepth(311).setAlpha(0);
+    objects.push(ernestoText);
+    let hitCount = 0;
+
+    // --- SPEED WARNING (upgrade #3) ---
+    const speedWarningText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 80, 'FASTER!', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '28px',
+      color: '#ffaa00',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(311).setAlpha(0);
+    objects.push(speedWarningText);
+    let speedWarning35Shown = false;
+    let speedWarning45Shown = false;
+    let dangerZoneActive = false;
 
     // --- TRACTOR (bigger: 40x24) ---
     const startLane = 2; // middle lane
@@ -237,6 +286,40 @@ export class TractorScene extends BaseChapterScene {
         lastSpeedTime += 5;
       }
 
+      // --- Speed warnings (upgrade #3) ---
+      if (scrollSpeed >= 3.5 && !speedWarning35Shown) {
+        speedWarning35Shown = true;
+        speedWarningText.setAlpha(1);
+        this.tweens.add({
+          targets: speedWarningText,
+          alpha: 0,
+          duration: 1200,
+          ease: 'Quad.easeIn',
+        });
+      }
+      if (scrollSpeed >= 4.5 && !speedWarning45Shown) {
+        speedWarning45Shown = true;
+        speedWarningText.setAlpha(1);
+        speedWarningText.setColor('#ff6600');
+        this.tweens.add({
+          targets: speedWarningText,
+          alpha: 0,
+          duration: 1200,
+          ease: 'Quad.easeIn',
+        });
+      }
+      // Danger zone: red tint on vineyard rows at speed 5+
+      if (scrollSpeed >= 5 && !dangerZoneActive) {
+        dangerZoneActive = true;
+        for (const rl of rowLines) {
+          this.tweens.add({
+            targets: rl,
+            fillColor: 0x803030,
+            duration: 1000,
+          });
+        }
+      }
+
       // --- Rows cleared: +1 every 3 seconds ---
       if (elapsed - lastScoreTime >= 3) {
         rowsCleared++;
@@ -296,12 +379,24 @@ export class TractorScene extends BaseChapterScene {
           if (dx < hw && dy < hh) {
             obs.hit = true;
             bumping = true;
+            hitCount++;
 
             // Screen shake on bump
             this.cameras.main.shake(200, 0.008);
 
-            // Flash "WATCH IT!"
-            watchItText.setAlpha(1);
+            // Ernesto reaction (upgrade #2) — pick yell based on severity
+            const yellIndex = hitCount >= 4 ? 2 : (hitCount >= 2 ? Phaser.Math.Between(0, 1) : 0);
+            ernestoText.setText(ernestoYells[yellIndex]);
+            ernestoText.setAlpha(1);
+            this.tweens.add({
+              targets: ernestoText,
+              alpha: 0,
+              duration: 1200,
+              ease: 'Quad.easeOut',
+            });
+
+            // Also flash "WATCH IT!" but less prominent now
+            watchItText.setAlpha(0.6);
             this.tweens.add({
               targets: watchItText,
               alpha: 0,
@@ -351,125 +446,164 @@ export class TractorScene extends BaseChapterScene {
         }
       }
 
-      // --- PHONE DISTRACTION at 25 seconds ---
+      // --- PHONE DISTRACTION at 25 seconds (upgrade #4) ---
       if (elapsed >= 25 && !phoneShown) {
         phoneShown = true;
 
-        // Phone notification box slides in from top
-        const notifBg = this.add.rectangle(GAME_WIDTH / 2, -60, 500, 50, 0x1a1a2e, 0.95)
+        // First notification — the tempting one
+        const notifBg1 = this.add.rectangle(GAME_WIDTH / 2, -60, 560, 50, 0x1a1a2e, 0.95)
           .setScrollFactor(0).setDepth(312).setStrokeStyle(2, 0x4a4a6a);
-        objects.push(notifBg);
+        objects.push(notifBg1);
 
-        const notifText = this.add.text(GAME_WIDTH / 2, -60, "New notification: 'How to make money online'", {
+        const notifText1 = this.add.text(GAME_WIDTH / 2, -60, "YouTube: 'How I Made $10K in One Month with AI'", {
           fontFamily: '"Press Start 2P", monospace',
-          fontSize: '10px',
+          fontSize: '9px',
           color: '#e0e0ff',
         }).setOrigin(0.5).setScrollFactor(0).setDepth(313);
-        objects.push(notifText);
+        objects.push(notifText1);
 
-        // Slide notification down
+        // Slide first notification down
         this.tweens.add({
-          targets: [notifBg, notifText],
+          targets: [notifBg1, notifText1],
           y: 120,
           duration: 600,
           ease: 'Back.easeOut',
         });
 
-        // After 2 seconds of notification being visible, JP looks at phone
-        this.time.delayedCall(2000, () => {
-          active = false; // player loses control
+        // Second notification 1 second later
+        this.time.delayedCall(1000, () => {
+          const notifBg2 = this.add.rectangle(GAME_WIDTH / 2, -60, 480, 50, 0x1a1a2e, 0.95)
+            .setScrollFactor(0).setDepth(312).setStrokeStyle(2, 0x4a4a6a);
+          objects.push(notifBg2);
 
-          // Phone emoji near tractor
-          const phoneIcon = this.add.text(tractor.x + 50, tractor.y - 30, '📱', {
-            fontSize: '28px',
-          }).setScrollFactor(0).setDepth(313);
-          objects.push(phoneIcon);
-
-          // "JP looked at his phone..." text
-          const lookText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 80, 'JP looked at his phone...', {
+          const notifText2 = this.add.text(GAME_WIDTH / 2, -60, 'Instagram: @techbro liked your post', {
             fontFamily: '"Press Start 2P", monospace',
-            fontSize: '12px',
-            color: '#ffcccc',
+            fontSize: '9px',
+            color: '#e0e0ff',
           }).setOrigin(0.5).setScrollFactor(0).setDepth(313);
-          objects.push(lookText);
-
-          // Tractor drifts into nearest row
-          const nearestRowY = rowYPositions.reduce((a, b) =>
-            Math.abs(b - tractorLaneY) < Math.abs(a - tractorLaneY) ? b : a
-          );
+          objects.push(notifText2);
 
           this.tweens.add({
-            targets: { val: tractorLaneY },
-            val: nearestRowY,
-            duration: 1200,
-            ease: 'Quad.easeIn',
-            onUpdate: (_tw: Phaser.Tweens.Tween, target: { val: number }) => {
-              tractorLaneY = target.val;
-              syncTractorParts(tractorLaneY);
-            },
+            targets: [notifBg2, notifText2],
+            y: 178,
+            duration: 600,
+            ease: 'Back.easeOut',
+          });
+        });
+
+        // After 2 seconds — internal conflict then phone look
+        this.time.delayedCall(2500, () => {
+          // Brief internal conflict: "Ignore it..." text
+          const ignoreText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 120, 'Ignore it...', {
+            fontFamily: '"Press Start 2P", monospace',
+            fontSize: '11px',
+            color: '#aabbaa',
+          }).setOrigin(0.5).setScrollFactor(0).setDepth(313).setAlpha(0);
+          objects.push(ignoreText);
+
+          this.tweens.add({
+            targets: ignoreText,
+            alpha: 1,
+            duration: 400,
+            yoyo: true,
+            hold: 800,
             onComplete: () => {
-              crashed = true;
+              // NOW JP gives in
+              active = false; // player loses control
 
-              // Stop engine vibration
-              this.cameras.main.resetFX();
+              // Phone emoji near tractor
+              const phoneIcon = this.add.text(tractor.x + 50, tractor.y - 30, '\ud83d\udcf1', {
+                fontSize: '28px',
+              }).setScrollFactor(0).setDepth(313);
+              objects.push(phoneIcon);
 
-              // RED FLASH
-              const flash = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0xff0000, 0.6)
-                .setScrollFactor(0).setDepth(315);
-              objects.push(flash);
-
-              // Big screen shake
-              this.cameras.main.shake(600, 0.025);
-
-              // CRUNCH text
-              const crunch = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 30, 'CRUNCH!', {
-                fontFamily: '"Press Start 2P", monospace',
-                fontSize: '36px',
-                color: '#ff2222',
-              }).setOrigin(0.5).setScrollFactor(0).setDepth(316);
-              objects.push(crunch);
-
-              // Rows cleared summary
-              const summary = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 30, `${rowsCleared} rows cleared before the crash.`, {
+              // "JP looked at his phone..." text
+              const lookText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 80, 'JP looked at his phone...', {
                 fontFamily: '"Press Start 2P", monospace',
                 fontSize: '12px',
-                color: '#f0c040',
-              }).setOrigin(0.5).setScrollFactor(0).setDepth(316);
-              objects.push(summary);
+                color: '#ffcccc',
+              }).setOrigin(0.5).setScrollFactor(0).setDepth(313);
+              objects.push(lookText);
 
-              // Fade flash
+              // Tractor drifts into nearest row
+              const nearestRowY = rowYPositions.reduce((a, b) =>
+                Math.abs(b - tractorLaneY) < Math.abs(a - tractorLaneY) ? b : a
+              );
+
               this.tweens.add({
-                targets: flash,
-                alpha: 0,
-                duration: 1000,
-              });
+                targets: { val: tractorLaneY },
+                val: nearestRowY,
+                duration: 1200,
+                ease: 'Quad.easeIn',
+                onUpdate: (_tw: Phaser.Tweens.Tween, target: { val: number }) => {
+                  tractorLaneY = target.val;
+                  syncTractorParts(tractorLaneY);
+                },
+                onComplete: () => {
+                  crashed = true;
 
-              // After 2.5 seconds, clean up and trigger crash dialogue
-              this.time.delayedCall(2500, () => {
-                // Remove update handler
-                this.events.off('update', updateHandler);
+                  // Stop engine vibration
+                  this.cameras.main.resetFX();
 
-                // Stop obstacle timer
-                obstacleTimer.destroy();
+                  // RED FLASH
+                  const flash = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0xff0000, 0.6)
+                    .setScrollFactor(0).setDepth(315);
+                  objects.push(flash);
 
-                // Remove keyboard listeners
-                this.input.keyboard!.removeKey(Phaser.Input.Keyboard.KeyCodes.UP);
-                this.input.keyboard!.removeKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
+                  // Big screen shake
+                  this.cameras.main.shake(600, 0.025);
 
-                // Clean up all mini-game objects
-                for (const obj of objects) {
-                  if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
-                }
+                  // CRUNCH text
+                  const crunch = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 30, 'CRUNCH!', {
+                    fontFamily: '"Press Start 2P", monospace',
+                    fontSize: '36px',
+                    color: '#ff2222',
+                  }).setOrigin(0.5).setScrollFactor(0).setDepth(316);
+                  objects.push(crunch);
 
-                this.frozen = false;
+                  // Rows cleared summary
+                  const summary = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 30, `${rowsCleared} rows cleared before the crash.`, {
+                    fontFamily: '"Press Start 2P", monospace',
+                    fontSize: '12px',
+                    color: '#f0c040',
+                  }).setOrigin(0.5).setScrollFactor(0).setDepth(316);
+                  objects.push(summary);
 
-                // Mark as required done and trigger crash dialogue
-                this.requiredDone = true;
-                const chapterDialogue = this.getChapterDialogue();
-                const crashLines = chapterDialogue.npcs['ch4_crash'];
-                if (crashLines) {
-                  this.dialogue.show(crashLines);
-                }
+                  // Fade flash
+                  this.tweens.add({
+                    targets: flash,
+                    alpha: 0,
+                    duration: 1000,
+                  });
+
+                  // After 2.5 seconds, clean up and trigger crash dialogue
+                  this.time.delayedCall(2500, () => {
+                    // Remove update handler
+                    this.events.off('update', updateHandler);
+
+                    // Stop obstacle timer
+                    obstacleTimer.destroy();
+
+                    // Remove keyboard listeners
+                    this.input.keyboard!.removeKey(Phaser.Input.Keyboard.KeyCodes.UP);
+                    this.input.keyboard!.removeKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
+
+                    // Clean up all mini-game objects
+                    for (const obj of objects) {
+                      if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
+                    }
+
+                    this.frozen = false;
+
+                    // Mark as required done and trigger crash dialogue
+                    this.requiredDone = true;
+                    const chapterDialogue = this.getChapterDialogue();
+                    const crashLines = chapterDialogue.npcs['ch4_crash'];
+                    if (crashLines) {
+                      this.dialogue.show(crashLines);
+                    }
+                  });
+                },
               });
             },
           });
@@ -481,6 +615,8 @@ export class TractorScene extends BaseChapterScene {
   }
 
   private playAIDiscoveryCutscene() {
+    this.frozen = true;
+
     // Computer tile is at 5,4 — walk player there
     const computerX = 5 * SCALED_TILE + SCALED_TILE / 2;
     const computerY = 4 * SCALED_TILE + SCALED_TILE / 2;
@@ -495,33 +631,185 @@ export class TractorScene extends BaseChapterScene {
         // Player stops (sits down) — face up toward computer
         this.player.setFrame(2); // up-idle frame
 
-        // Screen brightens slightly — white overlay
+        const cutsceneObjects: Phaser.GameObjects.GameObject[] = [];
+
+        // --- SLOW BUILD: white glow gradually builds (alpha 0 -> 0.15 over 3 seconds) ---
         const glow = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0xffffff)
           .setScrollFactor(0).setDepth(50).setAlpha(0);
+        cutsceneObjects.push(glow);
 
         this.tweens.add({
           targets: glow,
-          alpha: 0.1,
-          duration: 500,
-          onComplete: () => {
-            // Show the pivotal text
-            this.dialogue.show([
-              { speaker: 'Narrator', text: 'Everything changed in this moment.' },
-            ], () => {
-              // Hold for 2 seconds, then fade back
-              this.time.delayedCall(2000, () => {
-                this.tweens.add({
-                  targets: glow,
-                  alpha: 0,
-                  duration: 500,
-                  onComplete: () => {
-                    glow.destroy();
-                    this.frozen = false;
-                  },
-                });
-              });
+          alpha: 0.15,
+          duration: 3000,
+          ease: 'Sine.easeIn',
+        });
+
+        // --- TERMINAL RECTANGLE fades in after 1.5s ---
+        const termW = 360;
+        const termH = 200;
+        const termX = GAME_WIDTH / 2;
+        const termY = GAME_HEIGHT / 2 - 40;
+
+        this.time.delayedCall(1500, () => {
+          // Terminal background (dark screen)
+          const termBg = this.add.rectangle(termX, termY, termW, termH, 0x0a0a0a, 0.95)
+            .setScrollFactor(0).setDepth(51).setAlpha(0).setStrokeStyle(2, 0x333333);
+          cutsceneObjects.push(termBg);
+
+          // Terminal bezel/frame
+          const termFrame = this.add.rectangle(termX, termY, termW + 16, termH + 16, 0x222222, 0.9)
+            .setScrollFactor(0).setDepth(50.5).setAlpha(0);
+          cutsceneObjects.push(termFrame);
+
+          // Fade in terminal
+          this.tweens.add({
+            targets: [termFrame, termBg],
+            alpha: { value: 1, duration: 1000, ease: 'Sine.easeIn' },
+          });
+
+          // --- TYPE OUT "ChatGPT" letter by letter after terminal fades in ---
+          this.time.delayedCall(1200, () => {
+            const searchPrefix = '> ';
+            const searchWord = 'ChatGPT';
+            const typedText = this.add.text(termX - termW / 2 + 30, termY - 20, searchPrefix, {
+              fontFamily: '"Press Start 2P", monospace',
+              fontSize: '16px',
+              color: '#33ff33',
+            }).setScrollFactor(0).setDepth(52).setAlpha(1);
+            cutsceneObjects.push(typedText);
+
+            // Blinking cursor
+            const cursor = this.add.text(
+              typedText.x + typedText.width + 4, termY - 20, '_', {
+                fontFamily: '"Press Start 2P", monospace',
+                fontSize: '16px',
+                color: '#33ff33',
+              }).setScrollFactor(0).setDepth(52);
+            cutsceneObjects.push(cursor);
+
+            // Blink cursor
+            this.tweens.add({
+              targets: cursor,
+              alpha: 0,
+              duration: 400,
+              yoyo: true,
+              repeat: -1,
             });
-          },
+
+            let charIndex = 0;
+            const typeTimer = this.time.addEvent({
+              delay: 200,
+              callback: () => {
+                if (charIndex < searchWord.length) {
+                  typedText.setText(searchPrefix + searchWord.substring(0, charIndex + 1));
+                  cursor.x = typedText.x + typedText.width + 4;
+                  charIndex++;
+                }
+
+                // After typing is done, move to revelation
+                if (charIndex >= searchWord.length) {
+                  typeTimer.destroy();
+
+                  // Brief pause, then revelation text
+                  this.time.delayedCall(1000, () => {
+                    // Hide cursor
+                    cursor.setAlpha(0);
+
+                    // --- REVELATION TEXT: "Everything changed in this moment." ---
+                    const revelationText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 80, 'Everything changed in this moment.', {
+                      fontFamily: '"Press Start 2P", monospace',
+                      fontSize: '18px',
+                      color: '#ffffff',
+                    }).setOrigin(0.5).setScrollFactor(0).setDepth(52).setAlpha(0);
+                    cutsceneObjects.push(revelationText);
+
+                    this.tweens.add({
+                      targets: revelationText,
+                      alpha: 1,
+                      duration: 800,
+                      ease: 'Sine.easeIn',
+                    });
+
+                    // Hold for 3 seconds, then show the progression
+                    this.time.delayedCall(3000, () => {
+                      // Fade out revelation text
+                      this.tweens.add({
+                        targets: revelationText,
+                        alpha: 0,
+                        duration: 600,
+                      });
+
+                      // --- "Wix. Webflow. Then Claude." — each word with a pause ---
+                      const progressionWords = ['Wix.', 'Webflow.', 'Then Claude.'];
+                      const wordY = GAME_HEIGHT / 2 + 80;
+
+                      let totalDelay = 800; // start after revelation fades
+                      const wordTexts: Phaser.GameObjects.Text[] = [];
+
+                      for (let wi = 0; wi < progressionWords.length; wi++) {
+                        const wordDelay = totalDelay;
+                        this.time.delayedCall(wordDelay, () => {
+                          // Fade out previous word
+                          if (wordTexts.length > 0) {
+                            const prev = wordTexts[wordTexts.length - 1];
+                            this.tweens.add({ targets: prev, alpha: 0, duration: 400 });
+                          }
+
+                          const wordText = this.add.text(GAME_WIDTH / 2, wordY, progressionWords[wi], {
+                            fontFamily: '"Press Start 2P", monospace',
+                            fontSize: wi === 2 ? '20px' : '16px',
+                            color: wi === 2 ? '#66ffcc' : '#cccccc',
+                          }).setOrigin(0.5).setScrollFactor(0).setDepth(52).setAlpha(0);
+                          cutsceneObjects.push(wordText);
+                          wordTexts.push(wordText);
+
+                          this.tweens.add({
+                            targets: wordText,
+                            alpha: 1,
+                            duration: 500,
+                            ease: 'Sine.easeIn',
+                          });
+                        });
+
+                        totalDelay += 1800; // 1.8s between each word
+                      }
+
+                      // After all words shown, fade everything and end (~12s total)
+                      this.time.delayedCall(totalDelay + 1500, () => {
+                        // Fade out everything
+                        this.tweens.add({
+                          targets: glow,
+                          alpha: 0,
+                          duration: 1500,
+                          ease: 'Sine.easeOut',
+                        });
+
+                        for (const obj of cutsceneObjects) {
+                          if (obj && obj.active && obj !== glow) {
+                            this.tweens.add({
+                              targets: obj,
+                              alpha: 0,
+                              duration: 1000,
+                            });
+                          }
+                        }
+
+                        this.time.delayedCall(1600, () => {
+                          // Destroy all cutscene objects
+                          for (const obj of cutsceneObjects) {
+                            if (obj && obj.active) obj.destroy();
+                          }
+                          this.frozen = false;
+                        });
+                      });
+                    });
+                  });
+                }
+              },
+              loop: true,
+            });
+          });
         });
       },
     });
