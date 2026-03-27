@@ -263,16 +263,16 @@ function drawPlayerFrame32(
   px(g, ox + 11, 12, skinS, 10, 1);
 
   if (direction === 'down') {
-    px(g, ox + 10, 6, eyebrow, 4, 1);
-    px(g, ox + 18, 6, eyebrow, 4, 1);
+    px(g, ox + 10, 5, eyebrow, 4, 1);  // Eyebrows raised 1px — relaxed, not angry
+    px(g, ox + 18, 5, eyebrow, 4, 1);
     px(g, ox + 10, 7, eyeWhite, 4, 2);
     px(g, ox + 18, 7, eyeWhite, 4, 2);
     px(g, ox + 12, 7, eyeBlack, 2, 2);
     px(g, ox + 20, 7, eyeBlack, 2, 2);
     px(g, ox + 15, 9, noseShadow, 2, 1);
-    px(g, ox + 13, 10, mouth, 6, 1); // Wider smile
-    px(g, ox + 12, 11, mouth, 1, 1); // Smile curve left
-    px(g, ox + 19, 11, mouth, 1, 1); // Smile curve right
+    px(g, ox + 13, 10, mouth, 6, 1); // Smile
+    px(g, ox + 12, 10, mouth, 1, 1); // Smile wider left
+    px(g, ox + 19, 10, mouth, 1, 1); // Smile wider right
     px(g, ox + 7, 7, skin, 1, 2);
     px(g, ox + 24, 7, skin, 1, 2);
     px(g, ox + 7, 8, skinS, 1, 1);
