@@ -162,7 +162,7 @@ export const homeMap: MapData = {
     { id: 'ch0_poster',        x: 6,  y: 4,  type: 'examine', glow: true, sprite: 'item-poster' },      // poster on back wall (visible)
     { id: 'ch0_hidden_stash',  x: 9,  y: 7,  type: 'examine', glow: true, sprite: 'item-weed-bag' },     // behind desk — bag of weed
     { id: 'ch0_journal',       x: 7,  y: 8,  type: 'examine', glow: true, sprite: 'item-book' },        // journal near door
-    { id: 'ch0_crypto',        x: 4,  y: 8,  type: 'examine', glow: true, sprite: 'item-phone' },       // phone on floor by bed
+    { id: 'ch0_crypto',        x: 8,  y: 4,  type: 'examine', glow: true, sprite: 'item-phone' },       // phone on nightstand — Coinbase open
     // Sister's Room (cols 11-15, rows 4-8) — pink girly room
     { id: 'ch0_sister_bed',    x: 12, y: 4,  type: 'examine', glow: true, sprite: 'item-bed-pink' },
     { id: 'ch0_sister_toys',   x: 14, y: 5,  type: 'examine', glow: true },
@@ -201,7 +201,7 @@ export const homeMap: MapData = {
     // Dynamic interactables (added by scene events)
     { id: 'ch0_rooftop',       x: 3,  y: 15, type: 'examine', glow: true },
     { id: 'ch0_record_player', x: 33, y: 17, type: 'examine', glow: true },
-    { id: 'ch0_shoebox',       x: 5,  y: 8,  type: 'examine', glow: true },
+    { id: 'ch0_shoebox',       x: 4,  y: 5,  type: 'examine', glow: true },
     { id: 'ch0_tv_sitdown',    x: 5,  y: 13, type: 'examine', glow: true, sprite: 'item-couch' },
 
     // Windows (exterior facing)

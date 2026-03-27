@@ -1406,12 +1406,14 @@ export class HomeScene extends BaseChapterScene {
     };
 
     // Wire up app clicks
-    appButtons[0].on('pointerdown', () => showAppWindow('Safari — Crypto Portfolio', [
-      { speaker: 'Coinbase', text: 'Portfolio: -42.3% this month' },
-      { text: 'BTC: $28,400  (-8.2%)' },
-      { text: 'ETH: $1,830   (-12.1%)' },
-      { text: 'DOGE: $0.07   (-34.5%)' },
-      { speaker: 'JP\'s Mind', text: 'Pops would kill me if he knew how much I put in.' },
+    appButtons[0].on('pointerdown', () => showAppWindow('Safari — Coinbase', [
+      { speaker: 'Coinbase', text: 'Portfolio: $5,000 → $7,200  (+44%)' },
+      { text: 'BTC: $40,000   (+18%)' },
+      { text: 'ETH: $2,800    (+32%)' },
+      { text: 'SOL: $38.50    (+54%)' },
+      { text: 'LUNA: $5.20    (+12%)' },
+      { speaker: 'JP\'s Mind', text: '5K turned into 7 already. This is just the beginning.' },
+      { speaker: 'JP\'s Mind', text: 'Pops would kill me if he knew.' },
     ]));
 
     appButtons[1].on('pointerdown', () => showAppWindow('Mail — Inbox (3)', [

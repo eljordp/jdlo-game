@@ -1057,8 +1057,8 @@ const ch0Extras: Record<string, DialogueLine[]> = {
     { speaker: 'Narrator', text: 'Half-finished projects everywhere. This kid is trying everything.' },
   ],
   ch0_crypto: [
-    { speaker: 'Narrator', text: 'Bitcoin at $40K. JP bought in at $35K.' },
-    { speaker: 'Narrator', text: 'Not life-changing money, but proof he\'s paying attention to where the world is going.' },
+    { speaker: 'Narrator', text: 'JP\'s phone. Coinbase notification: "BTC up 4% today."' },
+    { speaker: 'JP\'s Mind', text: 'Check the computer for the full portfolio.' },
   ],
   ch0_college: [
     { speaker: 'Narrator', text: 'Oregon. Hawaii. Arizona State. All accepted. All collecting dust.' },
