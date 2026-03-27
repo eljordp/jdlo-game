@@ -2621,103 +2621,118 @@ function generateTiles(scene: Phaser.Scene) {
 
   // -- Tree (32x32) --
   makeTexture(scene, 'tile-tree', S, S, (g) => {
-    // Shadow underneath
-    px(g, 6, 28, 0x2a5020, 20, 3);
-    px(g, 8, 31, 0x2a5020, 16, 1);
+    // Ground shadow (ellipse shape)
+    px(g, 8, 28, 0x2a5020, 16, 2);
+    px(g, 10, 30, 0x2a5020, 12, 2);
 
-    // Trunk with bark texture
-    px(g, 13, 20, COLORS.treeTrunk, 6, 12);
-    px(g, 14, 20, 0x7a6040, 4, 12); // lighter bark center
-    // Bark lines
-    px(g, 13, 22, 0x5a4020, 6, 1);
-    px(g, 13, 25, 0x5a4020, 6, 1);
-    px(g, 13, 28, 0x5a4020, 6, 1);
-    // Bark highlights
-    px(g, 15, 21, 0x8a7050, 2, 1);
-    px(g, 15, 24, 0x8a7050, 2, 1);
-    px(g, 15, 27, 0x8a7050, 1, 1);
+    // Trunk — tapered, with bark detail
+    px(g, 14, 18, 0x6a5030, 4, 14); // main trunk
+    px(g, 15, 18, 0x7a6040, 2, 14); // bark highlight center
+    px(g, 13, 22, 0x5a4020, 1, 6);  // left bark shadow
+    px(g, 18, 22, 0x5a4020, 1, 6);  // right bark shadow
+    // Bark texture lines
+    px(g, 14, 21, 0x5a4020, 4, 1);
+    px(g, 15, 24, 0x5a4020, 2, 1);
+    px(g, 14, 27, 0x5a4020, 4, 1);
+    // Root flare
+    px(g, 12, 30, 0x6a5030, 2, 2);
+    px(g, 18, 30, 0x6a5030, 2, 2);
 
-    // Leafy canopy — rounded shape (multiple green shades)
-    g.fillStyle(COLORS.treeGreen);
-    g.fillRect(5, 4, 22, 14);
-    g.fillRect(3, 6, 26, 10);
-    g.fillRect(7, 2, 18, 2);
-    g.fillRect(9, 1, 14, 2);
+    // Canopy — built up in layers for round shape with depth
+    // Deep shadow layer (bottom of canopy)
+    px(g, 7, 16, 0x1a6020, 18, 3);
+    px(g, 5, 15, 0x1a6020, 22, 2);
 
-    // Leaf clusters (lighter green patches)
-    px(g, 8, 4, 0x40a040, 6, 4);
-    px(g, 18, 3, 0x40a040, 5, 3);
-    px(g, 10, 10, 0x40a040, 4, 3);
-    px(g, 22, 8, 0x40a040, 4, 3);
-    px(g, 6, 7, 0x38a038, 3, 3);
+    // Main canopy (dark green base)
+    px(g, 9, 5, 0x287028, 14, 2);   // very top
+    px(g, 7, 7, 0x287028, 18, 2);   // upper
+    px(g, 5, 9, 0x2a7a2a, 22, 2);   // upper-mid
+    px(g, 4, 11, 0x2a7a2a, 24, 2);  // mid
+    px(g, 4, 13, 0x287028, 24, 2);  // lower-mid
+    px(g, 6, 15, 0x206020, 20, 2);  // lower
 
-    // Dark shading (bottom of canopy)
-    g.fillStyle(COLORS.treeDark);
-    g.fillRect(5, 14, 22, 4);
-    g.fillRect(3, 12, 2, 4);
-    g.fillRect(27, 12, 2, 4);
+    // Light canopy patches (sun-facing top)
+    px(g, 10, 5, 0x40a040, 6, 2);
+    px(g, 14, 4, 0x48b048, 4, 1);   // bright top center
+    px(g, 8, 8, 0x38a038, 5, 2);    // upper left light
+    px(g, 19, 7, 0x38a038, 4, 2);   // upper right light
+    px(g, 12, 10, 0x40a040, 6, 2);  // center light
+    px(g, 7, 12, 0x38a038, 4, 2);   // left light
+    px(g, 21, 11, 0x38a038, 3, 2);  // right light
 
-    // Individual leaf highlight dots
-    px(g, 12, 3, 0x50b850, 2, 1);
-    px(g, 20, 5, 0x50b850, 2, 1);
-    px(g, 8, 8, 0x50b850, 1, 1);
-    px(g, 24, 10, 0x50b850, 1, 1);
-    px(g, 14, 6, 0x50b850, 1, 1);
+    // Highlight dots (leaf tips catching light)
+    px(g, 12, 5, 0x50c050, 2, 1);
+    px(g, 16, 4, 0x50c050, 1, 1);
+    px(g, 9, 8, 0x50c050, 1, 1);
+    px(g, 22, 9, 0x50c050, 1, 1);
+    px(g, 14, 11, 0x50c050, 2, 1);
+    px(g, 8, 13, 0x50c050, 1, 1);
+
+    // Dark gaps (depth between leaf clusters)
+    px(g, 11, 7, 0x1a5818, 1, 1);
+    px(g, 18, 9, 0x1a5818, 1, 1);
+    px(g, 13, 12, 0x1a5818, 1, 1);
+    px(g, 23, 13, 0x1a5818, 1, 1);
+    px(g, 7, 10, 0x1a5818, 1, 1);
   });
 
   // -- Palm Tree (32x32) --
   makeTexture(scene, 'tile-palm', S, S, (g) => {
-    // Shadow
-    px(g, 10, 30, 0x2a5020, 14, 2);
+    // Ground shadow
+    px(g, 10, 30, 0x2a5020, 12, 2);
 
-    // Curved trunk with ring texture
-    px(g, 14, 14, 0x907050, 4, 18);
-    px(g, 15, 13, 0x907050, 4, 1);
-    px(g, 16, 12, 0xa08060, 3, 1);
-    // Ring marks on trunk
-    px(g, 14, 16, 0x806040, 4, 1);
-    px(g, 14, 19, 0x806040, 4, 1);
-    px(g, 14, 22, 0x806040, 4, 1);
-    px(g, 14, 25, 0x806040, 4, 1);
-    px(g, 14, 28, 0x806040, 4, 1);
-    // Trunk highlight
-    px(g, 16, 15, 0xa08868, 1, 16);
+    // Curved trunk — slight lean for natural feel
+    px(g, 15, 14, 0x907050, 3, 18); // main trunk
+    px(g, 14, 16, 0x907050, 1, 14); // left edge
+    px(g, 18, 16, 0x907050, 1, 12); // right edge
+    px(g, 16, 14, 0xa08868, 1, 16); // highlight stripe
+    // Ring marks (coconut palm texture)
+    px(g, 14, 17, 0x706040, 5, 1);
+    px(g, 14, 20, 0x706040, 5, 1);
+    px(g, 14, 23, 0x706040, 5, 1);
+    px(g, 14, 26, 0x706040, 5, 1);
+    px(g, 15, 29, 0x706040, 3, 1);
 
-    // Fronds spreading out
-    // Left frond
-    px(g, 2, 5, 0x30a030, 14, 1);
-    px(g, 0, 6, 0x30a030, 12, 1);
-    px(g, 0, 7, 0x30a030, 10, 1);
-    px(g, 0, 8, 0x209020, 7, 1);
-    px(g, 0, 9, 0x209020, 4, 1);
-    // Right frond
-    px(g, 18, 4, 0x30a030, 12, 1);
-    px(g, 20, 5, 0x30a030, 12, 1);
-    px(g, 22, 6, 0x30a030, 10, 1);
-    px(g, 24, 7, 0x209020, 8, 1);
-    px(g, 26, 8, 0x209020, 4, 1);
-    // Top frond
-    px(g, 10, 1, 0x30a030, 12, 1);
-    px(g, 12, 0, 0x40b040, 8, 1);
-    px(g, 8, 2, 0x30a030, 16, 1);
-    // Down-hanging frond
-    px(g, 4, 10, 0x209020, 8, 1);
-    px(g, 2, 11, 0x209020, 6, 1);
-    px(g, 20, 9, 0x209020, 8, 1);
-    px(g, 24, 10, 0x209020, 6, 1);
+    // Coconut cluster at top
+    px(g, 14, 12, 0x8a6a30, 3, 2);
+    px(g, 15, 11, 0x7a5a28, 1, 1);
 
-    // Center bright leaves
-    px(g, 14, 4, 0x50c050, 4, 4);
-    px(g, 12, 5, 0x40b040, 2, 2);
-    px(g, 18, 5, 0x40b040, 2, 2);
+    // Fronds — spread outward from center, each is a thin tapered line
+    // Left frond (drooping)
+    px(g, 4, 4, 0x30a030, 10, 1);
+    px(g, 2, 5, 0x28902a, 9, 1);
+    px(g, 1, 6, 0x28902a, 7, 1);
+    px(g, 0, 7, 0x208020, 5, 1);
+    px(g, 0, 8, 0x208020, 3, 1);
 
-    // Coconut cluster
-    px(g, 12, 8, 0x805020, 3, 3);
-    px(g, 17, 9, 0x906030, 3, 2);
-    px(g, 13, 10, 0x704018, 2, 2);
-    // Coconut highlights
-    px(g, 12, 8, 0x906830, 1, 1);
-    px(g, 17, 9, 0xa07038, 1, 1);
+    // Right frond (drooping)
+    px(g, 18, 3, 0x30a030, 10, 1);
+    px(g, 20, 4, 0x28902a, 10, 1);
+    px(g, 23, 5, 0x28902a, 7, 1);
+    px(g, 25, 6, 0x208020, 5, 1);
+    px(g, 27, 7, 0x208020, 3, 1);
+
+    // Top frond (upward)
+    px(g, 13, 1, 0x38b038, 6, 1);
+    px(g, 12, 2, 0x30a030, 8, 1);
+    px(g, 10, 3, 0x30a030, 12, 1);
+    px(g, 9, 4, 0x28902a, 4, 1);
+    px(g, 19, 4, 0x28902a, 4, 1);
+
+    // Back-left frond
+    px(g, 6, 2, 0x28902a, 8, 1);
+    px(g, 3, 3, 0x208020, 6, 1);
+    px(g, 1, 4, 0x208020, 3, 1);
+
+    // Back-right frond
+    px(g, 18, 1, 0x28902a, 8, 1);
+    px(g, 22, 2, 0x208020, 7, 1);
+    px(g, 26, 3, 0x208020, 4, 1);
+
+    // Frond highlight tips
+    px(g, 14, 0, 0x48c048, 4, 1);
+    px(g, 5, 4, 0x48c048, 2, 1);
+    px(g, 25, 3, 0x48c048, 2, 1);
   });
 
   // -- Vine / Vineyard Trellis Row (32x32) --
@@ -3399,10 +3414,10 @@ function generateBMW(scene: Phaser.Scene) {
 }
 
 // ─── CORVETTE C8 ──────────────────────────────────────────────────────
-// 48x32 top-down sprite — white/silver C8 Stingray, mid-engine, aggressive
+// 64x32 top-down sprite — white/pearl C8 Stingray, mid-engine supercar
 function generateCorvetteC8(scene: Phaser.Scene) {
   if (scene.textures.exists('car-corvette-c8')) return;
-  const w = 48;
+  const w = 64;
   const h = 32;
   const canvas = document.createElement('canvas');
   canvas.width = w;
@@ -3413,154 +3428,208 @@ function generateCorvetteC8(scene: Phaser.Scene) {
   const bodyMain = '#e0e0e8';
   const bodyShadow = '#c8c8d0';
   const bodyHighlight = '#f0f0f8';
+  const bodyPearl = '#e8e0f0';
   const black = '#1a1a1e';
-  const darkGrey = '#303038';
   const windowTint = '#101828';
   const windowShine = '#1a2848';
   const chrome = '#a0a0b0';
   const headlight = '#d0e8ff';
   const headlightBlue = '#80b0ff';
+  const headlightWhite = '#f0f8ff';
   const taillight = '#ff2020';
   const taillightDark = '#a01010';
+  const taillightBright = '#ff4040';
   const tire = '#181818';
+  const tireSide = '#222228';
   const rim = '#808088';
-  const rimHighlight = '#a0a0a8';
+  const rimHighlight = '#b0b0b8';
+  const rimCenter = '#606068';
   const exhaust = '#505058';
+  const exhaustDark = '#303038';
   const diffuser = '#0a0a0e';
   const scoopDark = '#404048';
+  const carbonFiber = '#1a1a20';
 
   // === BODY SHELL (top-down, facing right) ===
-  // C8 is very low and wide with wedge proportions
-  // Main body — wider than BMW, more aggressive shape
+  // C8 mid-engine: short front overhang, long rear, massive haunches
+
+  // Main body block
   g.fillStyle = bodyMain;
-  g.fillRect(4, 6, 40, 20);   // main body
+  g.fillRect(6, 7, 52, 18);   // core body
 
-  // Wider rear haunches (C8 has huge rear fenders)
-  g.fillRect(4, 5, 16, 1);    // rear top widening
-  g.fillRect(4, 26, 16, 1);   // rear bottom widening
-  g.fillRect(6, 4, 12, 1);    // even wider rear
-  g.fillRect(6, 27, 12, 1);
-
-  // Front is narrower (mid-engine = short front)
+  // Rear haunches — C8 signature wide hips
   g.fillStyle = bodyMain;
-  g.fillRect(42, 8, 4, 16);   // front nose
-  g.fillRect(44, 9, 2, 14);   // front tip narrower
+  g.fillRect(6, 5, 22, 2);    // rear top haunch
+  g.fillRect(6, 25, 22, 2);   // rear bottom haunch
+  g.fillRect(8, 4, 18, 1);    // wider rear top
+  g.fillRect(8, 27, 18, 1);   // wider rear bottom
 
-  // Rear section (left side, wider)
+  // Front section — narrower, wedge nose
   g.fillStyle = bodyMain;
-  g.fillRect(1, 8, 4, 16);    // rear overhang
-  g.fillRect(2, 7, 3, 18);    // rear width
+  g.fillRect(56, 9, 6, 14);   // front nose
+  g.fillRect(58, 10, 4, 12);  // narrower nose tip
+  g.fillRect(60, 11, 3, 10);  // pointed tip
 
-  // === BODY SHADING ===
+  // Rear overhang
+  g.fillStyle = bodyMain;
+  g.fillRect(2, 9, 5, 14);    // rear end
+  g.fillRect(3, 8, 4, 16);    // rear width
+
+  // === BODY SHADING + PEARL EFFECT ===
   g.fillStyle = bodyShadow;
-  g.fillRect(4, 24, 38, 2);   // bottom shadow line
-  g.fillRect(4, 6, 38, 1);    // top shadow line
-  g.fillRect(4, 10, 1, 12);   // rear side shadow
+  g.fillRect(6, 24, 50, 1);   // lower body shadow
+  g.fillRect(6, 7, 50, 1);    // upper body shadow
+  g.fillRect(6, 12, 1, 8);    // rear side shadow
 
   g.fillStyle = bodyHighlight;
-  g.fillRect(10, 7, 28, 1);   // top highlight streak
-  g.fillRect(10, 24, 28, 1);  // bottom highlight streak
-  g.fillRect(20, 8, 14, 1);   // center spine highlight
+  g.fillRect(14, 8, 36, 1);   // top highlight streak
+  g.fillRect(14, 23, 36, 1);  // bottom highlight streak
 
-  // === SIDE SCOOPS (C8 signature — behind doors) ===
+  // Pearl shimmer on upper body
+  g.fillStyle = bodyPearl;
+  g.fillRect(20, 9, 20, 1);   // pearl accent top
+  g.fillRect(20, 22, 20, 1);  // pearl accent bottom
+
+  // Center spine (prominent on C8)
+  g.fillStyle = bodyShadow;
+  g.fillRect(24, 15, 22, 2);  // center spine line
+  g.fillStyle = bodyHighlight;
+  g.fillRect(26, 15, 18, 1);  // spine highlight
+
+  // === SIDE AIR INTAKES (C8 signature — behind doors) ===
   g.fillStyle = scoopDark;
-  g.fillRect(17, 6, 4, 2);    // top side scoop
-  g.fillRect(17, 24, 4, 2);   // bottom side scoop
+  g.fillRect(24, 6, 5, 2);    // top side scoop
+  g.fillRect(24, 24, 5, 2);   // bottom side scoop
   g.fillStyle = black;
-  g.fillRect(18, 6, 2, 1);    // scoop intake dark
-  g.fillRect(18, 25, 2, 1);
+  g.fillRect(25, 6, 3, 1);    // scoop intake dark
+  g.fillRect(25, 25, 3, 1);
+  g.fillStyle = carbonFiber;
+  g.fillRect(24, 7, 5, 1);    // carbon fiber trim
+  g.fillRect(24, 24, 5, 1);
 
-  // === ROOF / WINDOWS (targa-style, black A-pillars) ===
+  // === ENGINE COVER (visible vents behind cabin) ===
+  g.fillStyle = scoopDark;
+  g.fillRect(10, 10, 8, 12);  // engine bay area
+  g.fillStyle = '#353540';
+  g.fillRect(11, 11, 6, 2);   // vent slat 1
+  g.fillRect(11, 14, 6, 2);   // vent slat 2
+  g.fillRect(11, 17, 6, 2);   // vent slat 3
+  g.fillRect(11, 20, 6, 2);   // vent slat 4
+
+  // === WINDOWS (targa-style, mid-engine cab-forward) ===
   g.fillStyle = windowTint;
-  g.fillRect(24, 10, 14, 12); // window area (pushed forward — mid-engine)
+  g.fillRect(32, 10, 18, 12); // window area (pushed forward)
   g.fillStyle = windowShine;
-  g.fillRect(25, 11, 6, 1);   // windshield glare
-  g.fillRect(25, 14, 4, 1);   // side window glare
+  g.fillRect(33, 11, 8, 1);   // windshield glare top
+  g.fillRect(33, 15, 5, 1);   // side window glare
+  g.fillRect(42, 12, 6, 1);   // front windshield glare
 
-  // Black A-pillars (targa top look)
+  // A-pillars and targa bar
   g.fillStyle = black;
-  g.fillRect(23, 10, 1, 12);  // rear window pillar
-  g.fillRect(30, 10, 1, 12);  // B-pillar
-  g.fillRect(38, 10, 1, 12);  // A-pillar (front)
-  // Targa bar across top
-  g.fillRect(28, 10, 3, 1);
-  g.fillRect(28, 21, 3, 1);
+  g.fillRect(31, 10, 1, 12);  // rear window pillar
+  g.fillRect(39, 10, 1, 12);  // B-pillar
+  g.fillRect(50, 10, 1, 12);  // A-pillar (front)
+  g.fillRect(36, 10, 4, 1);   // targa bar top
+  g.fillRect(36, 21, 4, 1);   // targa bar bottom
 
-  // === HEADLIGHTS (thin LED strip style — C8 signature) ===
+  // === HEADLIGHTS (angular LED strips — C8 signature) ===
+  g.fillStyle = headlightWhite;
+  g.fillRect(59, 10, 3, 1);   // top LED strip
+  g.fillRect(59, 21, 3, 1);   // bottom LED strip
   g.fillStyle = headlight;
-  g.fillRect(44, 9, 2, 1);    // top LED strip thin
-  g.fillRect(44, 22, 2, 1);   // bottom LED strip thin
+  g.fillRect(60, 11, 2, 2);   // top headlight body
+  g.fillRect(60, 19, 2, 2);   // bottom headlight body
   g.fillStyle = headlightBlue;
-  g.fillRect(45, 10, 1, 2);   // blue accent top
-  g.fillRect(45, 20, 1, 2);   // blue accent bottom
-  // DRL line extending back
+  g.fillRect(61, 11, 1, 1);   // blue DRL accent top
+  g.fillRect(61, 20, 1, 1);   // blue DRL accent bottom
+  // DRL lines running back
   g.fillStyle = headlight;
-  g.fillRect(42, 8, 4, 1);    // top DRL
-  g.fillRect(42, 23, 4, 1);   // bottom DRL
+  g.fillRect(56, 9, 6, 1);    // top DRL line
+  g.fillRect(56, 22, 6, 1);   // bottom DRL line
 
   // === REAR — wide taillights + quad exhaust + diffuser ===
+  // Taillights (thin horizontal bands — C8 style)
   g.fillStyle = taillight;
-  g.fillRect(2, 7, 2, 4);     // top taillight
-  g.fillRect(2, 21, 2, 4);    // bottom taillight
+  g.fillRect(3, 8, 3, 4);     // top taillight
+  g.fillRect(3, 20, 3, 4);    // bottom taillight
+  g.fillStyle = taillightBright;
+  g.fillRect(4, 9, 2, 2);     // bright center top
+  g.fillRect(4, 21, 2, 2);    // bright center bottom
   g.fillStyle = taillightDark;
-  g.fillRect(2, 8, 1, 2);     // taillight depth
-  g.fillRect(2, 22, 1, 2);
+  g.fillRect(3, 10, 1, 2);    // taillight depth top
+  g.fillRect(3, 22, 1, 2);    // taillight depth bottom
 
-  // Black rear diffuser (big on C8)
+  // Black rear diffuser
   g.fillStyle = diffuser;
-  g.fillRect(1, 12, 3, 8);    // center diffuser
-  g.fillRect(0, 13, 2, 6);    // deep diffuser
+  g.fillRect(1, 13, 4, 6);    // center diffuser
+  g.fillStyle = carbonFiber;
+  g.fillRect(0, 14, 2, 4);    // deep diffuser carbon
 
-  // Quad exhaust tips (center-exit on C8)
+  // Quad exhaust tips (center-exit)
   g.fillStyle = chrome;
-  g.fillRect(0, 11, 2, 2);    // top-left exhaust
-  g.fillRect(0, 13, 2, 2);    // top-right exhaust
-  g.fillRect(0, 19, 2, 2);    // bottom-left exhaust
-  g.fillRect(0, 21, 2, 2);    // bottom-right exhaust
-  g.fillStyle = exhaust;
-  g.fillRect(0, 12, 1, 1);    // exhaust openings
-  g.fillRect(0, 14, 1, 1);
-  g.fillRect(0, 20, 1, 1);
-  g.fillRect(0, 22, 1, 1);
+  g.fillRect(0, 12, 2, 2);    // top-outer exhaust
+  g.fillRect(0, 14, 2, 2);    // top-inner exhaust
+  g.fillRect(0, 18, 2, 2);    // bottom-inner exhaust
+  g.fillRect(0, 20, 2, 2);    // bottom-outer exhaust
+  g.fillStyle = exhaustDark;
+  g.fillRect(0, 13, 1, 1);    // exhaust hole
+  g.fillRect(0, 15, 1, 1);
+  g.fillRect(0, 19, 1, 1);
+  g.fillRect(0, 21, 1, 1);
 
   // === TIRES + RIMS ===
-  // Front tires (narrower)
+  // Front tires (narrower — 245s)
   g.fillStyle = tire;
-  g.fillRect(36, 5, 6, 3);    // front-top tire
-  g.fillRect(36, 24, 6, 3);   // front-bottom tire
+  g.fillRect(48, 5, 8, 4);    // front-top tire
+  g.fillRect(48, 23, 8, 4);   // front-bottom tire
+  g.fillStyle = tireSide;
+  g.fillRect(49, 5, 6, 1);    // tire sidewall top
+  g.fillRect(49, 26, 6, 1);   // tire sidewall bottom
   g.fillStyle = rim;
-  g.fillRect(38, 5, 2, 3);    // front-top rim
-  g.fillRect(38, 24, 2, 3);   // front-bottom rim
+  g.fillRect(50, 6, 4, 3);    // front-top rim
+  g.fillRect(50, 23, 4, 3);   // front-bottom rim
   g.fillStyle = rimHighlight;
-  g.fillRect(39, 6, 1, 1);    // rim shine
-  g.fillRect(39, 25, 1, 1);
+  g.fillRect(51, 7, 2, 1);    // rim shine top
+  g.fillRect(51, 24, 2, 1);   // rim shine bottom
+  g.fillStyle = rimCenter;
+  g.fillRect(52, 6, 1, 1);    // lug nut hint
+  g.fillRect(52, 25, 1, 1);
 
-  // Rear tires (much wider — C8 has 345s in the back)
+  // Rear tires (much wider — 345s, massive)
   g.fillStyle = tire;
-  g.fillRect(5, 3, 8, 4);     // rear-top tire (wider)
-  g.fillRect(5, 25, 8, 4);    // rear-bottom tire (wider)
+  g.fillRect(7, 2, 10, 5);    // rear-top tire
+  g.fillRect(7, 25, 10, 5);   // rear-bottom tire
+  g.fillStyle = tireSide;
+  g.fillRect(8, 2, 8, 1);     // tire sidewall
+  g.fillRect(8, 29, 8, 1);
   g.fillStyle = rim;
-  g.fillRect(7, 3, 4, 4);     // rear-top rim
-  g.fillRect(7, 25, 4, 4);    // rear-bottom rim
+  g.fillRect(9, 3, 6, 4);     // rear-top rim
+  g.fillRect(9, 25, 6, 4);    // rear-bottom rim
   g.fillStyle = rimHighlight;
-  g.fillRect(8, 4, 2, 2);     // rear rim shine
-  g.fillRect(8, 26, 2, 2);
+  g.fillRect(10, 4, 4, 2);    // rear rim shine top
+  g.fillRect(10, 26, 4, 2);   // rear rim shine bottom
+  g.fillStyle = rimCenter;
+  g.fillRect(12, 4, 1, 1);    // lug nut
+  g.fillRect(12, 27, 1, 1);
 
   // === SIDE MIRRORS ===
   g.fillStyle = bodyMain;
-  g.fillRect(32, 5, 2, 2);    // top mirror
-  g.fillRect(32, 25, 2, 2);   // bottom mirror
+  g.fillRect(44, 5, 3, 2);    // top mirror
+  g.fillRect(44, 25, 3, 2);   // bottom mirror
   g.fillStyle = bodyShadow;
-  g.fillRect(33, 5, 1, 1);
-  g.fillRect(33, 25, 1, 1);
+  g.fillRect(45, 5, 1, 1);    // mirror shadow
+  g.fillRect(45, 26, 1, 1);
 
-  // === SUBTLE STINGRAY BADGE AREA (center rear) ===
+  // === CHROME ACCENTS ===
   g.fillStyle = chrome;
-  g.fillRect(3, 15, 1, 2);    // tiny chrome badge hint
+  g.fillRect(4, 15, 1, 2);    // rear badge
+  g.fillRect(56, 15, 1, 2);   // front badge/lip
 
-  // === CENTER SPINE (C8 has a prominent center line) ===
-  g.fillStyle = bodyShadow;
-  g.fillRect(20, 15, 16, 2);  // center spine line
+  // === FRONT SPLITTER ===
+  g.fillStyle = carbonFiber;
+  g.fillRect(58, 9, 4, 1);    // front splitter top edge
+  g.fillRect(58, 22, 4, 1);   // front splitter bottom edge
+  g.fillRect(62, 12, 1, 8);   // front lip
 
   scene.textures.addCanvas('car-corvette-c8', canvas);
 }

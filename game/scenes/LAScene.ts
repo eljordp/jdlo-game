@@ -408,24 +408,99 @@ export class LAScene extends Phaser.Scene {
           }
         }
 
-        // City lights far below through window — dense scattered lights
-        const lightColors2 = [0xf0c040, 0x40a0f0, 0xf06040, 0xf0f0f0, 0xff8040, 0x40f0c0, 0xff4060, 0xf0a0f0];
-        for (let i = 0; i < 120; i++) {
-          const lx = (winX - winW / 2 + 30) + Math.random() * (winW - 60);
-          const ly = winY + 30 + Math.random() * (winH / 2);
-          const light = this.addObj(
-            this.add.rectangle(
-              lx, ly,
-              1 + Math.random() * 3,
-              1 + Math.random() * 6,
-              lightColors2[Math.floor(Math.random() * lightColors2.length)]
-            ).setAlpha(0.15 + Math.random() * 0.5)
+        // City lights far below through window — LA downtown grid
+        // Street grid (horizontal and vertical light lines representing roads)
+        const streetColor = 0xf0a040;
+        const gridLeft = winX - winW / 2 + 30;
+        const gridRight = winX + winW / 2 - 30;
+        const gridTop = winY + winH / 4 + 20;
+        const gridBottom = winY + winH / 2 - 10;
+
+        // Horizontal streets (perspective — closer together near top, wider apart near bottom)
+        for (let sy = gridTop; sy < gridBottom; sy += 18 + (sy - gridTop) * 0.3) {
+          const streetWidth = gridRight - gridLeft - 20;
+          const street = this.addObj(
+            this.add.rectangle(winX, sy, streetWidth, 1, streetColor).setAlpha(0.08 + Math.random() * 0.06)
           );
-          // All lights twinkle at different rates
+          this.addTween({
+            targets: street,
+            alpha: 0.04,
+            duration: 2000 + Math.random() * 3000,
+            yoyo: true,
+            repeat: -1,
+            delay: Math.random() * 2000,
+          });
+        }
+
+        // Vertical streets
+        for (let sx = gridLeft + 20; sx < gridRight - 20; sx += 28 + Math.random() * 16) {
+          const streetH = gridBottom - gridTop - 10;
+          const street = this.addObj(
+            this.add.rectangle(sx, (gridTop + gridBottom) / 2, 1, streetH, streetColor).setAlpha(0.06 + Math.random() * 0.05)
+          );
+          this.addTween({
+            targets: street,
+            alpha: 0.03,
+            duration: 2500 + Math.random() * 3000,
+            yoyo: true,
+            repeat: -1,
+            delay: Math.random() * 2000,
+          });
+        }
+
+        // Small buildings far below — rectangles with lit window grids
+        const smallBuildingColors = [0x0a0a18, 0x0c0c1a, 0x0e0e1c, 0x08081a];
+        const windowColors = [0xf0c860, 0xe0b840, 0xf0d870, 0xc0e8ff, 0xf0f0f0];
+        for (let i = 0; i < 35; i++) {
+          const bx = gridLeft + 10 + Math.random() * (gridRight - gridLeft - 20);
+          const bw = 8 + Math.random() * 18;
+          const bh = 10 + Math.random() * 25;
+          const by = gridTop + 5 + Math.random() * (gridBottom - gridTop - bh);
+
+          // Building body
+          this.addObj(
+            this.add.rectangle(bx, by, bw, bh, smallBuildingColors[Math.floor(Math.random() * smallBuildingColors.length)])
+              .setAlpha(0.4 + Math.random() * 0.3)
+          );
+
+          // Window grid on each small building
+          const winSpacingX = 4;
+          const winSpacingY = 4;
+          for (let wy = by - bh / 2 + 3; wy < by + bh / 2 - 2; wy += winSpacingY) {
+            for (let wx = bx - bw / 2 + 3; wx < bx + bw / 2 - 2; wx += winSpacingX) {
+              if (Math.random() > 0.4) {
+                const wColor = windowColors[Math.floor(Math.random() * windowColors.length)];
+                const bldgWin = this.addObj(
+                  this.add.rectangle(wx, wy, 2, 2, wColor).setAlpha(0.1 + Math.random() * 0.25)
+                );
+                if (Math.random() > 0.5) {
+                  this.addTween({
+                    targets: bldgWin,
+                    alpha: Math.random() * 0.06,
+                    duration: 1000 + Math.random() * 4000,
+                    yoyo: true,
+                    repeat: -1,
+                    delay: Math.random() * 3000,
+                  });
+                }
+              }
+            }
+          }
+        }
+
+        // Scattered accent lights (car headlights, signs, etc.)
+        const accentColors = [0xff4040, 0x40ff40, 0x4080ff, 0xff8040, 0xff40ff, 0x40ffff];
+        for (let i = 0; i < 25; i++) {
+          const lx = gridLeft + 15 + Math.random() * (gridRight - gridLeft - 30);
+          const ly = gridTop + Math.random() * (gridBottom - gridTop);
+          const light = this.addObj(
+            this.add.rectangle(lx, ly, 1 + Math.random() * 2, 1, accentColors[Math.floor(Math.random() * accentColors.length)])
+              .setAlpha(0.15 + Math.random() * 0.35)
+          );
           this.addTween({
             targets: light,
-            alpha: Math.random() * 0.15,
-            duration: 600 + Math.random() * 3000,
+            alpha: Math.random() * 0.08,
+            duration: 400 + Math.random() * 2000,
             yoyo: true,
             repeat: -1,
             delay: Math.random() * 3000,
