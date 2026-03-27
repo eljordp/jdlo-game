@@ -5,6 +5,7 @@ import { beachDialogue } from '../data/story';
 import type { DialogueLine } from '../systems/DialogueSystem';
 import { SCALED_TILE, SCALE, GAME_WIDTH, GAME_HEIGHT, TILE_IDS } from '../config';
 import { Analytics } from '../systems/Analytics';
+import { MoodSystem } from '../systems/MoodSystem';
 
 export class BeachScene extends BaseChapterScene {
   private inHotTub = false;
@@ -14,6 +15,9 @@ export class BeachScene extends BaseChapterScene {
   private cooperPassedOut = false;
   private hotTubReacted = false;
   private davidPhoneDown = false;
+  private hotTubBlinker = false;
+  private bedroomStayed = false;
+  private showerBlinker = false;
 
   constructor() {
     super({ key: 'BeachScene' });
@@ -257,6 +261,62 @@ export class BeachScene extends BaseChapterScene {
       return;
     }
 
+    // Hot tub — blinker choice
+    if (interactable.id === 'ch1_hottub' && !this.hotTubBlinker) {
+      Analytics.trackInteraction(interactable.id);
+      this.frozen = true;
+      this.showYesNoChoice('Hit the blinker?', 'Yeah', 'Nah', () => {
+        this.hotTubBlinker = true;
+        MoodSystem.setMood('faded', 120);
+        this.dialogue.show([
+          { speaker: 'Nolan', text: 'Ayy pass that!' },
+          { speaker: 'Narrator', text: 'The boys pass it around. Nobody has anywhere to be.' },
+        ], () => { this.frozen = false; });
+      }, () => {
+        this.dialogue.show([
+          { speaker: 'JP', text: 'I\'m good.' },
+        ], () => { this.frozen = false; });
+      });
+      return;
+    }
+
+    // Bedroom — stay the night choice
+    if (interactable.id === 'ch1_bed' && !this.bedroomStayed) {
+      Analytics.trackInteraction(interactable.id);
+      this.frozen = true;
+      this.showYesNoChoice('Stay the night?', 'Yeah', 'Nah', () => {
+        this.bedroomStayed = true;
+        MoodSystem.setMood('tired', 120);
+        MoodSystem.changeMorale(-20);
+        this.dialogue.show([
+          { speaker: 'Narrator', text: 'JP wakes up hours later. Groggy. Not sure where he is for a second.' },
+        ], () => { this.frozen = false; });
+      }, () => {
+        this.dialogue.show([
+          { speaker: 'JP', text: 'Nah I\'m good. Early morning.' },
+        ], () => { this.frozen = false; });
+      });
+      return;
+    }
+
+    // Shower — blinker choice
+    if (interactable.id === 'ch1_shower' && !this.showerBlinker) {
+      Analytics.trackInteraction(interactable.id);
+      this.frozen = true;
+      this.showYesNoChoice('Hit it in the shower?', 'Yeah', 'Nah', () => {
+        this.showerBlinker = true;
+        MoodSystem.setMood('faded', 90);
+        this.dialogue.show([
+          { speaker: 'Narrator', text: 'Steam and smoke. JP\'s favorite combination.' },
+        ], () => { this.frozen = false; });
+      }, () => {
+        this.dialogue.show([
+          { speaker: 'Narrator', text: 'JP takes a quick shower and gets out.' },
+        ], () => { this.frozen = false; });
+      });
+      return;
+    }
+
     // BMW interaction — check if player is adjacent to the car tiles (3-5, 9)
     // We handle this via proximity in the interact handler below
     super.handleInteractable(interactable);
@@ -293,6 +353,52 @@ export class BeachScene extends BaseChapterScene {
     }
 
     super.handleInteract();
+  }
+
+  // Reusable yes/no choice UI
+  private showYesNoChoice(
+    _prompt: string,
+    yesLabel: string,
+    noLabel: string,
+    onYes: () => void,
+    onNo: () => void,
+  ) {
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+
+    const yesBg = this.add.rectangle(cx - 80, cy, 120, 40, 0x30a040)
+      .setScrollFactor(0).setDepth(200).setInteractive({ useHandCursor: true });
+    const yesText = this.add.text(cx - 80, cy, yesLabel, {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '12px', color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(201);
+
+    const noBg = this.add.rectangle(cx + 80, cy, 120, 40, 0xa03030)
+      .setScrollFactor(0).setDepth(200).setInteractive({ useHandCursor: true });
+    const noText = this.add.text(cx + 80, cy, noLabel, {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '12px', color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(201);
+
+    yesBg.on('pointerover', () => yesBg.setFillStyle(0x40c050));
+    yesBg.on('pointerout', () => yesBg.setFillStyle(0x30a040));
+    noBg.on('pointerover', () => noBg.setFillStyle(0xc04040));
+    noBg.on('pointerout', () => noBg.setFillStyle(0xa03030));
+
+    const cleanup = () => {
+      yesBg.destroy(); yesText.destroy();
+      noBg.destroy(); noText.destroy();
+      spaceKey.off('down', spaceHandler);
+      nKey.off('down', nHandler);
+    };
+
+    noBg.on('pointerdown', () => { cleanup(); onNo(); });
+    yesBg.on('pointerdown', () => { cleanup(); onYes(); });
+
+    const spaceKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    const nKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.N);
+    const spaceHandler = () => { cleanup(); onYes(); };
+    const nHandler = () => { cleanup(); onNo(); };
+    spaceKey.on('down', spaceHandler);
+    nKey.on('down', nHandler);
   }
 
   private playVolleyballMinigame() {
@@ -628,6 +734,9 @@ export class BeachScene extends BaseChapterScene {
       this.events.off('update', updateHandler);
 
       const jpWon = jpScore >= winScore;
+      if (jpWon) {
+        MoodSystem.setMood('locked_in', 45);
+      }
       title.setText(jpWon ? 'SET POINT!' : 'GAME OVER');
 
       const msg = jpWon

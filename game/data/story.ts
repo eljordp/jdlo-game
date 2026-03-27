@@ -1375,6 +1375,9 @@ const ch1Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'Unmade bed. Sheets smell like weed and cologne.' },
     { speaker: 'JP\'s Mind', text: 'Can\'t remember the last time he slept before 4 AM.' },
   ],
+  ch1_shower: [
+    { speaker: 'JP\'s Mind', text: 'Frat house shower. At least the water\'s hot.' },
+  ],
 };
 
 // ─── Chapter 2 extras ──────────────────────────────────────────────────

@@ -4,6 +4,7 @@ import { homeDialogue } from '../data/story';
 import type { DialogueLine } from '../systems/DialogueSystem';
 import { SCALED_TILE, SCALE, GAME_WIDTH, GAME_HEIGHT } from '../config';
 import { Analytics } from '../systems/Analytics';
+import { MoodSystem } from '../systems/MoodSystem';
 
 export class HomeScene extends BaseChapterScene {
   private interactionCount = 0;
@@ -20,6 +21,8 @@ export class HomeScene extends BaseChapterScene {
   private momFoodSpawned = false;
   private sisterDrawingSpawned = false;
   private popsRecordPlayed = false;
+  private stashSmoked = false;
+  private bedLocked = false;
   private nightOverlay: Phaser.GameObjects.Rectangle | null = null;
   private ivyFollowHistory: { x: number; y: number }[] = [];
 
@@ -733,8 +736,105 @@ export class HomeScene extends BaseChapterScene {
       super.handleInteractable(interactable);
       return;
     }
+    // Hidden stash — smoke choice
+    if (interactable.id === 'ch0_hidden_stash' && !this.stashSmoked) {
+      Analytics.trackInteraction(interactable.id);
+      this.frozen = true;
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'A bag tucked behind the desk. JP knows what it is.' },
+      ], () => {
+        this.showYesNoChoice('Smoke?', 'Yeah', 'Nah', () => {
+          // Yes — smoke
+          this.stashSmoked = true;
+          MoodSystem.setMood('faded', 90);
+          this.dialogue.show([
+            { speaker: 'Narrator', text: 'JP sits on the floor. Everything slows down.' },
+          ], () => { this.frozen = false; });
+        }, () => {
+          // No
+          this.dialogue.show([
+            { speaker: 'JP', text: 'Not right now.' },
+          ], () => { this.frozen = false; });
+        });
+      });
+      this.trackForPhoneCall(interactable.id);
+      return;
+    }
+
+    // Bed — lock the door choice
+    if (interactable.id === 'ch0_bed' && !this.bedLocked) {
+      Analytics.trackInteraction(interactable.id);
+      this.frozen = true;
+      const chapterDialogue = this.getChapterDialogue();
+      const bedLines = chapterDialogue.npcs['ch0_bed'] || [
+        { speaker: 'JP\'s Mind', text: 'Another night staring at the ceiling.' },
+      ];
+      this.dialogue.show(bedLines, () => {
+        this.showYesNoChoice('Lock the door?', 'Yeah', 'Nah', () => {
+          // Yes — lock door and vibe
+          this.bedLocked = true;
+          MoodSystem.setMood('faded', 60);
+          MoodSystem.changeMorale(5);
+          this.dialogue.show([
+            { speaker: 'Narrator', text: 'JP locks the door. Puts his phone on the charger. Vibes.' },
+          ], () => { this.frozen = false; });
+        }, () => {
+          // No — just close
+          this.frozen = false;
+        });
+      });
+      this.trackForPhoneCall(interactable.id);
+      return;
+    }
+
     this.trackForPhoneCall(interactable.id);
     super.handleInteractable(interactable);
+  }
+
+  // Reusable yes/no choice UI (same pattern as playGoodbyeCutscene)
+  private showYesNoChoice(
+    _prompt: string,
+    yesLabel: string,
+    noLabel: string,
+    onYes: () => void,
+    onNo: () => void,
+  ) {
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+
+    const yesBg = this.add.rectangle(cx - 80, cy, 120, 40, 0x30a040)
+      .setScrollFactor(0).setDepth(200).setInteractive({ useHandCursor: true });
+    const yesText = this.add.text(cx - 80, cy, yesLabel, {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '12px', color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(201);
+
+    const noBg = this.add.rectangle(cx + 80, cy, 120, 40, 0xa03030)
+      .setScrollFactor(0).setDepth(200).setInteractive({ useHandCursor: true });
+    const noText = this.add.text(cx + 80, cy, noLabel, {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '12px', color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(201);
+
+    yesBg.on('pointerover', () => yesBg.setFillStyle(0x40c050));
+    yesBg.on('pointerout', () => yesBg.setFillStyle(0x30a040));
+    noBg.on('pointerover', () => noBg.setFillStyle(0xc04040));
+    noBg.on('pointerout', () => noBg.setFillStyle(0xa03030));
+
+    const cleanup = () => {
+      yesBg.destroy(); yesText.destroy();
+      noBg.destroy(); noText.destroy();
+      spaceKey.off('down', spaceHandler);
+      nKey.off('down', nHandler);
+    };
+
+    noBg.on('pointerdown', () => { cleanup(); onNo(); });
+    yesBg.on('pointerdown', () => { cleanup(); onYes(); });
+
+    const spaceKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    const nKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.N);
+    const spaceHandler = () => { cleanup(); onYes(); };
+    const nHandler = () => { cleanup(); onNo(); };
+    spaceKey.on('down', spaceHandler);
+    nKey.on('down', nHandler);
   }
 
   // Override NPC dialogue to add reactive behaviors
@@ -1666,6 +1766,11 @@ export class HomeScene extends BaseChapterScene {
       instr.setText(`Total: ${totalCaught}/${totalRounds}`);
       instr.setColor('#ffffff');
 
+      // Locked in on perfect fishing
+      if (totalCaught === totalRounds) {
+        MoodSystem.setMood('locked_in', 45);
+      }
+
       this.time.delayedCall(2000, () => {
         for (const obj of objects) { if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy(); }
         this.dialogue.show([
@@ -2134,6 +2239,11 @@ export class HomeScene extends BaseChapterScene {
 
       instr.setText(`Ivy fetched ${score}/${totalRounds} balls!`);
       title.setText(score === totalRounds ? 'PERFECT!' : score > 0 ? 'GOOD GIRL IVY!' : 'NEXT TIME...');
+
+      // Locked in on perfect fetch
+      if (score === totalRounds) {
+        MoodSystem.setMood('locked_in', 45);
+      }
 
       const resultMsg = score === totalRounds
         ? 'Ivy is the happiest dog alive.'

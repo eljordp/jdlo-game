@@ -4,6 +4,7 @@ import { jailMap, MapData } from '../data/maps';
 import { jailDay1Dialogue, jailDay2Dialogue, jailDay3Dialogue } from '../data/story';
 import { GAME_WIDTH, GAME_HEIGHT } from '../config';
 import type { DialogueLine } from '../systems/DialogueSystem';
+import { MoodSystem } from '../systems/MoodSystem';
 
 export class JailScene extends BaseChapterScene {
   private currentDay = 1;
@@ -701,6 +702,11 @@ export class JailScene extends BaseChapterScene {
 
           // Track pushup outcome for reactive NPC dialogue
           if (diff > 10) this.pushupDominated = true;
+
+          // Locked in on pushup win
+          if (diff > 0) {
+            MoodSystem.setMood('locked_in', 45);
+          }
 
           // Clean up after 3 seconds
           this.time.delayedCall(3000, () => {
