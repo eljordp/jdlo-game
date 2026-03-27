@@ -52,8 +52,8 @@ export const introDialogue: DialogueLine[] = [
 
 export const chapter0IntroText: string[] = [
   'Home',
-  'Before the hustle. Before the streets.',
-  'Just a kid with a computer and too many ideas.',
+  'Good neighborhood. Good family. Good life.',
+  'But Jordi wanted more.',
 ];
 
 export const chapter0NPCs: NPCData[] = [
@@ -469,8 +469,9 @@ export const chapter3OutroText: string[] = [
 
 export const chapter4IntroText: string[] = [
   'Caymus Vineyards',
-  'Napa Valley. Honest work. Dirt under the nails.',
-  'And a screen that was about to change everything.',
+  'Most people don\'t make it out of that situation.',
+  'Jordi did. Now he\'s got dirt under his nails and $12 an hour.',
+  'But he\'s free. And that\'s enough to start.',
 ];
 
 export const chapter4NPCs: NPCData[] = [
