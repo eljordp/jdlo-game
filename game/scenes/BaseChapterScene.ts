@@ -10,6 +10,7 @@ import { MusicSystem } from '../systems/MusicSystem';
 import { SaveSystem } from '../systems/SaveSystem';
 import { SoundEffects } from '../systems/SoundEffects';
 import { Analytics } from '../systems/Analytics';
+import { EmoteSystem } from '../systems/EmoteSystem';
 import type { MapData } from '../data/maps';
 
 type NPCObject = {
@@ -188,6 +189,9 @@ export abstract class BaseChapterScene extends Phaser.Scene {
 
     // Autosave progress
     SaveSystem.saveChapter(this.scene.key);
+
+    // Emote system — press E to open emote wheel
+    EmoteSystem.init(this);
   }
 
   private showChapterTitle() {
