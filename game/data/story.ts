@@ -1385,6 +1385,21 @@ const ch2Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'Bags on bags. More than anyone needs for a Tuesday night.' },
     { speaker: 'JP\'s Mind', text: 'Same routine. Didn\'t even think about it anymore.' },
   ],
+  ch2_weed2: [
+    { speaker: 'JP\'s Mind', text: 'Bags on the bed. On the pillow. He sleeps next to this stuff.' },
+  ],
+  ch2_weed3: [
+    { speaker: 'JP\'s Mind', text: 'More bags. At least a QP just sitting in the open.' },
+  ],
+  ch2_weed4: [
+    { speaker: 'JP\'s Mind', text: 'Bag on the floor. Stepped on it twice already today.' },
+  ],
+  ch2_weed5: [
+    { speaker: 'JP\'s Mind', text: 'Stash against the wall. This used to feel exciting. Now it\'s just inventory.' },
+  ],
+  ch2_weed6: [
+    { speaker: 'JP\'s Mind', text: 'The room smells like a dispensary. Windows been closed all week.' },
+  ],
   ch2_car: [
     { speaker: 'JP\'s Mind', text: 'Black 2008 BMW 335i. N54 twin turbo.' },
     { speaker: 'JP\'s Mind', text: 'Catless downpipes, intake, tuned. This car is the one thing that\'s actually his.' },

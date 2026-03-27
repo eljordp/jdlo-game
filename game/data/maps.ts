@@ -379,11 +379,16 @@ export const wrongCrowdMap: MapData = {
   },
   triggers: [],  // No scene triggers — only way out is through ch2_sale raid
   interactables: [
-    // --- JP's Room (cols 15-20, rows 1-6) ---
-    { id: 'ch2_grab_weed', x: 19, y: 3, type: 'examine', glow: true, sprite: 'item-weed-bag' },  // weed on desk in JP's room
+    // --- JP's Room (cols 15-20, rows 1-6) — weed EVERYWHERE near the bed ---
+    { id: 'ch2_grab_weed', x: 19, y: 3, type: 'examine', glow: true, sprite: 'item-weed-bag' },  // main bag on desk
+    { id: 'ch2_weed2',     x: 15, y: 2, type: 'examine', glow: false, sprite: 'item-weed-bag' }, // bag on bed
+    { id: 'ch2_weed3',     x: 16, y: 2, type: 'examine', glow: false, sprite: 'item-weed-bag' }, // bag next to bed
+    { id: 'ch2_weed4',     x: 15, y: 3, type: 'examine', glow: false, sprite: 'item-weed-bag' }, // bag on floor by bed
+    { id: 'ch2_weed5',     x: 17, y: 1, type: 'examine', glow: false, sprite: 'item-weed-bag' }, // bag against wall
+    { id: 'ch2_weed6',     x: 18, y: 2, type: 'examine', glow: false, sprite: 'item-weed-bag' }, // bag mid-room
     { id: 'ch2_gun',       x: 16, y: 1, type: 'examine', glow: true, sprite: 'item-gun' },       // gun in JP's room
     { id: 'ch2_computer',  x: 19, y: 1, type: 'examine', glow: true },                            // computer/desk
-    { id: 'ch2_bed',       x: 15, y: 1, type: 'examine', glow: true, sprite: 'item-bed' },       // bed against north wall in JP's room
+    { id: 'ch2_bed',       x: 15, y: 1, type: 'examine', glow: true, sprite: 'item-bed' },       // bed against north wall
     { id: 'ch2_phone',     x: 16, y: 3, type: 'examine', glow: true, sprite: 'item-phone' },     // phone in JP's room
     { id: 'ch2_money_stack', x: 20, y: 3, type: 'examine', glow: true, sprite: 'item-money' },   // money in JP's room
     { id: 'ch2_pops_missed', x: 17, y: 5, type: 'examine', glow: true, sprite: 'item-phone' },   // missed call from pops
