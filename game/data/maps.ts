@@ -153,7 +153,7 @@ export const homeMap: MapData = {
     { id: 'ch0_nightstand',    x: 7,  y: 4,  type: 'examine', glow: true, sprite: 'item-nightstand' },  // nightstand next to bed
     { id: 'ch0_computer',      x: 9,  y: 5,  type: 'examine', glow: true, sprite: 'item-desk' },        // desk w/ computer, right wall
     { id: 'ch0_college',       x: 9,  y: 6,  type: 'examine', glow: true, sprite: 'item-letter' },      // college letters on desk area
-    { id: 'ch0_poster',        x: 4,  y: 6,  type: 'examine', glow: true, sprite: 'item-poster' },      // poster on left wall
+    { id: 'ch0_poster',        x: 7,  y: 4,  type: 'examine', glow: true, sprite: 'item-poster' },      // poster on back wall (visible)
     { id: 'ch0_hidden_stash',  x: 9,  y: 7,  type: 'examine', glow: true },                             // behind desk — bag of weed
     { id: 'ch0_journal',       x: 7,  y: 8,  type: 'examine', glow: true, sprite: 'item-book' },        // journal near door
     { id: 'ch0_crypto',        x: 4,  y: 8,  type: 'examine', glow: true, sprite: 'item-phone' },       // phone on floor by bed

@@ -103,12 +103,16 @@ export class InteractionSystem {
     'item-bed', 'item-fridge', 'item-couch', 'item-tv', 'item-bbq',
     'item-bong', 'item-mirror', 'item-tablet', 'item-computer',
     'item-gun', 'item-bottle', 'item-food',
+    'item-desk', 'item-nightstand', 'item-poster', 'item-toilet',
+    'item-window', 'item-photo',
   ]);
 
   // Furniture sprites that should NOT glow/pulse — they're scenery, not pickups
   private static readonly NO_GLOW_SPRITES = new Set([
     'item-bed', 'item-fridge', 'item-couch', 'item-tv', 'item-bbq',
     'item-mirror', 'item-computer', 'item-food',
+    'item-desk', 'item-nightstand', 'item-poster', 'item-toilet',
+    'item-window', 'item-photo',
   ]);
 
   consume(id: string): void {
