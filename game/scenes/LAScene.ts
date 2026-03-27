@@ -340,147 +340,61 @@ export class LAScene extends Phaser.Scene {
       }
 
       // ═══════════════════════════════════════════════════════════════
-      // STEP 2 — Highrise View
+      // STEP 2 — Highrise (3rd person exterior — glass tower at night)
       // ═══════════════════════════════════════════════════════════════
       case 2: {
-        // Dark room background
+        // 3rd person exterior — glass tower at night, JP silhouette in window
+
+        // Night sky
         this.addObj(
-          this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x080812)
+          this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x06060e)
         );
 
-        // Large window — the main visual element
-        const winX = cx;
-        const winY = cy - 20;
-        const winW = GAME_WIDTH - 160;
-        const winH = GAME_HEIGHT - 180;
+        // Stars
+        for (let i = 0; i < 40; i++) {
+          const star = this.addObj(
+            this.add.rectangle(
+              Math.random() * GAME_WIDTH,
+              Math.random() * (GAME_HEIGHT * 0.35),
+              1, 1, 0xffffff
+            ).setAlpha(0.2 + Math.random() * 0.4)
+          );
+          this.addTween({
+            targets: star,
+            alpha: 0.1,
+            duration: 1000 + Math.random() * 3000,
+            yoyo: true,
+            repeat: -1,
+            delay: Math.random() * 2000,
+          });
+        }
 
-        // Window glass (very dark blue, slightly lighter than walls)
-        this.addObj(this.add.rectangle(winX, winY, winW, winH, 0x0c0c22));
-        // Window frame
-        const frame = this.addObj(this.add.rectangle(winX, winY, winW, winH, 0x000000, 0));
-        (frame as Phaser.GameObjects.Rectangle).setStrokeStyle(4, 0x303050);
-        // Window cross-bars (4 panes)
-        this.addObj(this.add.rectangle(winX, winY, 2, winH, 0x303050));
-        this.addObj(this.add.rectangle(winX, winY, winW, 2, 0x303050));
-
-        // Building silhouettes — varied heights, layered depth
-        const buildings = [
-          // Far background layer (darker, taller)
-          { x: winX - 380, w: 45, h: 320, color: 0x08081a, alpha: 0.5 },
-          { x: winX - 300, w: 60, h: 200, color: 0x0a0a1e, alpha: 0.6 },
-          { x: winX - 220, w: 40, h: 260, color: 0x08081a, alpha: 0.5 },
-          { x: winX - 200, w: 80, h: 280, color: 0x0c0c20, alpha: 0.6 },
-          { x: winX - 130, w: 35, h: 180, color: 0x0a0a1c, alpha: 0.55 },
-          { x: winX - 80, w: 50, h: 160, color: 0x0e0e1c, alpha: 0.6 },
-          { x: winX - 20, w: 30, h: 340, color: 0x08081a, alpha: 0.45 },
-          { x: winX + 40, w: 70, h: 240, color: 0x0c0c20, alpha: 0.6 },
-          { x: winX + 100, w: 38, h: 190, color: 0x0a0a1c, alpha: 0.55 },
-          { x: winX + 150, w: 90, h: 300, color: 0x0e0e1c, alpha: 0.6 },
-          { x: winX + 230, w: 42, h: 220, color: 0x08081a, alpha: 0.5 },
-          { x: winX + 280, w: 55, h: 180, color: 0x0c0c20, alpha: 0.6 },
-          { x: winX + 340, w: 32, h: 270, color: 0x0a0a1c, alpha: 0.5 },
-          { x: winX + 370, w: 75, h: 220, color: 0x0e0e1c, alpha: 0.6 },
-          { x: winX + 430, w: 50, h: 150, color: 0x08081a, alpha: 0.5 },
+        // Background buildings (shorter, darker, flanking the main tower)
+        const bgBuildings = [
+          { x: 120, w: 100, h: 350, color: 0x0a0a16 },
+          { x: 260, w: 70, h: 280, color: 0x0c0c1a },
+          { x: 380, w: 90, h: 420, color: 0x08080f },
+          { x: 900, w: 110, h: 380, color: 0x0a0a16 },
+          { x: 1050, w: 80, h: 300, color: 0x0c0c1a },
+          { x: 1160, w: 95, h: 340, color: 0x08080f },
         ];
-        for (const b of buildings) {
-          const by = winY + winH / 2 - b.h / 2 + 40;
-          this.addObj(this.add.rectangle(b.x, by, b.w, b.h, b.color).setAlpha(b.alpha));
-          // Lit windows on buildings
-          for (let wy = by - b.h / 2 + 15; wy < by + b.h / 2 - 5; wy += 16) {
-            for (let wx = b.x - b.w / 2 + 6; wx < b.x + b.w / 2 - 5; wx += 12) {
-              if (Math.random() > 0.35) {
-                const bldgLight = this.addObj(
-                  this.add.rectangle(wx, wy, 4, 5, 0xf0c860).setAlpha(0.12 + Math.random() * 0.25)
-                );
-                // Most building windows twinkle
-                if (Math.random() > 0.4) {
-                  this.addTween({
-                    targets: bldgLight,
-                    alpha: Math.random() * 0.08,
-                    duration: 800 + Math.random() * 3000,
-                    yoyo: true,
-                    repeat: -1,
-                    delay: Math.random() * 4000,
-                  });
-                }
-              }
-            }
-          }
-        }
-
-        // City lights far below through window — LA downtown grid
-        // Street grid (horizontal and vertical light lines representing roads)
-        const streetColor = 0xf0a040;
-        const gridLeft = winX - winW / 2 + 30;
-        const gridRight = winX + winW / 2 - 30;
-        const gridTop = winY + winH / 4 + 20;
-        const gridBottom = winY + winH / 2 - 10;
-
-        // Horizontal streets (perspective — closer together near top, wider apart near bottom)
-        for (let sy = gridTop; sy < gridBottom; sy += 18 + (sy - gridTop) * 0.3) {
-          const streetWidth = gridRight - gridLeft - 20;
-          const street = this.addObj(
-            this.add.rectangle(winX, sy, streetWidth, 1, streetColor).setAlpha(0.08 + Math.random() * 0.06)
-          );
-          this.addTween({
-            targets: street,
-            alpha: 0.04,
-            duration: 2000 + Math.random() * 3000,
-            yoyo: true,
-            repeat: -1,
-            delay: Math.random() * 2000,
-          });
-        }
-
-        // Vertical streets
-        for (let sx = gridLeft + 20; sx < gridRight - 20; sx += 28 + Math.random() * 16) {
-          const streetH = gridBottom - gridTop - 10;
-          const street = this.addObj(
-            this.add.rectangle(sx, (gridTop + gridBottom) / 2, 1, streetH, streetColor).setAlpha(0.06 + Math.random() * 0.05)
-          );
-          this.addTween({
-            targets: street,
-            alpha: 0.03,
-            duration: 2500 + Math.random() * 3000,
-            yoyo: true,
-            repeat: -1,
-            delay: Math.random() * 2000,
-          });
-        }
-
-        // Small buildings far below — rectangles with lit window grids
-        const smallBuildingColors = [0x0a0a18, 0x0c0c1a, 0x0e0e1c, 0x08081a];
-        const windowColors = [0xf0c860, 0xe0b840, 0xf0d870, 0xc0e8ff, 0xf0f0f0];
-        for (let i = 0; i < 35; i++) {
-          const bx = gridLeft + 10 + Math.random() * (gridRight - gridLeft - 20);
-          const bw = 8 + Math.random() * 18;
-          const bh = 10 + Math.random() * 25;
-          const by = gridTop + 5 + Math.random() * (gridBottom - gridTop - bh);
-
-          // Building body
-          this.addObj(
-            this.add.rectangle(bx, by, bw, bh, smallBuildingColors[Math.floor(Math.random() * smallBuildingColors.length)])
-              .setAlpha(0.4 + Math.random() * 0.3)
-          );
-
-          // Window grid on each small building
-          const winSpacingX = 4;
-          const winSpacingY = 4;
-          for (let wy = by - bh / 2 + 3; wy < by + bh / 2 - 2; wy += winSpacingY) {
-            for (let wx = bx - bw / 2 + 3; wx < bx + bw / 2 - 2; wx += winSpacingX) {
+        for (const b of bgBuildings) {
+          const by = GAME_HEIGHT - b.h / 2;
+          this.addObj(this.add.rectangle(b.x, by, b.w, b.h, b.color).setAlpha(0.7));
+          // Dim windows on background buildings
+          for (let wy = by - b.h / 2 + 20; wy < by + b.h / 2 - 10; wy += 18) {
+            for (let wx = b.x - b.w / 2 + 8; wx < b.x + b.w / 2 - 8; wx += 14) {
               if (Math.random() > 0.4) {
-                const wColor = windowColors[Math.floor(Math.random() * windowColors.length)];
-                const bldgWin = this.addObj(
-                  this.add.rectangle(wx, wy, 2, 2, wColor).setAlpha(0.1 + Math.random() * 0.25)
+                const bw = this.addObj(
+                  this.add.rectangle(wx, wy, 4, 5, 0xf0c860).setAlpha(0.06 + Math.random() * 0.12)
                 );
                 if (Math.random() > 0.5) {
                   this.addTween({
-                    targets: bldgWin,
-                    alpha: Math.random() * 0.06,
-                    duration: 1000 + Math.random() * 4000,
+                    targets: bw,
+                    alpha: 0.02,
+                    duration: 2000 + Math.random() * 4000,
                     yoyo: true,
                     repeat: -1,
-                    delay: Math.random() * 3000,
                   });
                 }
               }
@@ -488,107 +402,109 @@ export class LAScene extends Phaser.Scene {
           }
         }
 
-        // Scattered accent lights (car headlights, signs, etc.)
-        const accentColors = [0xff4040, 0x40ff40, 0x4080ff, 0xff8040, 0xff40ff, 0x40ffff];
-        for (let i = 0; i < 25; i++) {
-          const lx = gridLeft + 15 + Math.random() * (gridRight - gridLeft - 30);
-          const ly = gridTop + Math.random() * (gridBottom - gridTop);
-          const light = this.addObj(
-            this.add.rectangle(lx, ly, 1 + Math.random() * 2, 1, accentColors[Math.floor(Math.random() * accentColors.length)])
-              .setAlpha(0.15 + Math.random() * 0.35)
+        // THE MAIN TOWER — tall glass building, center of screen
+        const towerX = cx;
+        const towerW = 180;
+        const towerH = 700;
+        const towerY = GAME_HEIGHT - towerH / 2 + 40;
+
+        // Tower body
+        this.addObj(this.add.rectangle(towerX, towerY, towerW, towerH, 0x10101e).setAlpha(0.95));
+
+        // Glass panels — subtle blue tint strips
+        for (let py = towerY - towerH / 2; py < towerY + towerH / 2; py += 24) {
+          this.addObj(this.add.rectangle(towerX, py, towerW - 4, 1, 0x1a1a30).setAlpha(0.5));
+        }
+        // Vertical mullions
+        for (let px = towerX - towerW / 2 + 20; px < towerX + towerW / 2; px += 20) {
+          this.addObj(this.add.rectangle(px, towerY, 1, towerH, 0x1a1a30).setAlpha(0.3));
+        }
+
+        // Tower windows — grid of lit windows
+        const jpFloorY = towerY - towerH / 2 + 80; // JP is near the top
+        for (let wy = towerY - towerH / 2 + 20; wy < towerY + towerH / 2 - 20; wy += 24) {
+          for (let wx = towerX - towerW / 2 + 12; wx < towerX + towerW / 2 - 10; wx += 20) {
+            const isJPWindow = Math.abs(wy - jpFloorY) < 12 && Math.abs(wx - towerX) < 10;
+            if (isJPWindow) continue; // leave JP's window for the special treatment
+
+            if (Math.random() > 0.35) {
+              const winColor = Math.random() > 0.8 ? 0xc0e0ff : 0xf0c860;
+              const tw = this.addObj(
+                this.add.rectangle(wx, wy, 8, 10, winColor).setAlpha(0.08 + Math.random() * 0.15)
+              );
+              if (Math.random() > 0.6) {
+                this.addTween({
+                  targets: tw,
+                  alpha: 0.03,
+                  duration: 1500 + Math.random() * 4000,
+                  yoyo: true,
+                  repeat: -1,
+                  delay: Math.random() * 3000,
+                });
+              }
+            }
+          }
+        }
+
+        // JP'S WINDOW — brighter than the rest, warm light
+        const jpWinX = towerX;
+        const jpWinY = jpFloorY;
+        // Warm glow spilling out
+        this.addObj(this.add.rectangle(jpWinX, jpWinY, 30, 18, 0xf0d080).setAlpha(0.35));
+        this.addObj(this.add.rectangle(jpWinX, jpWinY, 22, 14, 0xf8e0a0).setAlpha(0.5));
+
+        // JP silhouette in the window — tiny dark figure against the warm light
+        const jpSilhouette = this.addObj(
+          this.add.rectangle(jpWinX, jpWinY + 2, 6, 10, 0x0a0a14).setAlpha(0.8)
+        );
+        // Head
+        this.addObj(this.add.rectangle(jpWinX, jpWinY - 4, 4, 4, 0x0a0a14).setAlpha(0.8));
+
+        // Subtle glow ring around JP's window
+        const glow = this.addObj(
+          this.add.circle(jpWinX, jpWinY, 30, 0xf0d080, 0.08)
+        );
+        this.addTween({
+          targets: glow,
+          alpha: 0.04,
+          scaleX: 1.1,
+          scaleY: 1.1,
+          duration: 3000,
+          yoyo: true,
+          repeat: -1,
+          ease: 'Sine.easeInOut',
+        });
+
+        // Ground level — street with car headlights
+        this.addObj(this.add.rectangle(cx, GAME_HEIGHT - 20, GAME_WIDTH, 40, 0x101018));
+        // Car lights on street
+        for (let i = 0; i < 8; i++) {
+          const carX = Math.random() * GAME_WIDTH;
+          const carLight = this.addObj(
+            this.add.rectangle(carX, GAME_HEIGHT - 15, 3, 2, 0xf0e0c0).setAlpha(0.3 + Math.random() * 0.3)
           );
           this.addTween({
-            targets: light,
-            alpha: Math.random() * 0.08,
-            duration: 400 + Math.random() * 2000,
-            yoyo: true,
+            targets: carLight,
+            x: carX + (Math.random() > 0.5 ? 200 : -200),
+            duration: 4000 + Math.random() * 4000,
             repeat: -1,
-            delay: Math.random() * 3000,
           });
         }
 
-        // JP standing at window, facing up (looking out, back to camera)
-        this.addObj(
-          this.add.sprite(cx, winY + 100, 'player-ch5', 2).setScale(CHAR_SCALE)
-        );
-
-        // Reflection in window glass — semi-transparent, flipped, with wave distortion
-        const reflection = this.addObj(
-          this.add.sprite(cx, winY + 180, 'player-ch5', 0).setScale(CHAR_SCALE).setAlpha(0.15).setFlipY(true)
-        );
-        // Slow alpha breathing (glass shimmer)
-        this.addTween({
-          targets: reflection,
-          alpha: 0.06,
-          duration: 2500,
-          yoyo: true,
-          repeat: -1,
-          ease: 'Sine.easeInOut',
-        });
-        // Wave distortion — subtle horizontal sway
-        this.addTween({
-          targets: reflection,
-          x: cx - 2,
-          duration: 1800,
-          yoyo: true,
-          repeat: -1,
-          ease: 'Sine.easeInOut',
-        });
-        // Vertical drift (glass warping effect)
-        this.addTween({
-          targets: reflection,
-          y: winY + 183,
-          duration: 2200,
-          yoyo: true,
-          repeat: -1,
-          ease: 'Sine.easeInOut',
-        });
-
-        // Floor ambient light (reflection from window)
-        this.addObj(
-          this.add.rectangle(cx, GAME_HEIGHT - 50, GAME_WIDTH, 80, 0x101830).setAlpha(0.3)
-        );
-
-        // "30th floor" — large text that shrinks to final size for impact
-        const floorText = this.add.text(cx, 40, '30th floor.', {
-          fontFamily: '"Press Start 2P", monospace',
-          fontSize: '28px',
-          color: '#8888cc',
-          align: 'center',
-        }).setOrigin(0.5).setAlpha(0).setScale(1.8);
-        this.textObjects.push(floorText);
-
-        this.addTween({
-          targets: floorText,
-          alpha: 1,
-          scaleX: 1,
-          scaleY: 1,
-          duration: 1200,
-          ease: 'Back.easeOut',
-        });
-
-        // "Downtown LA" fades in after floor text settles
-        const cityText = this.add.text(cx, 72, 'Downtown LA.', {
-          fontFamily: '"Press Start 2P", monospace',
-          fontSize: '14px',
-          color: '#6666aa',
-          align: 'center',
-        }).setOrigin(0.5).setAlpha(0);
-        this.textObjects.push(cityText);
-        this.addTween({
-          targets: cityText,
-          alpha: 1,
-          duration: 600,
-          delay: 1000,
-        });
-
+        // Text
+        this.showText('30th floor. Downtown LA.', 40, { size: '20px', color: '#8888cc', delay: 500 });
         this.showText(
-          'Looking down at the city\nthat used to feel impossible\nto reach.',
-          GAME_HEIGHT - 120,
-          { delay: 1400 }
+          'One window lit brighter than the rest.\nThat\'s where Jordi is.',
+          GAME_HEIGHT - 140,
+          { delay: 1500, color: '#aaaacc' }
+        );
+        this.showText(
+          'Looking down at the city\nthat used to feel impossible to reach.',
+          GAME_HEIGHT - 70,
+          { size: '12px', delay: 2500 }
         );
 
-        this.showContinue(3000);
+        this.showContinue(4000);
         break;
       }
 
