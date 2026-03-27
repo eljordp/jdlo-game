@@ -962,6 +962,10 @@ export abstract class BaseChapterScene extends Phaser.Scene {
 
   /** Show/hide tile rows for floor switching (Pokemon-style) */
   protected setFloorVisibility(showRows: number[], hideRows: number[]): void {
+    const showSet = new Set(showRows);
+    const hideSet = new Set(hideRows);
+
+    // Toggle tile sprites
     for (const row of hideRows) {
       const sprites = this.tilesByRow.get(row);
       if (sprites) sprites.forEach(s => s.setVisible(false));
@@ -970,13 +974,25 @@ export abstract class BaseChapterScene extends Phaser.Scene {
       const sprites = this.tilesByRow.get(row);
       if (sprites) sprites.forEach(s => s.setVisible(true));
     }
-    // Also hide/show NPCs and interactable sprites based on their tile Y
+
+    // Toggle NPCs
     for (const npc of this.npcs) {
       const npcTileY = Math.round((npc.sprite.y - SCALED_TILE / 2) / SCALED_TILE);
-      const shouldShow = showRows.includes(npcTileY);
-      const shouldHide = hideRows.includes(npcTileY);
-      if (shouldHide) npc.sprite.setVisible(false);
-      if (shouldShow) npc.sprite.setVisible(true);
+      if (hideSet.has(npcTileY)) npc.sprite.setVisible(false);
+      if (showSet.has(npcTileY)) npc.sprite.setVisible(true);
+    }
+
+    // Toggle interactable sprites and markers
+    const visuals = this.interactions.getVisuals();
+    for (const v of visuals) {
+      if (hideSet.has(v.y)) {
+        if (v.sprite) v.sprite.setVisible(false);
+        if (v.marker) v.marker.setVisible(false);
+      }
+      if (showSet.has(v.y)) {
+        if (v.sprite) v.sprite.setVisible(true);
+        if (v.marker) v.marker.setVisible(true);
+      }
     }
   }
 

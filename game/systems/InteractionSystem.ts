@@ -27,6 +27,17 @@ export class InteractionSystem {
     this.scene = scene;
   }
 
+  /** Get all interactable items with their sprites/markers for floor visibility */
+  getVisuals(): { id: string; x: number; y: number; sprite?: Phaser.GameObjects.Sprite; marker?: Phaser.GameObjects.Text }[] {
+    return this.interactables.map(item => ({
+      id: item.id,
+      x: item.x,
+      y: item.y,
+      sprite: this.sprites.get(item.id),
+      marker: this.markers.get(item.id),
+    }));
+  }
+
   init(interactables: Interactable[]): void {
     // Clean up any previous state
     this.destroy();
