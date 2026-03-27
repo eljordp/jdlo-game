@@ -69,55 +69,106 @@ export class JailScene extends BaseChapterScene {
 
   private playPushupMinigame() {
     this.frozen = true;
-    let count = 0;
-    let timeLeft = 10;
+    let jpCount = 0;
+    let rivalCount = 0;
+    let timeLeft = 15;
     let active = true;
+    const rivalInterval = 0.6; // seconds per pushup
+    let rivalTimer = 0;
+    const objects: Phaser.GameObjects.GameObject[] = [];
 
     // Darken background
     const overlay = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.6)
       .setScrollFactor(0).setDepth(300);
+    objects.push(overlay);
 
     // Title
-    const title = this.add.text(GAME_WIDTH / 2, 80, 'PUSHUPS!', {
+    const title = this.add.text(GAME_WIDTH / 2, 70, 'PUSHUP CONTEST', {
       fontFamily: '"Press Start 2P", monospace',
-      fontSize: '24px',
+      fontSize: '22px',
       color: '#f0c040',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+    objects.push(title);
 
     // Instructions
-    const instructions = this.add.text(GAME_WIDTH / 2, 140, 'MASH SPACE!', {
+    const instructions = this.add.text(GAME_WIDTH / 2, 110, 'MASH SPACE!', {
       fontFamily: '"Press Start 2P", monospace',
       fontSize: '14px',
       color: '#ffffff',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+    objects.push(instructions);
 
-    // Counter
-    const counter = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2, '0', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '48px',
-      color: '#ffffff',
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
-
-    // Timer
-    const timer = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 80, '10s', {
+    // Timer (centered)
+    const timer = this.add.text(GAME_WIDTH / 2, 145, '15s', {
       fontFamily: '"Press Start 2P", monospace',
       fontSize: '16px',
       color: '#aaaacc',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+    objects.push(timer);
 
-    // Player sprite for pushup animation
-    const pushupSprite = this.add.sprite(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 180, this.getPlayerTexture(), 0)
+    // --- LEFT SIDE: JP ---
+    const jpLabel = this.add.text(GAME_WIDTH / 2 - 200, 190, 'JP', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '16px',
+      color: '#f0c040',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+    objects.push(jpLabel);
+
+    const jpCounter = this.add.text(GAME_WIDTH / 2 - 200, GAME_HEIGHT / 2 - 40, '0', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '48px',
+      color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+    objects.push(jpCounter);
+
+    const jpSprite = this.add.sprite(GAME_WIDTH / 2 - 200, GAME_HEIGHT / 2 + 80, this.getPlayerTexture(), 0)
       .setScale(6).setScrollFactor(0).setDepth(301);
+    objects.push(jpSprite);
 
-    // Pushup handler
+    // --- RIGHT SIDE: INMATE ---
+    const rivalLabel = this.add.text(GAME_WIDTH / 2 + 200, 190, 'INMATE', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '16px',
+      color: '#ff6666',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+    objects.push(rivalLabel);
+
+    const rivalCounter = this.add.text(GAME_WIDTH / 2 + 200, GAME_HEIGHT / 2 - 40, '0', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '48px',
+      color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+    objects.push(rivalCounter);
+
+    const rivalSprite = this.add.sprite(GAME_WIDTH / 2 + 200, GAME_HEIGHT / 2 + 80, 'npc_inmate3', 0)
+      .setScale(6).setScrollFactor(0).setDepth(301);
+    objects.push(rivalSprite);
+
+    // VS divider
+    const vsText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'VS', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '14px',
+      color: '#555555',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+    objects.push(vsText);
+
+    // Catching up warning text (hidden by default)
+    const warningText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 160, '', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '12px',
+      color: '#ff4444',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(302);
+    objects.push(warningText);
+
+    // JP pushup handler
     const doPushup = () => {
       if (!active) return;
-      count++;
-      counter.setText(String(count));
+      jpCount++;
+      jpCounter.setText(String(jpCount));
 
-      // Pushup animation — squish down then up
+      // Squish animation
       this.tweens.add({
-        targets: pushupSprite,
+        targets: jpSprite,
         scaleY: 3,
         scaleX: 7,
         duration: 80,
@@ -127,7 +178,7 @@ export class JailScene extends BaseChapterScene {
 
       // Counter pulse
       this.tweens.add({
-        targets: counter,
+        targets: jpCounter,
         scale: 1.2,
         duration: 60,
         yoyo: true,
@@ -143,10 +194,43 @@ export class JailScene extends BaseChapterScene {
     const pointerListener = () => doPushup();
     this.input.on('pointerdown', pointerListener);
 
+    // Rival pushup timer (every 600ms)
+    const rivalEvent = this.time.addEvent({
+      delay: rivalInterval * 1000,
+      loop: true,
+      callback: () => {
+        if (!active) return;
+        rivalCount++;
+        rivalCounter.setText(String(rivalCount));
+
+        // Rival squish animation
+        this.tweens.add({
+          targets: rivalSprite,
+          scaleY: 3,
+          scaleX: 7,
+          duration: 80,
+          yoyo: true,
+          ease: 'Power1',
+        });
+
+        // Check if rival is catching up
+        if (rivalCount > jpCount && active) {
+          warningText.setText("HE'S CATCHING UP!");
+          warningText.setAlpha(1);
+          this.tweens.add({
+            targets: warningText,
+            alpha: 0,
+            duration: 500,
+            delay: 300,
+          });
+        }
+      },
+    });
+
     // Countdown timer
     const timerEvent = this.time.addEvent({
       delay: 1000,
-      repeat: 9,
+      repeat: 14,
       callback: () => {
         timeLeft--;
         timer.setText(`${timeLeft}s`);
@@ -157,44 +241,54 @@ export class JailScene extends BaseChapterScene {
 
         if (timeLeft <= 0) {
           active = false;
+          rivalEvent.remove();
           spaceKey.off('down', pushupListener);
           this.input.off('pointerdown', pointerListener);
 
           // Show result
           instructions.setText('TIME!');
           timer.setVisible(false);
+          warningText.setText('');
 
-          // Result message
+          // Result message based on comparison
           let message = '';
-          if (count >= 50) {
-            message = '50+ pushups. Beast mode. Clear mind. Strong body.';
-            counter.setColor('#f0c040');
-          } else if (count >= 30) {
-            message = `${count} pushups. Not bad. Keep grinding.`;
-            counter.setColor('#40c040');
-          } else if (count >= 15) {
-            message = `${count} pushups. It's a start.`;
+          const diff = jpCount - rivalCount;
+          if (diff > 10) {
+            message = 'Destroyed. The yard is watching.';
+            jpCounter.setColor('#f0c040');
+          } else if (diff > 0) {
+            message = 'JP wins. Respect earned.';
+            jpCounter.setColor('#40c040');
+          } else if (diff === 0) {
+            message = 'Dead even. Mutual respect.';
+            jpCounter.setColor('#aaaacc');
+            rivalCounter.setColor('#aaaacc');
           } else {
-            message = `${count} pushups. JP's still building strength.`;
+            message = 'Inmate wins. JP nods. Next time.';
+            rivalCounter.setColor('#ff6666');
           }
 
-          const result = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 250, message, {
+          const result = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 220, message, {
             fontFamily: '"Press Start 2P", monospace',
             fontSize: '11px',
             color: '#aaaacc',
             wordWrap: { width: 600 },
             align: 'center',
           }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+          objects.push(result);
+
+          const scoreResult = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 250, `JP: ${jpCount}  |  INMATE: ${rivalCount}`, {
+            fontFamily: '"Press Start 2P", monospace',
+            fontSize: '10px',
+            color: '#666666',
+          }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+          objects.push(scoreResult);
 
           // Clean up after 3 seconds
           this.time.delayedCall(3000, () => {
-            overlay.destroy();
-            title.destroy();
-            instructions.destroy();
-            counter.destroy();
-            timer.destroy();
-            pushupSprite.destroy();
-            result.destroy();
+            for (const obj of objects) {
+              if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
+            }
             this.frozen = false;
           });
         }
@@ -206,8 +300,14 @@ export class JailScene extends BaseChapterScene {
     this.frozen = true;
     const objects: Phaser.GameObjects.GameObject[] = [];
     let roundNum = 0;
-    let wins = 0;
-    const maxRounds = 3;
+    let points = 10;
+    const maxRounds = 5;
+    let currentBet = 1;
+    const betOptions = [1, 3, 5];
+    let betIndex = 0;
+
+    const winComments = ['Lucky.', 'JP collects.', 'The yard nods.'];
+    const loseComments = ['Cold dice.', 'The yard laughs.', 'JP pays up.'];
 
     // Dark overlay
     const overlay = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.7)
@@ -222,10 +322,10 @@ export class JailScene extends BaseChapterScene {
     }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
     objects.push(title);
 
-    // Round info
-    const roundText = this.add.text(GAME_WIDTH / 2, 130, 'Round 1/3', {
+    // Round + points info
+    const roundText = this.add.text(GAME_WIDTH / 2, 130, 'Round 1/5  |  Commissary: 10', {
       fontFamily: '"Press Start 2P", monospace',
-      fontSize: '12px',
+      fontSize: '11px',
       color: '#aaaacc',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
     objects.push(roundText);
@@ -238,7 +338,7 @@ export class JailScene extends BaseChapterScene {
       .setScrollFactor(0).setDepth(301).setStrokeStyle(3, 0x333333);
     objects.push(die1Bg, die2Bg);
 
-    // Dice value text (shown as number for simplicity, with dot patterns)
+    // Dice value text
     const die1Text = this.add.text(GAME_WIDTH / 2 - 60, GAME_HEIGHT / 2, '?', {
       fontFamily: '"Press Start 2P", monospace',
       fontSize: '28px',
@@ -251,58 +351,159 @@ export class JailScene extends BaseChapterScene {
     }).setOrigin(0.5).setScrollFactor(0).setDepth(302);
     objects.push(die1Text, die2Text);
 
-    // Instructions
-    const instr = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 100, 'Press SPACE to roll', {
+    // Bet selection display
+    const betLabel = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 80, 'BET:', {
       fontFamily: '"Press Start 2P", monospace',
       fontSize: '12px',
       color: '#ffffff',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
-    objects.push(instr);
+    objects.push(betLabel);
 
-    // Result text
-    const resultText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 160, '', {
+    const betButtons: Phaser.GameObjects.Text[] = [];
+    for (let i = 0; i < 3; i++) {
+      const bx = GAME_WIDTH / 2 + (i - 1) * 100;
+      const btn = this.add.text(bx, GAME_HEIGHT / 2 + 115, String(betOptions[i]), {
+        fontFamily: '"Press Start 2P", monospace',
+        fontSize: '18px',
+        color: i === 0 ? '#f0c040' : '#666666',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(302);
+      objects.push(btn);
+      betButtons.push(btn);
+    }
+
+    // Arrows around selected bet
+    const leftArrow = this.add.text(GAME_WIDTH / 2 - 100 - 30, GAME_HEIGHT / 2 + 115, '<', {
       fontFamily: '"Press Start 2P", monospace',
       fontSize: '14px',
+      color: '#f0c040',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(302);
+    const rightArrow = this.add.text(GAME_WIDTH / 2 - 100 + 30, GAME_HEIGHT / 2 + 115, '>', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '14px',
+      color: '#f0c040',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(302);
+    objects.push(leftArrow, rightArrow);
+
+    // Instructions
+    const instr = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 160, 'LEFT/RIGHT to bet, SPACE to roll', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '10px',
+      color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+    objects.push(instr);
+
+    // Result / flavor text
+    const resultText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 200, '', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '12px',
       color: '#ffffff',
       align: 'center',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
     objects.push(resultText);
 
-    // Win counter
-    const winText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 210, '', {
+    // Side commentary
+    const commentText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 235, '', {
       fontFamily: '"Press Start 2P", monospace',
       fontSize: '10px',
-      color: '#aaaacc',
+      color: '#888888',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
-    objects.push(winText);
+    objects.push(commentText);
 
     let rolling = false;
-    let canRoll = true;
+    let phase: 'betting' | 'rolling' | 'done' = 'betting';
+
+    const updateBetDisplay = () => {
+      currentBet = betOptions[betIndex];
+      for (let i = 0; i < 3; i++) {
+        const isSelected = i === betIndex;
+        betButtons[i].setColor(isSelected ? '#f0c040' : '#666666');
+        betButtons[i].setScale(isSelected ? 1.2 : 1);
+        // Grey out bets player can't afford
+        if (betOptions[i] > points) {
+          betButtons[i].setColor('#333333');
+        }
+      }
+      // Position arrows around selected bet
+      const selectedX = GAME_WIDTH / 2 + (betIndex - 1) * 100;
+      leftArrow.setPosition(selectedX - 30, GAME_HEIGHT / 2 + 115);
+      rightArrow.setPosition(selectedX + 30, GAME_HEIGHT / 2 + 115);
+    };
+
+    const endGame = (reason?: string) => {
+      phase = 'done';
+      betLabel.setVisible(false);
+      for (const b of betButtons) b.setVisible(false);
+      leftArrow.setVisible(false);
+      rightArrow.setVisible(false);
+      instr.setText('');
+
+      let finalMsg: string;
+      if (points >= 20) {
+        finalMsg = 'JP walks away up. Smart player.';
+      } else if (points >= 10) {
+        finalMsg = 'Broke even. Could be worse.';
+      } else if (points >= 1) {
+        finalMsg = "Down bad. But it's just soup.";
+      } else {
+        finalMsg = 'JP walks away empty.';
+      }
+
+      if (reason) {
+        resultText.setText(reason);
+        resultText.setColor('#ff4444');
+      }
+
+      const finalMsgText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 270,
+        `Final: ${points} pts  |  ${finalMsg}`, {
+        fontFamily: '"Press Start 2P", monospace',
+        fontSize: '10px',
+        color: '#aaaacc',
+        align: 'center',
+        wordWrap: { width: 600 },
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+      objects.push(finalMsgText);
+
+      // Clean up after 3 seconds
+      this.time.delayedCall(3000, () => {
+        spaceKey.off('down', inputListener);
+        leftKey.off('down', inputListener);
+        rightKey.off('down', inputListener);
+        this.input.off('pointerdown', inputListener);
+        for (const obj of objects) {
+          if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
+        }
+        this.frozen = false;
+      });
+    };
 
     const rollDice = () => {
-      if (!canRoll || rolling) return;
+      if (phase !== 'betting' || rolling) return;
+      // Can't bet more than you have
+      if (currentBet > points) return;
+
       rolling = true;
-      canRoll = false;
+      phase = 'rolling';
       resultText.setText('');
+      commentText.setText('');
       instr.setText('Rolling...');
+      betLabel.setVisible(false);
+      for (const b of betButtons) b.setVisible(false);
+      leftArrow.setVisible(false);
+      rightArrow.setVisible(false);
 
       // Rapid random cycling for 1 second
-      let rollCount = 0;
-      const rollEvent = this.time.addEvent({
+      this.time.addEvent({
         delay: 60,
         repeat: 15,
         callback: () => {
-          rollCount++;
           die1Text.setText(String(Phaser.Math.Between(1, 6)));
           die2Text.setText(String(Phaser.Math.Between(1, 6)));
-
-          // Shake dice
           die1Bg.setAngle(Phaser.Math.Between(-10, 10));
           die2Bg.setAngle(Phaser.Math.Between(-10, 10));
         },
       });
 
-      // Land on final values after rolling
+      // Land on final values
       this.time.delayedCall(1100, () => {
         rolling = false;
         const val1 = Phaser.Math.Between(1, 6);
@@ -332,54 +533,86 @@ export class JailScene extends BaseChapterScene {
         roundNum++;
 
         if (total >= 7) {
-          wins++;
-          resultText.setText(`${total}! You win! +1 soup from commissary`);
+          points += currentBet;
+          resultText.setText(`${total}! Win +${currentBet} pts`);
           resultText.setColor('#40c040');
+          commentText.setText(winComments[Phaser.Math.Between(0, winComments.length - 1)]);
         } else {
-          resultText.setText(`${total}. You lose. Better luck next time.`);
+          points -= currentBet;
+          resultText.setText(`${total}. Lose -${currentBet} pts`);
           resultText.setColor('#ff4444');
+          commentText.setText(loseComments[Phaser.Math.Between(0, loseComments.length - 1)]);
         }
 
-        winText.setText(`Wins: ${wins} / ${roundNum}`);
+        roundText.setText(`Round ${roundNum}/${maxRounds}  |  Commissary: ${points}`);
+
+        // Check for going broke
+        if (points <= 0) {
+          points = 0;
+          endGame("JP's out. Nothing left to bet.");
+          return;
+        }
 
         if (roundNum < maxRounds) {
-          roundText.setText(`Round ${roundNum + 1}/${maxRounds}`);
-          instr.setText('Press SPACE to roll');
-          this.time.delayedCall(1200, () => {
-            canRoll = true;
+          // Next round — show bet selection again
+          this.time.delayedCall(1500, () => {
+            phase = 'betting';
+            roundText.setText(`Round ${roundNum + 1}/${maxRounds}  |  Commissary: ${points}`);
+            instr.setText('LEFT/RIGHT to bet, SPACE to roll');
+            betLabel.setVisible(true);
+            for (const b of betButtons) b.setVisible(true);
+            leftArrow.setVisible(true);
+            rightArrow.setVisible(true);
+            // Reset bet index if current bet is unaffordable
+            if (betOptions[betIndex] > points) {
+              betIndex = 0;
+            }
+            updateBetDisplay();
           });
         } else {
-          // Game over
-          instr.setText('');
-          roundText.setText('');
-
-          const finalMsg = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 260,
-            "JP walks away. This isn't his game anymore.", {
-            fontFamily: '"Press Start 2P", monospace',
-            fontSize: '10px',
-            color: '#aaaacc',
-            align: 'center',
-          }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
-          objects.push(finalMsg);
-
-          // Clean up after 3 seconds
-          this.time.delayedCall(3000, () => {
-            spaceKey.off('down', rollListener);
-            this.input.off('pointerdown', rollListener);
-            for (const obj of objects) {
-              if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
-            }
-            this.frozen = false;
-          });
+          endGame();
         }
       });
     };
 
     // Input
     const spaceKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-    const rollListener = () => rollDice();
-    spaceKey.on('down', rollListener);
-    this.input.on('pointerdown', rollListener);
+    const leftKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
+    const rightKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
+
+    const inputListener = (event?: { keyCode?: number }) => {
+      if (phase === 'done') return;
+
+      if (phase === 'betting' && !rolling) {
+        const keyCode = event?.keyCode;
+        if (keyCode === Phaser.Input.Keyboard.KeyCodes.LEFT) {
+          betIndex = Math.max(0, betIndex - 1);
+          // Skip unaffordable bets
+          while (betIndex > 0 && betOptions[betIndex] > points) betIndex--;
+          updateBetDisplay();
+          return;
+        }
+        if (keyCode === Phaser.Input.Keyboard.KeyCodes.RIGHT) {
+          betIndex = Math.min(2, betIndex + 1);
+          // Skip unaffordable bets
+          while (betIndex < 2 && betOptions[betIndex] > points) {
+            if (betOptions[betIndex] <= points) break;
+            betIndex--;
+            break;
+          }
+          updateBetDisplay();
+          return;
+        }
+        if (keyCode === Phaser.Input.Keyboard.KeyCodes.SPACE || !keyCode) {
+          rollDice();
+        }
+      }
+    };
+
+    spaceKey.on('down', (e: { keyCode: number }) => inputListener(e));
+    leftKey.on('down', (e: { keyCode: number }) => inputListener(e));
+    rightKey.on('down', (e: { keyCode: number }) => inputListener(e));
+    this.input.on('pointerdown', () => inputListener());
   }
 
   private playBattleScene() {

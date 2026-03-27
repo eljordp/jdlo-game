@@ -85,123 +85,238 @@ export class ComeUpScene extends BaseChapterScene {
   private playTypingMinigame() {
     this.frozen = true;
     const objects: Phaser.GameObjects.GameObject[] = [];
-    let correct = 0;
-    let total = 0;
-    const maxChars = 15;
     let active = true;
 
-    // Code-like characters to type
-    const codeChars = 'abcdefghijklmnopqrstuvwxyz0123456789=(){}[];:.'.split('');
-    // Code line displayed at top
-    const codeLine = 'const site = new Website()';
+    const lines = [
+      'npx create-next-app',
+      'export default function',
+      'className="flex gap-4"',
+      'npm run build',
+      'vercel --prod',
+    ];
+    let lineIndex = 0;
+    let charIndex = 0;
+    let totalCharsTyped = 0;
+    const startTime = Date.now();
+
+    const monoStyle = {
+      fontFamily: '"Press Start 2P", monospace',
+    };
 
     // Dark overlay
-    const overlay = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.8)
+    const overlay = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.85)
       .setScrollFactor(0).setDepth(300);
     objects.push(overlay);
 
-    // Terminal-style background
-    const terminal = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH - 200, GAME_HEIGHT - 200, 0x0a0a1a)
+    // Terminal background
+    const termW = GAME_WIDTH - 160;
+    const termH = GAME_HEIGHT - 140;
+    const terminal = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, termW, termH, 0x0a0a1a)
       .setScrollFactor(0).setDepth(300).setStrokeStyle(2, 0x30c060);
     objects.push(terminal);
 
-    // Title
-    const title = this.add.text(GAME_WIDTH / 2, 130, 'SHIP IT!', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '24px',
-      color: '#30c060',
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
-    objects.push(title);
-
-    // Code context line (scrolling effect)
-    const contextLine = this.add.text(GAME_WIDTH / 2, 190, `> ${codeLine}`, {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '12px',
-      color: '#4080c0',
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
-    objects.push(contextLine);
-
-    // Progress
-    const progressText = this.add.text(GAME_WIDTH / 2, 230, `0/${maxChars}`, {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '10px',
-      color: '#aaaacc',
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
-    objects.push(progressText);
-
-    // Target character — BIG in center
-    const targetChar = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 20, '', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '64px',
-      color: '#ffffff',
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(302);
-    objects.push(targetChar);
-
-    // Instruction
-    const instr = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 100, 'Type the character!', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '10px',
-      color: '#aaaacc',
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
-    objects.push(instr);
-
-    // Flash indicator (green/red)
-    const flash = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 20, 120, 100, 0x000000, 0)
+    // Title bar
+    const titleBar = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2 - termH / 2 + 14, termW, 28, 0x1a1a2e)
       .setScrollFactor(0).setDepth(301);
+    objects.push(titleBar);
+    const titleText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - termH / 2 + 14, 'BUILD THE SITE', {
+      ...monoStyle, fontSize: '10px', color: '#30c060',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(302);
+    objects.push(titleText);
+
+    // Progress bar background
+    const barY = GAME_HEIGHT / 2 - termH / 2 + 44;
+    const barW = termW - 60;
+    const barBg = this.add.rectangle(GAME_WIDTH / 2, barY, barW, 12, 0x1a1a2e)
+      .setScrollFactor(0).setDepth(301).setStrokeStyle(1, 0x333355);
+    objects.push(barBg);
+    // Progress bar fill
+    const barFill = this.add.rectangle(GAME_WIDTH / 2 - barW / 2, barY, 0, 12, 0x30c060)
+      .setOrigin(0, 0.5).setScrollFactor(0).setDepth(302);
+    objects.push(barFill);
+    // Progress label
+    const progressLabel = this.add.text(GAME_WIDTH / 2 + barW / 2 + 10, barY, '0%', {
+      ...monoStyle, fontSize: '8px', color: '#30c060',
+    }).setOrigin(0, 0.5).setScrollFactor(0).setDepth(302);
+    objects.push(progressLabel);
+
+    // WPM display
+    const wpmText = this.add.text(GAME_WIDTH / 2 + termW / 2 - 30, GAME_HEIGHT / 2 - termH / 2 + 14, '0 WPM', {
+      ...monoStyle, fontSize: '8px', color: '#aaaacc',
+    }).setOrigin(1, 0.5).setScrollFactor(0).setDepth(302);
+    objects.push(wpmText);
+
+    // Line number + prompt
+    const lineY = GAME_HEIGHT / 2 - 20;
+    const promptX = GAME_WIDTH / 2 - termW / 2 + 40;
+
+    const lineNumText = this.add.text(promptX - 20, lineY - 30, '1/5', {
+      ...monoStyle, fontSize: '8px', color: '#555577',
+    }).setOrigin(0, 0.5).setScrollFactor(0).setDepth(301);
+    objects.push(lineNumText);
+
+    // Target line (untyped chars in grey)
+    const targetText = this.add.text(promptX, lineY, '', {
+      ...monoStyle, fontSize: '14px', color: '#555577',
+    }).setOrigin(0, 0.5).setScrollFactor(0).setDepth(301);
+    objects.push(targetText);
+
+    // Typed text (green, overlaid on top)
+    const typedText = this.add.text(promptX, lineY, '', {
+      ...monoStyle, fontSize: '14px', color: '#30c060',
+    }).setOrigin(0, 0.5).setScrollFactor(0).setDepth(302);
+    objects.push(typedText);
+
+    // Blinking cursor
+    const cursor = this.add.text(promptX, lineY, '_', {
+      ...monoStyle, fontSize: '14px', color: '#ffffff',
+    }).setOrigin(0, 0.5).setScrollFactor(0).setDepth(303);
+    objects.push(cursor);
+
+    // Cursor blink
+    const cursorBlink = this.time.addEvent({
+      delay: 500,
+      loop: true,
+      callback: () => {
+        cursor.setAlpha(cursor.alpha === 1 ? 0 : 1);
+      },
+    });
+
+    // Red flash overlay (for wrong keypress)
+    const flash = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, termW, termH, 0xff4444, 0)
+      .setScrollFactor(0).setDepth(303);
     objects.push(flash);
 
-    // Typed so far line
-    const typedLine = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 160, '', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '14px',
-      color: '#30c060',
+    // Instruction text
+    const instrText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + termH / 2 - 30, 'Type each line to build the site', {
+      ...monoStyle, fontSize: '8px', color: '#555577',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
-    objects.push(typedLine);
+    objects.push(instrText);
 
-    let currentTarget = '';
-    let typedSoFar = '';
+    // "Line shipped!" text (hidden initially)
+    const shippedText = this.add.text(GAME_WIDTH / 2, lineY + 40, '', {
+      ...monoStyle, fontSize: '10px', color: '#30c060',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(302).setAlpha(0);
+    objects.push(shippedText);
 
-    const nextChar = () => {
-      if (total >= maxChars) {
+    // Completed lines display area
+    const completedTexts: Phaser.GameObjects.Text[] = [];
+    const completedStartY = lineY - 80;
+
+    const totalChars = lines.reduce((sum, l) => sum + l.length, 0);
+
+    const updateProgress = () => {
+      let charsCompleted = 0;
+      for (let i = 0; i < lineIndex; i++) charsCompleted += lines[i].length;
+      charsCompleted += charIndex;
+      const pct = Math.round((charsCompleted / totalChars) * 100);
+      barFill.setDisplaySize(barW * (pct / 100), 12);
+      progressLabel.setText(`${pct}%`);
+    };
+
+    const updateWPM = () => {
+      const elapsed = (Date.now() - startTime) / 1000 / 60; // minutes
+      if (elapsed <= 0) return;
+      const words = totalCharsTyped / 5; // standard: 5 chars = 1 word
+      const wpm = Math.round(words / elapsed);
+      wpmText.setText(`${wpm} WPM`);
+      return wpm;
+    };
+
+    const loadLine = () => {
+      if (lineIndex >= lines.length) {
         finishGame();
         return;
       }
-      currentTarget = codeChars[Phaser.Math.Between(0, codeChars.length - 1)];
-      targetChar.setText(currentTarget);
-      targetChar.setColor('#ffffff');
-      progressText.setText(`${total}/${maxChars}`);
+      charIndex = 0;
+      const line = lines[lineIndex];
+      targetText.setText(line);
+      typedText.setText('');
+      cursor.setX(promptX);
+      cursor.setAlpha(1);
+      lineNumText.setText(`${lineIndex + 1}/5`);
+      updateProgress();
+    };
+
+    const advanceLine = () => {
+      // Show completed line in the history area
+      const completedY = completedStartY + completedTexts.length * 18;
+      const done = this.add.text(promptX, completedY, `> ${lines[lineIndex]}`, {
+        ...monoStyle, fontSize: '8px', color: '#30c060',
+      }).setOrigin(0, 0.5).setScrollFactor(0).setDepth(301).setAlpha(0.5);
+      objects.push(done);
+      completedTexts.push(done);
+
+      // Flash "Line shipped!"
+      shippedText.setText('Line shipped!');
+      shippedText.setAlpha(1);
+      this.tweens.add({
+        targets: shippedText,
+        alpha: 0,
+        duration: 800,
+        delay: 400,
+      });
+
+      // Flash terminal border green
+      terminal.setStrokeStyle(3, 0x30c060);
+      this.time.delayedCall(300, () => {
+        terminal.setStrokeStyle(2, 0x30c060);
+      });
+
+      lineIndex++;
+      this.time.delayedCall(600, () => {
+        loadLine();
+      });
     };
 
     const finishGame = () => {
       active = false;
-      // Remove keyboard listener
+      cursorBlink.destroy();
       this.input.keyboard!.off('keydown', keyHandler);
+      this.input.off('pointerdown', pointerListener);
 
-      const accuracy = Math.round((correct / maxChars) * 100);
-      title.setText('DEPLOYED!');
-      targetChar.setText('');
-      instr.setText(`Site deployed! Client happy.`);
+      const elapsed = (Date.now() - startTime) / 1000;
+      const minutes = elapsed / 60;
+      const words = totalCharsTyped / 5;
+      const wpm = minutes > 0 ? Math.round(words / minutes) : 0;
 
-      const resultMsg = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 20, `${correct}/${maxChars} correct (${accuracy}%)`, {
-        fontFamily: '"Press Start 2P", monospace',
-        fontSize: '16px',
-        color: accuracy >= 80 ? '#30c060' : accuracy >= 50 ? '#f0c040' : '#ff4444',
+      // Clear typing area
+      targetText.setText('');
+      typedText.setText('');
+      cursor.setAlpha(0);
+      lineNumText.setText('');
+      instrText.setText('');
+
+      // Show results
+      titleText.setText('SITE DEPLOYED!');
+      titleText.setColor('#30c060');
+
+      const timeStr = elapsed < 60
+        ? `${elapsed.toFixed(1)}s`
+        : `${Math.floor(elapsed / 60)}m ${Math.round(elapsed % 60)}s`;
+
+      const resultText = this.add.text(GAME_WIDTH / 2, lineY - 10, `${wpm} WPM  //  ${timeStr}`, {
+        ...monoStyle, fontSize: '16px', color: '#ffffff',
       }).setOrigin(0.5).setScrollFactor(0).setDepth(302);
-      objects.push(resultMsg);
+      objects.push(resultText);
 
-      const flavor = accuracy >= 80
-        ? 'Clean code. Ship it.'
-        : accuracy >= 50
-        ? 'Some bugs, but it works. Ship it anyway.'
-        : 'Rough draft. But JP ships it and iterates.';
+      const flavor = wpm >= 60
+        ? 'Senior dev energy.'
+        : wpm >= 40
+        ? 'JP ships fast.'
+        : wpm >= 20
+        ? "Still learning. But it's live."
+        : 'Slow and steady. The site works.';
 
-      const flavorText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 70, flavor, {
-        fontFamily: '"Press Start 2P", monospace',
-        fontSize: '10px',
-        color: '#aaaacc',
-        align: 'center',
+      const flavorText = this.add.text(GAME_WIDTH / 2, lineY + 30, flavor, {
+        ...monoStyle, fontSize: '10px', color: '#aaaacc',
       }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
       objects.push(flavorText);
+
+      // Fill progress to 100%
+      barFill.setDisplaySize(barW, 12);
+      progressLabel.setText('100%');
+      wpmText.setText(`${wpm} WPM`);
 
       this.time.delayedCall(3000, () => {
         for (const obj of objects) {
@@ -211,83 +326,82 @@ export class ComeUpScene extends BaseChapterScene {
       });
     };
 
+    const handleCorrectChar = () => {
+      const line = lines[lineIndex];
+      typedText.setText(line.substring(0, charIndex + 1));
+      charIndex++;
+      totalCharsTyped++;
+
+      // Move cursor
+      // Approximate character width for "Press Start 2P" at 14px
+      cursor.setX(promptX + charIndex * 12.5);
+      cursor.setAlpha(1);
+
+      updateProgress();
+      updateWPM();
+
+      // Check if line complete
+      if (charIndex >= line.length) {
+        advanceLine();
+      }
+    };
+
     const keyHandler = (event: KeyboardEvent) => {
-      if (!active) return;
+      if (!active || lineIndex >= lines.length) return;
 
-      const pressed = event.key.toLowerCase();
-      // Only handle single printable characters
-      if (pressed.length !== 1) return;
+      const line = lines[lineIndex];
+      const expected = line[charIndex];
 
-      total++;
+      // Only handle single printable characters and space
+      if (event.key.length !== 1) return;
 
-      if (pressed === currentTarget) {
-        correct++;
-        typedSoFar += currentTarget;
-        typedLine.setText(typedSoFar);
+      if (event.key === expected) {
+        handleCorrectChar();
 
-        // Green flash
-        flash.setFillStyle(0x30c060, 0.3);
-        targetChar.setColor('#30c060');
+        // Green pulse on cursor
         this.tweens.add({
-          targets: flash,
-          alpha: 0,
-          duration: 200,
-        });
-
-        // Scale pop
-        this.tweens.add({
-          targets: targetChar,
-          scale: 1.3,
-          duration: 80,
+          targets: cursor,
+          scaleY: 1.3,
+          duration: 60,
           yoyo: true,
         });
       } else {
-        typedSoFar += '?';
-        typedLine.setText(typedSoFar);
-
-        // Red flash
-        flash.setFillStyle(0xff4444, 0.3);
-        targetChar.setColor('#ff4444');
+        // Wrong key — red flash, don't advance
+        flash.setFillStyle(0xff4444, 0.2);
+        flash.setAlpha(1);
         this.tweens.add({
           targets: flash,
           alpha: 0,
           duration: 200,
         });
 
-        // Shake
+        // Shake the target text
+        const origX = targetText.x;
         this.tweens.add({
-          targets: targetChar,
-          x: targetChar.x + 6,
+          targets: [targetText, typedText],
+          x: origX + 4,
           duration: 40,
           yoyo: true,
           repeat: 2,
+          onComplete: () => {
+            targetText.setX(origX);
+            typedText.setX(origX);
+          },
         });
       }
+    };
 
-      // Next character after brief delay
-      this.time.delayedCall(300, () => {
-        nextChar();
-      });
+    // Touch support — auto-complete current character
+    const pointerListener = () => {
+      if (!active || lineIndex >= lines.length) return;
+      handleCorrectChar();
     };
 
     this.input.keyboard!.on('keydown', keyHandler);
-
-    // Also support touch — show the current char and auto-succeed on tap
-    const pointerListener = () => {
-      if (!active) return;
-      // Touch counts as correct
-      total++;
-      correct++;
-      typedSoFar += currentTarget;
-      typedLine.setText(typedSoFar);
-      flash.setFillStyle(0x30c060, 0.3);
-      this.tweens.add({ targets: flash, alpha: 0, duration: 200 });
-      this.time.delayedCall(300, () => nextChar());
-    };
     this.input.on('pointerdown', pointerListener);
 
-    // Start
-    nextChar();
+    // Start first line
+    loadLine();
   }
 
   private playPaymentCutscene() {

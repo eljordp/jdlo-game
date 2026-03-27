@@ -1,3 +1,4 @@
+import Phaser from 'phaser';
 import { BaseChapterScene } from './BaseChapterScene';
 import { beachMap, MapData } from '../data/maps';
 import { beachDialogue } from '../data/story';
@@ -150,10 +151,34 @@ export class BeachScene extends BaseChapterScene {
   private playVolleyballMinigame() {
     this.frozen = true;
     const objects: Phaser.GameObjects.GameObject[] = [];
-    let points = 0;
-    let misses = 0;
-    const maxMisses = 3;
+    let jpScore = 0;
+    let oppScore = 0;
+    const winScore = 5;
     let active = true;
+    let rallyCount = 0;
+
+    // Court bounds
+    const courtLeft = 80;
+    const courtRight = GAME_WIDTH - 80;
+    const courtTop = 170;
+    const courtBottom = GAME_HEIGHT - 100;
+    const netX = GAME_WIDTH / 2;
+    const groundY = courtBottom - 30;
+
+    // Ball state
+    let ballX = GAME_WIDTH / 4;
+    let ballY = courtTop + 60;
+    let ballVX = 0;
+    let ballVY = 0;
+    const gravity = 0.15;
+    let ballSpeed = 5;
+    let ballOnJPSide = true;
+    let waitingForServe = true;
+    let oppReturning = false;
+    let pointScored = false;
+
+    // Opponent return delay (gets faster each rally)
+    let oppBaseDelay = 800;
 
     // Dark overlay
     const overlay = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.7)
@@ -161,89 +186,197 @@ export class BeachScene extends BaseChapterScene {
     objects.push(overlay);
 
     // Sand background
-    const sand = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH - 100, GAME_HEIGHT - 140, 0xd4b896)
+    const sand = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH - 60, GAME_HEIGHT - 120, 0xd4b896)
       .setScrollFactor(0).setDepth(300);
     objects.push(sand);
 
-    // Net line in the middle
-    const net = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, 4, GAME_HEIGHT - 200, 0xffffff, 0.4)
+    // Net
+    const net = this.add.rectangle(netX, (courtTop + courtBottom) / 2, 6, courtBottom - courtTop, 0xffffff, 0.5)
       .setScrollFactor(0).setDepth(301);
     objects.push(net);
 
+    // Net top bar
+    const netTop = this.add.rectangle(netX, courtTop, 30, 4, 0xffffff, 0.7)
+      .setScrollFactor(0).setDepth(301);
+    objects.push(netTop);
+
     // Title
-    const title = this.add.text(GAME_WIDTH / 2, 90, 'BEACH VOLLEYBALL', {
+    const title = this.add.text(GAME_WIDTH / 2, 80, 'BEACH VOLLEYBALL', {
       fontFamily: '"Press Start 2P", monospace',
       fontSize: '20px',
       color: '#f0c040',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(302);
     objects.push(title);
 
-    // Score + misses display
-    const scoreText = this.add.text(GAME_WIDTH / 2, 130, 'Score: 0  |  Misses: 0/3', {
+    // Score display
+    const scoreText = this.add.text(GAME_WIDTH / 2, 120, `JP: 0  |  OPP: 0`, {
       fontFamily: '"Press Start 2P", monospace',
-      fontSize: '11px',
+      fontSize: '14px',
       color: '#ffffff',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(302);
     objects.push(scoreText);
 
+    // Rally counter
+    const rallyText = this.add.text(GAME_WIDTH / 2, 150, '', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '10px',
+      color: '#f0c040',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(302);
+    objects.push(rallyText);
+
     // Instructions
-    const instr = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 60, 'LEFT/RIGHT to move, SPACE to bump!', {
+    const instr = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 50, 'UP/DOWN to move, SPACE to hit!', {
       fontFamily: '"Press Start 2P", monospace',
       fontSize: '10px',
       color: '#ffffff',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(302);
     objects.push(instr);
 
-    // JP paddle (sprite at bottom)
-    const jpPaddle = this.add.sprite(GAME_WIDTH / 2, GAME_HEIGHT - 160, this.getPlayerTexture(), 0)
+    // JP sprite (left side)
+    const jpSprite = this.add.sprite(GAME_WIDTH / 4, groundY - 30, this.getPlayerTexture(), 0)
       .setScale(5).setScrollFactor(0).setDepth(302);
-    objects.push(jpPaddle);
+    objects.push(jpSprite);
 
-    // Ball — white circle
-    let ballX = GAME_WIDTH / 2;
-    let ballY = 200;
-    let ballVX = Phaser.Math.Between(-2, 2);
-    let ballVY = 1;
-    const gravity = 0.12;
+    // Opponent sprite (right side)
+    const oppSprite = this.add.sprite(GAME_WIDTH * 3 / 4, groundY - 30, 'npc_inmate', 0)
+      .setScale(5).setScrollFactor(0).setDepth(302);
+    objects.push(oppSprite);
+
+    // Ball
     const ball = this.add.circle(ballX, ballY, 10, 0xffffff)
       .setScrollFactor(0).setDepth(303);
     objects.push(ball);
 
     // Ball shadow
-    const shadow = this.add.ellipse(ballX, GAME_HEIGHT - 140, 16, 6, 0x000000, 0.2)
+    const shadow = this.add.ellipse(ballX, groundY + 10, 16, 6, 0x000000, 0.2)
       .setScrollFactor(0).setDepth(301);
     objects.push(shadow);
 
     // Input
-    const leftKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
-    const rightKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
+    const upKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
+    const downKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
     const spaceKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
-    const resetBall = () => {
-      ballX = GAME_WIDTH / 2 + Phaser.Math.Between(-200, 200);
-      ballY = 200;
-      ballVX = Phaser.Math.Between(-3, 3);
-      ballVY = 0;
+    const updateRallyDisplay = () => {
+      if (rallyCount <= 1) {
+        rallyText.setText('');
+      } else if (rallyCount <= 3) {
+        rallyText.setText('!');
+      } else if (rallyCount <= 5) {
+        rallyText.setText('!!');
+      } else if (rallyCount <= 8) {
+        rallyText.setText('!!!');
+      } else {
+        rallyText.setText('RALLY!');
+      }
+    };
+
+    const serveBall = (toJP: boolean) => {
+      pointScored = false;
+      waitingForServe = false;
+      oppReturning = false;
+      rallyCount = 0;
+      ballSpeed = 5;
+      oppBaseDelay = 800;
+      updateRallyDisplay();
+
+      if (toJP) {
+        // Serve to JP's side
+        ballX = GAME_WIDTH / 4 + Phaser.Math.Between(-80, 80);
+        ballY = courtTop + 40;
+        ballVX = Phaser.Math.Between(-1, 1);
+        ballVY = 2;
+        ballOnJPSide = true;
+      } else {
+        // Serve to opponent's side
+        ballX = GAME_WIDTH * 3 / 4 + Phaser.Math.Between(-80, 80);
+        ballY = courtTop + 40;
+        ballVX = Phaser.Math.Between(-1, 1);
+        ballVY = 2;
+        ballOnJPSide = false;
+      }
       ball.setPosition(ballX, ballY);
       ball.setFillStyle(0xffffff);
+    };
+
+    const scorePoint = (jpScored: boolean) => {
+      if (pointScored) return;
+      pointScored = true;
+      rallyCount = 0;
+      updateRallyDisplay();
+
+      if (jpScored) {
+        jpScore++;
+        ball.setFillStyle(0x40c040);
+      } else {
+        oppScore++;
+        ball.setFillStyle(0xff4444);
+      }
+
+      scoreText.setText(`JP: ${jpScore}  |  OPP: ${oppScore}`);
+
+      // Check for game end
+      if (jpScore >= winScore || oppScore >= winScore) {
+        endGame();
+        return;
+      }
+
+      // Next serve after delay — loser receives
+      waitingForServe = true;
+      this.time.delayedCall(1200, () => {
+        if (!active) return;
+        serveBall(jpScored ? false : true);
+      });
+    };
+
+    const oppReturnBall = () => {
+      if (!active || pointScored || oppReturning) return;
+      oppReturning = true;
+
+      // Opponent delay decreases with rally count
+      const delay = Math.max(300, oppBaseDelay - rallyCount * 50);
+
+      this.time.delayedCall(delay, () => {
+        if (!active || pointScored) return;
+        oppReturning = false;
+
+        // Opponent hit animation
+        this.tweens.add({
+          targets: oppSprite,
+          scaleY: 5.5,
+          duration: 80,
+          yoyo: true,
+        });
+
+        rallyCount++;
+        ballSpeed = Math.min(10, 5 + rallyCount * 0.4);
+        updateRallyDisplay();
+
+        // Send ball to JP's side
+        const targetY = jpSprite.y + Phaser.Math.Between(-60, 60);
+        const angle = Math.atan2(targetY - ballY, (GAME_WIDTH / 4 + Phaser.Math.Between(-80, 80)) - ballX);
+        ballVX = Math.cos(angle) * ballSpeed;
+        ballVY = -(4 + Math.random() * 2); // Arc up
+        ballOnJPSide = true;
+      });
     };
 
     const endGame = () => {
       active = false;
       this.events.off('update', updateHandler);
 
-      title.setText(points >= 5 ? 'NICE GAME!' : points >= 3 ? 'NOT BAD!' : 'GAME OVER');
-      instr.setText(`Final score: ${points}`);
+      const jpWon = jpScore >= winScore;
+      title.setText(jpWon ? 'SET POINT!' : 'GAME OVER');
 
-      const msg = points >= 5
-        ? 'JP impresses the beach crew.'
-        : points >= 3
-        ? 'Solid effort. The volleyball players nod.'
-        : 'The volleyball rolls away. Someone else grabs it.';
+      const msg = jpWon
+        ? 'JP takes the set. Beach king.'
+        : "Not his day. But he'll be back.";
+
+      instr.setText(`Final: JP ${jpScore} - ${oppScore} OPP`);
 
       const result = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2, msg, {
         fontFamily: '"Press Start 2P", monospace',
-        fontSize: '11px',
+        fontSize: '12px',
         color: '#aaaacc',
         align: 'center',
         wordWrap: { width: 600 },
@@ -258,76 +391,105 @@ export class BeachScene extends BaseChapterScene {
       });
     };
 
-    const updateHandler = () => {
-      if (!active) return;
+    // Start with serve to JP
+    this.time.delayedCall(500, () => {
+      serveBall(true);
+    });
 
-      // Move JP left/right
-      if (leftKey.isDown) {
-        jpPaddle.x -= 5;
-      } else if (rightKey.isDown) {
-        jpPaddle.x += 5;
+    const updateHandler = () => {
+      if (!active || waitingForServe) return;
+
+      // Move JP up/down
+      if (upKey.isDown) {
+        jpSprite.y -= 4;
+      } else if (downKey.isDown) {
+        jpSprite.y += 4;
       }
-      jpPaddle.x = Phaser.Math.Clamp(jpPaddle.x, 100, GAME_WIDTH - 100);
+      jpSprite.y = Phaser.Math.Clamp(jpSprite.y, courtTop + 30, groundY - 10);
 
       // Ball physics
       ballVY += gravity;
       ballX += ballVX;
       ballY += ballVY;
 
-      // Bounce off side walls
-      if (ballX < 80 || ballX > GAME_WIDTH - 80) {
-        ballVX *= -1;
-        ballX = Phaser.Math.Clamp(ballX, 80, GAME_WIDTH - 80);
+      // Keep ball in court horizontally
+      if (ballX < courtLeft) {
+        ballX = courtLeft;
+        ballVX = Math.abs(ballVX);
+      }
+      if (ballX > courtRight) {
+        ballX = courtRight;
+        ballVX = -Math.abs(ballVX);
       }
 
+      // Track which side ball is on
+      ballOnJPSide = ballX < netX;
+
       ball.setPosition(ballX, ballY);
-      shadow.setPosition(ballX, GAME_HEIGHT - 140);
+      shadow.setPosition(ballX, groundY + 10);
 
-      // Check if space pressed AND ball is near JP
-      if (spaceKey.isDown && ballY > GAME_HEIGHT - 210 && ballY < GAME_HEIGHT - 120) {
-        const dist = Math.abs(ballX - jpPaddle.x);
-        if (dist < 50) {
-          // Bump! Ball goes back up
-          ballVY = -(6 + Math.random() * 3);
-          ballVX = (ballX - jpPaddle.x) * 0.1 + Phaser.Math.Between(-2, 2);
-          points++;
-          scoreText.setText(`Score: ${points}  |  Misses: ${misses}/${maxMisses}`);
-
-          // Flash ball green
-          ball.setFillStyle(0x40c040);
-          this.time.delayedCall(150, () => {
-            if (ball.active) ball.setFillStyle(0xffffff);
-          });
-
-          // Bump animation on JP
+      // Player hits ball when SPACE pressed and ball is near JP on JP's side
+      if (spaceKey.isDown && ballOnJPSide && !pointScored) {
+        const distX = Math.abs(ballX - jpSprite.x);
+        const distY = Math.abs(ballY - jpSprite.y);
+        if (distX < 60 && distY < 60) {
+          // Hit! Send ball to opponent's side
           this.tweens.add({
-            targets: jpPaddle,
+            targets: jpSprite,
             scaleY: 5.5,
             duration: 80,
             yoyo: true,
           });
-        }
-      }
 
-      // Ball went off bottom — miss
-      if (ballY > GAME_HEIGHT - 60) {
-        misses++;
-        scoreText.setText(`Score: ${points}  |  Misses: ${misses}/${maxMisses}`);
+          rallyCount++;
+          ballSpeed = Math.min(10, 5 + rallyCount * 0.4);
+          updateRallyDisplay();
 
-        if (misses >= maxMisses) {
-          endGame();
-        } else {
-          // Flash red
-          ball.setFillStyle(0xff4444);
-          this.time.delayedCall(500, () => {
-            resetBall();
+          // Arc ball to opponent's side
+          const targetX = GAME_WIDTH * 3 / 4 + Phaser.Math.Between(-80, 80);
+          ballVX = (targetX - ballX) / 40;
+          ballVY = -(5 + Math.random() * 2);
+
+          ball.setFillStyle(0x40c040);
+          this.time.delayedCall(150, () => {
+            if (ball.active) ball.setFillStyle(0xffffff);
           });
         }
       }
 
-      // Ball went off top — bounce it back
-      if (ballY < 160) {
-        ballVY = Math.abs(ballVY) * 0.8;
+      // Ball hits ground — point scored
+      if (ballY > groundY && !pointScored) {
+        if (ballOnJPSide) {
+          // Ball hit JP's ground — opponent scores
+          scorePoint(false);
+        } else {
+          // Ball hit opponent's ground — JP scores
+          scorePoint(true);
+        }
+        return;
+      }
+
+      // Opponent AI — when ball is on their side and falling, they return it
+      if (!ballOnJPSide && ballVY > 0 && !oppReturning && !pointScored) {
+        // Move opponent toward ball
+        if (oppSprite.y < ballY - 20) {
+          oppSprite.y += 3;
+        } else if (oppSprite.y > ballY + 20) {
+          oppSprite.y -= 3;
+        }
+        oppSprite.y = Phaser.Math.Clamp(oppSprite.y, courtTop + 30, groundY - 10);
+
+        // When ball is close enough, trigger return
+        const distX = Math.abs(ballX - oppSprite.x);
+        const distY = Math.abs(ballY - oppSprite.y);
+        if (distX < 80 && distY < 80) {
+          oppReturnBall();
+        }
+      }
+
+      // Ball goes above screen — bring it back
+      if (ballY < courtTop - 50) {
+        ballVY = Math.abs(ballVY) * 0.5;
       }
     };
 
