@@ -2,7 +2,7 @@ import { BaseChapterScene } from './BaseChapterScene';
 import { operatorMap, MapData } from '../data/maps';
 import { operatorDialogue } from '../data/story';
 import type { DialogueLine } from '../systems/DialogueSystem';
-import { GAME_WIDTH, GAME_HEIGHT, SCALE, TILE_SIZE } from '../config';
+import { GAME_WIDTH, GAME_HEIGHT, SCALE, TILE_SIZE, SCALED_TILE } from '../config';
 import { Analytics } from '../systems/Analytics';
 
 export class OperatorScene extends BaseChapterScene {
@@ -32,14 +32,63 @@ export class OperatorScene extends BaseChapterScene {
     // Exit south -- head to Vegas (row 57 visible, triggers at 58)
     this.addNavArrow(19, 57, 'Vegas');
 
-    // --- C8 Corvette sprite at parking spot (x:20, y:51) ---
-    const carX = 20 * TILE_SIZE * SCALE + (TILE_SIZE * SCALE) / 2;
-    const carY = 51 * TILE_SIZE * SCALE + (TILE_SIZE * SCALE) / 2;
-    const car = this.add.rectangle(carX, carY, TILE_SIZE * SCALE * 2, TILE_SIZE * SCALE, 0x2a5a3a);
-    car.setDepth(5);
-    // Metallic sheen highlight
-    const carHighlight = this.add.rectangle(carX, carY - 6, TILE_SIZE * SCALE * 1.6, TILE_SIZE * SCALE * 0.3, 0x4a8a5a, 0.5);
-    carHighlight.setDepth(6);
+    // --- C8 Corvette + Lambo SVJ parked side by side ---
+    const c8X = 19 * SCALED_TILE + SCALED_TILE / 2;
+    const c8Y = 51 * SCALED_TILE + SCALED_TILE / 2;
+    const c8 = this.add.sprite(c8X, c8Y, 'car-corvette-c8').setScale(SCALE).setDepth(5);
+    this.collisionTiles.add('18,51'); this.collisionTiles.add('19,51'); this.collisionTiles.add('20,51');
+
+    const svjX = 23 * SCALED_TILE + SCALED_TILE / 2;
+    const svjY = 51 * SCALED_TILE + SCALED_TILE / 2;
+    const svj = this.add.sprite(svjX, svjY, 'car-lambo-svj').setScale(SCALE).setDepth(5);
+    this.collisionTiles.add('22,51'); this.collisionTiles.add('23,51'); this.collisionTiles.add('24,51');
+
+    // --- Gym equipment (inside gym building ~rows 37-42, cols 3-12) ---
+    // Bench press
+    const benchX = 6 * SCALED_TILE + SCALED_TILE / 2;
+    const benchY = 39 * SCALED_TILE + SCALED_TILE / 2;
+    this.add.rectangle(benchX, benchY, 28, 14, 0x505060).setDepth(5); // bench
+    this.add.rectangle(benchX, benchY - 8, 36, 3, 0x808090).setDepth(6); // barbell
+    this.add.circle(benchX - 18, benchY - 8, 6, 0x404050).setDepth(6); // left plate
+    this.add.circle(benchX + 18, benchY - 8, 6, 0x404050).setDepth(6); // right plate
+
+    // Dumbbells rack
+    const rackX = 10 * SCALED_TILE + SCALED_TILE / 2;
+    const rackY = 38 * SCALED_TILE + SCALED_TILE / 2;
+    for (let i = 0; i < 5; i++) {
+      this.add.rectangle(rackX + i * 10 - 20, rackY, 8, 6, 0x606070).setDepth(5);
+      this.add.circle(rackX + i * 10 - 20 - 4, rackY, 3, 0x505060).setDepth(5);
+      this.add.circle(rackX + i * 10 - 20 + 4, rackY, 3, 0x505060).setDepth(5);
+    }
+
+    // Pull-up bar
+    const pullupX = 5 * SCALED_TILE + SCALED_TILE / 2;
+    const pullupY = 41 * SCALED_TILE;
+    this.add.rectangle(pullupX, pullupY, 40, 3, 0x808090).setDepth(6); // bar
+    this.add.rectangle(pullupX - 18, pullupY, 3, 20, 0x606070).setDepth(5); // left post
+    this.add.rectangle(pullupX + 18, pullupY, 3, 20, 0x606070).setDepth(5); // right post
+
+    // --- Coffee shop details (inside ~rows 37-42, cols 14-19) ---
+    // Espresso machine
+    const espressoX = 16 * SCALED_TILE + SCALED_TILE / 2;
+    const espressoY = 38 * SCALED_TILE + SCALED_TILE / 2;
+    this.add.rectangle(espressoX, espressoY, 18, 14, 0x404048).setDepth(5); // machine body
+    this.add.rectangle(espressoX, espressoY - 6, 12, 4, 0x808088).setDepth(6); // chrome top
+    this.add.circle(espressoX - 4, espressoY + 2, 2, 0x30c060).setDepth(6); // green light
+
+    // Matcha cup on counter
+    const matchaX = 17 * SCALED_TILE;
+    const matchaY = 40 * SCALED_TILE + SCALED_TILE / 2;
+    this.add.circle(matchaX, matchaY, 5, 0x80c060).setDepth(6); // matcha green cup
+    this.add.circle(matchaX, matchaY, 3, 0xa0e080).setDepth(7); // foam top
+
+    // Menu board on wall
+    const menuX = 15 * SCALED_TILE + SCALED_TILE / 2;
+    const menuY = 37 * SCALED_TILE + 10;
+    this.add.rectangle(menuX, menuY, 30, 20, 0x1a1a2a).setDepth(5); // chalkboard
+    this.add.text(menuX, menuY, 'MENU', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '4px', color: '#ffffff',
+    }).setOrigin(0.5).setDepth(6);
 
     // --- Ambient office atmosphere ---
 
@@ -169,6 +218,7 @@ export class OperatorScene extends BaseChapterScene {
     // Client pitch presentation (big_client or client2)
     if (interactable.id === 'ch6_portfolio') {
       Analytics.trackInteraction(interactable.id);
+      this.pitchDone = true;
       this.playClientPitch();
       this.interactions.consume(interactable.id);
       return;
