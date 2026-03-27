@@ -1,11 +1,13 @@
 import Phaser from 'phaser';
 import { BaseChapterScene } from './BaseChapterScene';
 import { jailMap, MapData } from '../data/maps';
-import { jailDialogue } from '../data/story';
+import { jailDay1Dialogue, jailDay2Dialogue, jailDay3Dialogue } from '../data/story';
 import { GAME_WIDTH, GAME_HEIGHT } from '../config';
 import type { DialogueLine } from '../systems/DialogueSystem';
 
 export class JailScene extends BaseChapterScene {
+  private currentDay = 1;
+
   constructor() {
     super({ key: 'JailScene' });
     this.chapterTitle = 'Chapter 4: Locked Up';
@@ -22,6 +24,7 @@ export class JailScene extends BaseChapterScene {
   }
 
   create() {
+    this.currentDay = 1;
     super.create();
     // Exit triggers at y=25, x=17-18
     this.addNavArrow(17, 24, 'Freedom');
@@ -36,35 +39,176 @@ export class JailScene extends BaseChapterScene {
   }
 
   getChapterDialogue(): { intro: DialogueLine[]; npcs: Record<string, DialogueLine[]> } {
-    return jailDialogue;
+    if (this.currentDay === 3) return jailDay3Dialogue;
+    if (this.currentDay === 2) return jailDay2Dialogue;
+    return jailDay1Dialogue;
   }
 
   protected handleInteractable(interactable: { id: string; type: string; consumed?: boolean }) {
     if (interactable.id === 'ch3_bed') {
-      this.playTimeSkip();
-      this.interactions.consume(interactable.id);
+      this.handleBedInteraction();
       return;
     }
 
-    if (interactable.id === 'ch3_pushups') {
+    // Pushup minigame — available Day 2+
+    if (interactable.id === 'ch3_pushups' && this.currentDay >= 2) {
       this.playPushupMinigame();
       this.interactions.consume(interactable.id);
       return;
     }
 
-    if (interactable.id === 'ch3_dice_watch') {
+    // Dice minigame — available Day 2
+    if (interactable.id === 'ch3_dice_watch' && this.currentDay >= 2) {
       this.playDiceMinigame();
       this.interactions.consume(interactable.id);
       return;
     }
 
-    if (interactable.id === 'ch3_fight_watch') {
+    // Battle — available Day 1
+    if (interactable.id === 'ch3_fight_watch' && this.currentDay === 1) {
       this.playBattleScene();
       this.interactions.consume(interactable.id);
       return;
     }
 
     super.handleInteractable(interactable);
+  }
+
+  private handleBedInteraction() {
+    // Get bed dialogue for current day
+    const chapterDialogue = this.getChapterDialogue();
+    const bedLines = chapterDialogue.npcs['ch3_bed'];
+
+    if (this.currentDay === 1) {
+      // Show Day 1 bed dialogue, then transition to Day 2
+      if (bedLines) {
+        this.dialogue.show(bedLines, () => {
+          this.playDayTransition('3 months later...', () => {
+            this.currentDay = 2;
+            this.refreshDayDialogue();
+            this.interactions.resetAll();
+          });
+        });
+      }
+    } else if (this.currentDay === 2) {
+      // Show Day 2 bed dialogue, then transition to Day 3
+      if (bedLines) {
+        this.dialogue.show(bedLines, () => {
+          this.playDayTransition('6 months later...', () => {
+            this.currentDay = 3;
+            this.refreshDayDialogue();
+            this.interactions.resetAll();
+          });
+        });
+      }
+    } else {
+      // Day 3 — show final bed dialogue, then play montage and release
+      if (bedLines) {
+        this.dialogue.show(bedLines, () => {
+          this.playFinalMontage();
+        });
+      }
+    }
+  }
+
+  /**
+   * After changing day, update all NPC dialogue references to match the new day.
+   */
+  private refreshDayDialogue() {
+    const chapterDialogue = this.getChapterDialogue();
+    for (const npc of this.npcs) {
+      npc.dialogue = chapterDialogue.npcs[npc.id] || [{ text: '...' }];
+    }
+  }
+
+  /**
+   * Show a black screen with white text (e.g., "3 months later...")
+   * then fade back to gameplay and call the callback.
+   */
+  private playDayTransition(text: string, callback: () => void) {
+    this.frozen = true;
+
+    const bg = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000)
+      .setScrollFactor(0).setDepth(200).setAlpha(0);
+
+    // Fade to black
+    this.tweens.add({
+      targets: bg,
+      alpha: 1,
+      duration: 800,
+      ease: 'Quad.easeIn',
+      onComplete: () => {
+        // Show transition text
+        const transText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2, text, {
+          fontFamily: '"Press Start 2P", monospace',
+          fontSize: '20px',
+          color: '#ffffff',
+        }).setOrigin(0.5).setScrollFactor(0).setDepth(201).setAlpha(0);
+
+        // Fade in text
+        this.tweens.add({
+          targets: transText,
+          alpha: 1,
+          duration: 600,
+          ease: 'Quad.easeOut',
+          onComplete: () => {
+            // Hold for 2 seconds
+            this.time.delayedCall(2000, () => {
+              // Fade out text
+              this.tweens.add({
+                targets: transText,
+                alpha: 0,
+                duration: 500,
+                ease: 'Quad.easeIn',
+                onComplete: () => {
+                  transText.destroy();
+
+                  // Run callback (changes day, resets interactions)
+                  callback();
+
+                  // Fade back to gameplay
+                  this.tweens.add({
+                    targets: bg,
+                    alpha: 0,
+                    duration: 800,
+                    ease: 'Quad.easeOut',
+                    onComplete: () => {
+                      bg.destroy();
+                      this.frozen = false;
+                    },
+                  });
+                },
+              });
+            });
+          },
+        });
+      },
+    });
+  }
+
+  /**
+   * Day 3 final montage: time skip beats then transition to ReleaseScene.
+   */
+  private playFinalMontage() {
+    this.frozen = true;
+
+    const steps = [
+      { day: 'Day 270', desc: '50 pushups every morning.\nReading two books a week.\nDifferent person.', hold: 1500 },
+      { day: 'Day 365', desc: "The doors open.\nJP walks out.\nNot the same kid who walked in.", hold: 2500 },
+    ];
+
+    const bg = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000)
+      .setScrollFactor(0).setDepth(200).setAlpha(0);
+
+    this.tweens.add({
+      targets: bg,
+      alpha: 1,
+      duration: 1200,
+      ease: 'Quad.easeIn',
+      onComplete: () => {
+        this.playTimeSkipStep(steps, 0, bg);
+      },
+    });
   }
 
   private playPushupMinigame() {
@@ -1260,33 +1404,7 @@ export class JailScene extends BaseChapterScene {
     spaceKey.on('down', onConfirm);
   }
 
-  private playTimeSkip() {
-    this.frozen = true;
-
-    const steps = [
-      { day: 'Day 1', desc: "First night. Can't sleep.", hold: 1000 },
-      { day: 'Day 30', desc: 'Started reading. First book in years.', hold: 1000 },
-      { day: 'Day 90', desc: 'Enrolled in a psychology course.\nCollege credit from behind bars.', hold: 1000 },
-      { day: 'Day 180', desc: "Happy 21st birthday.\nNo cake. No candles.\nJust concrete walls.", hold: 2000, shake: true },
-      { day: 'Day 270', desc: '50 pushups every morning.\nReading two books a week.\nDifferent person.', hold: 1000 },
-      { day: 'Day 365', desc: "The doors open.\nJP walks out.\nNot the same kid who walked in.", hold: 2000 },
-    ];
-
-    // Full-screen black overlay
-    const bg = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000)
-      .setScrollFactor(0).setDepth(200).setAlpha(0);
-
-    // Fade to black first
-    this.tweens.add({
-      targets: bg,
-      alpha: 1,
-      duration: 1200,
-      ease: 'Quad.easeIn',
-      onComplete: () => {
-        this.playTimeSkipStep(steps, 0, bg);
-      },
-    });
-  }
+  // playTimeSkip removed — replaced by day system + playFinalMontage
 
   private playTimeSkipStep(
     steps: { day: string; desc: string; hold: number; shake?: boolean }[],

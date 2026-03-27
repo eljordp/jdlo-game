@@ -376,23 +376,23 @@ export const jailMap: MapData = {
   spawns: {
     player: { x: 3, y: 7 }, // JP's cell (cell3)
     npcs: [
-      // --- Existing NPCs ---
-      { id: 'ch3_cellmate', x: 2, y: 7,  sprite: 'npc_inmate' },   // in JP's cell (corner, not blocking door)
-      { id: 'ch3_guard',    x: 17, y: 12, sprite: 'npc_guard' },    // guard station (right side, not blocking)
-      { id: 'ch3_inmate1',  x: 4, y: 2,  sprite: 'npc_inmate' },   // cell 1 (back of cell)
-      { id: 'ch3_inmate2',  x: 7, y: 3,  sprite: 'npc_inmate2' },  // cell 2 (back of cell)
-      { id: 'ch3_inmate3',  x: 7, y: 7,  sprite: 'npc_inmate3' },  // cell 4 (back of cell)
-      { id: 'ch3_inmate4',  x: 4, y: 10, sprite: 'npc_inmate4' },  // cell 5 (back of cell)
-      { id: 'ch3_mind',     x: 14, y: 14, sprite: 'npc_mirror' },   // bottom of hallway (wide open space)
+      // --- JP's crew ---
+      { id: 'ch3_mikey',    x: 2, y: 7,  sprite: 'npc_inmate' },    // in JP's cell (corner, not blocking door)
+      { id: 'ch3_chris',    x: 7, y: 3,  sprite: 'npc_inmate2' },   // cell 2 (back of cell)
+      { id: 'ch3_bird',     x: 7, y: 7,  sprite: 'npc_inmate3' },   // cell 4 (back of cell)
+      { id: 'ch3_og',       x: 4, y: 10, sprite: 'npc_inmate4' },   // cell 5 (back of cell)
+      { id: 'ch3_guard',    x: 17, y: 12, sprite: 'npc_guard' },     // guard station (right side, not blocking)
+      { id: 'ch3_mind',     x: 14, y: 14, sprite: 'npc_mirror' },    // bottom of hallway (wide open space)
 
-      // --- New NPCs ---
-      { id: 'ch3_fighter1', x: 22, y: 4,  sprite: 'npc_inmate3' },  // common area (not on main path)
-      { id: 'ch3_fighter2', x: 23, y: 5,  sprite: 'npc_inmate2' },  // near fighter1
-      { id: 'ch3_dice1',    x: 30, y: 7,  sprite: 'npc_inmate' },   // dice corner (right side)
-      { id: 'ch3_dice2',    x: 32, y: 8,  sprite: 'npc_inmate4' },  // with dice1
-      { id: 'ch3_tattoo',   x: 27, y: 3,  sprite: 'npc_inmate2' },  // common area corner
-      { id: 'ch3_smoker',   x: 4, y: 20,  sprite: 'npc_inmate4' },  // yard corner
-      { id: 'ch3_pullups',  x: 8, y: 17,  sprite: 'npc_inmate3' },  // near pull-up bars
+      // --- Other inmates ---
+      { id: 'ch3_fighter1', x: 22, y: 4,  sprite: 'npc_inmate3' },   // common area (not on main path)
+      { id: 'ch3_fighter2', x: 23, y: 5,  sprite: 'npc_inmate2' },   // near fighter1
+      { id: 'ch3_dice1',    x: 30, y: 7,  sprite: 'npc_inmate' },    // dice corner (right side)
+      { id: 'ch3_dice2',    x: 32, y: 8,  sprite: 'npc_inmate4' },   // with dice1
+      { id: 'ch3_tattoo',   x: 27, y: 3,  sprite: 'npc_inmate2' },   // common area corner
+      { id: 'ch3_smoker',   x: 4, y: 20,  sprite: 'npc_inmate4' },   // yard corner
+      { id: 'ch3_pullups',  x: 8, y: 17,  sprite: 'npc_inmate3' },   // near pull-up bars
+      { id: 'ch3_book_inmate', x: 4, y: 2, sprite: 'npc_inmate' },   // cell 1 (study inmate)
     ],
   },
   triggers: [
@@ -400,29 +400,43 @@ export const jailMap: MapData = {
     { x: 18, y: 25, action: 'scene', target: 'TractorScene' },
   ],
   interactables: [
-    // --- Existing interactables (moved to valid positions) ---
+    // --- Cell scratches ---
     { id: 'ch3_wall_1',  x: 2, y: 7,  type: 'scratch', glow: true, sprite: 'item-scratch' },   // JP's cell wall
     { id: 'ch3_wall_2',  x: 2, y: 8,  type: 'scratch', glow: true, sprite: 'item-scratch' },   // JP's cell wall
     { id: 'ch3_wall_3',  x: 14, y: 12, type: 'scratch', glow: true, sprite: 'item-scratch' },  // guard station
     { id: 'ch3_wall_4',  x: 5, y: 11, type: 'scratch', glow: true, sprite: 'item-scratch' },   // hallway wall
-    { id: 'ch3_book',    x: 4, y: 8,  type: 'examine', glow: true, sprite: 'item-book' },   // JP's cell
-    { id: 'ch3_pushups', x: 10, y: 17, type: 'examine', glow: true, sprite: 'item-weights' },  // yard
 
-    // --- New interactables ---
-    { id: 'ch3_phone',       x: 9, y: 11,  type: 'examine', glow: true, sprite: 'item-phone' },  // hallway phone
-    { id: 'ch3_tablet',      x: 30, y: 18, type: 'examine', glow: true, sprite: 'item-tablet' },  // study corner
-    { id: 'ch3_music',       x: 30, y: 19, type: 'examine', glow: true, sprite: 'item-headphones' },  // study corner
-    { id: 'ch3_bed',         x: 3, y: 8,   type: 'examine', glow: true, sprite: 'item-bed' },  // JP's bunk
-    { id: 'ch3_toilet',      x: 2, y: 6,   type: 'examine', glow: true, sprite: 'item-toilet' },  // JP's cell
-    { id: 'ch3_window',      x: 13, y: 14, type: 'examine', glow: true, sprite: 'item-window' },  // small window in hallway
-    { id: 'ch3_dice_watch',  x: 29, y: 8,  type: 'examine', glow: true, sprite: 'item-dice' },  // watching dice
-    { id: 'ch3_fight_watch', x: 20, y: 3,  type: 'examine', glow: true },  // watching fight
+    // --- JP's cell items ---
+    { id: 'ch3_bed',         x: 3, y: 6,   type: 'examine', glow: true, sprite: 'item-bed' },      // BACK of JP's cell (top corner)
+    { id: 'ch3_toilet',      x: 2, y: 6,   type: 'examine', glow: true, sprite: 'item-toilet' },   // JP's cell
+    { id: 'ch3_book',        x: 4, y: 8,   type: 'examine', glow: true, sprite: 'item-book' },     // JP's cell
+    { id: 'ch3_letter_home', x: 4, y: 6,   type: 'examine', glow: true, sprite: 'item-letter' },   // JP's cell
 
-    // --- Transformation interactables ---
-    { id: 'ch3_birthday',       x: 25, y: 20, type: 'examine', glow: true },                          // yard, open area
-    { id: 'ch3_psych_course',   x: 31, y: 18, type: 'examine', glow: true, sprite: 'item-book' },     // near study corner
-    { id: 'ch3_transformation', x: 12, y: 14, type: 'examine', glow: true },                          // hallway
-    { id: 'ch3_letter_home',    x: 4,  y: 6,  type: 'examine', glow: true, sprite: 'item-letter' },   // JP's cell
+    // --- Hallway / common ---
+    { id: 'ch3_phone',       x: 9, y: 11,  type: 'examine', glow: true, sprite: 'item-phone' },    // hallway phone
+    { id: 'ch3_window',      x: 13, y: 14, type: 'examine', glow: true, sprite: 'item-window' },   // small window in hallway
+    { id: 'ch3_transformation', x: 12, y: 14, type: 'examine', glow: true },                        // hallway mirror
+
+    // --- Common area ---
+    { id: 'ch3_commissary',  x: 25, y: 4,  type: 'examine', glow: true },                          // commissary counter
+    { id: 'ch3_fight_watch', x: 20, y: 3,  type: 'examine', glow: true },                          // watching fight
+    { id: 'ch3_dice_watch',  x: 29, y: 8,  type: 'examine', glow: true, sprite: 'item-dice' },     // watching dice
+    { id: 'ch3_anger_management', x: 21, y: 8, type: 'examine', glow: true },                      // anger mgmt poster
+
+    // --- Yard ---
+    { id: 'ch3_pushups',     x: 10, y: 17, type: 'examine', glow: true, sprite: 'item-weights' },  // yard
+    { id: 'ch3_yard',        x: 15, y: 20, type: 'examine', glow: true },                          // open yard area
+    { id: 'ch3_birthday',    x: 25, y: 20, type: 'examine', glow: true },                          // yard, open area
+    { id: 'ch3_faith',       x: 6, y: 19,  type: 'examine', glow: true },                          // quiet corner of yard
+
+    // --- Study corner ---
+    { id: 'ch3_tablet',      x: 30, y: 18, type: 'examine', glow: true, sprite: 'item-tablet' },   // study corner
+    { id: 'ch3_music',       x: 30, y: 19, type: 'examine', glow: true, sprite: 'item-headphones' }, // study corner
+    { id: 'ch3_psych_course', x: 31, y: 18, type: 'examine', glow: true, sprite: 'item-book' },    // near study corner
+
+    // --- Mirrors (different locations) ---
+    { id: 'ch3_mirror_day2', x: 10, y: 11, type: 'examine', glow: true },                          // hallway mirror
+    { id: 'ch3_mirror_day3', x: 28, y: 18, type: 'examine', glow: true },                          // study area mirror
   ],
 };
 

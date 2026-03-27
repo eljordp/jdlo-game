@@ -412,24 +412,48 @@ export const chapter3IntroText: string[] = [
 
 export const chapter3NPCs: NPCData[] = [
   {
-    id: 'ch3_cellmate',
+    id: 'ch3_mikey',
     x: 4,
     y: 6,
     sprite: 'npc_inmate',
     dialogue: [
-      { speaker: 'OG', text: 'First time?' },
-      { speaker: 'JP', text: 'Yeah.' },
-      { speaker: 'OG', text: 'I been here three times. Don\'t be like me.' },
-      { speaker: 'OG', text: 'Most dudes in here had one moment where they could\'ve walked away. They didn\'t.' },
-      { speaker: 'OG', text: 'What about you? What was your moment?', choices: [
-        { text: '"I should\'ve stayed home."', next: [
-          { speaker: 'OG', text: 'Yeah. But you didn\'t. So now what?' },
-        ]},
-        { text: '"I don\'t know. It all happened so fast."', next: [
-          { speaker: 'OG', text: 'It always does. The smart ones learn from it. The rest come back.' },
-        ]},
-      ]},
-      { speaker: 'OG', text: 'When you get out — and you will — don\'t come back. That\'s the only thing that matters.' },
+      { speaker: 'Mikey', text: 'Bro, keep your head down. First week is the worst.' },
+      { speaker: 'Mikey', text: 'I been here 8 months. You learn who to trust real quick.' },
+      { speaker: 'Mikey', text: 'Don\'t talk to nobody you don\'t know. And don\'t look at nobody\'s food.' },
+    ],
+  },
+  {
+    id: 'ch3_chris',
+    x: 7,
+    y: 3,
+    sprite: 'npc_inmate2',
+    dialogue: [
+      { speaker: 'Chris', text: 'JP? Damn. When\'d they get you?' },
+      { speaker: 'Chris', text: 'Don\'t worry, we got you in here. Mikey, Bird, and me.' },
+      { speaker: 'Chris', text: 'Just don\'t do nothing stupid the first month.' },
+    ],
+  },
+  {
+    id: 'ch3_bird',
+    x: 7,
+    y: 7,
+    sprite: 'npc_inmate3',
+    dialogue: [
+      { speaker: 'Bird', text: 'Ayo JP, I saved you a spot in the cell block. Top bunk.' },
+      { speaker: 'Bird', text: 'Food\'s trash but commissary hits different. I\'ll put you on.' },
+    ],
+  },
+  {
+    id: 'ch3_og',
+    x: 4,
+    y: 10,
+    sprite: 'npc_inmate4',
+    dialogue: [
+      { speaker: 'OG Inmate', text: 'Fresh fish. What you in for?' },
+      { speaker: 'JP', text: 'Attempted murder.' },
+      { speaker: 'OG Inmate', text: '...you don\'t look like the type.' },
+      { speaker: 'JP', text: 'I\'m not.' },
+      { speaker: 'OG Inmate', text: 'Then keep your head down and you might make it out.' },
     ],
   },
   {
@@ -438,10 +462,8 @@ export const chapter3NPCs: NPCData[] = [
     y: 13,
     sprite: 'npc_guard',
     dialogue: [
-      { speaker: 'Guard', text: 'You\'re quieter than most of the new ones.' },
-      { speaker: 'JP', text: 'Nothing to say.' },
-      { speaker: 'Guard', text: 'That\'s the smartest thing I\'ve heard in here all week.' },
-      { speaker: 'Guard', text: 'Keep that energy when you\'re out. Loud gets you caught. Quiet gets you somewhere.' },
+      { speaker: 'Guard', text: 'New intake. Lopez. Cell 3.' },
+      { speaker: 'Guard', text: 'Don\'t make me learn your name for the wrong reasons.' },
     ],
   },
   {
@@ -1347,54 +1369,43 @@ const ch2Extras: Record<string, DialogueLine[]> = {
   ],
 };
 
-// ─── Chapter 3 inmate dialogue + interactables ──────────────────────
+// ─── Chapter 3: Day-based NPC dialogue ──────────────────────────────
+// Each NPC has dialogue for Day 1, Day 2, and Day 3.
+// JailScene swaps which set is active based on currentDay.
 
-const ch3InmateDialogue: Record<string, DialogueLine[]> = {
-  ch3_inmate1: [
-    { speaker: 'Inmate', text: 'Two years in here, man. Two years.' },
-    { speaker: 'Inmate', text: 'My lawyer says we got a shot at appeal but I don\'t even believe him anymore.' },
-    { speaker: 'Inmate', text: 'I keep replaying that night in my head. One stupid decision.' },
-    { speaker: 'JP', text: '...' },
-    { speaker: 'Inmate', text: 'You\'re smart not to talk much. Just do your time and get out.' },
+const ch3Day1NPCDialogue: Record<string, DialogueLine[]> = {
+  ch3_mikey: [
+    { speaker: 'Mikey', text: 'Bro, keep your head down. First week is the worst.' },
+    { speaker: 'Mikey', text: 'I been here 8 months. You learn who to trust real quick.' },
+    { speaker: 'Mikey', text: 'Don\'t talk to nobody you don\'t know. And don\'t look at nobody\'s food.' },
   ],
-  ch3_inmate2: [
-    { speaker: 'Inmate', text: 'Ayo new fish. You want something to take the edge off?', choices: [
-      { text: '"Nah. I\'m good."', next: [
-        { speaker: 'Inmate', text: 'Suit yourself.' },
-        { speaker: 'JP\'s Mind', text: 'Old JP would have said yes. Not anymore.' },
-      ]},
-      { text: '"I don\'t do that anymore."', next: [
-        { speaker: 'Inmate', text: 'Anymore? So you USED to. Interesting.' },
-        { speaker: 'JP\'s Mind', text: 'He\'s trying to get in my head. Not today.' },
-      ]},
-    ]},
+  ch3_chris: [
+    { speaker: 'Chris', text: 'JP? Damn. When\'d they get you?' },
+    { speaker: 'Chris', text: 'Don\'t worry, we got you in here. Mikey, Bird, and me.' },
+    { speaker: 'Chris', text: 'Just don\'t do nothing stupid the first month.' },
   ],
-  ch3_inmate3: [
-    { speaker: 'Big Inmate', text: 'You see that dude at lunch? Tried to get tough with me.' },
-    { speaker: 'Big Inmate', text: 'I put him on the floor in two seconds. Two seconds. Ask anybody.' },
-    { speaker: 'Big Inmate', text: 'Nobody in here messes with me. You understand? Nobody.' },
-    { speaker: 'JP\'s Mind', text: 'This dude\'s been in here so long he thinks this is his kingdom. Sad.' },
+  ch3_bird: [
+    { speaker: 'Bird', text: 'Ayo JP, I saved you a spot in the cell block. Top bunk.' },
+    { speaker: 'Bird', text: 'Food\'s trash but commissary hits different. I\'ll put you on.' },
   ],
-  ch3_inmate4: [
-    { speaker: 'Quiet Inmate', text: '...' },
-    { speaker: 'JP', text: 'How long you been here?' },
-    { speaker: 'Quiet Inmate', text: 'Eight years.' },
-    { speaker: 'JP', text: 'Damn.' },
-    { speaker: 'Quiet Inmate', text: 'I\'ve seen hundreds of guys come through. Most of them come back.' },
-    { speaker: 'Quiet Inmate', text: 'The ones who make it? They\'re the ones who use the time. Read. Work out. Plan.' },
-    { speaker: 'Quiet Inmate', text: 'Don\'t just survive in here. Prepare for out there.' },
-    { speaker: 'JP', text: 'I hear you.' },
-    { speaker: 'Quiet Inmate', text: 'I hope you do, young man. I really hope you do.' },
+  ch3_og: [
+    { speaker: 'OG Inmate', text: 'Fresh fish. What you in for?' },
+    { speaker: 'JP', text: 'Attempted murder.' },
+    { speaker: 'OG Inmate', text: '...you don\'t look like the type.' },
+    { speaker: 'JP', text: 'I\'m not.' },
+    { speaker: 'OG Inmate', text: 'Then keep your head down and you might make it out.' },
   ],
-  ch3_book: [
-    { speaker: 'JP\'s Mind', text: 'Someone left a book behind. Some self-help thing. Normally I\'d never touch this.' },
-    { speaker: 'JP\'s Mind', text: 'But what else am I gonna do in here? Stare at the wall?' },
-    { speaker: 'JP\'s Mind', text: 'JP picks it up and starts reading. First book he\'s finished in years.' },
+  ch3_guard: [
+    { speaker: 'Guard', text: 'New intake. Lopez. Cell 3.' },
+    { speaker: 'Guard', text: 'Don\'t make me learn your name for the wrong reasons.' },
   ],
-  ch3_pushups: [
-    { speaker: 'JP\'s Mind', text: 'JP drops and does fifty pushups. No excuses.' },
-    { speaker: 'JP\'s Mind', text: 'Clear mind. Strong body. That\'s the only way out of here as a better person.' },
-    { speaker: 'JP\'s Mind', text: 'Forty-eight... forty-nine... fifty. Done. Tomorrow it\'s sixty.' },
+  ch3_mind: [
+    { speaker: 'JP\'s Mind', text: 'Look at where you are.' },
+    { speaker: 'JP\'s Mind', text: 'Pops tried to tell you. Jose tried to tell you. You didn\'t listen.' },
+    { speaker: 'JP\'s Mind', text: 'Time you\'ll never get back. People who stopped picking up the phone. A reputation you gotta rebuild from scratch.' },
+    { speaker: 'JP\'s Mind', text: 'So what now? Feel sorry for yourself? Blame somebody?' },
+    { speaker: 'JP\'s Mind', text: 'Nah. That\'s done.' },
+    { speaker: 'JP\'s Mind', text: 'Stop being a bitch. Change everything.' },
   ],
   ch3_fighter1: [
     { speaker: 'Fighter', text: 'You looking at something?' },
@@ -1431,26 +1442,170 @@ const ch3InmateDialogue: Record<string, DialogueLine[]> = {
     { speaker: 'JP', text: 'Every day.' },
     { speaker: 'Workout Inmate', text: 'Good. Keeps your head right in here.' },
   ],
+  ch3_book_inmate: [
+    { speaker: 'Inmate', text: 'Two years in here, man. Two years.' },
+    { speaker: 'Inmate', text: 'My lawyer says we got a shot at appeal but I don\'t even believe him anymore.' },
+    { speaker: 'Inmate', text: 'I keep replaying that night in my head. One stupid decision.' },
+    { speaker: 'JP', text: '...' },
+    { speaker: 'Inmate', text: 'You\'re smart not to talk much. Just do your time and get out.' },
+  ],
 };
 
-// ─── Chapter 3 extras ──────────────────────────────────────────────────
+const ch3Day2NPCDialogue: Record<string, DialogueLine[]> = {
+  ch3_mikey: [
+    { speaker: 'Mikey', text: 'You been putting in work, bro. I see you doing pushups every morning.' },
+    { speaker: 'Mikey', text: 'That\'s the move. Keep the body right, the mind follows.' },
+  ],
+  ch3_chris: [
+    { speaker: 'Chris', text: 'Yo JP, we playing dice in the yard. You in?' },
+    { speaker: 'Chris', text: 'Commissary on the line. Don\'t bet what you can\'t lose.' },
+  ],
+  ch3_bird: [
+    { speaker: 'Bird', text: 'JP looking different already. You filling out, bro.' },
+    { speaker: 'Bird', text: 'Keep it up. People respect strength in here.' },
+  ],
+  ch3_og: [
+    { speaker: 'Fighter Inmate', text: 'Ayo you the one doing pushups every morning?' },
+    { speaker: 'Fighter Inmate', text: 'Think you\'re tough? Let\'s see it then.' },
+    { speaker: 'JP', text: 'You wanna go?' },
+    { speaker: 'Fighter Inmate', text: 'Pushups. Right here. Right now. Winner gets respect.' },
+  ],
+  ch3_guard: [
+    { speaker: 'Guard', text: 'Lopez. You\'re quieter than most. Keep it that way.' },
+  ],
+  ch3_mind: [
+    { speaker: 'JP\'s Mind', text: 'Three months in. Starting to know the rhythm of this place.' },
+    { speaker: 'JP\'s Mind', text: 'Wake up. Pushups. Yard. Read. Sleep. Repeat.' },
+    { speaker: 'JP\'s Mind', text: 'It\'s not freedom but it\'s structure. And structure is all I got.' },
+  ],
+  ch3_fighter1: [
+    { speaker: 'Fighter', text: 'You been putting in work, new fish. I see you.' },
+    { speaker: 'Fighter', text: 'Respect.' },
+  ],
+  ch3_fighter2: [
+    { speaker: 'Inmate', text: 'JP\'s different from most guys that come through here.' },
+    { speaker: 'Inmate', text: 'Quiet. Focused. That scares people more than loud.' },
+  ],
+  ch3_dice1: [
+    { speaker: 'Dice Player', text: 'JP! You playing today or just watching again?' },
+    { speaker: 'JP', text: 'Might roll a few.' },
+    { speaker: 'Dice Player', text: 'That\'s what I like to hear. Don\'t cry when you lose.' },
+  ],
+  ch3_dice2: [
+    { speaker: 'Dice Player 2', text: 'JP\'s been on a streak. Three days running.' },
+    { speaker: 'Dice Player 2', text: 'Lucky bastard.' },
+  ],
+  ch3_tattoo: [
+    { speaker: 'Tattoo Guy', text: 'JP, you sure you don\'t want ink? I\'m doing good work these days.' },
+    { speaker: 'JP', text: 'I\'m good. Saving my skin for when I get out.' },
+    { speaker: 'Tattoo Guy', text: 'Smart man.' },
+  ],
+  ch3_smoker: [
+    { speaker: 'Smoker', text: 'JP still don\'t smoke huh? Disciplined.' },
+    { speaker: 'JP', text: 'Trying to be.' },
+    { speaker: 'Smoker', text: 'Keep that energy when you get out. Harder on the outside.' },
+  ],
+  ch3_pullups: [
+    { speaker: 'Workout Inmate', text: 'JP! You hit a new PR yesterday. How many was that?' },
+    { speaker: 'JP', text: 'Eighty.' },
+    { speaker: 'Workout Inmate', text: 'Damn. You came in here doing thirty.' },
+  ],
+  ch3_book_inmate: [
+    { speaker: 'Inmate', text: 'My appeal got denied. Two more years minimum.' },
+    { speaker: 'JP', text: 'That\'s rough, man. I\'m sorry.' },
+    { speaker: 'Inmate', text: 'Don\'t be sorry for me. Be smart for you. Get out and stay out.' },
+  ],
+};
 
-const ch3Extras: Record<string, DialogueLine[]> = {
+const ch3Day3NPCDialogue: Record<string, DialogueLine[]> = {
+  ch3_mikey: [
+    { speaker: 'Mikey', text: 'Bro you\'re reading AGAIN? What is that, your fifth book this week?' },
+    { speaker: 'JP', text: 'The Compound Effect. It\'s about how small things add up.' },
+    { speaker: 'Mikey', text: 'Like pushups?' },
+    { speaker: 'JP', text: 'Like everything.' },
+  ],
+  ch3_chris: [
+    { speaker: 'Chris', text: 'JP signed up for that psychology course. Getting college credit in here.' },
+    { speaker: 'Chris', text: 'I\'m proud of you, bro. Most people come out worse. You\'re gonna come out better.' },
+  ],
+  ch3_bird: [
+    { speaker: 'Bird', text: 'JP, real talk. When you get out, don\'t come back to the bullshit.' },
+    { speaker: 'Bird', text: 'You\'re different now. I can see it. Don\'t waste it.' },
+    { speaker: 'JP\'s Mind', text: 'Bird\'s been in here three times. He knows what coming back looks like.' },
+  ],
+  ch3_og: [
+    { speaker: 'OG Inmate', text: 'Lopez. I been watching you.' },
+    { speaker: 'OG Inmate', text: 'You came in here scared. Now you walk different. Talk different.' },
+    { speaker: 'OG Inmate', text: 'Don\'t ever forget what this place taught you. But don\'t ever come back.' },
+  ],
+  ch3_guard: [
+    { speaker: 'Guard', text: 'Lopez. Your release date is coming up.' },
+    { speaker: 'Guard', text: 'In all my years, I\'ve seen maybe ten people actually change in here. You\'re one of them.' },
+  ],
+  ch3_mind: [
+    { speaker: 'JP\'s Mind', text: 'I walked in here a kid who thought he was tough.' },
+    { speaker: 'JP\'s Mind', text: 'I\'m walking out a man who knows what strength actually is.' },
+    { speaker: 'JP\'s Mind', text: 'Discipline. Patience. Faith.' },
+    { speaker: 'JP\'s Mind', text: 'When these doors open, I\'m never looking back.' },
+  ],
+  ch3_fighter1: [
+    { speaker: 'Fighter', text: 'JP, you\'re getting out soon right?' },
+    { speaker: 'JP', text: 'Yeah.' },
+    { speaker: 'Fighter', text: 'Do something with it, man. For all of us who can\'t.' },
+  ],
+  ch3_fighter2: [
+    { speaker: 'Inmate', text: 'JP\'s leaving soon. Place won\'t be the same.' },
+    { speaker: 'Inmate', text: 'He was the only one in here who actually changed.' },
+  ],
+  ch3_dice1: [
+    { speaker: 'Dice Player', text: 'JP quit playing dice weeks ago. Says he don\'t gamble anymore.' },
+    { speaker: 'Dice Player', text: 'Smarter than all of us.' },
+  ],
+  ch3_dice2: [
+    { speaker: 'Dice Player 2', text: 'I tried to read one of JP\'s books. Couldn\'t finish the first chapter.' },
+    { speaker: 'Dice Player 2', text: 'That boy built different.' },
+  ],
+  ch3_tattoo: [
+    { speaker: 'Tattoo Guy', text: 'JP, before you go — I made you something.' },
+    { speaker: 'Tattoo Guy', text: '*hands JP a drawing*' },
+    { speaker: 'Tattoo Guy', text: 'It\'s the yard. So you remember where you came from.' },
+    { speaker: 'JP', text: 'Appreciate that, bro.' },
+  ],
+  ch3_smoker: [
+    { speaker: 'Smoker', text: 'JP getting out. Good for you, man.' },
+    { speaker: 'Smoker', text: 'I got three more years. Maybe I\'ll start reading too.' },
+    { speaker: 'JP', text: 'You should. Changed everything for me.' },
+  ],
+  ch3_pullups: [
+    { speaker: 'Workout Inmate', text: 'JP. Last workout together?' },
+    { speaker: 'JP', text: 'Let\'s make it count.' },
+    { speaker: 'Workout Inmate', text: 'When you get out, don\'t stop. The gym is the one thing from in here worth keeping.' },
+  ],
+  ch3_book_inmate: [
+    { speaker: 'Book Inmate', text: 'Oye JP, you finished The Intelligent Investor yet?' },
+    { speaker: 'JP', text: 'Yeah. Blew my mind. Who sent you that?' },
+    { speaker: 'Book Inmate', text: 'My girl. She sends me a book every month.' },
+    { speaker: 'JP', text: 'That\'s love, bro.' },
+  ],
+};
+
+// ─── Chapter 3: Day-based interactable dialogue ─────────────────────
+
+const ch3Day1Extras: Record<string, DialogueLine[]> = {
   ch3_wall_1: [
     { speaker: 'JP\'s Mind', text: 'Day 1. This is real.' },
     { speaker: 'JP\'s Mind', text: 'The door locked behind me and that sound... I\'ll never forget that sound.' },
   ],
   ch3_wall_2: [
-    { speaker: 'JP\'s Mind', text: 'Day 15. I keep thinking about what Pops said.' },
-    { speaker: 'JP\'s Mind', text: '"The people you surround yourself with... that becomes your life." He was right about all of it.' },
+    { speaker: 'JP\'s Mind', text: 'Scratches on the wall. Someone was counting days.' },
+    { speaker: 'JP\'s Mind', text: 'How many before they stopped counting?' },
   ],
   ch3_wall_3: [
-    { speaker: 'JP\'s Mind', text: 'Day 30. I\'m not coming back here. Ever.' },
-    { speaker: 'JP\'s Mind', text: 'Whatever it takes. Minimum wage. Night shifts. I don\'t care. Not this.' },
+    { speaker: 'JP\'s Mind', text: 'Names carved into the concrete. Ghost stories of everyone who sat here before.' },
   ],
   ch3_wall_4: [
-    { speaker: 'JP\'s Mind', text: 'Day 45. I have a plan. I just need to get out.' },
-    { speaker: 'JP\'s Mind', text: 'I don\'t know what it looks like yet. But I know what it doesn\'t look like. And that\'s enough to start.' },
+    { speaker: 'JP\'s Mind', text: '"TRUST NO ONE" scratched into the wall.' },
+    { speaker: 'JP\'s Mind', text: 'Noted.' },
   ],
   ch3_phone: [
     { speaker: 'JP', text: 'JP calls his Pops.' },
@@ -1458,21 +1613,10 @@ const ch3Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'Long pause.' },
     { speaker: 'Pops', text: 'I\'m proud of you for staying strong, son.' },
   ],
-  ch3_tablet: [
-    { speaker: 'JP\'s Mind', text: 'JP pulls out his tablet. While everyone else is doing nothing, he\'s reading about business.' },
-    { speaker: 'JP\'s Mind', text: 'About systems. About getting out and staying out.' },
-  ],
-  ch3_music: [
-    { speaker: 'JP\'s Mind', text: 'Headphones in. The noise fades.' },
-    { speaker: 'JP\'s Mind', text: 'For a minute, it\'s just JP and the beat.' },
-  ],
   ch3_bed: [
-    { speaker: 'JP\'s Mind', text: 'Hard mattress. Thin blanket. JP lies down and closes his eyes.' },
-    { speaker: 'JP\'s Mind', text: 'Most people don\'t make it out of this situation.' },
-    { speaker: 'JP\'s Mind', text: 'I don\'t know anyone that did.' },
-    { speaker: 'JP\'s Mind', text: 'I need to rededicate my life to having faith. That\'s all I got right now.' },
-    { speaker: 'JP\'s Mind', text: 'God knows I never attempted to cause harm to anyone.' },
-    { speaker: 'JP\'s Mind', text: 'He knows that.' },
+    { speaker: 'JP\'s Mind', text: 'First night. Can\'t sleep.' },
+    { speaker: 'JP\'s Mind', text: 'The walls are too close. The sounds are too loud.' },
+    { speaker: 'JP\'s Mind', text: 'What did I get myself into.' },
   ],
   ch3_toilet: [
     { speaker: 'JP\'s Mind', text: 'Prison toilet. Rock bottom looks like this.' },
@@ -1480,6 +1624,10 @@ const ch3Extras: Record<string, DialogueLine[]> = {
   ch3_window: [
     { speaker: 'JP\'s Mind', text: 'A sliver of sky. That\'s all you get.' },
     { speaker: 'JP\'s Mind', text: 'Make it enough.' },
+  ],
+  ch3_commissary: [
+    { speaker: 'JP\'s Mind', text: 'Bird wasn\'t lying. Soups, chips, candy bars.' },
+    { speaker: 'JP\'s Mind', text: 'JP\'s locker stays full.' },
   ],
   ch3_dice_watch: [
     { speaker: 'JP\'s Mind', text: 'Everyone\'s gambling commissary. JP watches but doesn\'t play.' },
@@ -1489,10 +1637,132 @@ const ch3Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'Two guys going at it over nothing. Guard doesn\'t even flinch.' },
     { speaker: 'JP\'s Mind', text: 'This is normal here.' },
   ],
+  ch3_pushups: [
+    { speaker: 'JP\'s Mind', text: 'JP drops and does twenty pushups.' },
+    { speaker: 'JP\'s Mind', text: 'It\'s not much. But it\'s a start.' },
+  ],
+  ch3_book: [
+    { speaker: 'JP\'s Mind', text: 'Someone left a book behind. Some self-help thing. Normally I\'d never touch this.' },
+    { speaker: 'JP\'s Mind', text: 'But what else am I gonna do in here? Stare at the wall?' },
+    { speaker: 'JP\'s Mind', text: 'JP picks it up and starts reading. First book he\'s finished in years.' },
+  ],
+  ch3_tablet: [
+    { speaker: 'JP\'s Mind', text: 'Nothing on the tablet worth watching. Just noise.' },
+  ],
+  ch3_music: [
+    { speaker: 'JP\'s Mind', text: 'Headphones in. The noise fades.' },
+    { speaker: 'JP\'s Mind', text: 'For a minute, it\'s just JP and the beat.' },
+  ],
+  ch3_letter_home: [
+    { speaker: 'JP\'s Mind', text: 'Nothing to write home about yet. Not until I have something real to say.' },
+  ],
+  ch3_birthday: [
+    { speaker: 'JP\'s Mind', text: 'Calendar on the wall. 364 more days at least.' },
+    { speaker: 'JP\'s Mind', text: 'Don\'t think about it. Just survive today.' },
+  ],
+  ch3_yard: [
+    { speaker: 'JP\'s Mind', text: 'The yard. Concrete and chain link.' },
+    { speaker: 'JP\'s Mind', text: 'First time seeing the sky in days. Doesn\'t feel real.' },
+  ],
+  ch3_psych_course: [
+    { speaker: 'JP\'s Mind', text: 'Sign-up sheet for classes. JP walks past it.' },
+    { speaker: 'JP\'s Mind', text: 'Not ready for that yet.' },
+  ],
+  ch3_transformation: [
+    { speaker: 'JP\'s Mind', text: 'JP catches his reflection. Bags under his eyes. Jaw tight.' },
+    { speaker: 'JP\'s Mind', text: 'This is what it looks like when everything falls apart.' },
+  ],
+  ch3_faith: [
+    { speaker: 'JP\'s Mind', text: 'A Bible on the shelf. JP hasn\'t opened one in years.' },
+    { speaker: 'JP\'s Mind', text: 'Not yet. But soon.' },
+  ],
+  ch3_anger_management: [
+    { speaker: 'JP\'s Mind', text: 'Anger management flyer on the board. "Tuesdays at 2 PM."' },
+    { speaker: 'JP\'s Mind', text: 'JP rips the flyer down and tosses it. "I\'m not angry."' },
+    { speaker: 'JP\'s Mind', text: '...right?' },
+  ],
+  ch3_mirror_day2: [
+    { speaker: 'JP\'s Mind', text: 'Mirror\'s cracked. Just like everything else in here.' },
+  ],
+  ch3_mirror_day3: [
+    { speaker: 'JP\'s Mind', text: 'Can\'t even see your full face. Just fragments.' },
+  ],
+};
+
+const ch3Day2Extras: Record<string, DialogueLine[]> = {
+  ch3_wall_1: [
+    { speaker: 'JP\'s Mind', text: 'JP adds his own mark to the wall. Day 90.' },
+  ],
+  ch3_wall_2: [
+    { speaker: 'JP\'s Mind', text: 'The scratches don\'t bother him anymore. They\'re just marks.' },
+  ],
+  ch3_wall_3: [
+    { speaker: 'JP\'s Mind', text: 'Halfway through a sentence — the walls start to feel smaller.' },
+  ],
+  ch3_wall_4: [
+    { speaker: 'JP\'s Mind', text: '"TRUST NO ONE" — JP crosses it out and writes "TRUST YOURSELF."' },
+  ],
+  ch3_phone: [
+    { speaker: 'JP', text: 'Pops. I enrolled in a course.' },
+    { speaker: 'Pops', text: 'A course? In there?' },
+    { speaker: 'JP', text: 'Psychology. Getting college credit.' },
+    { speaker: 'Pops', text: 'That\'s my boy.' },
+  ],
+  ch3_bed: [
+    { speaker: 'JP\'s Mind', text: 'Can\'t believe it\'s been three months.' },
+    { speaker: 'JP\'s Mind', text: 'Starting to feel normal. That\'s the scary part.' },
+  ],
+  ch3_toilet: [
+    { speaker: 'JP\'s Mind', text: 'Still a prison toilet. But JP doesn\'t even notice anymore.' },
+  ],
+  ch3_window: [
+    { speaker: 'JP\'s Mind', text: 'Same sliver of sky. But it looks different now.' },
+    { speaker: 'JP\'s Mind', text: 'Not a reminder of what he\'s missing. A promise of what\'s coming.' },
+  ],
+  ch3_commissary: [
+    { speaker: 'JP\'s Mind', text: 'JP trades half his commissary for a notebook.' },
+    { speaker: 'JP\'s Mind', text: 'Everybody thinks he\'s crazy. He doesn\'t care.' },
+  ],
+  ch3_dice_watch: [
+    { speaker: 'JP\'s Mind', text: 'Chris is playing dice. Wants JP to join.' },
+    { speaker: 'JP\'s Mind', text: 'Might be fun. Blow off some steam.' },
+  ],
+  ch3_fight_watch: [
+    { speaker: 'JP\'s Mind', text: 'Another fight in the common area. JP doesn\'t even look up anymore.' },
+    { speaker: 'JP\'s Mind', text: 'Not his business. Not his energy.' },
+  ],
+  ch3_pushups: [
+    { speaker: 'JP\'s Mind', text: 'JP drops and does fifty pushups. No excuses.' },
+    { speaker: 'JP\'s Mind', text: 'Clear mind. Strong body. That\'s the only way out of here as a better person.' },
+    { speaker: 'JP\'s Mind', text: 'Forty-eight... forty-nine... fifty. Done. Tomorrow it\'s sixty.' },
+  ],
+  ch3_book: [
+    { speaker: 'JP\'s Mind', text: 'Atomic Habits by James Clear. Third book this month.' },
+    { speaker: 'JP\'s Mind', text: '"You don\'t rise to the level of your goals. You fall to the level of your systems."' },
+    { speaker: 'JP\'s Mind', text: 'JP reads that line three times.' },
+  ],
+  ch3_tablet: [
+    { speaker: 'JP\'s Mind', text: 'JP pulls out his tablet. While everyone else is doing nothing, he\'s reading about business.' },
+    { speaker: 'JP\'s Mind', text: 'About systems. About getting out and staying out.' },
+  ],
+  ch3_music: [
+    { speaker: 'JP\'s Mind', text: 'Same playlist, but it hits different now.' },
+    { speaker: 'JP\'s Mind', text: 'The hunger in the lyrics — JP feels it in his chest.' },
+  ],
+  ch3_letter_home: [
+    { speaker: 'JP', text: 'Dear Pops,' },
+    { speaker: 'JP', text: 'I enrolled in a college course. Psychology. Getting an A.' },
+    { speaker: 'JP', text: 'Working out every day. Reading every night. I\'m different.' },
+    { speaker: 'JP', text: '- JP' },
+  ],
   ch3_birthday: [
     { speaker: 'JP\'s Mind', text: 'It\'s July. JP turns 21 today.' },
     { speaker: 'JP\'s Mind', text: 'His friends are at bars. He\'s staring at a concrete ceiling.' },
     { speaker: 'JP\'s Mind', text: 'No call from Mom.' },
+  ],
+  ch3_yard: [
+    { speaker: 'JP\'s Mind', text: 'The yard. Concrete and sky. JP does laps every morning now.' },
+    { speaker: 'JP\'s Mind', text: 'Some of the other inmates join him. Respect is earned here.' },
   ],
   ch3_psych_course: [
     { speaker: 'JP\'s Mind', text: 'Psychology 101. College credit from behind bars.' },
@@ -1500,15 +1770,128 @@ const ch3Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'He sees himself in every chapter.' },
   ],
   ch3_transformation: [
-    { speaker: 'JP\'s Mind', text: 'JP looks in the mirror.' },
+    { speaker: 'JP\'s Mind', text: 'JP catches his reflection again.' },
+    { speaker: 'JP\'s Mind', text: 'Same face. But the eyes are different. Sharper. More focused.' },
+  ],
+  ch3_mirror_day2: [
+    { speaker: 'JP\'s Mind', text: 'JP looks at himself. Three months in.' },
+    { speaker: 'JP\'s Mind', text: 'Bags under his eyes are fading. Arms are bigger.' },
+    { speaker: 'JP\'s Mind', text: 'Starting to look like someone who gives a damn.' },
+  ],
+  ch3_mirror_day3: [
+    { speaker: 'JP\'s Mind', text: 'Same cracked mirror. Doesn\'t matter. JP knows who he is now.' },
+  ],
+  ch3_faith: [
+    { speaker: 'JP\'s Mind', text: 'JP picks up the Bible. Starts in Proverbs.' },
+    { speaker: 'JP\'s Mind', text: '"Trust in the Lord with all your heart and lean not on your own understanding."' },
+    { speaker: 'JP\'s Mind', text: 'Heavy.' },
+  ],
+  ch3_anger_management: [
+    { speaker: 'JP\'s Mind', text: 'Anger management class. JP actually showed up this time.' },
+    { speaker: 'JP\'s Mind', text: 'The instructor says anger isn\'t the problem. It\'s a signal.' },
+    { speaker: 'JP\'s Mind', text: 'JP thinks about every time he got angry. She might be right.' },
+  ],
+};
+
+const ch3Day3Extras: Record<string, DialogueLine[]> = {
+  ch3_wall_1: [
+    { speaker: 'JP\'s Mind', text: 'JP looks at all the marks on the wall. Hundreds of them.' },
+    { speaker: 'JP\'s Mind', text: 'Tomorrow he won\'t need to count anymore.' },
+  ],
+  ch3_wall_2: [
+    { speaker: 'JP\'s Mind', text: 'These walls have heard a lot of prayers. JP\'s were answered.' },
+  ],
+  ch3_wall_3: [
+    { speaker: 'JP\'s Mind', text: 'Last time looking at these walls. Thank God.' },
+  ],
+  ch3_wall_4: [
+    { speaker: 'JP\'s Mind', text: '"TRUST YOURSELF" — still there. JP smiles.' },
+  ],
+  ch3_phone: [
+    { speaker: 'JP', text: 'Pops. I\'m coming home.' },
+    { speaker: 'JP\'s Mind', text: 'JP can hear his Pops crying through the phone.' },
+    { speaker: 'Pops', text: 'I\'ll be there. Right at the gate.' },
+  ],
+  ch3_bed: [
+    { speaker: 'JP\'s Mind', text: 'Last night. Tomorrow the doors open.' },
+    { speaker: 'JP\'s Mind', text: 'I knew it.' },
+    { speaker: 'JP\'s Mind', text: 'God showed.' },
+    { speaker: 'JP\'s Mind', text: 'The truth always prevails.' },
+  ],
+  ch3_toilet: [
+    { speaker: 'JP\'s Mind', text: 'Last time using this thing. That alone is worth celebrating.' },
+  ],
+  ch3_window: [
+    { speaker: 'JP\'s Mind', text: 'Tomorrow I\'ll see the whole sky. Not just a sliver.' },
+    { speaker: 'JP\'s Mind', text: 'Can\'t wait.' },
+  ],
+  ch3_commissary: [
+    { speaker: 'JP\'s Mind', text: 'JP gives away his commissary to the guys who helped him through it.' },
+    { speaker: 'JP\'s Mind', text: 'Won\'t need any of this where he\'s going.' },
+  ],
+  ch3_dice_watch: [
+    { speaker: 'JP\'s Mind', text: 'The dice game is still going. JP hasn\'t played in months.' },
+    { speaker: 'JP\'s Mind', text: 'No more gambling. On anything.' },
+  ],
+  ch3_fight_watch: [
+    { speaker: 'JP\'s Mind', text: 'No more fights. Not in here. Not out there. Never again.' },
+  ],
+  ch3_pushups: [
+    { speaker: 'JP\'s Mind', text: 'One hundred pushups. Last set in this yard.' },
+    { speaker: 'JP\'s Mind', text: 'He started at twenty. Now he doesn\'t even count.' },
+    { speaker: 'JP\'s Mind', text: 'The Compound Effect in action.' },
+  ],
+  ch3_book: [
+    { speaker: 'JP\'s Mind', text: 'The Compound Effect by Darren Hardy. JP\'s read it three times.' },
+    { speaker: 'JP\'s Mind', text: 'Small daily decisions. That\'s the whole secret. Not some massive change. Just 1% better every day.' },
+  ],
+  ch3_tablet: [
+    { speaker: 'JP\'s Mind', text: 'JP\'s been studying business models on this tablet for months.' },
+    { speaker: 'JP\'s Mind', text: 'When he gets out, he\'s not getting a job. He\'s building something.' },
+  ],
+  ch3_music: [
+    { speaker: 'JP\'s Mind', text: 'Last time with these headphones. Last time the music has to drown out this place.' },
+    { speaker: 'JP\'s Mind', text: 'From now on, the music is a celebration. Not an escape.' },
+  ],
+  ch3_letter_home: [
+    { speaker: 'JP\'s Mind', text: 'Letter from Pops. "I\'m proud of you, Jordan. Keep going."' },
+    { speaker: 'JP\'s Mind', text: 'JP reads it every night.' },
+  ],
+  ch3_birthday: [
+    { speaker: 'JP\'s Mind', text: 'That birthday in here... worst day of his life.' },
+    { speaker: 'JP\'s Mind', text: 'Next birthday he\'ll be free. And he\'ll make it count.' },
+  ],
+  ch3_yard: [
+    { speaker: 'JP\'s Mind', text: 'Last walk around the yard.' },
+    { speaker: 'JP\'s Mind', text: 'Concrete and sky. He\'ll never forget this place. But he\'ll never come back.' },
+  ],
+  ch3_psych_course: [
+    { speaker: 'JP\'s Mind', text: 'Introduction to Psychology. JP\'s getting an A.' },
+    { speaker: 'JP\'s Mind', text: 'College credit from behind bars. Pops would be proud.' },
+  ],
+  ch3_transformation: [
+    { speaker: 'JP\'s Mind', text: 'JP looks in the mirror one last time.' },
     { speaker: 'JP\'s Mind', text: 'Six months ago he couldn\'t look at himself.' },
     { speaker: 'JP\'s Mind', text: 'Now he sees someone he respects.' },
   ],
-  ch3_letter_home: [
-    { speaker: 'JP', text: 'Dear Pops,' },
-    { speaker: 'JP', text: 'I\'m doing good in here. Finishing a college course. Reading every day.' },
-    { speaker: 'JP', text: 'I\'ll be home soon.' },
-    { speaker: 'JP', text: '- JP' },
+  ch3_mirror_day2: [
+    { speaker: 'JP\'s Mind', text: 'The gym mirror. JP sees the change. Lean, strong, clear.' },
+  ],
+  ch3_mirror_day3: [
+    { speaker: 'JP\'s Mind', text: 'JP looks at himself. Six months of pushups, reading, and discipline.' },
+    { speaker: 'JP\'s Mind', text: 'Same face. Completely different person behind it.' },
+    { speaker: 'JP\'s Mind', text: 'Strong. Healthy. Clear-eyed. Ready.' },
+  ],
+  ch3_faith: [
+    { speaker: 'JP\'s Mind', text: 'Most people don\'t make it out of this situation.' },
+    { speaker: 'JP\'s Mind', text: 'I don\'t know anyone that did.' },
+    { speaker: 'JP\'s Mind', text: 'I need to rededicate my life to having faith. That\'s all I got right now.' },
+    { speaker: 'JP\'s Mind', text: 'God knows I never attempted to cause harm to anyone.' },
+    { speaker: 'JP\'s Mind', text: 'He knows that.' },
+  ],
+  ch3_anger_management: [
+    { speaker: 'JP\'s Mind', text: 'Anger management class. JP used to think it was bullshit.' },
+    { speaker: 'JP\'s Mind', text: 'But it taught him something — the anger isn\'t the problem. It\'s what you do with it.' },
   ],
 };
 
@@ -1730,7 +2113,10 @@ const ch6Extras: Record<string, DialogueLine[]> = {
 export const homeDialogue = buildChapterDialogue(chapter0IntroText, chapter0NPCs, chapter0OutroText, ch0Extras);
 export const beachDialogue = buildChapterDialogue(chapter1IntroText, chapter1NPCs, chapter1OutroText, ch1Extras);
 export const wrongCrowdDialogue = buildChapterDialogue(chapter2IntroText, chapter2NPCs, chapter2OutroText, ch2Extras);
-export const jailDialogue = buildChapterDialogue(chapter3IntroText, chapter3NPCs, chapter3OutroText, { ...ch3Extras, ...ch3InmateDialogue });
+export const jailDialogue = buildChapterDialogue(chapter3IntroText, chapter3NPCs, chapter3OutroText, { ...ch3Day1Extras, ...ch3Day1NPCDialogue });
+export const jailDay1Dialogue = buildChapterDialogue(chapter3IntroText, chapter3NPCs, chapter3OutroText, { ...ch3Day1Extras, ...ch3Day1NPCDialogue });
+export const jailDay2Dialogue = buildChapterDialogue(chapter3IntroText, chapter3NPCs, chapter3OutroText, { ...ch3Day2Extras, ...ch3Day2NPCDialogue });
+export const jailDay3Dialogue = buildChapterDialogue(chapter3IntroText, chapter3NPCs, chapter3OutroText, { ...ch3Day3Extras, ...ch3Day3NPCDialogue });
 export const tractorDialogue = buildChapterDialogue(chapter4IntroText, chapter4NPCs, chapter4OutroText, ch4Extras);
 export const comeUpDialogue = buildChapterDialogue(chapter5IntroText, chapter5NPCs, chapter5OutroText, ch5Extras);
 export const operatorDialogue = buildChapterDialogue(chapter6IntroText, chapter6NPCs, chapter6OutroText, ch6Extras);

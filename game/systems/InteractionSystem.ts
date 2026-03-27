@@ -132,6 +132,56 @@ export class InteractionSystem {
     return this.sprites.get(id);
   }
 
+  resetAll(): void {
+    // Un-consume all interactables and re-show their sprites/markers
+    for (const obj of this.interactables) {
+      obj.consumed = false;
+
+      // Re-show the sprite
+      const sprite = this.sprites.get(obj.id);
+      if (sprite) {
+        sprite.setVisible(true);
+      }
+
+      // Re-create glow tween if needed
+      if (obj.glow && sprite && !this.glowTweens.has(obj.id)) {
+        const tween = this.scene.tweens.add({
+          targets: sprite,
+          alpha: { from: 0.7, to: 1.0 },
+          duration: 800,
+          yoyo: true,
+          repeat: -1,
+          ease: 'Sine.easeInOut',
+        });
+        this.glowTweens.set(obj.id, tween);
+      }
+
+      // Re-create "!" marker if missing
+      if (obj.glow && !this.markers.has(obj.id)) {
+        const markerX = obj.x * SCALED_TILE + SCALED_TILE / 2;
+        const markerY = obj.y * SCALED_TILE - 4;
+
+        const marker = this.scene.add.text(markerX, markerY, '!', {
+          fontFamily: '"Press Start 2P", monospace',
+          fontSize: '10px',
+          color: '#f0c040',
+        }).setOrigin(0.5, 1).setDepth(50);
+
+        this.markers.set(obj.id, marker);
+
+        const bounce = this.scene.tweens.add({
+          targets: marker,
+          y: markerY - 6,
+          duration: 800,
+          yoyo: true,
+          repeat: -1,
+          ease: 'Sine.easeInOut',
+        });
+        this.markerTweens.set(obj.id, bounce);
+      }
+    }
+  }
+
   destroy(): void {
     for (const tween of this.glowTweens.values()) {
       tween.stop();
