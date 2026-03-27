@@ -12,7 +12,7 @@ export class OperatorScene extends BaseChapterScene {
   }
 
   protected getPlayerTexture(): string {
-    return 'player-ch6';
+    return 'player-ch7';
   }
 
   protected getMusicTrack(): string {

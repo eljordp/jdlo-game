@@ -1290,15 +1290,15 @@ function generateAllNPCs(scene: Phaser.Scene) {
     }
   );
 
-  // Malachi — business partner, man bun + glasses + navy suit — 32x32
+  // Malachi — business partner, man bun + glasses + charcoal suit — 32x32
   generateNPC32(
     scene,
     'npc_malachi',
     0x201818,
     'short',
-    0x1a2040,
-    0x222850,
-    0x1a1a2a,
+    0x2a2a35,
+    0x3a3a45,
+    0x222230,
     0xc09060,
     0xa07848,
     (g) => {
@@ -3155,11 +3155,16 @@ function generateChapterOutfits(scene: Phaser.Scene) {
     },
     {
       key: 'player-ch5',
-      colors: { shirt: 0x606068, shirtLight: 0x707078, pants: 0x383840, pantsLight: 0x484850, shoe: 0x303030 },
+      colors: { shirt: 0x8B7355, shirtLight: 0x9B8365, pants: 0x3B4050, pantsLight: 0x4B5060, shoe: 0x5C4033 },
     },
     {
       key: 'player-ch6',
-      colors: { shirt: 0x1a2040, shirtLight: 0x243050, pants: 0x181820, pantsLight: 0x222230, shoe: 0x202020 },
+      colors: { shirt: 0x6B6B75, shirtLight: 0x7B7B85, pants: 0x2B3B5B, pantsLight: 0x3B4B6B, shoe: 0xE0E0E0 },
+    },
+    {
+      // Ch7 Operator — white tee, black jeans, clean
+      key: 'player-ch7',
+      colors: { shirt: 0xF0F0F0, shirtLight: 0xE8E8E8, pants: 0x1a1a1a, pantsLight: 0x2a2a2a, shoe: 0xF0F0F0 },
     },
     {
       // Swim trunks — "shirt" is skin tone (shirtless), blue trunks
