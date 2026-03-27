@@ -4534,6 +4534,53 @@ function generateMoreItems(scene: Phaser.Scene) {
     px(g, 4, 12, 0x909898, 8, 1);
   });
 
+  // --- item-desk ---
+  makeTexture(scene, 'item-desk', TILE_SIZE, TILE_SIZE, (g) => {
+    // Desk surface — dark wood, top-down view
+    px(g, 2, 8, 0x5a3a20, 28, 14);
+    // Surface top highlight
+    px(g, 2, 8, 0x6a4a30, 28, 2);
+    // Surface wood grain
+    px(g, 6, 12, 0x503018, 18, 1);
+    px(g, 4, 15, 0x503018, 22, 1);
+    px(g, 8, 18, 0x503018, 14, 1);
+    // Front edge shadow
+    px(g, 2, 21, 0x3a2210, 28, 2);
+    // Legs (front two visible)
+    px(g, 4, 22, 0x4a3018, 3, 6);
+    px(g, 25, 22, 0x4a3018, 3, 6);
+    // Drawer handle
+    px(g, 13, 22, 0x808070, 6, 1);
+    // Items on desk — small monitor
+    px(g, 12, 4, 0x1a1a1a, 8, 5);
+    px(g, 13, 5, 0x3070b0, 6, 3);  // screen glow
+    // Keyboard
+    px(g, 10, 10, 0x303030, 12, 2);
+    px(g, 11, 10, 0x404040, 10, 1);
+  });
+
+  // --- item-nightstand ---
+  makeTexture(scene, 'item-nightstand', TILE_SIZE, TILE_SIZE, (g) => {
+    // Small bedside table
+    px(g, 8, 12, 0x6a4a30, 16, 12);
+    // Top surface
+    px(g, 7, 11, 0x7a5a40, 18, 2);
+    // Front drawer
+    px(g, 10, 16, 0x5a3a20, 12, 4);
+    // Drawer handle
+    px(g, 14, 17, 0x909080, 4, 1);
+    // Shadow
+    px(g, 8, 24, 0x3a2a18, 16, 1);
+    // Legs
+    px(g, 9, 23, 0x5a3a20, 2, 2);
+    px(g, 21, 23, 0x5a3a20, 2, 2);
+    // Lamp on top
+    px(g, 14, 6, 0xd0c080, 4, 1);  // shade
+    px(g, 13, 5, 0xe0d090, 6, 1);  // shade top
+    px(g, 15, 7, 0x807060, 2, 4);  // lamp stem
+    px(g, 14, 8, 0xf0e8a0, 1, 1);  // light dot
+  });
+
   // --- item-poster ---
   makeTexture(scene, 'item-poster', TILE_SIZE, TILE_SIZE, (g) => {
     // Wall poster — rectangular, slightly tilted feel

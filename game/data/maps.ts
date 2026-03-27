@@ -148,14 +148,15 @@ export const homeMap: MapData = {
     { x: 18, y: 29, action: 'scene', target: 'TransitionScene', data: { text: 'Three weeks later...', nextScene: 'BeachScene' } },
   ],
   interactables: [
-    // JP's Room (cols 4-9, rows 4-8)
-    { id: 'ch0_computer',      x: 5,  y: 4,  type: 'examine', glow: true, sprite: 'item-tablet' },
-    { id: 'ch0_crypto',        x: 8,  y: 4,  type: 'examine', glow: true, sprite: 'item-phone' },
-    { id: 'ch0_college',       x: 9,  y: 5,  type: 'examine', glow: true, sprite: 'item-letter' },
-    { id: 'ch0_bed',           x: 6,  y: 4,  type: 'examine', glow: true, sprite: 'item-bed' },
-    { id: 'ch0_poster',        x: 9,  y: 7,  type: 'examine', glow: true, sprite: 'item-poster' },
-    { id: 'ch0_hidden_stash',  x: 4,  y: 4,  type: 'examine', glow: true },
-    { id: 'ch0_journal',       x: 7,  y: 8,  type: 'examine', glow: true, sprite: 'item-book' },
+    // JP's Room (cols 4-9, rows 4-8) — laid out like a real bedroom
+    { id: 'ch0_bed',           x: 5,  y: 4,  type: 'examine', glow: true, sprite: 'item-bed' },         // bed against back wall, left
+    { id: 'ch0_nightstand',    x: 7,  y: 4,  type: 'examine', glow: true, sprite: 'item-nightstand' },  // nightstand next to bed
+    { id: 'ch0_computer',      x: 9,  y: 5,  type: 'examine', glow: true, sprite: 'item-desk' },        // desk w/ computer, right wall
+    { id: 'ch0_college',       x: 9,  y: 6,  type: 'examine', glow: true, sprite: 'item-letter' },      // college letters on desk area
+    { id: 'ch0_poster',        x: 4,  y: 6,  type: 'examine', glow: true, sprite: 'item-poster' },      // poster on left wall
+    { id: 'ch0_hidden_stash',  x: 9,  y: 7,  type: 'examine', glow: true },                             // behind desk — bag of weed
+    { id: 'ch0_journal',       x: 7,  y: 8,  type: 'examine', glow: true, sprite: 'item-book' },        // journal near door
+    { id: 'ch0_crypto',        x: 4,  y: 8,  type: 'examine', glow: true, sprite: 'item-phone' },       // phone on floor by bed
     // Sister's Room (cols 11-15, rows 4-8)
     { id: 'ch0_sister_toys',   x: 13, y: 7,  type: 'examine', glow: true },
     // Parents' Room (cols 17-23, rows 4-8)

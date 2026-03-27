@@ -1072,7 +1072,7 @@ const ch0Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'Nolan wasn\'t offering anything shady. Just a fresh start. JP needed that.' },
   ],
   ch0_hidden_stash: [
-    { speaker: 'Narrator', text: 'A small bag of weed tucked behind the bookshelf.' },
+    { speaker: 'Narrator', text: 'JP reaches behind the desk. A small bag of weed.' },
     { speaker: 'Narrator', text: 'The habit started before Santa Barbara.' },
   ],
   ch0_journal: [

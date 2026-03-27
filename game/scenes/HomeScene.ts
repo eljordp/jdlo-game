@@ -45,6 +45,7 @@ export class HomeScene extends BaseChapterScene {
   // Override to add computer interface, fetch, goodbye, phone ring
   protected handleInteractable(interactable: { id: string; type: string; consumed?: boolean }) {
     if (interactable.id === 'ch0_computer') {
+      if (this.frozen) return; // prevent re-opening while interface is up
       Analytics.trackInteraction(interactable.id);
       this.showComputerInterface();
       this.trackForPhoneCall(interactable.id);
