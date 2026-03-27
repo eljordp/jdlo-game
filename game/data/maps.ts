@@ -99,7 +99,7 @@ export const homeMap: MapData = {
     [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 2  open grass
     [ G, G, G, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, G, G, G ], // 3  roof line
     [ G, G, G, K, J, J, J, J, J, J, K, J, J, J, J, J, K, J, J, J, J, J, J, J, K, J, J, J, J, J, J, K, F, F, F, F, K, G, G, G ], // 4  JP room | sister | parents | gap | bathroom
-    [ G, G, G, K, J, M, J, J, J, J, K, J, J, J, J, J, K, J, J, J, J, J, J, J, K, J, J, J, J, J, J, K, F, F, F, F, K, G, G, G ], // 5  M=computer in JP room
+    [ G, G, G, K, J, J, J, J, J, J, K, J, J, J, J, J, K, J, J, J, J, J, J, J, K, J, J, J, J, J, J, K, F, F, F, F, K, G, G, G ], // 5  JP room (computer is interactable sprite, not map tile)
     [ G, G, G, K, J, J, J, J, J, J, K, J, J, J, J, J, K, J, J, J, J, J, J, J, K, J, J, J, J, J, J, K, F, F, F, F, K, G, G, G ], // 6
     [ G, G, G, K, J, J, J, J, J, J, K, J, J, J, J, J, K, J, J, J, J, J, J, J, K, J, J, J, J, J, J, K, F, F, F, F, K, G, G, G ], // 7
     [ G, G, G, K, J, J, J, J, J, J, K, J, J, J, J, J, K, J, J, J, J, J, J, J, K, J, J, J, J, J, J, K, F, F, F, F, K, G, G, G ], // 8
@@ -188,7 +188,7 @@ export const beachMap: MapData = {
     [ B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B ], // 0  house top wall
     [ B, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, F, B, C, C, C, C, C, C, C, C, C, C, B ], // 1  living rm | JP rm | kitchen | bedroom | hot tub patio
     [ B, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, F, B, C, C, H, H, H, H, C, C, C, C, B ], // 2
-    [ B, F, F, F, F, F, F, F, F, B, F, F, F, M, F, F, B, F, F, F, F, F, B, F, F, F, F, F, B, C, C, H, H, H, H, C, C, C, C, B ], // 3  M=computer in JP room
+    [ B, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, F, B, C, C, H, H, H, H, C, C, C, C, B ], // 3  JP room (computer is interactable sprite)
     [ B, F, F, F, F, F, F, F, F, O, F, F, F, F, F, F, O, F, F, F, F, F, O, F, F, F, F, F, B, C, C, H, H, H, H, C, C, C, C, B ], // 4  doors between rooms
     [ B, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, F, B, C, C, C, C, C, C, C, C, C, C, B ], // 5
     [ B, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, F, B, C, C, C, C, C, C, C, C, C, C, B ], // 6
@@ -274,8 +274,8 @@ export const wrongCrowdMap: MapData = {
     // === ROWS 0-8: SB FRAT HOUSE (nighttime) — house centered with yard space on sides ===
     [ T, G, G, G, T, G, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, G, T, G, G, G, T ], // 0  trees + house top wall
     [ G, G, G, G, G, G, B, D, D, D, D, D, D, D, B, D, D, D, D, D, D, B, D, D, D, D, D, B, C, C, C, C, C, B, G, G, G, G, G, G ], // 1  living room | JP room | kitchen | hot tub patio
-    [ G, G, T, G, G, G, B, D, D, D, D, D, D, D, B, D, D, D, D, D, D, B, D, D, M, D, D, B, C, H, H, H, C, B, G, G, G, T, G, G ], // 2  M=fridge area in kitchen, hot tub
-    [ G, G, G, G, G, G, B, D, D, D, D, D, D, D, B, D, D, D, D, M, D, B, D, D, D, D, D, B, C, H, H, H, C, B, G, G, G, G, G, G ], // 3  M=computer desk in JP room
+    [ G, G, T, G, G, G, B, D, D, D, D, D, D, D, B, D, D, D, D, D, D, B, D, D, D, D, D, B, C, H, H, H, C, B, G, G, G, T, G, G ], // 2  kitchen, hot tub
+    [ G, G, G, G, G, G, B, D, D, D, D, D, D, D, B, D, D, D, D, D, D, B, D, D, D, D, D, B, C, H, H, H, C, B, G, G, G, G, G, G ], // 3  JP room (computer is interactable sprite)
     [ G, G, G, G, G, G, B, D, D, D, D, D, D, D, O, D, D, D, D, D, D, O, D, D, D, D, D, B, C, H, H, H, C, B, G, G, G, G, G, G ], // 4  doors between rooms
     [ G, G, G, G, G, G, B, D, D, D, D, D, D, D, B, D, D, D, D, D, D, B, D, D, D, D, D, B, C, H, H, H, C, B, G, G, G, G, G, G ], // 5  walls between rooms
     [ G, G, T, G, G, G, B, D, D, D, D, D, D, D, B, D, D, D, D, D, D, B, D, D, D, D, D, B, C, C, C, C, C, B, G, G, G, T, G, G ], // 6
