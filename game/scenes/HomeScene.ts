@@ -208,173 +208,325 @@ export class HomeScene extends BaseChapterScene {
   private showComputerInterface() {
     this.frozen = true;
     const objects: Phaser.GameObjects.GameObject[] = [];
-    let selectedIndex = 0;
     let active = true;
 
-    const menuItems = [
-      { label: 'Crypto Portfolio', lines: [
-        { speaker: 'JP\'s Mind', text: 'Bitcoin, Ethereum, some random altcoins. Down 40% this month.' },
-        { speaker: 'JP\'s Mind', text: 'Pops would kill me if he knew how much I put in.' },
-      ]},
-      { label: 'College Emails', lines: [
-        { speaker: 'JP\'s Mind', text: '3 acceptance letters. UC Davis, Sac State, Sonoma.' },
-        { speaker: 'JP\'s Mind', text: '$40K a year for something I can learn on YouTube? Nah.' },
-      ]},
-      { label: 'Social Media', lines: [
-        { speaker: 'JP\'s Mind', text: 'Instagram DMs. Nolan wants to link in Santa Barbara this weekend.' },
-        { speaker: 'JP\'s Mind', text: '"Bro come thru. Crazy party at the frat house."' },
-      ]},
-      { label: 'YouTube - "How to Make Money Online"', lines: [
-        { speaker: 'JP\'s Mind', text: 'Dropshipping, crypto trading, affiliate marketing...' },
-        { speaker: 'JP\'s Mind', text: 'Everyone\'s selling the dream. Nobody shows the work.' },
-      ]},
-      { label: '[ Exit ]', lines: [] },
-    ];
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2 - 20;
+    const monW = 780;
+    const monH = 520;
 
     // Dark overlay
-    const overlay = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.8)
+    const overlay = this.add.rectangle(cx, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.8)
       .setScrollFactor(0).setDepth(300);
     objects.push(overlay);
 
-    // Monitor frame — outer bezel
-    const monW = 700;
-    const monH = 480;
-    const monX = GAME_WIDTH / 2;
-    const monY = GAME_HEIGHT / 2 - 20;
-    const bezel = this.add.rectangle(monX, monY, monW + 20, monH + 20, 0x2a2a2a)
-      .setScrollFactor(0).setDepth(301);
-    objects.push(bezel);
+    // MacBook body — silver bezel
+    objects.push(this.add.rectangle(cx, cy, monW + 24, monH + 24, 0xc0c0c0).setScrollFactor(0).setDepth(301));
+    objects.push(this.add.rectangle(cx, cy, monW + 20, monH + 20, 0xa0a0a0).setScrollFactor(0).setDepth(301));
 
-    // Screen background — dark blue/black
-    const screen = this.add.rectangle(monX, monY, monW, monH, 0x0a0a1e)
-      .setScrollFactor(0).setDepth(302);
-    objects.push(screen);
+    // Screen — macOS desktop gradient (dark blue/purple)
+    objects.push(this.add.rectangle(cx, cy, monW, monH, 0x1a1028).setScrollFactor(0).setDepth(302));
+    // Desktop gradient bands
+    objects.push(this.add.rectangle(cx, cy - 100, monW, 120, 0x2a1838).setScrollFactor(0).setDepth(302).setAlpha(0.5));
+    objects.push(this.add.rectangle(cx, cy + 80, monW, 160, 0x141020).setScrollFactor(0).setDepth(302).setAlpha(0.5));
 
-    // Monitor stand
-    const stand = this.add.rectangle(monX, monY + monH / 2 + 20, 60, 20, 0x2a2a2a)
-      .setScrollFactor(0).setDepth(301);
-    objects.push(stand);
-    const base = this.add.rectangle(monX, monY + monH / 2 + 35, 120, 10, 0x333333)
-      .setScrollFactor(0).setDepth(301);
-    objects.push(base);
+    // Stand
+    objects.push(this.add.rectangle(cx, cy + monH / 2 + 18, 80, 16, 0xb0b0b0).setScrollFactor(0).setDepth(301));
+    objects.push(this.add.rectangle(cx, cy + monH / 2 + 30, 160, 8, 0xa0a0a0).setScrollFactor(0).setDepth(301));
 
-    // Screen header
-    const header = this.add.text(monX, monY - monH / 2 + 30, 'JP\'s Computer', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '14px',
-      color: '#40c080',
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(303);
-    objects.push(header);
+    // Menu bar at top
+    objects.push(this.add.rectangle(cx, cy - monH / 2 + 10, monW, 20, 0x1a1a1a).setScrollFactor(0).setDepth(303).setAlpha(0.8));
+    objects.push(this.add.text(cx - monW / 2 + 15, cy - monH / 2 + 4, '  JP\'s MacBook', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#cccccc',
+    }).setScrollFactor(0).setDepth(304));
+    objects.push(this.add.text(cx + monW / 2 - 80, cy - monH / 2 + 4, '11:42 PM', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#cccccc',
+    }).setScrollFactor(0).setDepth(304));
 
-    // Divider line
-    const divider = this.add.rectangle(monX, monY - monH / 2 + 50, monW - 40, 1, 0x304030)
-      .setScrollFactor(0).setDepth(303);
-    objects.push(divider);
+    // Dock at bottom — dark glass bar
+    const dockY = cy + monH / 2 - 40;
+    objects.push(this.add.rectangle(cx, dockY, 500, 50, 0x1a1a2a).setScrollFactor(0).setDepth(303).setAlpha(0.7));
+    objects.push(this.add.rectangle(cx, dockY - 25, 500, 1, 0x404060).setScrollFactor(0).setDepth(303).setAlpha(0.5));
 
-    // Menu items
-    const menuTexts: Phaser.GameObjects.Text[] = [];
-    const startY = monY - monH / 2 + 80;
-    for (let i = 0; i < menuItems.length; i++) {
-      const item = this.add.text(monX - monW / 2 + 60, startY + i * 40, menuItems[i].label, {
-        fontFamily: '"Press Start 2P", monospace',
-        fontSize: '12px',
-        color: i === selectedIndex ? '#40ff80' : '#608060',
-      }).setScrollFactor(0).setDepth(303);
-      objects.push(item);
-      menuTexts.push(item);
+    // App icons on dock
+    const apps = [
+      { name: 'Safari',    color: 0x2090e0, icon: 'S', x: cx - 180 },
+      { name: 'Mail',      color: 0x3080d0, icon: 'M', x: cx - 100 },
+      { name: 'Instagram', color: 0xc040a0, icon: 'IG', x: cx - 20 },
+      { name: 'YouTube',   color: 0xe02020, icon: 'YT', x: cx + 60 },
+      { name: 'Close',     color: 0x606060, icon: 'X', x: cx + 180 },
+    ];
+
+    const appButtons: Phaser.GameObjects.Rectangle[] = [];
+    for (const app of apps) {
+      // App icon square
+      const btn = this.add.rectangle(app.x, dockY, 42, 42, app.color)
+        .setScrollFactor(0).setDepth(304).setInteractive({ useHandCursor: true });
+      objects.push(btn);
+      appButtons.push(btn);
+
+      // Rounded corners feel — highlight
+      objects.push(this.add.rectangle(app.x, dockY - 8, 36, 4, 0xffffff).setScrollFactor(0).setDepth(305).setAlpha(0.15));
+
+      // App label
+      objects.push(this.add.text(app.x, dockY, app.icon, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#ffffff',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(305));
+
+      // App name below dock
+      objects.push(this.add.text(app.x, dockY + 30, app.name, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#808090',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(304));
+
+      // Hover glow
+      btn.on('pointerover', () => btn.setAlpha(0.8));
+      btn.on('pointerout', () => btn.setAlpha(1));
     }
 
-    // Cursor arrow
-    const cursor = this.add.text(monX - monW / 2 + 40, startY, '>', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '12px',
-      color: '#40ff80',
-    }).setScrollFactor(0).setDepth(303);
-    objects.push(cursor);
+    // Desktop hint
+    objects.push(this.add.text(cx, cy - 40, 'Click an app to open', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#606080',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303));
 
-    // Blinking cursor animation
-    this.tweens.add({
-      targets: cursor,
-      alpha: 0.3,
-      duration: 400,
-      yoyo: true,
-      repeat: -1,
-    });
+    // ESC hint
+    objects.push(this.add.text(cx, cy + monH / 2 - 8, 'ESC to close', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#404050',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303));
 
-    // Instructions
-    const hint = this.add.text(monX, monY + monH / 2 - 20, 'Arrow keys to navigate  ·  Space to select', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '8px',
-      color: '#405040',
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(303);
-    objects.push(hint);
-
-    const updateSelection = () => {
-      for (let i = 0; i < menuTexts.length; i++) {
-        menuTexts[i].setColor(i === selectedIndex ? '#40ff80' : '#608060');
-      }
-      cursor.setY(startY + selectedIndex * 40);
-    };
-
-    const closeInterface = () => {
+    // Close handler
+    const closeAll = () => {
       if (!active) return;
       active = false;
-      upKey.off('down', upHandler);
-      downKey.off('down', downHandler);
-      selectKey.off('down', selectHandler);
-      enterKey.off('down', selectHandler);
-      this.input.off('pointerdown', clickHandler);
+      escKey.off('down', closeAll);
       for (const obj of objects) {
         if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
       }
       this.frozen = false;
     };
 
-    const selectItem = () => {
+    const escKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+    escKey.on('down', closeAll);
+
+    // App window builder
+    const showAppWindow = (title: string, content: { speaker?: string; text: string }[]) => {
       if (!active) return;
-      const item = menuItems[selectedIndex];
-
-      // Exit option
-      if (item.lines.length === 0) {
-        closeInterface();
-        return;
-      }
-
-      // Show dialogue for selected item, then return to menu
       active = false;
-      for (const obj of objects) {
-        if (obj && obj.active) {
-          (obj as Phaser.GameObjects.Sprite | Phaser.GameObjects.Text | Phaser.GameObjects.Rectangle).setAlpha?.(0.3);
+
+      // App window overlay
+      const winObjs: Phaser.GameObjects.GameObject[] = [];
+      const winW = monW - 60;
+      const winH = monH - 80;
+      const winY = cy - 10;
+
+      // Window background
+      winObjs.push(this.add.rectangle(cx, winY, winW, winH, 0x1e1e2e).setScrollFactor(0).setDepth(310));
+      // Title bar
+      winObjs.push(this.add.rectangle(cx, winY - winH / 2 + 14, winW, 28, 0x2a2a3a).setScrollFactor(0).setDepth(311));
+      // Traffic lights
+      winObjs.push(this.add.circle(cx - winW / 2 + 20, winY - winH / 2 + 14, 5, 0xff5f57).setScrollFactor(0).setDepth(312));
+      winObjs.push(this.add.circle(cx - winW / 2 + 36, winY - winH / 2 + 14, 5, 0xffbd2e).setScrollFactor(0).setDepth(312));
+      winObjs.push(this.add.circle(cx - winW / 2 + 52, winY - winH / 2 + 14, 5, 0x28c940).setScrollFactor(0).setDepth(312));
+      // Title text
+      winObjs.push(this.add.text(cx, winY - winH / 2 + 14, title, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#aaaacc',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(312));
+
+      // Content lines
+      let lineY = winY - winH / 2 + 50;
+      for (const line of content) {
+        if (line.speaker) {
+          winObjs.push(this.add.text(cx - winW / 2 + 20, lineY, line.speaker, {
+            fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#f0c040',
+          }).setScrollFactor(0).setDepth(312));
+          lineY += 18;
         }
+        winObjs.push(this.add.text(cx - winW / 2 + 20, lineY, line.text, {
+          fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#c0c0d0',
+          wordWrap: { width: winW - 40 }, lineSpacing: 6,
+        }).setScrollFactor(0).setDepth(312));
+        lineY += 30;
       }
 
-      this.dialogue.show(item.lines, () => {
+      // Close button (click red traffic light or press ESC)
+      const closeBtn = this.add.circle(cx - winW / 2 + 20, winY - winH / 2 + 14, 5, 0xff5f57)
+        .setScrollFactor(0).setDepth(313).setInteractive({ useHandCursor: true });
+      winObjs.push(closeBtn);
+
+      const closeWin = () => {
+        for (const o of winObjs) { if (o && o.active) (o as Phaser.GameObjects.GameObject).destroy(); }
         active = true;
-        for (const obj of objects) {
-          if (obj && obj.active) {
-            (obj as Phaser.GameObjects.Sprite | Phaser.GameObjects.Text | Phaser.GameObjects.Rectangle).setAlpha?.(1);
-          }
-        }
-        updateSelection();
-      });
+      };
+      closeBtn.on('pointerdown', closeWin);
+
+      // Also close on ESC or Space
+      const winEsc = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+      const winSpace = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+      const winCloseHandler = () => { closeWin(); winEsc.off('down', winCloseHandler); winSpace.off('down', winCloseHandler); };
+      winEsc.on('down', winCloseHandler);
+      winSpace.on('down', winCloseHandler);
+
+      for (const o of winObjs) objects.push(o);
     };
 
-    // Input handlers
-    const upKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
-    const downKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
-    const selectKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-    const enterKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+    // IG DM interface — special handler
+    const showInstagram = () => {
+      if (!active) return;
+      active = false;
 
-    const upHandler = () => { if (!active) return; selectedIndex = (selectedIndex - 1 + menuItems.length) % menuItems.length; updateSelection(); };
-    const downHandler = () => { if (!active) return; selectedIndex = (selectedIndex + 1) % menuItems.length; updateSelection(); };
-    const selectHandler = () => selectItem();
-    const clickHandler = () => selectItem();
+      const winObjs: Phaser.GameObjects.GameObject[] = [];
+      const winW = monW - 60;
+      const winH = monH - 80;
+      const winY = cy - 10;
 
-    upKey.on('down', upHandler);
-    downKey.on('down', downHandler);
-    selectKey.on('down', selectHandler);
-    enterKey.on('down', selectHandler);
-    this.input.on('pointerdown', clickHandler);
+      // Window bg
+      winObjs.push(this.add.rectangle(cx, winY, winW, winH, 0x0a0a0a).setScrollFactor(0).setDepth(310));
+      // IG header — gradient purple/orange
+      winObjs.push(this.add.rectangle(cx, winY - winH / 2 + 24, winW, 48, 0x833ab4).setScrollFactor(0).setDepth(311));
+      winObjs.push(this.add.rectangle(cx + 100, winY - winH / 2 + 24, winW / 2, 48, 0xc13584).setScrollFactor(0).setDepth(311).setAlpha(0.6));
+      // IG logo text
+      winObjs.push(this.add.text(cx, winY - winH / 2 + 16, 'Instagram', {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '11px', color: '#ffffff',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(312));
+      winObjs.push(this.add.text(cx, winY - winH / 2 + 34, 'Direct Messages', {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#ddddee',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(312));
+
+      // Traffic lights
+      winObjs.push(this.add.circle(cx - winW / 2 + 20, winY - winH / 2 + 12, 5, 0xff5f57).setScrollFactor(0).setDepth(313));
+      winObjs.push(this.add.circle(cx - winW / 2 + 36, winY - winH / 2 + 12, 5, 0xffbd2e).setScrollFactor(0).setDepth(313));
+      winObjs.push(this.add.circle(cx - winW / 2 + 52, winY - winH / 2 + 12, 5, 0x28c940).setScrollFactor(0).setDepth(313));
+
+      // DM conversation list (left panel)
+      const panelX = cx - winW / 2;
+      const panelW = 200;
+      winObjs.push(this.add.rectangle(panelX + panelW / 2, winY + 20, panelW, winH - 60, 0x121212).setScrollFactor(0).setDepth(311));
+      // Divider line
+      winObjs.push(this.add.rectangle(panelX + panelW, winY + 20, 1, winH - 60, 0x333333).setScrollFactor(0).setDepth(312));
+
+      // DM contacts
+      const dms = [
+        { name: 'Nolan', preview: 'bro come thru this wknd', active: true },
+        { name: 'David', preview: 'lmao u see that video', active: false },
+        { name: 'Cooper', preview: 'yo', active: false },
+        { name: 'Random Girl', preview: 'hey :)', active: false },
+      ];
+
+      let dmY = winY - winH / 2 + 70;
+      for (const dm of dms) {
+        // DM row highlight if active
+        if (dm.active) {
+          winObjs.push(this.add.rectangle(panelX + panelW / 2, dmY + 10, panelW - 4, 40, 0x1e1e2e).setScrollFactor(0).setDepth(312));
+        }
+        // Profile circle
+        winObjs.push(this.add.circle(panelX + 22, dmY + 10, 12, dm.active ? 0x833ab4 : 0x333333).setScrollFactor(0).setDepth(312));
+        winObjs.push(this.add.text(panelX + 22, dmY + 10, dm.name[0], {
+          fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#ffffff',
+        }).setOrigin(0.5).setScrollFactor(0).setDepth(313));
+        // Name
+        winObjs.push(this.add.text(panelX + 42, dmY, dm.name, {
+          fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: dm.active ? '#ffffff' : '#888888',
+        }).setScrollFactor(0).setDepth(312));
+        // Preview
+        winObjs.push(this.add.text(panelX + 42, dmY + 14, dm.preview, {
+          fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#666666',
+        }).setScrollFactor(0).setDepth(312));
+
+        // Blue dot for unread
+        if (dm.active) {
+          winObjs.push(this.add.circle(panelX + panelW - 14, dmY + 10, 4, 0x3897f0).setScrollFactor(0).setDepth(312));
+        }
+
+        dmY += 46;
+      }
+
+      // Right panel — active conversation with Nolan
+      const chatX = panelX + panelW + 10;
+      const chatW = winW - panelW - 10;
+
+      // Chat header
+      winObjs.push(this.add.text(chatX + chatW / 2, winY - winH / 2 + 60, 'Nolan', {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#ffffff',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(312));
+      winObjs.push(this.add.text(chatX + chatW / 2, winY - winH / 2 + 76, 'Active now', {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#44bb44',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(312));
+
+      // Chat messages — bubble style
+      const messages = [
+        { from: 'nolan', text: 'yooo JP' },
+        { from: 'nolan', text: 'bro this weekend' },
+        { from: 'nolan', text: 'santa barbara' },
+        { from: 'nolan', text: 'frat house on the beach' },
+        { from: 'nolan', text: 'david n cooper already down' },
+        { from: 'jp', text: 'who else going' },
+        { from: 'nolan', text: 'terrell, some girls from UCSB' },
+        { from: 'nolan', text: 'bro come thru this wknd 🔥' },
+      ];
+
+      let msgY = winY - winH / 2 + 96;
+      for (const msg of messages) {
+        const isJP = msg.from === 'jp';
+        const bubbleColor = isJP ? 0x3897f0 : 0x262626;
+        const textColor = '#ffffff';
+        const msgX = isJP ? chatX + chatW - 30 : chatX + 20;
+        const originX = isJP ? 1 : 0;
+
+        // Bubble
+        const textObj = this.add.text(msgX, msgY, msg.text, {
+          fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: textColor,
+          padding: { x: 8, y: 6 },
+          backgroundColor: isJP ? '#3897f0' : '#262626',
+        }).setOrigin(originX, 0).setScrollFactor(0).setDepth(312);
+        winObjs.push(textObj);
+
+        msgY += 26;
+      }
+
+      // Close on red button, ESC, or Space
+      const closeBtn = this.add.circle(cx - winW / 2 + 20, winY - winH / 2 + 12, 5, 0xff5f57)
+        .setScrollFactor(0).setDepth(314).setInteractive({ useHandCursor: true });
+      winObjs.push(closeBtn);
+
+      const closeWin = () => {
+        for (const o of winObjs) { if (o && o.active) (o as Phaser.GameObjects.GameObject).destroy(); }
+        active = true;
+      };
+      closeBtn.on('pointerdown', closeWin);
+      const winEsc = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+      const winSpace = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+      const winCloseHandler = () => { closeWin(); winEsc.off('down', winCloseHandler); winSpace.off('down', winCloseHandler); };
+      winEsc.on('down', winCloseHandler);
+      winSpace.on('down', winCloseHandler);
+
+      for (const o of winObjs) objects.push(o);
+    };
+
+    // Wire up app clicks
+    appButtons[0].on('pointerdown', () => showAppWindow('Safari — Crypto Portfolio', [
+      { speaker: 'Coinbase', text: 'Portfolio: -42.3% this month' },
+      { text: 'BTC: $28,400  (-8.2%)' },
+      { text: 'ETH: $1,830   (-12.1%)' },
+      { text: 'DOGE: $0.07   (-34.5%)' },
+      { speaker: 'JP\'s Mind', text: 'Pops would kill me if he knew how much I put in.' },
+    ]));
+
+    appButtons[1].on('pointerdown', () => showAppWindow('Mail — Inbox (3)', [
+      { speaker: 'UC Davis Admissions', text: 'Congratulations! You have been accepted...' },
+      { speaker: 'Sac State', text: 'We are pleased to offer you admission...' },
+      { speaker: 'Sonoma State', text: 'Dear Jordan, Welcome to the Seawolf family...' },
+      { speaker: 'JP\'s Mind', text: '$40K a year for something I can learn on YouTube? Nah.' },
+    ]));
+
+    appButtons[2].on('pointerdown', () => showInstagram());
+
+    appButtons[3].on('pointerdown', () => showAppWindow('YouTube — Trending', [
+      { text: '"How I Made $10K/Month Dropshipping" — 2.1M views' },
+      { text: '"Crypto Trading for Beginners" — 890K views' },
+      { text: '"Affiliate Marketing Blueprint" — 1.4M views' },
+      { speaker: 'JP\'s Mind', text: 'Everyone selling the dream. Nobody shows the work.' },
+    ]));
+
+    appButtons[4].on('pointerdown', () => closeAll());
   }
 
   private playFishing() {
