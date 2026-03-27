@@ -30,6 +30,11 @@ export class OperatorScene extends BaseChapterScene {
   create() {
     super.create();
 
+    // JP has money by Ch7 — seed balance if not already set
+    if (BalanceSystem.getBalance() < 2550) {
+      BalanceSystem.earn(2550); // $2,550 earned through Ch6 clients
+    }
+
     // Exit south -- head to Vegas (row 57 visible, triggers at 58)
     this.addNavArrow(19, 57, 'Vegas');
 
@@ -157,9 +162,9 @@ export class OperatorScene extends BaseChapterScene {
     // Barista — purchase menu
     if (npcId === 'ch6_barista') {
       this.playPurchaseMenu('ORDER UP', [
-        { name: 'Matcha Latte', price: '$7', color: '#80c060' },
-        { name: 'Espresso', price: '$4', color: '#3a2010' },
-        { name: 'Breakfast Sandwich', price: '$9', color: '#c8a050' },
+        { name: 'Matcha Latte', price: '$7', cost: 7, color: '#80c060' },
+        { name: 'Espresso', price: '$4', cost: 4, color: '#3a2010' },
+        { name: 'Breakfast Sandwich', price: '$9', cost: 9, color: '#c8a050' },
       ], [
         '"The usual?" JP nods.',
         'Barista already had it started.',
@@ -259,10 +264,10 @@ export class OperatorScene extends BaseChapterScene {
     if (interactable.id === 'ch6_food_truck_menu') {
       Analytics.trackInteraction(interactable.id);
       this.playPurchaseMenu('STREET TACOS', [
-        { name: 'Asada Tacos (2)', price: '$8', color: '#c8a040' },
-        { name: 'Al Pastor (2)', price: '$8', color: '#d06030' },
-        { name: 'Birria Quesadilla', price: '$12', color: '#b84020' },
-        { name: 'Horchata', price: '$4', color: '#f0e8d0' },
+        { name: 'Asada Tacos (2)', price: '$8', cost: 8, color: '#c8a040' },
+        { name: 'Al Pastor (2)', price: '$8', cost: 8, color: '#d06030' },
+        { name: 'Birria Quesadilla', price: '$12', cost: 12, color: '#b84020' },
+        { name: 'Horchata', price: '$4', cost: 4, color: '#f0e8d0' },
       ], [
         'Best tacos in LA. Twice a week minimum.',
         'The vendor knows JP by name now.',
@@ -285,7 +290,7 @@ export class OperatorScene extends BaseChapterScene {
   // ─── PURCHASE MENU ─────────────────────────────────────────────────
   private playPurchaseMenu(
     title: string,
-    items: { name: string; price: string; color: string }[],
+    items: { name: string; price: string; cost: number; color: string }[],
     afterLines: string[]
   ) {
     this.frozen = true;
@@ -364,8 +369,18 @@ export class OperatorScene extends BaseChapterScene {
     const onDown = () => { selectedIndex = Math.min(items.length - 1, selectedIndex + 1); updateSelection(); };
     const onEsc = () => cleanup();
     const onBuy = () => {
-      // Purchase animation
       const item = items[selectedIndex];
+      // Check balance
+      if (!BalanceSystem.canAfford(item.cost)) {
+        const noFunds = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + menuH / 2 - 45, "Can't afford that rn", {
+          fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#ff4444',
+        }).setOrigin(0.5).setScrollFactor(0).setDepth(310);
+        objects.push(noFunds);
+        this.tweens.add({ targets: noFunds, alpha: 0, delay: 1000, duration: 300, onComplete: () => noFunds.destroy() });
+        return;
+      }
+      BalanceSystem.spend(item.cost);
+      // Purchase animation
       const purchaseText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2, `${item.name}  ✓`, {
         fontFamily: '"Press Start 2P", monospace', fontSize: '14px', color: '#40c060',
       }).setOrigin(0.5).setScrollFactor(0).setDepth(310).setAlpha(0);
