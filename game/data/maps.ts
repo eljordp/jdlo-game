@@ -200,7 +200,7 @@ export const homeMap: MapData = {
     { id: 'ch0_rooftop',       x: 3,  y: 15, type: 'examine', glow: true },                              // easter egg
     { id: 'ch0_record_player', x: 33, y: 17, type: 'examine', glow: true },                              // easter egg
     { id: 'ch0_shoebox',       x: 4,  y: 5,  type: 'examine', glow: true },                              // easter egg
-    { id: 'ch0_tv_sitdown',    x: 5,  y: 13, type: 'examine', glow: true },                              // Pops moment — NO couch sprite (uses existing couch)
+    // tv_sitdown removed — Pops already has fishing moment
 
     // Windows — on wall tiles, no floating sprite
     { id: 'ch0_window_jp',     x: 6,  y: 3,  type: 'examine', glow: false },

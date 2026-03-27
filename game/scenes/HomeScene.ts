@@ -45,6 +45,39 @@ export class HomeScene extends BaseChapterScene {
     super.create();
     this.addNavArrow(14, 34, 'Leave home');
 
+    // Sister's crayon drawings on walls (cols 11-15, rows 4-8)
+    const drawingColors = [0xff69b4, 0xf0c040, 0x40c060, 0x4080e0, 0xff4444, 0xc040f0];
+    // Drawing 1: Sun on back wall
+    this.add.circle(12 * SCALED_TILE + 20, 4 * SCALED_TILE + 20, 8, 0xf0c040).setDepth(1);
+    for (let i = 0; i < 6; i++) {
+      const angle = (Math.PI * 2 / 6) * i;
+      this.add.rectangle(
+        12 * SCALED_TILE + 20 + Math.cos(angle) * 12,
+        4 * SCALED_TILE + 20 + Math.sin(angle) * 12,
+        3, 6, 0xf0c040
+      ).setDepth(1).setAngle(angle * 180 / Math.PI);
+    }
+    // Drawing 2: Heart on side wall
+    this.add.rectangle(11 * SCALED_TILE + 20, 5 * SCALED_TILE + 20, 6, 6, 0xff69b4).setDepth(1);
+    this.add.rectangle(11 * SCALED_TILE + 17, 5 * SCALED_TILE + 17, 4, 4, 0xff69b4).setDepth(1);
+    this.add.rectangle(11 * SCALED_TILE + 23, 5 * SCALED_TILE + 17, 4, 4, 0xff69b4).setDepth(1);
+    // Drawing 3: Flower on back wall
+    this.add.circle(14 * SCALED_TILE + 30, 4 * SCALED_TILE + 25, 4, 0xf0c040).setDepth(1); // center
+    for (let i = 0; i < 5; i++) {
+      const a = (Math.PI * 2 / 5) * i;
+      this.add.circle(
+        14 * SCALED_TILE + 30 + Math.cos(a) * 7,
+        4 * SCALED_TILE + 25 + Math.sin(a) * 7,
+        3, 0xff69b4
+      ).setDepth(1);
+    }
+    // Drawing 4: Rainbow stripes
+    const rainbowColors = [0xff4444, 0xf0a030, 0xf0f040, 0x40c060, 0x4080e0, 0xc040f0];
+    for (let i = 0; i < 6; i++) {
+      this.add.rectangle(13 * SCALED_TILE + 10, 4 * SCALED_TILE + 10 + i * 3, 20, 2, rainbowColors[i])
+        .setDepth(1).setAlpha(0.7);
+    }
+
     // Render windows directly on wall tiles (not floating sprites)
     const windowPositions = [
       { x: 6, y: 3 },   // JP's room
@@ -287,37 +320,47 @@ export class HomeScene extends BaseChapterScene {
     const mom = this.findNPC('ch0_mom');
     if (!mom) return;
 
-    // Mom walks to parents room
-    this.moveNPCTo('ch0_mom', 22, 6, 2000, () => {
-      // Dark overlay on parents' room (cols 17-30, rows 4-8)
-      const roomCenterX = 23.5 * SCALED_TILE + SCALED_TILE / 2;
-      const roomCenterY = 6 * SCALED_TILE + SCALED_TILE / 2;
-      const roomW = 14 * SCALED_TILE;
-      const roomH = 5 * SCALED_TILE;
+    // Mom walks a REAL PATH: kitchen → hallway → parents room door → inside
+    // Step 1: Walk to hallway door area (through kitchen to row 10)
+    this.moveNPCTo('ch0_mom', 20, 10, 1200, () => {
+      // Step 2: Walk down hallway toward parents room door
+      this.moveNPCTo('ch0_mom', 20, 9, 400, () => {
+        // Step 3: Walk into parents room through door
+        this.moveNPCTo('ch0_mom', 22, 6, 1200, () => {
+          // Block the parents room door — Mom locked it
+          this.collisionTiles.add('20,9');
 
-      const darkness = this.add.rectangle(roomCenterX, roomCenterY, roomW, roomH, 0x000000, 0)
-        .setDepth(7);
-      this.tweens.add({
-        targets: darkness,
-        alpha: 0.5,
-        duration: 1000,
-        ease: 'Sine.easeIn',
-      });
+          // Dark overlay on parents' room (cols 17-30, rows 4-8)
+          const roomCenterX = 23.5 * SCALED_TILE + SCALED_TILE / 2;
+          const roomCenterY = 6 * SCALED_TILE + SCALED_TILE / 2;
+          const roomW = 14 * SCALED_TILE;
+          const roomH = 5 * SCALED_TILE;
 
-      // Door closing sound effect — just visual "thud"
-      this.cameras.main.shake(100, 0.002);
+          const darkness = this.add.rectangle(roomCenterX, roomCenterY, roomW, roomH, 0x000000, 0)
+            .setDepth(7);
+          this.tweens.add({
+            targets: darkness,
+            alpha: 0.5,
+            duration: 1000,
+            ease: 'Sine.easeIn',
+          });
 
-      // Update Mom's dialogue to reflect state
-      mom.dialogue = [
-        { speaker: 'Narrator', text: 'The door is closed. She\'s done talking.' },
-      ];
+          // Door closing sound effect — just visual "thud"
+          this.cameras.main.shake(100, 0.002);
 
-      // Spawn food on counter after a delay
-      this.time.delayedCall(5000, () => {
-        if (!this.momFoodSpawned) {
-          this.momFoodSpawned = true;
-          this.spawnDynamicInteractable('ch0_mom_food', 28, 12, 'item-plate');
-        }
+          // Update Mom's dialogue to reflect state
+          mom.dialogue = [
+            { speaker: 'Narrator', text: 'The door is locked. She\'s done talking.' },
+          ];
+
+          // Spawn food on counter after a delay
+          this.time.delayedCall(5000, () => {
+            if (!this.momFoodSpawned) {
+              this.momFoodSpawned = true;
+              this.spawnDynamicInteractable('ch0_mom_food', 28, 12, 'item-plate');
+            }
+          });
+        });
       });
     });
   }
