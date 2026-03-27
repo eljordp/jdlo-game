@@ -785,7 +785,7 @@ export class HomeScene extends BaseChapterScene {
       this.frozen = true;
       this.cameras.main.fadeOut(300, 0, 0, 0);
       this.cameras.main.once('camerafadeoutcomplete', () => {
-        this.player.setPosition(18 * SCALED_TILE + SCALED_TILE / 2, 6 * SCALED_TILE + SCALED_TILE / 2);
+        this.player.setPosition(20 * SCALED_TILE + SCALED_TILE / 2, 10 * SCALED_TILE + SCALED_TILE / 2);
         const upRows = Array.from({ length: 12 }, (_, i) => i); // rows 0-11
         const downRows = Array.from({ length: this.mapHeight - 12 }, (_, i) => i + 12);
         this.setFloorVisibility(upRows, downRows);
@@ -801,7 +801,7 @@ export class HomeScene extends BaseChapterScene {
       this.frozen = true;
       this.cameras.main.fadeOut(300, 0, 0, 0);
       this.cameras.main.once('camerafadeoutcomplete', () => {
-        this.player.setPosition(18 * SCALED_TILE + SCALED_TILE / 2, 18 * SCALED_TILE + SCALED_TILE / 2);
+        this.player.setPosition(20 * SCALED_TILE + SCALED_TILE / 2, 18 * SCALED_TILE + SCALED_TILE / 2);
         const upRows = Array.from({ length: 12 }, (_, i) => i); // rows 0-11
         const downRows = Array.from({ length: this.mapHeight - 12 }, (_, i) => i + 12);
         this.setFloorVisibility(downRows, upRows);

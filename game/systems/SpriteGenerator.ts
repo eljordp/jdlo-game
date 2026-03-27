@@ -5228,6 +5228,39 @@ function generateMoreItems(scene: Phaser.Scene) {
     px(g, 8, 2, 0xb0b0b0, 1, 1);
     px(g, 10, 3, 0xc0c0c0, 1, 1);
   });
+
+  // --- item-stairs --- descending steps left-to-right
+  makeTexture(scene, 'item-stairs', TILE_SIZE, TILE_SIZE, (g) => {
+    // Step 1 (top-left, highest)
+    px(g, 2, 8, 0x4a3820, 7, 2);    // shadow under step
+    px(g, 2, 6, 0x6a5030, 7, 4);    // step body
+    px(g, 2, 6, 0x8a6840, 7, 1);    // highlight on top
+
+    // Step 2
+    px(g, 8, 14, 0x4a3820, 7, 2);   // shadow under step
+    px(g, 8, 12, 0x6a5030, 7, 4);   // step body
+    px(g, 8, 12, 0x8a6840, 7, 1);   // highlight on top
+
+    // Step 3
+    px(g, 14, 20, 0x4a3820, 7, 2);  // shadow under step
+    px(g, 14, 18, 0x6a5030, 7, 4);  // step body
+    px(g, 14, 18, 0x8a6840, 7, 1);  // highlight on top
+
+    // Step 4
+    px(g, 20, 26, 0x4a3820, 7, 2);  // shadow under step
+    px(g, 20, 24, 0x6a5030, 7, 4);  // step body
+    px(g, 20, 24, 0x8a6840, 7, 1);  // highlight on top
+
+    // Step 5 (bottom-right, lowest — partially cut off at bottom)
+    px(g, 26, 30, 0x6a5030, 5, 2);  // step body (clipped)
+    px(g, 26, 30, 0x8a6840, 5, 1);  // highlight on top
+
+    // Handrail on the right side (grey metal)
+    px(g, 29, 2, 0x808890, 2, 28);  // vertical rail post
+    px(g, 29, 2, 0x909aa0, 1, 28);  // rail highlight
+    // Rail top cap
+    px(g, 28, 1, 0x909aa0, 3, 2);
+  });
 }
 
 export function generateAllSprites(scene: Phaser.Scene): void {

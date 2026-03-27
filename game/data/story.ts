@@ -1151,6 +1151,46 @@ const ch0Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP', text: 'What are you doing, bro?' },
     { speaker: 'Narrator', text: 'No answer.' },
   ],
+  ch0_laundry: [
+    { speaker: 'Narrator', text: 'Laundry basket. Overflowing. Mom gave up asking.' },
+  ],
+  ch0_storage_boxes: [
+    { speaker: 'Narrator', text: 'Old boxes. Baby clothes, school projects, Christmas decorations.' },
+    { speaker: 'JP\'s Mind', text: 'Mom keeps everything.' },
+  ],
+  ch0_ironing_board: [
+    { speaker: 'Narrator', text: 'Ironing board. Pops\' work shirts hang next to it.' },
+  ],
+  ch0_family_albums: [
+    { speaker: 'Narrator', text: 'Photo albums. Thick ones, from before phones had cameras.' },
+    { speaker: 'Narrator', text: 'JP at 3. Sister\'s first birthday. Pops with a full head of hair.' },
+    { speaker: 'JP\'s Mind', text: 'We looked happy.' },
+    { speaker: 'JP\'s Mind', text: 'We were happy.' },
+  ],
+  ch0_sister_nightlight: [
+    { speaker: 'Narrator', text: 'A nightlight shaped like a butterfly. Still plugged in.' },
+  ],
+  ch0_den_couch: [
+    { speaker: 'Narrator', text: 'The big couch. This is where the family watches movies.' },
+  ],
+  ch0_den_tv: [
+    { speaker: 'Narrator', text: 'Big TV. Pops watches the game every Sunday.' },
+  ],
+  ch0_den_rug: [
+    { speaker: 'Narrator', text: 'Area rug. Sister spilled juice on it last month. Mom flipped.' },
+  ],
+  ch0_den_lamp: [
+    { speaker: 'Narrator', text: 'Floor lamp. The one that flickers when you bump it.' },
+  ],
+  ch0_den_plant: [
+    { speaker: 'Narrator', text: 'Mom\'s plant. She talks to it. JP\'s not sure if it helps.' },
+  ],
+  ch0_den_shelf: [
+    { speaker: 'Narrator', text: 'Family bookshelf. DVDs, board games, a Bible, old yearbooks.' },
+  ],
+  ch0_den_table: [
+    { speaker: 'Narrator', text: 'Side table. Remote, coasters, a candle Mom never lights.' },
+  ],
   ch0_toilet: [
     { speaker: 'Narrator', text: 'A toilet. What did you expect?' },
   ],
