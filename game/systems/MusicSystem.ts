@@ -24,14 +24,14 @@ type TrackDef = {
 };
 
 const TRACKS: Record<string, TrackDef> = {
-  // Ch1 Home: Warm, gentle, nostalgic. Major chord tones. Soft sine waves.
+  // Ch1 Home: Warm, gentle, nostalgic. Higher register, brighter. Like a Sunday morning.
   'home': {
-    notes: ['C3', 'E3', 'G3', 'E3', 'C3', 'REST', 'G2', 'REST'],
-    bpm: 50,
-    gain: 0.015,
+    notes: ['G3', 'B3', 'D4', 'REST', 'E4', 'D4', 'B3', 'REST'],
+    bpm: 60,
+    gain: 0.010,
     wave: 'sine',
-    filterFreq: 800,
-    harmonic: { wave: 'sine', detune: 1200, gainMult: 0.3 },
+    filterFreq: 1200,
+    harmonic: { wave: 'sine', detune: 1200, gainMult: 0.2 },
   },
   // Ch3 Wrong Crowd: Tense but NOT horror. Late night driving, subtle unease.
   'wrong-crowd': {

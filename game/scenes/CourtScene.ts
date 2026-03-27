@@ -27,6 +27,10 @@ export class CourtScene extends Phaser.Scene {
     MusicSystem.stop();
     this.cameras.main.fadeIn(500, 0, 0, 0);
 
+    // Cinema letterbox bars
+    this.add.rectangle(GAME_WIDTH / 2, 35, GAME_WIDTH, 70, 0x000000).setScrollFactor(0).setDepth(200);
+    this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT - 35, GAME_WIDTH, 70, 0x000000).setScrollFactor(0).setDepth(200);
+
     this.input.keyboard!.on('keydown-SPACE', () => this.advance());
     this.input.keyboard!.on('keydown-ENTER', () => this.advance());
     this.input.on('pointerdown', () => this.advance());
@@ -76,7 +80,7 @@ export class CourtScene extends Phaser.Scene {
       wordWrap: { width: GAME_WIDTH - 100 },
       align: 'center',
       lineSpacing: 10,
-    }).setOrigin(0.5).setAlpha(0);
+    }).setOrigin(0.5).setAlpha(0).setDepth(100);
 
     this.addTween({ targets: t, alpha: 1, duration: 400, delay });
     this.textObjects.push(t);
@@ -90,7 +94,7 @@ export class CourtScene extends Phaser.Scene {
           fontFamily: '"Press Start 2P", monospace',
           fontSize: '12px',
           color: '#666688',
-        }).setOrigin(0.5);
+        }).setOrigin(0.5).setDepth(100);
         this.addTween({
           targets: hint,
           alpha: 0.3,
@@ -202,12 +206,12 @@ export class CourtScene extends Phaser.Scene {
 
         // JP in center (black hoodie = ch2)
         const jp = this.addObj(
-          this.add.sprite(cx - 60, cy + 40, 'player-ch2', 0).setScale(CHAR_SCALE)
+          this.add.sprite(cx - 60, cy + 40, 'player-ch2', 0).setScale(CHAR_SCALE * 1.3)
         );
 
         // Buyer nearby
         this.addObj(
-          this.add.sprite(cx + 80, cy + 20, 'npc-shady', 0).setScale(SCALE)
+          this.add.sprite(cx + 80, cy + 20, 'npc-shady', 0).setScale(SCALE * 1.3)
         );
 
         // Table between them (rectangle)
@@ -287,15 +291,15 @@ export class CourtScene extends Phaser.Scene {
 
         // JP facing up (hands up simulation) — frame 2 = up-idle
         const jp = this.addObj(
-          this.add.sprite(cx, cy + 40, 'player-ch2', 2).setScale(CHAR_SCALE)
+          this.add.sprite(cx, cy + 40, 'player-ch2', 2).setScale(CHAR_SCALE * 1.3)
         );
 
         // Two cops entering from sides
         const cop1 = this.addObj(
-          this.add.sprite(-60, cy + 20, 'npc-guard', 6).setScale(SCALE) // right-idle, walking right
+          this.add.sprite(-60, cy + 20, 'npc-guard', 6).setScale(SCALE * 1.3) // right-idle, walking right
         );
         const cop2 = this.addObj(
-          this.add.sprite(GAME_WIDTH + 60, cy + 20, 'npc-guard', 4).setScale(SCALE) // left-idle, walking left
+          this.add.sprite(GAME_WIDTH + 60, cy + 20, 'npc-guard', 4).setScale(SCALE * 1.3) // left-idle, walking left
         );
 
         // Tween cops walking in
@@ -338,7 +342,7 @@ export class CourtScene extends Phaser.Scene {
 
         // JP sprite center, facing down (head down)
         const jp = this.addObj(
-          this.add.sprite(cx, cy + 20, 'player-ch2', 0).setScale(CHAR_SCALE)
+          this.add.sprite(cx, cy + 20, 'player-ch2', 0).setScale(CHAR_SCALE * 1.3)
         );
         // Slight slow bob to simulate riding in car
         this.addTween({
@@ -375,17 +379,17 @@ export class CourtScene extends Phaser.Scene {
 
           // Judge behind bench
           this.addObj(
-            this.add.sprite(cx, benchY - 30, 'npc-business', 0).setScale(SCALE)
+            this.add.sprite(cx, benchY - 30, 'npc-business', 0).setScale(SCALE * 1.3)
           );
 
           // JP in center-bottom area, small and alone
           this.addObj(
-            this.add.sprite(cx - 40, cy + 120, 'player-ch2', 2).setScale(CHAR_SCALE) // facing up toward judge
+            this.add.sprite(cx - 40, cy + 120, 'player-ch2', 2).setScale(CHAR_SCALE * 1.3) // facing up toward judge
           );
 
           // Lawyer next to JP
           this.addObj(
-            this.add.sprite(cx + 60, cy + 120, 'npc-narrator', 0).setScale(SCALE)
+            this.add.sprite(cx + 60, cy + 120, 'npc-narrator', 0).setScale(SCALE * 1.3)
           );
 
           this.cameras.main.fadeIn(800, 0, 0, 0);
@@ -467,17 +471,17 @@ export class CourtScene extends Phaser.Scene {
 
         // Judge still there
         this.addObj(
-          this.add.sprite(cx, benchY - 30, 'npc-business', 0).setScale(SCALE)
+          this.add.sprite(cx, benchY - 30, 'npc-business', 0).setScale(SCALE * 1.3)
         );
 
         // JP facing down (looking at floor)
         const jp = this.addObj(
-          this.add.sprite(cx - 40, cy + 120, 'player-ch2', 0).setScale(CHAR_SCALE)
+          this.add.sprite(cx - 40, cy + 120, 'player-ch2', 0).setScale(CHAR_SCALE * 1.3)
         );
 
         // Lawyer — starts further away, moves toward JP
         const lawyer = this.addObj(
-          this.add.sprite(cx + 140, cy + 120, 'npc-narrator', 4).setScale(SCALE) // facing left toward JP
+          this.add.sprite(cx + 140, cy + 120, 'npc-narrator', 4).setScale(SCALE * 1.3) // facing left toward JP
         );
 
         this.addTween({
@@ -510,7 +514,7 @@ export class CourtScene extends Phaser.Scene {
 
         // Judge — starts seated, stands slightly
         const judge = this.addObj(
-          this.add.sprite(cx, benchY - 30, 'npc-business', 0).setScale(SCALE)
+          this.add.sprite(cx, benchY - 30, 'npc-business', 0).setScale(SCALE * 1.3)
         );
         this.addTween({
           targets: judge,
@@ -522,10 +526,10 @@ export class CourtScene extends Phaser.Scene {
 
         // JP and lawyer
         this.addObj(
-          this.add.sprite(cx - 40, cy + 120, 'player-ch2', 2).setScale(CHAR_SCALE)
+          this.add.sprite(cx - 40, cy + 120, 'player-ch2', 2).setScale(CHAR_SCALE * 1.3)
         );
         this.addObj(
-          this.add.sprite(cx + 70, cy + 120, 'npc-narrator', 0).setScale(SCALE)
+          this.add.sprite(cx + 70, cy + 120, 'npc-narrator', 0).setScale(SCALE * 1.3)
         );
 
         this.showText('SENTENCED', cy + 200, { size: '16px', color: '#888899' });
@@ -642,7 +646,7 @@ export class CourtScene extends Phaser.Scene {
 
         // JP sprite centered, alone
         const jp = this.addObj(
-          this.add.sprite(cx, cy + 20, 'player-ch2', 0).setScale(CHAR_SCALE)
+          this.add.sprite(cx, cy + 20, 'player-ch2', 0).setScale(CHAR_SCALE * 1.3)
         );
         // Slow breathing pulse
         this.addTween({

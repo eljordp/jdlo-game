@@ -28,6 +28,10 @@ export class ReleaseScene extends Phaser.Scene {
     MusicSystem.stop();
     this.cameras.main.fadeIn(500, 0, 0, 0);
 
+    // Cinema letterbox bars
+    this.add.rectangle(GAME_WIDTH / 2, 35, GAME_WIDTH, 70, 0x000000).setScrollFactor(0).setDepth(200);
+    this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT - 35, GAME_WIDTH, 70, 0x000000).setScrollFactor(0).setDepth(200);
+
     this.input.keyboard!.on('keydown-SPACE', () => this.advance());
     this.input.keyboard!.on('keydown-ENTER', () => this.advance());
     this.input.on('pointerdown', () => this.advance());
@@ -77,7 +81,7 @@ export class ReleaseScene extends Phaser.Scene {
       wordWrap: { width: GAME_WIDTH - 100 },
       align: 'center',
       lineSpacing: 10,
-    }).setOrigin(0.5).setAlpha(0);
+    }).setOrigin(0.5).setAlpha(0).setDepth(100);
 
     this.addTween({ targets: t, alpha: 1, duration: 400, delay });
     this.textObjects.push(t);
@@ -91,7 +95,7 @@ export class ReleaseScene extends Phaser.Scene {
           fontFamily: '"Press Start 2P", monospace',
           fontSize: '12px',
           color: '#666688',
-        }).setOrigin(0.5);
+        }).setOrigin(0.5).setDepth(100);
         this.addTween({
           targets: hint,
           alpha: 0.3,
@@ -135,7 +139,7 @@ export class ReleaseScene extends Phaser.Scene {
 
         // JP sitting on bed, facing down
         const jp = this.addObj(
-          this.add.sprite(cx, cy + 40, 'player-ch3', 0).setScale(CHAR_SCALE)
+          this.add.sprite(cx, cy + 40, 'player-ch3', 0).setScale(CHAR_SCALE * 1.3)
         );
 
         // Bed
@@ -206,7 +210,7 @@ export class ReleaseScene extends Phaser.Scene {
 
         // JP walking forward (up the screen = toward the exit)
         const jp = this.addObj(
-          this.add.sprite(cx, GAME_HEIGHT + 40, 'player-ch3', 2).setScale(CHAR_SCALE)
+          this.add.sprite(cx, GAME_HEIGHT + 40, 'player-ch3', 2).setScale(CHAR_SCALE * 1.3)
         );
 
         // Walk animation
@@ -264,7 +268,7 @@ export class ReleaseScene extends Phaser.Scene {
 
         // JP facing the doors
         const jp = this.addObj(
-          this.add.sprite(cx, cy + 200, 'player-ch3', 2).setScale(CHAR_SCALE).setDepth(3)
+          this.add.sprite(cx, cy + 200, 'player-ch3', 2).setScale(CHAR_SCALE * 1.3).setDepth(3)
         );
 
         // Pause... then doors swing open
@@ -365,7 +369,7 @@ export class ReleaseScene extends Phaser.Scene {
 
         // JP walks out from bottom center — small at first, growing
         const jp = this.addObj(
-          this.add.sprite(cx, GAME_HEIGHT + 40, 'player-ch3', 2).setScale(CHAR_SCALE).setDepth(5)
+          this.add.sprite(cx, GAME_HEIGHT + 40, 'player-ch3', 2).setScale(CHAR_SCALE * 1.3).setDepth(5)
         );
 
         this.addTween({
@@ -408,7 +412,7 @@ export class ReleaseScene extends Phaser.Scene {
 
         // JP walking up and away — shrinking into the distance
         const jp = this.addObj(
-          this.add.sprite(cx, cy + 120, 'player-ch3', 2).setScale(CHAR_SCALE).setDepth(5)
+          this.add.sprite(cx, cy + 120, 'player-ch3', 2).setScale(CHAR_SCALE * 1.3).setDepth(5)
         );
 
         this.addTween({
@@ -420,8 +424,8 @@ export class ReleaseScene extends Phaser.Scene {
           ease: 'Power1',
         });
 
-        this.showText('The doors opened.', cy - 200, { size: '14px', color: '#4a4a5a', delay: 500 });
-        this.showText('Jordi walked out a different person.', cy - 150, { size: '14px', color: '#4a4a5a', delay: 1500 });
+        this.showText('The doors opened.', 60, { size: '14px', color: '#4a4a5a', delay: 500 });
+        this.showText('Jordi walked out a different person.', 110, { size: '14px', color: '#4a4a5a', delay: 1500 });
         this.showText('Not because jail changed him.', cy + 250, { size: '12px', color: '#666688', delay: 3000 });
         this.showText('Because he changed himself.', cy + 290, { size: '12px', color: '#666688', delay: 4000 });
 

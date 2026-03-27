@@ -293,25 +293,61 @@ function drawPlayerFrame32(
     px(g, ox + 7, 7, skin, 1, 2);
     px(g, ox + 24, 7, skin, 1, 2);
   } else if (direction === 'left') {
-    px(g, ox + 16, 6, hair, 10, 1);
-    px(g, ox + 18, 7, hair, 6, 1);
-    px(g, ox + 20, 8, hair, 4, 1);
-    px(g, ox + 10, 6, eyebrow, 4, 1);
+    // Back of head — hair covers right side
+    px(g, ox + 16, 5, hair, 10, 1);
+    px(g, ox + 17, 6, hair, 9, 1);
+    px(g, ox + 18, 7, hair, 8, 1);
+    px(g, ox + 19, 8, hair, 7, 1);
+    px(g, ox + 20, 9, hair, 5, 1);
+    px(g, ox + 21, 10, hair, 3, 1);
+    // Hair highlight on back
+    px(g, ox + 19, 6, hairH, 3, 1);
+    px(g, ox + 20, 7, hairH, 2, 1);
+    // Reshape face — narrower for profile
+    px(g, ox + 7, 8, skin, 1, 2);  // nose bridge
+    px(g, ox + 6, 9, skin, 1, 2);  // nose tip protrudes
+    // Eyebrow
+    px(g, ox + 10, 6, eyebrow, 5, 1);
+    // Eye — single eye visible
     px(g, ox + 10, 7, eyeWhite, 4, 2);
     px(g, ox + 10, 7, eyeBlack, 2, 2);
-    px(g, ox + 8, 9, noseShadow, 2, 1);
-    px(g, ox + 9, 10, mouth, 3, 1);
-    px(g, ox + 24, 7, skin, 1, 2);
+    // Nose
+    px(g, ox + 7, 9, noseShadow, 2, 1);
+    // Mouth — small, shifted left
+    px(g, ox + 9, 10, mouth, 4, 1);
+    // Jaw definition
+    px(g, ox + 8, 11, skinS, 6, 1);
+    // Ear on right
+    px(g, ox + 23, 7, skinS, 2, 2);
+    px(g, ox + 24, 8, skin, 1, 1);
   } else {
-    px(g, ox + 6, 6, hair, 10, 1);
-    px(g, ox + 8, 7, hair, 6, 1);
-    px(g, ox + 8, 8, hair, 4, 1);
-    px(g, ox + 18, 6, eyebrow, 4, 1);
+    // Back of head — hair covers left side
+    px(g, ox + 6, 5, hair, 10, 1);
+    px(g, ox + 6, 6, hair, 9, 1);
+    px(g, ox + 6, 7, hair, 8, 1);
+    px(g, ox + 6, 8, hair, 7, 1);
+    px(g, ox + 7, 9, hair, 5, 1);
+    px(g, ox + 8, 10, hair, 3, 1);
+    // Hair highlight on back
+    px(g, ox + 10, 6, hairH, 3, 1);
+    px(g, ox + 10, 7, hairH, 2, 1);
+    // Reshape face — narrower for profile
+    px(g, ox + 24, 8, skin, 1, 2);  // nose bridge
+    px(g, ox + 25, 9, skin, 1, 2);  // nose tip protrudes
+    // Eyebrow
+    px(g, ox + 17, 6, eyebrow, 5, 1);
+    // Eye — single eye visible
     px(g, ox + 18, 7, eyeWhite, 4, 2);
     px(g, ox + 20, 7, eyeBlack, 2, 2);
-    px(g, ox + 22, 9, noseShadow, 2, 1);
-    px(g, ox + 20, 10, mouth, 3, 1);
-    px(g, ox + 7, 7, skin, 1, 2);
+    // Nose
+    px(g, ox + 23, 9, noseShadow, 2, 1);
+    // Mouth — small, shifted right
+    px(g, ox + 19, 10, mouth, 4, 1);
+    // Jaw definition
+    px(g, ox + 18, 11, skinS, 6, 1);
+    // Ear on left
+    px(g, ox + 7, 7, skinS, 2, 2);
+    px(g, ox + 8, 8, skin, 1, 1);
   }
 
   // ── NECK (row 12-13) ──
@@ -849,41 +885,53 @@ function generateAllNPCs(scene: Phaser.Scene) {
   // ── Story-specific NPCs (aliases + unique characters) ──
 
   // Female NPC (Mom) — 32x32
+  // Mom — Japanese/white, lighter skin, straight black hair — 32x32
   generateNPC32(
     scene,
     'npc_female',
-    0x402020, // dark hair
+    0x1a1018, // straight black hair
     'long',
-    0x8040a0, // purple top
-    0x9050b0,
-    0x404060, // dark pants
-    0xf0c090,
-    0xd0a070,
+    0xd0b0a0, // cream/beige blouse
+    0xc0a090,
+    0x404050, // dark pants
+    0xf0d8c0, // lighter/fair skin
+    0xd8c0a0, // lighter shadow
     (g) => {
-      // Lipstick
-      px(g, 14, 10, 0xc05060, 4, 1);
-      // Earrings
-      px(g, 7, 9, 0xd0b040, 1, 1);
-      px(g, 24, 9, 0xd0b040, 1, 1);
+      // Lipstick — subtle pink
+      px(g, 14, 10, 0xc07070, 4, 1);
+      // Small earrings
+      px(g, 7, 9, 0xd0c080, 1, 1);
+      px(g, 24, 9, 0xd0c080, 1, 1);
+      // Narrower eyes — East Asian feature
+      px(g, 10, 7, 0xf0d8c0, 4, 1); // override eye row thinner
+      px(g, 18, 7, 0xf0d8c0, 4, 1);
+      px(g, 10, 7, 0x201010, 3, 1); // dark narrow eyes
+      px(g, 19, 7, 0x201010, 3, 1);
     }
   );
 
-  // Pops — older, warm, strong — 32x32
+  // Pops — Mexican, older, warm, strong, grey goatee — 32x32
   generateNPC32(
     scene,
     'npc_pops',
-    0x504030, // dark brown hair
+    0x383028, // greying dark hair
     'short',
     0x806040, // brown shirt
     0x907050,
     0x405060, // dark jeans
-    0xe0b080,
-    0xc09060,
+    0xd0a070, // tan/brown skin (Mexican)
+    0xb08858,
     (g) => {
-      // Slight stubble / five o'clock shadow
-      px(g, 12, 10, 0x907868, 2, 1);
-      px(g, 18, 10, 0x907868, 2, 1);
-      px(g, 13, 11, 0x907868, 6, 1);
+      // Grey goatee — chin area
+      px(g, 13, 11, 0x909090, 6, 1); // goatee top
+      px(g, 14, 12, 0x808080, 4, 1); // goatee bottom
+      px(g, 14, 13, 0x707070, 4, 1); // goatee chin
+      // Grey stubble on cheeks
+      px(g, 10, 10, 0x888880, 3, 1);
+      px(g, 19, 10, 0x888880, 3, 1);
+      // Grey in hair
+      px(g, 8, 2, 0x606058, 4, 1);
+      px(g, 20, 3, 0x606058, 3, 1);
       // Wider shoulders (strong build)
       px(g, 3, 16, 0x806040, 1, 2);
       px(g, 28, 16, 0x806040, 1, 2);
@@ -1648,17 +1696,17 @@ function generateAllNPCs(scene: Phaser.Scene) {
     }
   );
 
-  // Sister — young girl, smaller, long dark hair, pink top — 32x32
+  // Sister — young girl, takes after Pops (Mexican features), tan skin — 32x32
   generateNPC32(
     scene,
     'npc_sister',
-    0x302020,
+    0x281810, // dark brown hair (like Pops)
     'long',
     0xc060a0, // pink/purple top
     0xd070b0,
     0x505060, // shorts
-    0xf0c090,
-    0xd0a070,
+    0xd0a070, // tan skin (like Pops, not Mom)
+    0xb08858,
     (g) => {
       // Shift shorter — draw additional shorter legs/shoes detail
       // Pink sneakers
@@ -1678,111 +1726,80 @@ function generateAllNPCs(scene: Phaser.Scene) {
     const body = 0xc8a070;
     const bodyDk = 0xb08858;
     const bodyLt = 0xd8b880;
-    const bodyVLt = 0xe0c898;
-    const earPink = 0xd8a0a0;
-    const nose = 0x101010;
+    const nose = 0x202020;
     const eye = 0x181818;
-    const eyeShine = 0x606080;
+    const earPink = 0xd8a0a0;
 
-    // ── Big bat ears (rows 0-7) — THE signature Frenchie feature ──
-    // Left ear — tall triangle
-    px(g, 3, 0, body, 2, 1);
-    px(g, 2, 1, body, 3, 1);
-    px(g, 1, 2, body, 5, 1);
-    px(g, 1, 3, body, 6, 1);
-    px(g, 2, 4, body, 6, 1);
-    px(g, 3, 5, body, 5, 1);
-    px(g, 4, 6, body, 4, 1);
-    // Left ear inner pink
-    px(g, 3, 1, earPink, 2, 1);
-    px(g, 3, 2, earPink, 3, 1);
-    px(g, 3, 3, earPink, 4, 1);
-    px(g, 4, 4, earPink, 3, 1);
+    // ── Compact stocky body (rows 14-28) — Frenchies are chunky ──
+    px(g, 8, 14, body, 16, 2);
+    px(g, 7, 16, body, 18, 2);
+    px(g, 6, 18, body, 20, 4);
+    px(g, 7, 22, body, 18, 2);
+    px(g, 8, 24, bodyDk, 16, 2);
+    // Body highlight — barrel chest
+    px(g, 12, 18, bodyLt, 8, 3);
+    // Belly
+    px(g, 10, 22, bodyLt, 12, 2);
 
-    // Right ear — tall triangle
-    px(g, 27, 0, body, 2, 1);
-    px(g, 27, 1, body, 3, 1);
-    px(g, 26, 2, body, 5, 1);
-    px(g, 25, 3, body, 6, 1);
-    px(g, 24, 4, body, 6, 1);
-    px(g, 23, 5, body, 5, 1);
-    px(g, 24, 6, body, 4, 1);
-    // Right ear inner pink
-    px(g, 27, 1, earPink, 2, 1);
-    px(g, 26, 2, earPink, 3, 1);
-    px(g, 25, 3, earPink, 4, 1);
-    px(g, 25, 4, earPink, 3, 1);
+    // ── Stubby legs (rows 26-30) ──
+    px(g, 8, 26, bodyDk, 5, 3);   // front left
+    px(g, 19, 26, bodyDk, 5, 3);  // front right
+    px(g, 8, 29, 0x202020, 5, 2); // paws left
+    px(g, 19, 29, 0x202020, 5, 2); // paws right
 
-    // ── Wide flat head (rows 6-13) ──
-    px(g, 6, 6, body, 20, 1);
-    px(g, 6, 7, body, 20, 1);
-    px(g, 6, 8, body, 20, 1);
-    px(g, 6, 9, bodyLt, 20, 1);
-    px(g, 7, 10, bodyLt, 18, 1);
-    px(g, 8, 11, bodyLt, 16, 1);
-    px(g, 9, 12, bodyLt, 14, 1);
+    // ── Wide flat head (rows 4-14) — characteristic Frenchie shape ──
+    px(g, 8, 4, body, 16, 2);
+    px(g, 7, 6, body, 18, 2);
+    px(g, 6, 8, body, 20, 2);
+    px(g, 6, 10, bodyLt, 20, 2);
+    px(g, 7, 12, bodyLt, 18, 2);
+    // Forehead wrinkles
+    px(g, 10, 6, bodyDk, 12, 1);
+    px(g, 11, 8, bodyDk, 10, 1);
 
-    // Brow ridge
-    px(g, 8, 8, bodyDk, 4, 1);
-    px(g, 20, 8, bodyDk, 4, 1);
-    // Forehead wrinkle
-    px(g, 12, 7, bodyDk, 8, 1);
+    // ── Bat ears (rows 0-8) — wide, rounded, NOT pointy ──
+    // Left ear
+    px(g, 4, 1, body, 4, 2);
+    px(g, 3, 3, body, 5, 2);
+    px(g, 3, 5, body, 5, 2);
+    px(g, 4, 7, body, 4, 1);
+    // Left ear pink
+    px(g, 4, 2, earPink, 3, 2);
+    px(g, 4, 4, earPink, 3, 2);
+    // Right ear
+    px(g, 24, 1, body, 4, 2);
+    px(g, 24, 3, body, 5, 2);
+    px(g, 24, 5, body, 5, 2);
+    px(g, 24, 7, body, 4, 1);
+    // Right ear pink
+    px(g, 25, 2, earPink, 3, 2);
+    px(g, 25, 4, earPink, 3, 2);
 
-    // Big round dark eyes (spaced apart)
-    px(g, 9, 8, eye, 4, 3);
-    px(g, 19, 8, eye, 4, 3);
+    // ── Face features ──
+    // Big round eyes (wide set)
+    px(g, 9, 8, eye, 3, 3);
+    px(g, 20, 8, eye, 3, 3);
     // Eye shine
-    px(g, 9, 8, eyeShine, 2, 2);
-    px(g, 19, 8, eyeShine, 2, 2);
+    px(g, 9, 8, 0x505070, 2, 2);
+    px(g, 20, 8, 0x505070, 2, 2);
 
-    // Short flat snout + big black nose
-    px(g, 14, 10, nose, 4, 2);
+    // Flat smushed nose — THE Frenchie feature
+    px(g, 14, 10, nose, 4, 3);
+    px(g, 13, 11, nose, 6, 1);
     // Nostrils
-    px(g, 14, 10, 0x303030, 1, 1);
-    px(g, 17, 10, 0x303030, 1, 1);
-    // Mouth line / jowls
-    px(g, 14, 12, bodyDk, 2, 1);
-    px(g, 16, 12, bodyDk, 2, 1);
-    px(g, 15, 12, 0x806060, 2, 1); // tongue hint
+    px(g, 14, 10, 0x404040, 1, 1);
+    px(g, 17, 10, 0x404040, 1, 1);
 
-    // ── Stocky wide body (rows 13-23) ──
-    px(g, 6, 13, body, 20, 1);
-    px(g, 5, 14, body, 22, 1);
-    px(g, 5, 15, body, 22, 1);
-    px(g, 5, 16, body, 22, 1);
-    px(g, 5, 17, bodyDk, 22, 1);
-    px(g, 6, 18, body, 20, 1);
-    px(g, 7, 19, body, 18, 1);
-    px(g, 7, 20, body, 18, 1);
-    px(g, 8, 21, body, 16, 1);
-    px(g, 8, 22, body, 16, 1);
+    // Jowls / mouth
+    px(g, 12, 13, bodyDk, 3, 1);
+    px(g, 17, 13, bodyDk, 3, 1);
+    // Tongue sticking out slightly
+    px(g, 15, 13, 0xd08080, 2, 1);
 
-    // Belly highlight
-    px(g, 12, 15, bodyVLt, 8, 1);
-    px(g, 12, 16, bodyVLt, 8, 1);
-    px(g, 11, 17, bodyLt, 10, 1);
-    px(g, 12, 18, bodyLt, 8, 1);
-
-    // Collar (red)
-    px(g, 8, 13, 0xc03030, 16, 1);
-    px(g, 15, 14, 0xd0b040, 2, 1); // collar tag
-
-    // ── Short stubby legs (rows 23-28) ──
-    px(g, 6, 23, bodyDk, 4, 3);     // front-left
-    px(g, 22, 23, bodyDk, 4, 3);    // front-right
-    px(g, 10, 23, bodyDk, 3, 2);    // back-left
-    px(g, 19, 23, bodyDk, 3, 2);    // back-right
-    // Paws
-    px(g, 5, 26, 0xa07848, 5, 2);
-    px(g, 22, 26, 0xa07848, 5, 2);
-    px(g, 10, 25, 0xa07848, 3, 1);
-    px(g, 19, 25, 0xa07848, 3, 1);
-    // Paw pads
-    px(g, 7, 27, 0x906838, 2, 1);
-    px(g, 23, 27, 0x906838, 2, 1);
-
-    // Tail nub
-    px(g, 16, 22, bodyDk, 2, 1);
+    // ── Short curly tail (rows 14-16) ──
+    px(g, 26, 16, bodyDk, 2, 1);
+    px(g, 27, 15, bodyDk, 2, 1);
+    px(g, 28, 16, bodyDk, 1, 1);
   });
 
   // Bikini Girl 1 — light blue bikini, long brown hair, sleeping — 32x32
@@ -2443,31 +2460,26 @@ function generateTiles(scene: Phaser.Scene) {
 
   // -- Counter (32x32) — dark granite --
   makeTexture(scene, 'tile-counter', S, S, (g) => {
-    // Dark granite base
-    g.fillStyle(COLORS.counter);
-    g.fillRect(0, 0, S, S);
-
-    // Front face (lower half darker)
-    px(g, 0, 16, 0x383840, S, 16);
-
-    // Countertop surface specks (granite pattern)
-    px(g, 3, 3, COLORS.counterLight, 2, 1);
-    px(g, 10, 5, COLORS.counterLight, 1, 1);
-    px(g, 18, 2, COLORS.counterLight, 2, 1);
-    px(g, 26, 6, COLORS.counterLight, 1, 1);
-    px(g, 8, 8, COLORS.counterLight, 1, 1);
-    px(g, 22, 10, COLORS.counterLight, 2, 1);
-    px(g, 14, 12, COLORS.counterLight, 1, 1);
-
-    // White/light flecks
-    px(g, 6, 4, 0x606068, 1, 1);
-    px(g, 20, 8, 0x606068, 1, 1);
-    px(g, 12, 2, 0x585860, 1, 1);
-    px(g, 28, 10, 0x585860, 1, 1);
-
-    // Edge highlight
-    px(g, 0, 14, 0x484850, S, 1);
-    px(g, 0, 15, 0x303038, S, 1);
+    // Marble countertop — white/grey with veins
+    // Base white marble
+    px(g, 0, 0, 0xe8e4e0, S, S);
+    // Subtle grey variation
+    px(g, 0, 0, 0xe0dcd8, S, S / 2);
+    px(g, 0, S / 2, 0xeae6e2, S, S / 2);
+    // Marble veins — thin grey/blue lines
+    px(g, 3, 2, 0xc8c4c0, 8, 1);
+    px(g, 5, 3, 0xd0ccc8, 6, 1);
+    px(g, 8, 5, 0xc0bab4, 10, 1);
+    px(g, 12, 6, 0xc8c0b8, 7, 1);
+    px(g, 2, 10, 0xd0c8c0, 12, 1);
+    px(g, 6, 11, 0xc4beb8, 8, 1);
+    px(g, 1, 14, 0xc8c4c0, 14, 1);
+    // Front edge — polished look
+    px(g, 0, S - 2, 0xd8d4d0, S, 1);
+    px(g, 0, S - 1, 0xc0bcb8, S, 1);
+    // Subtle warm highlight
+    px(g, 4, 8, 0xf0ece8, 3, 1);
+    px(g, 10, 3, 0xf0ece8, 4, 1);
   });
 
   // -- Dark Floor (32x32) — concrete/stone --
@@ -3079,6 +3091,22 @@ function generateTiles(scene: Phaser.Scene) {
     g.fillStyle(0x707078);
     g.fillRect(0, 1, S, 1);
     g.fillRect(0, S - 4, S, 1);
+  });
+
+  // --- tile-carpet --- (soft beige/tan carpet for bedrooms)
+  makeTexture(scene, 'tile-carpet', S, S, (g) => {
+    // Base carpet color — warm beige
+    px(g, 0, 0, 0xc8b8a0, S, S);
+    // Carpet texture — subtle fiber pattern
+    for (let y = 0; y < S; y += 2) {
+      for (let x = 0; x < S; x += 3) {
+        const shade = Math.random() > 0.5 ? 0xc4b49c : 0xccbca4;
+        px(g, x, y, shade, 1, 1);
+      }
+    }
+    // Slightly darker edges for tile separation
+    px(g, 0, 0, 0xb8a890, S, 1);
+    px(g, 0, 0, 0xb8a890, 1, S);
   });
 }
 
@@ -4504,6 +4532,28 @@ function generateMoreItems(scene: Phaser.Scene) {
     px(g, 5, 5, 0xc0e8ff, 1, 1);  // glint top-left
     // Sill
     px(g, 4, 12, 0x909898, 8, 1);
+  });
+
+  // --- item-poster ---
+  makeTexture(scene, 'item-poster', TILE_SIZE, TILE_SIZE, (g) => {
+    // Wall poster — rectangular, slightly tilted feel
+    // Paper background (off-white)
+    px(g, 6, 3, 0xf0e8d8, 20, 24);
+    // Border/frame
+    px(g, 6, 3, 0xc0b8a0, 20, 1);   // top
+    px(g, 6, 26, 0xc0b8a0, 20, 1);  // bottom
+    px(g, 6, 3, 0xc0b8a0, 1, 24);   // left
+    px(g, 25, 3, 0xc0b8a0, 1, 24);  // right
+    // Bold text lines (motivational quote look)
+    px(g, 9, 7, 0x202020, 14, 2);   // line 1
+    px(g, 11, 11, 0x303030, 10, 2);  // line 2
+    px(g, 9, 15, 0x202020, 14, 2);   // line 3
+    // Small accent graphic (star/mountain)
+    px(g, 14, 20, 0xd0a030, 4, 3);
+    px(g, 15, 19, 0xd0a030, 2, 1);
+    px(g, 16, 18, 0xe0b040, 1, 1);
+    // Pin at top
+    px(g, 16, 2, 0xd04040, 2, 2);
   });
 
   // --- item-fridge ---

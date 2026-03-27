@@ -22,7 +22,7 @@ export class OperatorScene extends BaseChapterScene {
   create() {
     super.create();
     // Exit south — head to Vegas
-    this.addNavArrow(19, 18, 'Vegas');
+    this.addNavArrow(19, 20, 'Vegas');
   }
 
   protected getObjectiveHint(): string {

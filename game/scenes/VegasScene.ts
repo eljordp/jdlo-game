@@ -28,6 +28,10 @@ export class VegasScene extends Phaser.Scene {
     MusicSystem.stop();
     this.cameras.main.fadeIn(500, 0, 0, 0);
 
+    // Cinema letterbox bars
+    this.add.rectangle(GAME_WIDTH / 2, 35, GAME_WIDTH, 70, 0x000000).setScrollFactor(0).setDepth(200);
+    this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT - 35, GAME_WIDTH, 70, 0x000000).setScrollFactor(0).setDepth(200);
+
     this.input.keyboard!.on('keydown-SPACE', () => this.advance());
     this.input.keyboard!.on('keydown-ENTER', () => this.advance());
     this.input.on('pointerdown', () => this.advance());
@@ -77,7 +81,7 @@ export class VegasScene extends Phaser.Scene {
       wordWrap: { width: GAME_WIDTH - 100 },
       align: 'center',
       lineSpacing: 10,
-    }).setOrigin(0.5).setAlpha(0);
+    }).setOrigin(0.5).setAlpha(0).setDepth(100);
 
     this.addTween({ targets: t, alpha: 1, duration: 400, delay });
     this.textObjects.push(t);
@@ -91,7 +95,7 @@ export class VegasScene extends Phaser.Scene {
           fontFamily: '"Press Start 2P", monospace',
           fontSize: '12px',
           color: '#666688',
-        }).setOrigin(0.5);
+        }).setOrigin(0.5).setDepth(100);
         this.addTween({
           targets: hint,
           alpha: 0.3,
@@ -287,8 +291,8 @@ export class VegasScene extends Phaser.Scene {
       this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT - 180, GAME_WIDTH, 360, 0x222230)
     );
 
-    // Long conference table
-    const tableY = GAME_HEIGHT / 2 + 40;
+    // Long conference table — pushed down to clear dialogue text
+    const tableY = GAME_HEIGHT / 2 + 140;
     // Table shadow
     this.addObj(this.add.rectangle(GAME_WIDTH / 2, tableY + 8, 520, 60, 0x0a0a12).setAlpha(0.5));
     // Table surface (dark wood)
@@ -341,10 +345,10 @@ export class VegasScene extends Phaser.Scene {
         // JP and Malachi walking right along the road, small scale
         const jpY = GAME_HEIGHT - 140;
         const jp = this.addObj(
-          this.add.sprite(200, jpY, 'player-ch6', 6).setScale(CHAR_SCALE)
+          this.add.sprite(200, jpY, 'player-ch6', 6).setScale(CHAR_SCALE * 1.3)
         );
         const malachi = this.addObj(
-          this.add.sprite(120, jpY, 'npc_malachi', 6).setScale(SCALE)
+          this.add.sprite(120, jpY, 'npc_malachi', 6).setScale(SCALE * 1.3)
         );
 
         // Walking animation — move them right slowly
@@ -392,21 +396,21 @@ export class VegasScene extends Phaser.Scene {
 
           // NPCs around the table
           this.addObj(
-            this.add.sprite(tableX - 80, tableY - 80, 'npc_suit', 0).setScale(SCALE)
+            this.add.sprite(tableX - 80, tableY - 80, 'npc_suit', 0).setScale(SCALE * 1.3)
           );
           this.addObj(
-            this.add.sprite(tableX + 80, tableY - 80, 'npc-business', 0).setScale(SCALE)
+            this.add.sprite(tableX + 80, tableY - 80, 'npc-business', 0).setScale(SCALE * 1.3)
           );
           this.addObj(
-            this.add.sprite(tableX + 120, tableY + 80, 'npc_suit', 4).setScale(SCALE)
+            this.add.sprite(tableX + 120, tableY + 80, 'npc_suit', 4).setScale(SCALE * 1.3)
           );
 
           // JP and Malachi watching from nearby
           this.addObj(
-            this.add.sprite(tableX - 180, tableY + 100, 'player-ch6', 6).setScale(CHAR_SCALE)
+            this.add.sprite(tableX - 180, tableY + 100, 'player-ch6', 6).setScale(CHAR_SCALE * 1.3)
           );
           this.addObj(
-            this.add.sprite(tableX - 240, tableY + 100, 'npc_malachi', 6).setScale(SCALE)
+            this.add.sprite(tableX - 240, tableY + 100, 'npc_malachi', 6).setScale(SCALE * 1.3)
           );
 
           this.cameras.main.fadeIn(600, 0, 0, 0);
@@ -436,21 +440,21 @@ export class VegasScene extends Phaser.Scene {
 
           // Suited NPCs on far side of table
           this.addObj(
-            this.add.sprite(cx - 100, tableY - 60, 'npc_suit', 0).setScale(SCALE)
+            this.add.sprite(cx - 100, tableY - 60, 'npc_suit', 0).setScale(SCALE * 1.3)
           );
           this.addObj(
-            this.add.sprite(cx + 100, tableY - 60, 'npc-business', 0).setScale(SCALE)
+            this.add.sprite(cx + 100, tableY - 60, 'npc-business', 0).setScale(SCALE * 1.3)
           );
           this.addObj(
-            this.add.sprite(cx, tableY - 60, 'npc_suit', 0).setScale(SCALE)
+            this.add.sprite(cx, tableY - 60, 'npc_suit', 0).setScale(SCALE * 1.3)
           );
 
           // JP and Malachi on near side
           this.addObj(
-            this.add.sprite(cx - 60, tableY + 80, 'player-ch6', 2).setScale(CHAR_SCALE)
+            this.add.sprite(cx - 60, tableY + 80, 'player-ch6', 2).setScale(CHAR_SCALE * 1.3)
           );
           this.addObj(
-            this.add.sprite(cx + 60, tableY + 80, 'npc_malachi', 2).setScale(SCALE)
+            this.add.sprite(cx + 60, tableY + 80, 'npc_malachi', 2).setScale(SCALE * 1.3)
           );
 
           this.cameras.main.fadeIn(600, 0, 0, 0);
@@ -513,7 +517,7 @@ export class VegasScene extends Phaser.Scene {
               color: '#f0c040',
               align: 'center',
               lineSpacing: 14,
-            }).setOrigin(0.5).setAlpha(0);
+            }).setOrigin(0.5).setAlpha(0).setDepth(100);
             this.textObjects.push(bigLine);
 
             this.addTween({
@@ -592,10 +596,10 @@ export class VegasScene extends Phaser.Scene {
           // JP and Malachi walking — start left, move right
           const walkY = GAME_HEIGHT - 120;
           const jp = this.addObj(
-            this.add.sprite(300, walkY, 'player-ch6', 6).setScale(CHAR_SCALE)
+            this.add.sprite(300, walkY, 'player-ch6', 6).setScale(CHAR_SCALE * 1.3)
           );
           const malachi = this.addObj(
-            this.add.sprite(220, walkY, 'npc_malachi', 6).setScale(SCALE)
+            this.add.sprite(220, walkY, 'npc_malachi', 6).setScale(SCALE * 1.3)
           );
 
           // Walk slowly

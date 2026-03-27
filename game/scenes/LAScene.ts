@@ -25,7 +25,11 @@ export class LAScene extends Phaser.Scene {
     this.activeTweens = [];
 
     MusicSystem.stop();
-    this.cameras.main.fadeIn(1000, 0, 0, 0);
+    this.cameras.main.fadeIn(500, 0, 0, 0);
+
+    // Cinema letterbox bars
+    this.add.rectangle(GAME_WIDTH / 2, 35, GAME_WIDTH, 70, 0x000000).setScrollFactor(0).setDepth(200);
+    this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT - 35, GAME_WIDTH, 70, 0x000000).setScrollFactor(0).setDepth(200);
 
     this.input.keyboard!.on('keydown-SPACE', () => this.advance());
     this.input.keyboard!.on('keydown-ENTER', () => this.advance());
@@ -76,7 +80,7 @@ export class LAScene extends Phaser.Scene {
       wordWrap: { width: GAME_WIDTH - 120 },
       align: 'center',
       lineSpacing: 10,
-    }).setOrigin(0.5).setAlpha(0);
+    }).setOrigin(0.5).setAlpha(0).setDepth(100);
 
     this.addTween({ targets: t, alpha: 1, duration: 600, delay });
     this.textObjects.push(t);
@@ -90,7 +94,7 @@ export class LAScene extends Phaser.Scene {
           fontFamily: '"Press Start 2P", monospace',
           fontSize: '12px',
           color: '#666688',
-        }).setOrigin(0.5);
+        }).setOrigin(0.5).setDepth(100);
         this.addTween({
           targets: hint,
           alpha: 0.3,
@@ -302,17 +306,17 @@ export class LAScene extends Phaser.Scene {
         // 4 characters sitting around the table
         // JP at left (ch5 = come-up outfit)
         this.addObj(
-          this.add.sprite(cx - 140, tableY - 70, 'player-ch5', 0).setScale(CHAR_SCALE)
+          this.add.sprite(cx - 140, tableY - 70, 'player-ch5', 0).setScale(CHAR_SCALE * 1.3)
         );
         // Friends
         this.addObj(
-          this.add.sprite(cx - 50, tableY - 70, 'npc-tech', 0).setScale(SCALE)
+          this.add.sprite(cx - 50, tableY - 70, 'npc-tech', 0).setScale(SCALE * 1.3)
         );
         this.addObj(
-          this.add.sprite(cx + 50, tableY - 70, 'npc-friend', 0).setScale(SCALE)
+          this.add.sprite(cx + 50, tableY - 70, 'npc-friend', 0).setScale(SCALE * 1.3)
         );
         this.addObj(
-          this.add.sprite(cx + 140, tableY - 70, 'npc-narrator', 0).setScale(SCALE)
+          this.add.sprite(cx + 140, tableY - 70, 'npc-narrator', 0).setScale(SCALE * 1.3)
         );
 
         // Steam/warmth particles rising from plates
@@ -503,12 +507,12 @@ export class LAScene extends Phaser.Scene {
         this.showText('30th floor. Downtown LA.', 40, { size: '20px', color: '#8888cc', delay: 500 });
         this.showText(
           'One window lit brighter than the rest.\nThat\'s where Jordi is.',
-          GAME_HEIGHT - 140,
+          GAME_HEIGHT - 200,
           { delay: 1500, color: '#aaaacc' }
         );
         this.showText(
           'Looking down at the city\nthat used to feel impossible to reach.',
-          GAME_HEIGHT - 70,
+          GAME_HEIGHT - 120,
           { size: '12px', delay: 2500 }
         );
 
@@ -590,12 +594,12 @@ export class LAScene extends Phaser.Scene {
         this.showText("JP's Mind", cy - 220, { size: '12px', color: '#f0c040' });
         this.showText(
           '"Six months ago I was\non a tractor in Napa.\nNow I\'m in a penthouse in LA\nbuilding AI systems."',
-          cy + 140,
+          cy + 200,
           { delay: 600 }
         );
         this.showText(
           '"This is just the beginning."',
-          cy + 260,
+          cy + 330,
           { size: '18px', color: '#f0c040', delay: 2000 }
         );
 

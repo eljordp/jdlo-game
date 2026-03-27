@@ -107,4 +107,5 @@ export const TILE_IDS = {
   HARDWOOD: 20,
   COUNTER: 21,
   JAIL_BAR: 22,
+  CARPET: 23,
 } as const;

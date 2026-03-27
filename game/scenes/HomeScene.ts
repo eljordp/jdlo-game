@@ -6,6 +6,10 @@ import { SCALED_TILE, SCALE, GAME_WIDTH, GAME_HEIGHT } from '../config';
 import { Analytics } from '../systems/Analytics';
 
 export class HomeScene extends BaseChapterScene {
+  private interactionCount = 0;
+  private phoneTriggered = false;
+  private trackedInteractions = new Set<string>();
+
   constructor() {
     super({ key: 'HomeScene' });
     this.chapterTitle = 'Chapter 1: Home';
@@ -38,8 +42,14 @@ export class HomeScene extends BaseChapterScene {
     return homeDialogue;
   }
 
-  // Override to add Frenchie fetch + goodbye cutscene
+  // Override to add computer interface, fetch, goodbye, phone ring
   protected handleInteractable(interactable: { id: string; type: string; consumed?: boolean }) {
+    if (interactable.id === 'ch0_computer') {
+      Analytics.trackInteraction(interactable.id);
+      this.showComputerInterface();
+      this.trackForPhoneCall(interactable.id);
+      return;
+    }
     if (interactable.id === 'ch0_frenchie_ball') {
       Analytics.trackInteraction(interactable.id);
       this.playFetch();
@@ -58,7 +68,312 @@ export class HomeScene extends BaseChapterScene {
       this.interactions.consume(interactable.id);
       return;
     }
+    this.trackForPhoneCall(interactable.id);
     super.handleInteractable(interactable);
+  }
+
+  private trackForPhoneCall(id: string) {
+    if (this.phoneTriggered) return;
+    if (this.trackedInteractions.has(id)) return;
+    this.trackedInteractions.add(id);
+    this.interactionCount++;
+
+    // After 4 unique interactions, trigger surprise phone call
+    if (this.interactionCount >= 4) {
+      this.phoneTriggered = true;
+      // Delay so current interaction finishes first
+      this.time.delayedCall(2000, () => {
+        if (this.scene.isActive()) this.triggerPhoneCall();
+      });
+    }
+  }
+
+  private triggerPhoneCall() {
+    this.frozen = true;
+    const objects: Phaser.GameObjects.GameObject[] = [];
+
+    // Vibrate/ring effect — screen shake
+    this.cameras.main.shake(200, 0.003);
+
+    // Phone overlay
+    const overlay = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.7)
+      .setScrollFactor(0).setDepth(300);
+    objects.push(overlay);
+
+    // Phone body — centered on screen
+    const phoneX = GAME_WIDTH / 2;
+    const phoneY = GAME_HEIGHT / 2 - 40;
+    const phoneW = 200;
+    const phoneH = 340;
+
+    // Phone outer body
+    const phoneBody = this.add.rectangle(phoneX, phoneY, phoneW, phoneH, 0x1a1a1a)
+      .setScrollFactor(0).setDepth(301);
+    objects.push(phoneBody);
+
+    // Phone screen
+    const phoneScreen = this.add.rectangle(phoneX, phoneY - 20, phoneW - 20, phoneH - 80, 0x0a2040)
+      .setScrollFactor(0).setDepth(302);
+    objects.push(phoneScreen);
+
+    // Caller name
+    const callerName = this.add.text(phoneX, phoneY - 80, 'Nolan', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '18px',
+      color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303);
+    objects.push(callerName);
+
+    // "Incoming Call" text
+    const callLabel = this.add.text(phoneX, phoneY - 50, 'Incoming Call...', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '9px',
+      color: '#80a0c0',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303);
+    objects.push(callLabel);
+
+    // Pulsing ring animation on caller name
+    this.tweens.add({
+      targets: callerName,
+      scaleX: 1.05,
+      scaleY: 1.05,
+      duration: 500,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
+    });
+
+    // Periodic vibrate
+    const vibrateTimer = this.time.addEvent({
+      delay: 1500,
+      loop: true,
+      callback: () => {
+        if (this.scene.isActive()) this.cameras.main.shake(150, 0.002);
+      },
+    });
+
+    // Answer button — green
+    const btnY = phoneY + phoneH / 2 - 40;
+    const answerBtn = this.add.rectangle(phoneX, btnY, 140, 36, 0x30a040)
+      .setScrollFactor(0).setDepth(303).setInteractive({ useHandCursor: true });
+    objects.push(answerBtn);
+
+    const answerText = this.add.text(phoneX, btnY, 'ANSWER', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '12px',
+      color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(304);
+    objects.push(answerText);
+
+    // Button hover effect
+    answerBtn.on('pointerover', () => answerBtn.setFillStyle(0x40c050));
+    answerBtn.on('pointerout', () => answerBtn.setFillStyle(0x30a040));
+
+    // Answer handler
+    const answer = () => {
+      vibrateTimer.remove();
+      answerBtn.off('pointerdown');
+      spaceKey.off('down', spaceHandler);
+
+      // Clean up phone UI
+      for (const obj of objects) {
+        if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
+      }
+
+      // Nolan dialogue
+      this.dialogue.show([
+        { speaker: 'Nolan', text: 'Yooo JP! What\'s good bro?' },
+        { speaker: 'JP', text: 'Nolan. What\'s up man?' },
+        { speaker: 'Nolan', text: 'Bro. This weekend. Santa Barbara. You gotta come.' },
+        { speaker: 'Nolan', text: 'We got the frat house, the beach, the whole thing.' },
+        { speaker: 'JP', text: 'Who\'s going?' },
+        { speaker: 'Nolan', text: 'Everyone bro. David, Cooper, Terrell. Some girls too.' },
+        { speaker: 'Nolan', text: 'It\'s gonna be crazy. You in?' },
+        { speaker: 'JP', text: '...I\'m in.' },
+        { speaker: 'Nolan', text: 'LET\'S GO! I\'ll send you the address. Pack light bro.' },
+      ], () => {
+        // Mark the required interaction as done
+        this.requiredDone = true;
+        this.frozen = false;
+      });
+    };
+
+    answerBtn.on('pointerdown', answer);
+    const spaceKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    const spaceHandler = () => answer();
+    spaceKey.on('down', spaceHandler);
+  }
+
+  private showComputerInterface() {
+    this.frozen = true;
+    const objects: Phaser.GameObjects.GameObject[] = [];
+    let selectedIndex = 0;
+    let active = true;
+
+    const menuItems = [
+      { label: 'Crypto Portfolio', lines: [
+        { speaker: 'JP\'s Mind', text: 'Bitcoin, Ethereum, some random altcoins. Down 40% this month.' },
+        { speaker: 'JP\'s Mind', text: 'Pops would kill me if he knew how much I put in.' },
+      ]},
+      { label: 'College Emails', lines: [
+        { speaker: 'JP\'s Mind', text: '3 acceptance letters. UC Davis, Sac State, Sonoma.' },
+        { speaker: 'JP\'s Mind', text: '$40K a year for something I can learn on YouTube? Nah.' },
+      ]},
+      { label: 'Social Media', lines: [
+        { speaker: 'JP\'s Mind', text: 'Instagram DMs. Nolan wants to link in Santa Barbara this weekend.' },
+        { speaker: 'JP\'s Mind', text: '"Bro come thru. Crazy party at the frat house."' },
+      ]},
+      { label: 'YouTube - "How to Make Money Online"', lines: [
+        { speaker: 'JP\'s Mind', text: 'Dropshipping, crypto trading, affiliate marketing...' },
+        { speaker: 'JP\'s Mind', text: 'Everyone\'s selling the dream. Nobody shows the work.' },
+      ]},
+      { label: '[ Exit ]', lines: [] },
+    ];
+
+    // Dark overlay
+    const overlay = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.8)
+      .setScrollFactor(0).setDepth(300);
+    objects.push(overlay);
+
+    // Monitor frame — outer bezel
+    const monW = 700;
+    const monH = 480;
+    const monX = GAME_WIDTH / 2;
+    const monY = GAME_HEIGHT / 2 - 20;
+    const bezel = this.add.rectangle(monX, monY, monW + 20, monH + 20, 0x2a2a2a)
+      .setScrollFactor(0).setDepth(301);
+    objects.push(bezel);
+
+    // Screen background — dark blue/black
+    const screen = this.add.rectangle(monX, monY, monW, monH, 0x0a0a1e)
+      .setScrollFactor(0).setDepth(302);
+    objects.push(screen);
+
+    // Monitor stand
+    const stand = this.add.rectangle(monX, monY + monH / 2 + 20, 60, 20, 0x2a2a2a)
+      .setScrollFactor(0).setDepth(301);
+    objects.push(stand);
+    const base = this.add.rectangle(monX, monY + monH / 2 + 35, 120, 10, 0x333333)
+      .setScrollFactor(0).setDepth(301);
+    objects.push(base);
+
+    // Screen header
+    const header = this.add.text(monX, monY - monH / 2 + 30, 'JP\'s Computer', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '14px',
+      color: '#40c080',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303);
+    objects.push(header);
+
+    // Divider line
+    const divider = this.add.rectangle(monX, monY - monH / 2 + 50, monW - 40, 1, 0x304030)
+      .setScrollFactor(0).setDepth(303);
+    objects.push(divider);
+
+    // Menu items
+    const menuTexts: Phaser.GameObjects.Text[] = [];
+    const startY = monY - monH / 2 + 80;
+    for (let i = 0; i < menuItems.length; i++) {
+      const item = this.add.text(monX - monW / 2 + 60, startY + i * 40, menuItems[i].label, {
+        fontFamily: '"Press Start 2P", monospace',
+        fontSize: '12px',
+        color: i === selectedIndex ? '#40ff80' : '#608060',
+      }).setScrollFactor(0).setDepth(303);
+      objects.push(item);
+      menuTexts.push(item);
+    }
+
+    // Cursor arrow
+    const cursor = this.add.text(monX - monW / 2 + 40, startY, '>', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '12px',
+      color: '#40ff80',
+    }).setScrollFactor(0).setDepth(303);
+    objects.push(cursor);
+
+    // Blinking cursor animation
+    this.tweens.add({
+      targets: cursor,
+      alpha: 0.3,
+      duration: 400,
+      yoyo: true,
+      repeat: -1,
+    });
+
+    // Instructions
+    const hint = this.add.text(monX, monY + monH / 2 - 20, 'Arrow keys to navigate  ·  Space to select', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '8px',
+      color: '#405040',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303);
+    objects.push(hint);
+
+    const updateSelection = () => {
+      for (let i = 0; i < menuTexts.length; i++) {
+        menuTexts[i].setColor(i === selectedIndex ? '#40ff80' : '#608060');
+      }
+      cursor.setY(startY + selectedIndex * 40);
+    };
+
+    const closeInterface = () => {
+      if (!active) return;
+      active = false;
+      upKey.off('down', upHandler);
+      downKey.off('down', downHandler);
+      selectKey.off('down', selectHandler);
+      enterKey.off('down', selectHandler);
+      this.input.off('pointerdown', clickHandler);
+      for (const obj of objects) {
+        if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
+      }
+      this.frozen = false;
+    };
+
+    const selectItem = () => {
+      if (!active) return;
+      const item = menuItems[selectedIndex];
+
+      // Exit option
+      if (item.lines.length === 0) {
+        closeInterface();
+        return;
+      }
+
+      // Show dialogue for selected item, then return to menu
+      active = false;
+      for (const obj of objects) {
+        if (obj && obj.active) {
+          (obj as Phaser.GameObjects.Sprite | Phaser.GameObjects.Text | Phaser.GameObjects.Rectangle).setAlpha?.(0.3);
+        }
+      }
+
+      this.dialogue.show(item.lines, () => {
+        active = true;
+        for (const obj of objects) {
+          if (obj && obj.active) {
+            (obj as Phaser.GameObjects.Sprite | Phaser.GameObjects.Text | Phaser.GameObjects.Rectangle).setAlpha?.(1);
+          }
+        }
+        updateSelection();
+      });
+    };
+
+    // Input handlers
+    const upKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
+    const downKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
+    const selectKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    const enterKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+
+    const upHandler = () => { if (!active) return; selectedIndex = (selectedIndex - 1 + menuItems.length) % menuItems.length; updateSelection(); };
+    const downHandler = () => { if (!active) return; selectedIndex = (selectedIndex + 1) % menuItems.length; updateSelection(); };
+    const selectHandler = () => selectItem();
+    const clickHandler = () => selectItem();
+
+    upKey.on('down', upHandler);
+    downKey.on('down', downHandler);
+    selectKey.on('down', selectHandler);
+    enterKey.on('down', selectHandler);
+    this.input.on('pointerdown', clickHandler);
   }
 
   private playFishing() {

@@ -2121,6 +2121,145 @@ export const tractorDialogue = buildChapterDialogue(chapter4IntroText, chapter4N
 export const comeUpDialogue = buildChapterDialogue(chapter5IntroText, chapter5NPCs, chapter5OutroText, ch5Extras);
 export const operatorDialogue = buildChapterDialogue(chapter6IntroText, chapter6NPCs, chapter6OutroText, ch6Extras);
 
+// ─── HOME RETURN — Same house, different JP ─────────────────────────────
+const homeReturnIntro: string[] = [
+  'Same house. Same street. Same door.',
+  'But everything behind it is different now.',
+];
+
+const homeReturnNPCs: NPCData[] = [
+  {
+    id: 'ch0_pops',
+    x: 8,
+    y: 13,
+    sprite: 'npc_pops',
+    dialogue: [
+      { speaker: 'Pops', text: 'Son.' },
+      { speaker: 'Narrator', text: 'Pops hugs him. Doesn\'t let go for a while.' },
+      { speaker: 'Pops', text: 'I saw the websites. The businesses.' },
+      { speaker: 'Pops', text: 'Your mom showed me. I don\'t understand half of it.' },
+      { speaker: 'Pops', text: 'But I know you built it yourself.' },
+      { speaker: 'Pops', text: 'Most people don\'t come back from what you went through, Jordan.' },
+      { speaker: 'Pops', text: 'But you did. And you came back better.' },
+      { speaker: 'Pops', text: 'Whatever you do, just do it all the way.' },
+      { speaker: 'Pops', text: 'Don\'t half-ass it.' },
+      { speaker: 'JP', text: 'You told me that before I left for SB.' },
+      { speaker: 'Pops', text: 'And now you\'re finally listening.' },
+    ],
+  },
+  {
+    id: 'ch0_mom',
+    x: 28,
+    y: 13,
+    sprite: 'npc_female',
+    dialogue: [
+      { speaker: 'Mom', text: 'Jordan.' },
+      { speaker: 'Mom', text: 'I showed your dad those websites you built.' },
+      { speaker: 'Mom', text: 'He didn\'t say much. But I could tell.' },
+      { speaker: 'JP', text: 'Tell what?' },
+      { speaker: 'Mom', text: 'He\'s proud. We both are.' },
+      { speaker: 'Mom', text: '...I\'m sorry I didn\'t understand before.' },
+      { speaker: 'JP', text: 'It\'s OK, Mom. I didn\'t either.' },
+    ],
+  },
+  {
+    id: 'ch0_sister',
+    x: 13,
+    y: 6,
+    sprite: 'npc_sister',
+    dialogue: [
+      { speaker: 'Sister', text: 'JP! You\'re home!' },
+      { speaker: 'JP', text: 'Hey kid. Miss me?' },
+      { speaker: 'Sister', text: 'Mom says you\'re like a CEO now.' },
+      { speaker: 'JP', text: 'COO. Close enough.' },
+      { speaker: 'Sister', text: 'Can you build me a website?' },
+      { speaker: 'JP', text: 'What kind?' },
+      { speaker: 'Sister', text: 'I don\'t know yet. But I want one.' },
+      { speaker: 'JP', text: 'When you figure it out, I got you.' },
+    ],
+  },
+  {
+    id: 'ch0_frenchie',
+    x: 18,
+    y: 20,
+    sprite: 'npc_frenchie',
+    dialogue: [
+      { speaker: 'Narrator', text: 'Ivy sprints across the yard.' },
+      { speaker: 'Narrator', text: 'She doesn\'t care about the clients. The revenue. The title.' },
+      { speaker: 'Narrator', text: 'She just knows her person is home.' },
+    ],
+  },
+];
+
+const homeReturnExtras: Record<string, DialogueLine[]> = {
+  ch0_computer: [
+    { speaker: 'JP\'s Mind', text: 'Same desk. Same setup. This is where it all started.' },
+    { speaker: 'JP\'s Mind', text: 'ChatGPT to Wix to Webflow to Claude Code. Five months.' },
+  ],
+  ch0_bed: [
+    { speaker: 'JP\'s Mind', text: 'This bed. How many 3 AM nights did I spend here, staring at the ceiling?' },
+    { speaker: 'JP\'s Mind', text: 'Now those nights are worth something.' },
+  ],
+  ch0_mirror: [
+    { speaker: 'JP\'s Mind', text: 'Same face. Different person behind it.' },
+  ],
+  ch0_family_photo: [
+    { speaker: 'JP\'s Mind', text: 'Family photo from before everything. Before SB. Before jail.' },
+    { speaker: 'JP\'s Mind', text: 'We look the same. But nothing is the same.' },
+  ],
+  ch0_tv: [
+    { speaker: 'JP\'s Mind', text: 'Pops still watches the same shows.' },
+  ],
+  ch0_couch: [
+    { speaker: 'JP\'s Mind', text: 'This couch. How many times did Pops sit here while I was locked up?' },
+  ],
+  ch0_journal: [
+    { speaker: 'JP\'s Mind', text: 'Old journal from before. The handwriting looks like a different person.' },
+  ],
+  ch0_bbq: [
+    { speaker: 'JP\'s Mind', text: 'Need to fire this up soon. Invite the whole crew over.' },
+  ],
+  ch0_fishing: [
+    { speaker: 'JP\'s Mind', text: 'The pond. Still here. Still quiet.' },
+    { speaker: 'JP\'s Mind', text: 'Some things don\'t need to change.' },
+  ],
+  ch0_goodbye: [
+    { speaker: 'JP\'s Mind', text: 'Everything I built. Every 3 AM session. Every rejection. Every client.' },
+    { speaker: 'JP\'s Mind', text: 'It was all for this.' },
+    { speaker: 'JP\'s Mind', text: 'To come home and make Pops proud.' },
+  ],
+  ch0_crypto: [
+    { speaker: 'JP\'s Mind', text: 'Crypto phase. That was a lifetime ago.' },
+  ],
+  ch0_college: [
+    { speaker: 'JP\'s Mind', text: 'College acceptance letters. Never opened most of them.' },
+    { speaker: 'JP\'s Mind', text: 'Turned out OK anyway.' },
+  ],
+  ch0_hidden_stash: [
+    { speaker: 'JP\'s Mind', text: '...Empty. Good.' },
+  ],
+  ch0_poster: [
+    { speaker: 'JP\'s Mind', text: 'Old poster. Still up.' },
+  ],
+  ch0_mail: [
+    { speaker: 'JP\'s Mind', text: 'Junk mail and bills. Some things never change.' },
+  ],
+  ch0_fridge: [
+    { speaker: 'JP\'s Mind', text: 'Mom\'s cooking. Finally.' },
+  ],
+  ch0_nolan_call: [
+    { speaker: 'JP\'s Mind', text: 'Should call Nolan. Tell him about Vegas.' },
+  ],
+  ch0_frenchie_ball: [
+    { speaker: 'JP\'s Mind', text: 'Ivy\'s ball. She still plays with this thing every day.' },
+  ],
+  ch0_sister_toys: [
+    { speaker: 'JP\'s Mind', text: 'She\'s getting older. Growing up fast.' },
+  ],
+};
+
+export const homeReturnDialogue = buildChapterDialogue(homeReturnIntro, homeReturnNPCs, [], homeReturnExtras);
+
 export const endScreenData = {
   stats: endScreenStats,
   cta: endScreenCTA,
