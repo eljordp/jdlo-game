@@ -117,15 +117,18 @@ export class MapBuilder {
       }
     }
 
-    // Animate water tiles
+    // Animate water tiles — gentle alpha pulse to simulate waves
     if (waterSprites.length > 0) {
+      let wavePhase = 0;
       this.scene.time.addEvent({
-        delay: 600,
+        delay: 80,
         loop: true,
         callback: () => {
-          waterFrame = (waterFrame + 1) % 2;
-          for (const sprite of waterSprites) {
-            sprite.setCrop(waterFrame * TILE_SIZE, 0, TILE_SIZE, TILE_SIZE);
+          wavePhase += 0.05;
+          for (let i = 0; i < waterSprites.length; i++) {
+            const offset = i * 0.3;
+            const alpha = 0.85 + 0.15 * Math.sin(wavePhase + offset);
+            waterSprites[i].setAlpha(alpha);
           }
         },
       });
