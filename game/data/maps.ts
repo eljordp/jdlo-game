@@ -171,8 +171,9 @@ export const homeMap: MapData = {
     { id: 'ch0_parents_bed',   x: 19, y: 4,  type: 'examine', glow: false, sprite: 'item-bed' },        // furniture
     { id: 'ch0_family_photo',  x: 24, y: 4,  type: 'examine', glow: true, sprite: 'item-photo' },       // photo on back wall — story
     { id: 'ch0_parents_tv',    x: 17, y: 7,  type: 'examine', glow: false, sprite: 'item-tv' },         // furniture
-    { id: 'ch0_parents_closet', x: 27, y: 4, type: 'examine', glow: false, sprite: 'item-bookshelf' },  // furniture
-    { id: 'ch0_parents_dresser', x: 29, y: 7, type: 'examine', glow: false },                           // furniture
+    { id: 'ch0_parents_bookshelf', x: 25, y: 4, type: 'examine', glow: false, sprite: 'item-bookshelf' }, // bookshelf on back wall
+    { id: 'ch0_parents_closet', x: 29, y: 4, type: 'examine', glow: false },                             // walk-in closet door (back wall)
+    { id: 'ch0_parents_dresser', x: 27, y: 7, type: 'examine', glow: false },                            // dresser
     // Bathroom (cols 32-35, rows 4-8)
     { id: 'ch0_mirror',        x: 34, y: 4,  type: 'examine', glow: true, sprite: 'item-mirror' },      // deep reflection — interactive
     { id: 'ch0_toilet',        x: 32, y: 7,  type: 'examine', glow: false, sprite: 'item-toilet' },     // furniture

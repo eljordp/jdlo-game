@@ -1133,8 +1133,12 @@ const ch0Extras: Record<string, DialogueLine[]> = {
     { speaker: 'Narrator', text: 'Pops pretends he doesn\'t like them. He does.' },
   ],
   // --- Office (was spare room) ---
+  ch0_parents_bookshelf: [
+    { speaker: 'Narrator', text: 'Self-help books. Bible. Photo albums from the 90s.' },
+    { speaker: 'Narrator', text: 'Pops reads more than people think.' },
+  ],
   ch0_parents_closet: [
-    { speaker: 'Narrator', text: 'Mom\'s side is organized. Pops\' side... not so much.' },
+    { speaker: 'Narrator', text: 'Walk-in closet. Mom\'s side is organized. Pops\' side... not so much.' },
     { speaker: 'Narrator', text: 'A couple suits in the back. Never worn.' },
   ],
   ch0_parents_dresser: [
