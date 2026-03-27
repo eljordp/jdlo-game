@@ -66,9 +66,10 @@ export class MapBuilder {
     this.scene = scene;
   }
 
-  buildMap(mapData: MapData): { collisions: Set<string>; bounds: { width: number; height: number } } {
+  buildMap(mapData: MapData): { collisions: Set<string>; bounds: { width: number; height: number }; tilesByRow: Map<number, Phaser.GameObjects.Sprite[]> } {
     const collisions = new Set<string>();
     const collisionTileIds = new Set(mapData.collisions);
+    const tilesByRow = new Map<number, Phaser.GameObjects.Sprite[]>();
 
     const mapHeight = mapData.tiles.length;
     const mapWidth = mapData.tiles[0]?.length || 0;
@@ -77,6 +78,9 @@ export class MapBuilder {
     const waterSprites: Phaser.GameObjects.Sprite[] = [];
 
     for (let y = 0; y < mapHeight; y++) {
+      if (!tilesByRow.has(y)) tilesByRow.set(y, []);
+      const rowSprites = tilesByRow.get(y)!;
+
       for (let x = 0; x < mapWidth; x++) {
         const tileId = mapData.tiles[y][x];
         const textureKey = TILE_TEXTURE_MAP[tileId];
@@ -93,23 +97,24 @@ export class MapBuilder {
           ground.setScale(SCALE);
           ground.setDepth(0);
           ground.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+          rowSprites.push(ground);
         }
 
         if (tileId === TILE_IDS.WATER) {
-          // Water is now a static tile — no animation, no crop
           const sprite = this.scene.add.sprite(pixelX, pixelY, textureKey);
           sprite.setScale(SCALE);
           sprite.setDepth(0);
           sprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
           waterSprites.push(sprite);
+          rowSprites.push(sprite);
         } else {
           const sprite = this.scene.add.sprite(pixelX, pixelY, textureKey);
           sprite.setScale(SCALE);
-          // Overlay tiles render above ground, trees/palms above player
           const depth = (tileId === TILE_IDS.TREE || tileId === TILE_IDS.PALM) ? 50
             : OVERLAY_TILES.has(tileId) ? 1 : 0;
           sprite.setDepth(depth);
           sprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+          rowSprites.push(sprite);
         }
 
         if (collisionTileIds.has(tileId)) {
@@ -138,6 +143,7 @@ export class MapBuilder {
     return {
       collisions,
       bounds: { width: mapWidth, height: mapHeight },
+      tilesByRow,
     };
   }
 }

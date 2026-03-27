@@ -38,6 +38,7 @@ export abstract class BaseChapterScene extends Phaser.Scene {
   protected triggers: { x: number; y: number; action: string; target?: string; data?: Record<string, string> }[] = [];
   protected mapWidth = 0;
   protected mapHeight = 0;
+  protected tilesByRow: Map<number, Phaser.GameObjects.Sprite[]> = new Map();
   protected chapterTitle = '';
   protected nextScene = '';
   protected requiredInteractionId: string = '';
@@ -125,10 +126,11 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     // Build the map
     const mapData = this.getMapData();
     const mapBuilder = new MapBuilder(this);
-    const { collisions, bounds } = mapBuilder.buildMap(mapData);
+    const { collisions, bounds, tilesByRow } = mapBuilder.buildMap(mapData);
     this.collisionTiles = collisions;
     this.mapWidth = bounds.width;
     this.mapHeight = bounds.height;
+    this.tilesByRow = tilesByRow;
     this.triggers = mapData.triggers || [];
 
     // Create player at spawn point
@@ -957,6 +959,26 @@ export abstract class BaseChapterScene extends Phaser.Scene {
 
   /** Override in subclasses to react to player movement (e.g. hot tub clothes change) */
   protected onPlayerMove(_tileX: number, _tileY: number): void {}
+
+  /** Show/hide tile rows for floor switching (Pokemon-style) */
+  protected setFloorVisibility(showRows: number[], hideRows: number[]): void {
+    for (const row of hideRows) {
+      const sprites = this.tilesByRow.get(row);
+      if (sprites) sprites.forEach(s => s.setVisible(false));
+    }
+    for (const row of showRows) {
+      const sprites = this.tilesByRow.get(row);
+      if (sprites) sprites.forEach(s => s.setVisible(true));
+    }
+    // Also hide/show NPCs and interactable sprites based on their tile Y
+    for (const npc of this.npcs) {
+      const npcTileY = Math.round((npc.sprite.y - SCALED_TILE / 2) / SCALED_TILE);
+      const shouldShow = showRows.includes(npcTileY);
+      const shouldHide = hideRows.includes(npcTileY);
+      if (shouldHide) npc.sprite.setVisible(false);
+      if (shouldShow) npc.sprite.setVisible(true);
+    }
+  }
 
   /** Override in subclasses to add reactive NPC dialogue behaviors */
   protected handleNPCDialogue(_npcId: string, dialogue: DialogueLine[]): void {

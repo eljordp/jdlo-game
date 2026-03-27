@@ -25,6 +25,7 @@ export class HomeScene extends BaseChapterScene {
   private bedLocked = false;
   private nightOverlay: Phaser.GameObjects.Rectangle | null = null;
   private ivyFollowHistory: { x: number; y: number }[] = [];
+  private currentFloor: 'up' | 'down' = 'up'; // Player starts upstairs
 
   constructor() {
     super({ key: 'HomeScene' });
@@ -44,6 +45,18 @@ export class HomeScene extends BaseChapterScene {
   create() {
     super.create();
     this.addNavArrow(14, 34, 'Leave home');
+
+    // Player starts upstairs — hide downstairs tiles (Pokemon-style)
+    const downRows = Array.from({ length: 33 }, (_, i) => i + 3);
+    for (const row of downRows) {
+      const sprites = this.tilesByRow.get(row);
+      if (sprites) sprites.forEach(s => s.setVisible(false));
+    }
+    // Hide downstairs NPCs
+    for (const npc of this.npcs) {
+      const npcTileY = Math.round((npc.sprite.y - SCALED_TILE / 2) / SCALED_TILE);
+      if (npcTileY >= 3) npc.sprite.setVisible(false);
+    }
 
     // Sister's crayon drawings on walls — UPSTAIRS (cols 22-27, row 0-1)
     // Drawing 1: Sun on back wall
@@ -765,12 +778,16 @@ export class HomeScene extends BaseChapterScene {
       this.trackForPhoneCall(interactable.id);
       return;
     }
-    // Stairs — teleport between floors
+    // Stairs — Pokemon-style floor swap
     if (interactable.id === 'ch0_stairs_up') {
       this.frozen = true;
       this.cameras.main.fadeOut(300, 0, 0, 0);
       this.cameras.main.once('camerafadeoutcomplete', () => {
         this.player.setPosition(18 * SCALED_TILE + SCALED_TILE / 2, 1 * SCALED_TILE + SCALED_TILE / 2);
+        const upRows = [0, 1, 2];
+        const downRows = Array.from({ length: 33 }, (_, i) => i + 3);
+        this.setFloorVisibility(upRows, downRows);
+        this.currentFloor = 'up';
         this.cameras.main.fadeIn(300, 0, 0, 0);
         this.frozen = false;
       });
@@ -781,6 +798,10 @@ export class HomeScene extends BaseChapterScene {
       this.cameras.main.fadeOut(300, 0, 0, 0);
       this.cameras.main.once('camerafadeoutcomplete', () => {
         this.player.setPosition(18 * SCALED_TILE + SCALED_TILE / 2, 10 * SCALED_TILE + SCALED_TILE / 2);
+        const upRows = [0, 1, 2];
+        const downRows = Array.from({ length: 33 }, (_, i) => i + 3);
+        this.setFloorVisibility(downRows, upRows);
+        this.currentFloor = 'down';
         this.cameras.main.fadeIn(300, 0, 0, 0);
         this.frozen = false;
       });
