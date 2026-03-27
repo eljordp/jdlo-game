@@ -17,6 +17,8 @@ export class WrongCrowdScene extends BaseChapterScene {
   private lookoutWarned = false;
   private buyerNervousStarted = false;
   private unmarkedCarSpawned = false;
+  private bedBagsTriggered = false;
+  private wasNearBed = false;
 
   constructor() {
     super({ key: 'WrongCrowdScene' });
@@ -328,6 +330,52 @@ export class WrongCrowdScene extends BaseChapterScene {
       { speaker: 'Buyer', text: 'Cool cool. Lemme get a\u2014' },
     ];
     return dialogue;
+  }
+
+  // Bags fall from under the bed when JP walks away
+  protected onPlayerMove(tileX: number, tileY: number): void {
+    // Track if player was near the bed (cols 15-16, rows 1-3)
+    const nearBed = tileX >= 15 && tileX <= 16 && tileY >= 1 && tileY <= 3;
+
+    if (nearBed) {
+      this.wasNearBed = true;
+    } else if (this.wasNearBed && !this.bedBagsTriggered && !this.frozen) {
+      // Just walked AWAY from the bed — bags tumble out
+      this.bedBagsTriggered = true;
+      this.wasNearBed = false;
+
+      const bedX = 15 * SCALED_TILE + SCALED_TILE / 2;
+      const bedY = 2 * SCALED_TILE + SCALED_TILE / 2;
+
+      // 2 bags slide out from under the bed
+      for (let i = 0; i < 2; i++) {
+        const bag = this.add.sprite(bedX + i * 20, bedY - 10, 'item-weed-bag')
+          .setScale(SCALE).setDepth(11).setAlpha(0).setAngle(Phaser.Math.Between(-15, 15));
+
+        this.tweens.add({
+          targets: bag,
+          y: bedY + 30 + i * 20,
+          x: bedX - 10 + i * 40,
+          alpha: 1,
+          duration: 400,
+          delay: i * 200,
+          ease: 'Bounce.easeOut',
+        });
+      }
+
+      // JP turns around and shoves them back
+      this.time.delayedCall(700, () => {
+        if (this.frozen) return;
+        this.frozen = true;
+        this.dialogue.show([
+          { speaker: 'Narrator', text: 'Two bags slide out from under the bed.' },
+          { speaker: 'JP', text: '...every time.' },
+          { speaker: 'Narrator', text: 'He shoves them back under. They don\'t really fit.' },
+        ], () => {
+          this.frozen = false;
+        });
+      });
+    }
   }
 
   // Reactive NPC dialogue
