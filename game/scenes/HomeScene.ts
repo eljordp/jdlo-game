@@ -1358,9 +1358,16 @@ export class HomeScene extends BaseChapterScene {
     const escKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
     escKey.on('down', closeAll);
 
-    // App window builder
+    // App window state — track current open window for switching
+    let currentWinObjs: Phaser.GameObjects.GameObject[] = [];
+    let currentWinCleanup: (() => void) | null = null;
+
+    // App window builder — can switch directly between apps
     const showAppWindow = (title: string, content: { speaker?: string; text: string }[]) => {
-      if (!active) return;
+      // If another app is open, close it first (switch directly)
+      if (!active && currentWinCleanup) {
+        currentWinCleanup();
+      }
       active = false;
 
       // App window overlay
@@ -1398,29 +1405,37 @@ export class HomeScene extends BaseChapterScene {
         lineY += 30;
       }
 
-      // Close button (click red traffic light or press ESC)
+      // Close button (click red traffic light or press Space)
       const closeBtn = this.add.circle(cx - winW / 2 + 20, winY - winH / 2 + 14, 5, 0xff5f57)
         .setScrollFactor(0).setDepth(313).setInteractive({ useHandCursor: true });
       winObjs.push(closeBtn);
 
+      const winSpace = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+      const winSpaceHandler = () => closeWin();
+
       const closeWin = () => {
         winSpace.off('down', winSpaceHandler);
         for (const o of winObjs) { if (o && o.active) (o as Phaser.GameObjects.GameObject).destroy(); }
+        currentWinObjs = [];
+        currentWinCleanup = null;
         active = true;
       };
       closeBtn.on('pointerdown', closeWin);
-
-      // Space or click red dot to close app window (NOT ESC — ESC closes whole MacBook)
-      const winSpace = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-      const winSpaceHandler = () => closeWin();
       winSpace.on('down', winSpaceHandler);
+
+      // Track current window for switching
+      currentWinObjs = winObjs;
+      currentWinCleanup = closeWin;
 
       for (const o of winObjs) objects.push(o);
     };
 
     // IG DM interface — special handler
     const showInstagram = () => {
-      if (!active) return;
+      // If another app is open, close it first
+      if (!active && currentWinCleanup) {
+        currentWinCleanup();
+      }
       active = false;
 
       const winObjs: Phaser.GameObjects.GameObject[] = [];
@@ -1537,17 +1552,22 @@ export class HomeScene extends BaseChapterScene {
         .setScrollFactor(0).setDepth(314).setInteractive({ useHandCursor: true });
       winObjs.push(closeBtn);
 
+      const igSpace = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+      const igSpaceHandler = () => closeWin();
+
       const closeWin = () => {
         igSpace.off('down', igSpaceHandler);
         for (const o of winObjs) { if (o && o.active) (o as Phaser.GameObjects.GameObject).destroy(); }
+        currentWinObjs = [];
+        currentWinCleanup = null;
         active = true;
       };
       closeBtn.on('pointerdown', closeWin);
-
-      // Space or click red dot to close (NOT ESC)
-      const igSpace = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-      const igSpaceHandler = () => closeWin();
       igSpace.on('down', igSpaceHandler);
+
+      // Track for switching
+      currentWinObjs = winObjs;
+      currentWinCleanup = closeWin;
 
       for (const o of winObjs) objects.push(o);
     };
