@@ -1151,8 +1151,14 @@ const ch0Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP', text: 'What are you doing, bro?' },
     { speaker: 'Narrator', text: 'No answer.' },
   ],
+  ch0_washer: [
+    { speaker: 'Narrator', text: 'Washing machine. Still running. Mom does a load every morning.' },
+  ],
+  ch0_dryer: [
+    { speaker: 'Narrator', text: 'Dryer. A sock stuck to the lint trap. Always.' },
+  ],
   ch0_laundry: [
-    { speaker: 'Narrator', text: 'Laundry basket. Overflowing. Mom gave up asking.' },
+    { speaker: 'Narrator', text: 'Laundry basket. Overflowing. Mom gave up asking JP to bring his clothes down.' },
   ],
   ch0_storage_boxes: [
     { speaker: 'Narrator', text: 'Old boxes. Baby clothes, school projects, Christmas decorations.' },

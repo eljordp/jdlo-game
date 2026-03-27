@@ -5261,6 +5261,182 @@ function generateMoreItems(scene: Phaser.Scene) {
     // Rail top cap
     px(g, 28, 1, 0x909aa0, 3, 2);
   });
+
+  // --- item-washer --- Front-loading washing machine
+  makeTexture(scene, 'item-washer', TILE_SIZE, TILE_SIZE, (g) => {
+    // White body
+    px(g, 3, 3, 0xf0f0f0, 12, 14);
+    // Control panel strip on top
+    px(g, 3, 3, 0xd0d0d0, 12, 2);
+    px(g, 6, 3, 0x606060, 1, 1);  // knob
+    px(g, 9, 3, 0x606060, 1, 1);  // knob
+    px(g, 12, 4, 0x40c040, 1, 1); // power LED
+    // Dark circle door
+    px(g, 7, 7, 0x404048, 8, 8);
+    // Glass window inside door
+    px(g, 8, 8, 0x80b8e0, 6, 6);
+    px(g, 9, 9, 0x90c8f0, 3, 3); // reflection
+    // Door handle
+    px(g, 15, 10, 0xa0a0a8, 1, 3);
+    // Feet at bottom
+    px(g, 4, 17, 0x808088, 2, 1);
+    px(g, 12, 17, 0x808088, 2, 1);
+    // Edge shadows
+    px(g, 3, 3, 0xd8d8d8, 1, 14);  // left edge
+    px(g, 14, 3, 0xe0e0e0, 1, 14); // right edge
+  });
+
+  // --- item-dryer --- Matching dryer
+  makeTexture(scene, 'item-dryer', TILE_SIZE, TILE_SIZE, (g) => {
+    // White body
+    px(g, 3, 3, 0xf0f0f0, 12, 14);
+    // Lint trap line on top
+    px(g, 3, 3, 0xc0c0c0, 12, 2);
+    px(g, 5, 3, 0xa0a0a0, 6, 1); // lint trap slot
+    px(g, 12, 4, 0x40c040, 1, 1); // power LED
+    // Dark circle door
+    px(g, 7, 7, 0x404048, 8, 8);
+    // Lighter interior
+    px(g, 8, 8, 0xa0a0a8, 6, 6);
+    px(g, 9, 9, 0xb0b0b8, 3, 3); // inner highlight
+    // Door handle
+    px(g, 15, 10, 0x909098, 1, 3);
+    // Feet at bottom
+    px(g, 4, 17, 0x808088, 2, 1);
+    px(g, 12, 17, 0x808088, 2, 1);
+    // Edge shadows
+    px(g, 3, 3, 0xd8d8d8, 1, 14);
+    px(g, 14, 3, 0xe0e0e0, 1, 14);
+  });
+
+  // --- item-laundry-basket --- Overflowing laundry basket
+  makeTexture(scene, 'item-laundry-basket', TILE_SIZE, TILE_SIZE, (g) => {
+    // Clothes poking out top (above basket rim)
+    px(g, 5, 3, 0x4060c0, 4, 3);  // blue shirt
+    px(g, 10, 4, 0xc04040, 3, 2); // red cloth
+    px(g, 7, 2, 0xe0e0e0, 3, 2);  // white towel
+    // Tan/wicker basket body
+    px(g, 4, 6, 0xc8a870, 10, 8);
+    // Darker weave lines
+    px(g, 4, 8, 0xa08850, 10, 1);
+    px(g, 4, 10, 0xa08850, 10, 1);
+    px(g, 4, 12, 0xa08850, 10, 1);
+    // Basket rim
+    px(g, 4, 6, 0xb09860, 10, 1);
+    // Basket handles (bumps on sides)
+    px(g, 3, 8, 0xb09060, 1, 2);
+    px(g, 14, 8, 0xb09060, 1, 2);
+    // Bottom shadow
+    px(g, 5, 14, 0x806830, 8, 1);
+  });
+
+  // --- item-ironing-board --- Ironing board with iron
+  makeTexture(scene, 'item-ironing-board', TILE_SIZE, TILE_SIZE, (g) => {
+    // Board surface (long rectangle, slight angle feel)
+    px(g, 2, 8, 0xd0d0d0, 14, 4);
+    px(g, 2, 8, 0xd8d8d8, 14, 1); // top highlight
+    px(g, 16, 9, 0xc0c0c0, 1, 2); // narrow end
+    // Legs forming X shape
+    px(g, 5, 12, 0x808088, 1, 6);  // left leg left
+    px(g, 12, 12, 0x808088, 1, 6); // right leg right
+    px(g, 8, 12, 0x808088, 1, 6);  // left leg right (crossing)
+    px(g, 9, 12, 0x808088, 1, 6);  // right leg left (crossing)
+    px(g, 6, 14, 0x707078, 1, 1);  // cross point
+    px(g, 11, 14, 0x707078, 1, 1); // cross point
+    // Iron on board
+    px(g, 6, 7, 0x404048, 4, 3);
+    px(g, 7, 7, 0x505058, 2, 1);   // iron top highlight
+    // Steam wisps above iron
+    px(g, 7, 5, 0xc0c0c0, 1, 2);
+    px(g, 9, 4, 0xc0c0c0, 1, 2);
+  });
+
+  // --- item-storage-box --- Cardboard box
+  makeTexture(scene, 'item-storage-box', TILE_SIZE, TILE_SIZE, (g) => {
+    // Brown cardboard body
+    px(g, 4, 5, 0xb08850, 10, 8);
+    // Lighter top flap
+    px(g, 4, 5, 0xc8a068, 10, 2);
+    // Dark tape line down center
+    px(g, 8, 5, 0x806030, 2, 6);
+    // Edge highlights
+    px(g, 4, 5, 0xa07840, 1, 8);  // left shadow
+    px(g, 13, 5, 0xc09858, 1, 8); // right highlight
+    // Shadow underneath
+    px(g, 5, 13, 0x806030, 8, 1);
+  });
+
+  // --- item-lamp --- Floor lamp
+  makeTexture(scene, 'item-lamp', TILE_SIZE, TILE_SIZE, (g) => {
+    // Shade — trapezoid shape (wider at bottom)
+    px(g, 7, 2, 0xf0e0c0, 4, 1);  // top narrow
+    px(g, 6, 3, 0xf0e0c0, 6, 1);
+    px(g, 5, 4, 0xf0e0c0, 8, 1);
+    px(g, 4, 5, 0xf0e0c0, 10, 1);
+    px(g, 3, 6, 0xf0e0c0, 12, 1);
+    // Light glow inside shade
+    px(g, 8, 4, 0xf0c040, 2, 2);
+    px(g, 7, 3, 0xf8d860, 1, 1);
+    // Shade bottom rim
+    px(g, 3, 7, 0xe0d0b0, 12, 1);
+    // Pole
+    px(g, 8, 8, 0x606060, 2, 10);
+    px(g, 8, 8, 0x707070, 1, 10); // highlight
+    // Base
+    px(g, 6, 18, 0x505058, 6, 2);
+    px(g, 7, 18, 0x606068, 4, 1); // base highlight
+  });
+
+  // --- item-plant --- Potted plant
+  makeTexture(scene, 'item-plant', TILE_SIZE, TILE_SIZE, (g) => {
+    // Leaf clusters above pot
+    // Top cluster
+    px(g, 7, 2, 0x40a040, 4, 3);
+    px(g, 8, 1, 0x60c060, 2, 2);
+    // Left cluster
+    px(g, 4, 4, 0x40a040, 4, 3);
+    px(g, 5, 4, 0x60c060, 2, 2);
+    // Right cluster
+    px(g, 10, 4, 0x40a040, 4, 3);
+    px(g, 11, 4, 0x60c060, 2, 2);
+    // Stems
+    px(g, 8, 5, 0x308030, 1, 5);
+    px(g, 9, 6, 0x308030, 1, 4);
+    // Pot (terracotta trapezoid — wider at top, narrower at bottom)
+    px(g, 5, 10, 0xc06030, 8, 6);
+    px(g, 6, 16, 0xb05828, 6, 1); // bottom
+    px(g, 5, 10, 0xd07040, 8, 1); // rim highlight
+    // Soil
+    px(g, 6, 10, 0x604020, 6, 2);
+    // Pot shadow
+    px(g, 6, 17, 0x804820, 6, 1);
+  });
+
+  // --- item-rug --- Area rug (flat on floor)
+  makeTexture(scene, 'item-rug', TILE_SIZE, TILE_SIZE, (g) => {
+    // Gold border
+    px(g, 2, 4, 0xc0a040, 14, 10);
+    // Main body (burgundy)
+    px(g, 3, 5, 0x8a3030, 12, 8);
+    // Diamond pattern in center (lighter red)
+    px(g, 8, 7, 0xa04040, 2, 1);  // top point
+    px(g, 7, 8, 0xa04040, 4, 2);  // middle
+    px(g, 8, 10, 0xa04040, 2, 1); // bottom point
+    // Fringe at top
+    px(g, 3, 4, 0xc0a040, 1, 1);
+    px(g, 5, 4, 0xc0a040, 1, 1);
+    px(g, 7, 4, 0xc0a040, 1, 1);
+    px(g, 9, 4, 0xc0a040, 1, 1);
+    px(g, 11, 4, 0xc0a040, 1, 1);
+    px(g, 13, 4, 0xc0a040, 1, 1);
+    // Fringe at bottom
+    px(g, 3, 13, 0xc0a040, 1, 1);
+    px(g, 5, 13, 0xc0a040, 1, 1);
+    px(g, 7, 13, 0xc0a040, 1, 1);
+    px(g, 9, 13, 0xc0a040, 1, 1);
+    px(g, 11, 13, 0xc0a040, 1, 1);
+    px(g, 13, 13, 0xc0a040, 1, 1);
+  });
 }
 
 export function generateAllSprites(scene: Phaser.Scene): void {

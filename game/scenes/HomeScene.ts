@@ -60,6 +60,29 @@ export class HomeScene extends BaseChapterScene {
       0x000000
     ).setDepth(-1);
 
+    // Stairs labels so player knows where they are
+    const stairsDownX = 20 * SCALED_TILE + SCALED_TILE / 2;
+    const stairsDownY = 10 * SCALED_TILE + SCALED_TILE / 2;
+    this.add.text(stairsDownX, stairsDownY - 24, 'STAIRS', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#f0c040',
+    }).setOrigin(0.5).setDepth(15).setAlpha(0.8);
+    // Pulsing arrow above stairs
+    const stairsArrow = this.add.text(stairsDownX, stairsDownY - 36, '\u25bc', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#f0c040',
+    }).setOrigin(0.5).setDepth(15);
+    this.tweens.add({ targets: stairsArrow, y: stairsDownY - 28, alpha: 0.3, duration: 600, yoyo: true, repeat: -1 });
+
+    // Same for downstairs stairs
+    const stairsUpX = 20 * SCALED_TILE + SCALED_TILE / 2;
+    const stairsUpY = 18 * SCALED_TILE + SCALED_TILE / 2;
+    this.add.text(stairsUpX, stairsUpY - 24, 'STAIRS', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#f0c040',
+    }).setOrigin(0.5).setDepth(15).setAlpha(0.8);
+    const stairsArrow2 = this.add.text(stairsUpX, stairsUpY - 36, '\u25bc', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#f0c040',
+    }).setOrigin(0.5).setDepth(15);
+    this.tweens.add({ targets: stairsArrow2, y: stairsUpY - 28, alpha: 0.3, duration: 600, yoyo: true, repeat: -1 });
+
     // Sister's crayon drawings on walls — UPSTAIRS (cols 22-27, row 3)
     // Drawing 1: Sun on back wall
     this.add.circle(23 * SCALED_TILE + 20, 3 * SCALED_TILE + 40, 8, 0xf0c040).setDepth(1);
