@@ -1326,11 +1326,11 @@ function generateAllNPCs(scene: Phaser.Scene) {
     }
   );
 
-  // Higo — JP's white boy, light skin, brown hair — 32x32
+  // Higo — JP's white boy, ginger hair, light skin — 32x32
   generateNPC32(
     scene,
     'npc_higo',
-    0x6B4F30,   // medium brown hair
+    0xC04820,   // ginger/red hair
     'short',
     0xF0F0F0,   // white tee
     0xE0E0E0,

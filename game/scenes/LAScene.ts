@@ -204,10 +204,18 @@ export class LAScene extends Phaser.Scene {
         const car = this.addObj(
           this.add.sprite(cx + 100, GAME_HEIGHT - 60, 'car-corvette-c8').setScale(SCALE).setFlipX(true)
         );
-        // Subtle bounce
+        // JP in driver seat (head visible through window)
+        const jpHead = this.addObj(
+          this.add.sprite(cx + 110, GAME_HEIGHT - 68, 'player-ch7', 0).setScale(1).setDepth(2).setCrop(0, 0, 32, 14)
+        );
+        // Higo in passenger seat
+        const higoHead = this.addObj(
+          this.add.sprite(cx + 85, GAME_HEIGHT - 68, 'npc_higo', 0).setScale(1).setDepth(2).setCrop(0, 0, 32, 14)
+        );
+        // Subtle bounce — car and passengers together
         this.addTween({
-          targets: car,
-          y: GAME_HEIGHT - 62,
+          targets: [car, jpHead, higoHead],
+          y: '-=2',
           duration: 300,
           yoyo: true,
           repeat: -1,

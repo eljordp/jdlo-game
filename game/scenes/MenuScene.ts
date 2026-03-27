@@ -56,20 +56,12 @@ export class MenuScene extends Phaser.Scene {
     // Black background
     this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000).setDepth(0);
 
-    // Green C8 behind the characters
-    const c8 = this.add.sprite(GAME_WIDTH / 2, 290, 'car-corvette-c8')
-      .setScale(5).setDepth(0.5);
-
-    // Player sprite (JP) — left side
-    this.playerSprite = this.add.sprite(GAME_WIDTH / 2 - 70, 260, 'player', 0)
-      .setScale(6).setDepth(1);
-
-    // Higo — right side
-    const higo = this.add.sprite(GAME_WIDTH / 2 + 70, 260, 'npc_higo', 0)
+    // Player sprite — centered, breathing animation
+    this.playerSprite = this.add.sprite(GAME_WIDTH / 2, 260, 'player', 0)
       .setScale(6).setDepth(1);
 
     this.tweens.add({
-      targets: [this.playerSprite, higo],
+      targets: this.playerSprite,
       scaleX: 6.15,
       scaleY: 5.85,
       duration: 2000,
