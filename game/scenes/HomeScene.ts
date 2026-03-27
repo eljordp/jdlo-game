@@ -43,7 +43,7 @@ export class HomeScene extends BaseChapterScene {
 
   create() {
     super.create();
-    this.addNavArrow(14, 34, 'Leave home');
+    this.addNavArrow(14, 26, 'Leave home');
 
     // Sister's crayon drawings on walls (cols 11-15, rows 4-8)
     const drawingColors = [0xff69b4, 0xf0c040, 0x40c060, 0x4080e0, 0xff4444, 0xc040f0];
