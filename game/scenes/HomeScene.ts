@@ -50,8 +50,15 @@ export class HomeScene extends BaseChapterScene {
     const upRows = Array.from({ length: 12 }, (_, i) => i); // rows 0-11
     const downRows = Array.from({ length: this.mapHeight - 12 }, (_, i) => i + 12);
     this.setFloorVisibility(upRows, downRows);
-    // Clamp camera to upstairs area
+    // Clamp camera to upstairs area + black bg covers any bleed
     this.cameras.main.setBounds(0, 0, this.mapWidth * SCALED_TILE, 12 * SCALED_TILE);
+    this.cameras.main.setBackgroundColor(0x000000);
+    // Black mask behind upstairs to hide any downstairs bleed-through
+    this.add.rectangle(
+      this.mapWidth * SCALED_TILE / 2, 6 * SCALED_TILE,
+      this.mapWidth * SCALED_TILE, 12 * SCALED_TILE,
+      0x000000
+    ).setDepth(-1);
 
     // Sister's crayon drawings on walls — UPSTAIRS (cols 22-27, row 3)
     // Drawing 1: Sun on back wall

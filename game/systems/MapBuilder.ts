@@ -85,7 +85,18 @@ export class MapBuilder {
         const tileId = mapData.tiles[y][x];
         const textureKey = TILE_TEXTURE_MAP[tileId];
 
-        if (!textureKey) continue;
+        if (!textureKey) {
+          // Render EMPTY tiles as solid black to prevent bleed-through
+          if (tileId === 0) {
+            const black = this.scene.add.rectangle(
+              x * SCALED_TILE + SCALED_TILE / 2,
+              y * SCALED_TILE + SCALED_TILE / 2,
+              SCALED_TILE, SCALED_TILE, 0x000000
+            ).setDepth(0);
+            rowSprites.push(black as unknown as Phaser.GameObjects.Sprite);
+          }
+          continue;
+        }
 
         const pixelX = x * SCALED_TILE + SCALED_TILE / 2;
         const pixelY = y * SCALED_TILE + SCALED_TILE / 2;
