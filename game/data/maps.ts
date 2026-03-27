@@ -132,7 +132,7 @@ export const homeMap: MapData = {
       { id: 'ch0_pops',    x: 8,  y: 13, sprite: 'npc_pops' },
       { id: 'ch0_mom',     x: 28, y: 13, sprite: 'npc_female' },
       { id: 'ch0_sister',  x: 13, y: 6,  sprite: 'npc_sister' },
-      { id: 'ch0_frenchie', x: 18, y: 21, sprite: 'npc_frenchie' },
+      { id: 'ch0_frenchie', x: 18, y: 20, sprite: 'npc_frenchie' },
     ],
   },
   triggers: [
@@ -171,7 +171,7 @@ export const homeMap: MapData = {
     { id: 'ch0_nolan_call',    x: 8,  y: 7,  type: 'examine', glow: true, sprite: 'item-phone' },
     { id: 'ch0_frenchie_ball', x: 16, y: 21, type: 'examine', glow: true },
     { id: 'ch0_fishing',       x: 24, y: 20, type: 'examine', glow: true },
-    { id: 'ch0_goodbye',       x: 13, y: 24, type: 'examine', glow: true },
+    { id: 'ch0_goodbye',       x: 13, y: 23, type: 'examine', glow: true },
   ],
 };
 
@@ -255,7 +255,7 @@ export const beachMap: MapData = {
     { id: 'ch1_setup',   x: 11, y: 2,  type: 'examine', glow: true, sprite: 'item-tablet' },
     { id: 'ch1_bed',     x: 10, y: 1,  type: 'examine', glow: true, sprite: 'item-bed' },
     { id: 'ch1_closet',  x: 15, y: 2,  type: 'examine', glow: true },
-    { id: 'ch1_speaker', x: 10, y: 1,  type: 'examine', glow: true },
+    { id: 'ch1_speaker', x: 14, y: 1,  type: 'examine', glow: true },
     { id: 'ch1_volleyball1', x: 15, y: 20, type: 'examine', glow: true },
   ],
 };
@@ -351,7 +351,7 @@ export const wrongCrowdMap: MapData = {
     { id: 'ch2_nervous',   x: 12, y: 22, type: 'examine', glow: true },                           // nervous on second street
 
     // --- Convenience store area ---
-    { id: 'ch2_graffiti',  x: 5,  y: 17, type: 'examine', glow: true },                           // graffiti on store wall (adjacent walkable at x:4)
+    { id: 'ch2_graffiti',  x: 4,  y: 17, type: 'examine', glow: true },                           // graffiti visible on store wall
     { id: 'ch2_store',     x: 7,  y: 18, type: 'examine', glow: true },                           // inside the store
 
     // --- Buyer's house area ---
@@ -538,7 +538,7 @@ export const tractorMap: MapData = {
   spawns: {
     player: { x: 7, y: 8 },
     npcs: [
-      { id: 'ch4_boss', x: 16, y: 13, sprite: 'npc_farmer' },
+      { id: 'ch4_boss', x: 20, y: 9, sprite: 'npc_farmer' },
       { id: 'ch4_coworker', x: 5, y: 9, sprite: 'npc_jose' },
       { id: 'ch4_eliseo', x: 30, y: 15, sprite: 'npc_generic' },
     ],
@@ -617,17 +617,17 @@ export const comeUpMap: MapData = {
       { id: 'ch5_first_client', x: 4,  y: 14, sprite: 'npc_client' },
       { id: 'ch5_sticker',      x: 29, y: 14, sprite: 'npc_sticker_smith' },
       { id: 'ch5_ghost',        x: 14, y: 21, sprite: 'npc_generic' },
-      { id: 'ch5_rejected',     x: 20, y: 9,  sprite: 'npc_generic' },
+      { id: 'ch5_rejected',     x: 20, y: 8,  sprite: 'npc_generic' },
       { id: 'ch5_wct',          x: 14, y: 16, sprite: 'npc_client' },
-      { id: 'ch5_vacaville',    x: 10, y: 9,  sprite: 'npc_generic' },
-      { id: 'ch5_manza',        x: 30, y: 9,  sprite: 'npc_manza' },
+      { id: 'ch5_vacaville',    x: 10, y: 8,  sprite: 'npc_generic' },
+      { id: 'ch5_manza',        x: 30, y: 8,  sprite: 'npc_manza' },
     ],
   },
   triggers: [
     { x: 38, y: 27, action: 'scene', target: 'LAScene' },
   ],
   interactables: [
-    { id: 'ch5_wct_showcase', x: 3, y: 14, type: 'showcase', glow: true, sprite: 'item-money' },
+    { id: 'ch5_wct_showcase', x: 4, y: 13, type: 'showcase', glow: true, sprite: 'item-money' },
     { id: 'ch5_sticker_showcase', x: 28, y: 14, type: 'showcase', glow: true, sprite: 'item-money' },
     { id: 'ch5_dhl_showcase', x: 28, y: 21, type: 'showcase', glow: true, sprite: 'item-tablet' },
     { id: 'ch5_first_dollar', x: 7, y: 3, type: 'examine', glow: true, sprite: 'item-money' },
@@ -693,7 +693,7 @@ export const operatorMap: MapData = {
   ],
   collisions: STANDARD_COLLISIONS,
   spawns: {
-    player: { x: 19, y: 1 },
+    player: { x: 19, y: 2 },
     npcs: [
       // LA zone — offices
       { id: 'ch6_malachi',      x: 7,  y: 5,  sprite: 'npc_malachi' },
@@ -719,14 +719,14 @@ export const operatorMap: MapData = {
     { id: 'ch6_dashboard', x: 10, y: 5, type: 'examine', glow: true, sprite: 'item-tablet' },
     { id: 'ch6_portfolio', x: 19, y: 12, type: 'examine', glow: true, sprite: 'item-tablet' },
     { id: 'ch6_team', x: 10, y: 12, type: 'examine', glow: true, sprite: 'item-phone' },
-    { id: 'ch6_mirror', x: 34, y: 5, type: 'examine', glow: true },
+    { id: 'ch6_mirror', x: 33, y: 5, type: 'examine', glow: true },
     { id: 'ch6_pomaikai_office', x: 9, y: 4, type: 'examine', glow: true, sprite: 'item-tablet' },
     { id: 'ch6_slack', x: 4, y: 10, type: 'examine', glow: true, sprite: 'item-phone' },
     { id: 'ch6_revenue', x: 36, y: 10, type: 'examine', glow: true, sprite: 'item-money' },
     { id: 'ch6_instagram', x: 16, y: 12, type: 'examine', glow: true, sprite: 'item-phone' },
     { id: 'ch6_future', x: 30, y: 10, type: 'examine', glow: true, sprite: 'item-letter' },
     { id: 'ch6_equal_moment', x: 22, y: 12, type: 'examine', glow: true },
-    { id: 'ch6_security', x: 5, y: 15, type: 'examine', glow: true },
+    { id: 'ch6_security', x: 6, y: 15, type: 'examine', glow: true },
   ],
 };
 
