@@ -525,11 +525,11 @@ export const comeUpMap: MapData = {
     npcs: [
       { id: 'ch5_first_client', x: 4,  y: 14, sprite: 'npc_client' },
       { id: 'ch5_sticker',      x: 20, y: 14, sprite: 'npc_sticker_smith' },
-      { id: 'ch5_mentor',       x: 13, y: 18, sprite: 'npc_mentor' },
-      { id: 'ch5_impressed',    x: 15, y: 8,  sprite: 'npc_biz' },
-      { id: 'ch5_dhl',          x: 15, y: 10, sprite: 'npc_dhl_client' },
-      { id: 'ch5_vacaville',    x: 8,  y: 8,  sprite: 'npc_waitress' },
-      { id: 'ch5_manza',         x: 22, y: 8,  sprite: 'npc_manza' },
+      { id: 'ch5_ghost',        x: 13, y: 18, sprite: 'npc_generic' },
+      { id: 'ch5_rejected',     x: 15, y: 8,  sprite: 'npc_generic' },
+      { id: 'ch5_wct',          x: 15, y: 10, sprite: 'npc_client' },
+      { id: 'ch5_vacaville',    x: 8,  y: 8,  sprite: 'npc_generic' },
+      { id: 'ch5_manza',        x: 22, y: 8,  sprite: 'npc_manza' },
     ],
   },
   triggers: [

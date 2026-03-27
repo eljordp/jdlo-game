@@ -553,8 +553,10 @@ export const chapter4NPCs: NPCData[] = [
       { speaker: 'JP', text: 'Uh... ¿irrigación?' },
       { speaker: 'Eliseo', text: 'Jaja, casi. Riego. Se dice riego.' },
       { speaker: 'JP', text: 'Riego. Got it.' },
-      { speaker: 'Eliseo', text: 'Tu español está mejorando, eh. Cuando llegaste no sabías nada.' },
-      { speaker: 'JP', text: 'I had no choice. Y\'all don\'t speak English.' },
+      { speaker: 'Eliseo', text: 'Oye, ¿sabes qué significa "chingón"?' },
+      { speaker: 'JP', text: 'Yeah, Juan taught me that one the first week.' },
+      { speaker: 'Eliseo', text: 'Jaja, claro que sí. ¿Y "no mames"? ¿"Pendejo"? ¿"A la verga"?' },
+      { speaker: 'JP', text: 'Bro I knew Spanish before this. Y\'all just taught me the bad words.' },
       { speaker: 'Eliseo', text: 'Jaja, exacto. Así se aprende. Sin opción.' },
       { speaker: 'Eliseo', text: 'Sabes qué, me caes bien. La mayoría de los gringos no se molestan en hablar con nosotros.' },
       { speaker: 'JP', text: 'You guys are the hardest workers here. I\'d be stupid not to.' },
@@ -574,8 +576,8 @@ export const chapter4OutroText: string[] = [
 
 export const chapter5IntroText: string[] = [
   'The Come Up',
-  'First client. First dollar. First proof it was real.',
-  'And it was only the beginning.',
+  'No clients. No portfolio. No reputation.',
+  'Just a laptop, an internet connection, and six months of rage.',
 ];
 
 export const chapter5NPCs: NPCData[] = [
@@ -585,93 +587,109 @@ export const chapter5NPCs: NPCData[] = [
     y: 4,
     sprite: 'npc_client',
     dialogue: [
-      { speaker: 'Small Biz Owner', text: 'So you can really build me a website?',
-        choices: [
-          { text: 'Yeah. And it\'ll be better than anything you\'ve seen.',
-            next: [
-              { speaker: 'Small Biz Owner', text: 'Ha. Confident. I like that.' },
-            ] },
-          { text: 'I can try. I\'m still learning.',
-            next: [
-              { speaker: 'Small Biz Owner', text: 'At least you\'re honest.' },
-            ] },
-        ] },
-      { speaker: 'Small Biz Owner', text: 'How much?' },
+      { speaker: 'Small Biz Owner', text: 'So you can really build me a website?' },
+      { speaker: 'JP', text: '', choices: [
+        { text: '"Yeah. I can do it."', next: [
+          { speaker: 'Small Biz Owner', text: 'You got a portfolio? Something I can look at?' },
+          { speaker: 'JP', text: 'Not yet. But I\'ll build yours for cheap and you can judge from that.' },
+          { speaker: 'Small Biz Owner', text: 'Hmm. How cheap?' },
+        ]},
+        { text: '"I\'m still learning. But I\'ll make it work."', next: [
+          { speaker: 'Small Biz Owner', text: 'At least you\'re honest. My last guy oversold and underdelivered.' },
+          { speaker: 'Small Biz Owner', text: 'How much?' },
+        ]},
+      ]},
       { speaker: 'JP', text: '$300.' },
-      { speaker: 'Small Biz Owner', text: 'Three hundred?? My last quote was four thousand.' },
-      { speaker: 'JP', text: 'Their quote. My price. And mine will look better.' },
-      { speaker: 'Small Biz Owner', text: 'Alright, let\'s do it.' },
+      { speaker: 'Small Biz Owner', text: 'Three hundred? My last quote was four thousand.' },
+      { speaker: 'JP', text: 'Their quote. My price.' },
+      { speaker: 'Small Biz Owner', text: 'You got one week. If it\'s good, I\'ll tell people.' },
+      { speaker: 'JP', text: 'Deal.' },
+      { speaker: 'JP\'s Mind', text: 'Hands are shaking under the table. This is the first real client.' },
+      { speaker: 'JP\'s Mind', text: 'If I mess this up, there might not be a second one.' },
+      { speaker: 'JP\'s Mind', text: 'Don\'t mess this up.' },
     ],
   },
   {
     id: 'ch5_sticker',
     x: 8,
     y: 3,
-    sprite: 'npc_sticker',
+    sprite: 'npc_sticker_smith',
     dialogue: [
       { speaker: 'Sticker Smith', text: 'JP, this site is clean. Like, actually clean.' },
       { speaker: 'JP', text: 'Told you I\'d handle it.' },
-      { speaker: 'Sticker Smith', text: 'We\'re getting calls now. How much for the full marketing setup?',
-        choices: [
-          { text: '$1,000. Full package.',
-            next: [
-              { speaker: 'JP', text: 'Website, Google Business, SEO, the whole thing.' },
-            ] },
-          { text: 'Let me think about it and get back to you.',
-            next: [
-              { speaker: 'JP', text: 'I want to make sure I scope it right.' },
-            ] },
-        ] },
-      { speaker: 'Sticker Smith', text: 'Deal.' },
-      { speaker: 'Sticker Smith', text: 'Bro, you\'re different. Most people just talk.' },
+      { speaker: 'Sticker Smith', text: 'We\'re getting calls now. Real calls. From Google.' },
+      { speaker: 'JP', text: 'That\'s the SEO kicking in.' },
+      { speaker: 'Sticker Smith', text: 'I don\'t know what that means but I love it.' },
+      { speaker: 'Sticker Smith', text: 'How much for the full marketing setup?', choices: [
+        { text: '"$1,000. Full package."', next: [
+          { speaker: 'JP', text: 'Website, Google Business, SEO, social media templates.' },
+          { speaker: 'Sticker Smith', text: 'Done. I trust you.' },
+        ]},
+        { text: '"Let me scope it and get back to you."', next: [
+          { speaker: 'JP', text: 'I want to give you exactly what you need. Not just what\'s easy.' },
+          { speaker: 'Sticker Smith', text: 'See? That\'s why I rock with you.' },
+        ]},
+      ]},
+      { speaker: 'Sticker Smith', text: 'Bro, you\'re different. Most people just talk. You actually deliver.' },
+      { speaker: 'Sticker Smith', text: 'I got people who need what you do. I\'m putting them on.' },
+      { speaker: 'JP\'s Mind', text: 'First referral. One person believes in you and tells two more. This is how it starts.' },
     ],
   },
   {
-    id: 'ch5_mentor',
+    id: 'ch5_ghost',
     x: 12,
     y: 6,
-    sprite: 'npc_mentor',
+    sprite: 'npc_generic',
     dialogue: [
-      { speaker: 'Mentor', text: 'You built all this in five months? Self-taught?' },
-      { speaker: 'JP', text: 'Yeah. AI helped a lot. But I had to learn how to use it right.' },
-      { speaker: 'Mentor', text: 'Most people with CS degrees can\'t ship this fast.' },
-      { speaker: 'Mentor', text: 'Stop charging a thousand. You\'re leaving money on the table.' },
-      { speaker: 'JP', text: 'I\'m getting there.' },
-      { speaker: 'Mentor', text: 'You\'re already there. You just don\'t believe it yet.' },
+      { speaker: 'Prospect', text: 'Yeah I saw your DM. What can you do for me?' },
+      { speaker: 'JP', text: 'Website, branding, the whole setup. I can have something for you in a week.' },
+      { speaker: 'Prospect', text: 'How much?' },
+      { speaker: 'JP', text: '$500.' },
+      { speaker: 'Prospect', text: 'Let me think about it.' },
+      { speaker: 'JP\'s Mind', text: '"Let me think about it" means no. I already know.' },
+      { speaker: 'JP\'s Mind', text: 'But I sent the message. That\'s one more than yesterday.' },
     ],
   },
   {
-    id: 'ch5_impressed',
+    id: 'ch5_rejected',
     x: 6,
     y: 8,
-    sprite: 'npc_biz',
+    sprite: 'npc_generic',
     dialogue: [
-      { speaker: 'Client', text: 'Wait, you built the site AND the AI receptionist AND the email system?' },
-      { speaker: 'JP', text: 'Yeah. It\'s all connected.' },
-      { speaker: 'Client', text: 'My last agency had six people and took three months to do less than this.' },
-      { speaker: 'JP', text: 'Different approach. I use AI as my team.' },
+      { speaker: 'Business Owner', text: 'Look, I appreciate the offer. But I found someone on Fiverr for $50.' },
+      { speaker: 'JP', text: '', choices: [
+        { text: '"You get what you pay for."', next: [
+          { speaker: 'Business Owner', text: 'Maybe. But $50 is $50.' },
+          { speaker: 'JP\'s Mind', text: 'Lost to a guy in another country charging nothing. How do I compete with that?' },
+        ]},
+        { text: '"No worries. Good luck."', next: [
+          { speaker: 'JP\'s Mind', text: 'Third rejection this week. Starting to wonder if this is real or if I\'m delusional.' },
+        ]},
+      ]},
+      { speaker: 'JP\'s Mind', text: 'Normal people quit after three. I sent six more proposals that night.' },
     ],
   },
   {
-    id: 'ch5_dhl',
+    id: 'ch5_wct',
     x: 15,
     y: 10,
-    sprite: 'npc_dhl_client',
+    sprite: 'npc_client',
     dialogue: [
-      { speaker: 'DHL Manager', text: 'We need a translator app for the warehouse.',
-        choices: [
-          { text: 'I can have a demo by end of week.',
-            next: [
-              { speaker: 'JP', text: 'I\'ll scope it tonight and have something running by Friday.' },
-            ] },
-          { text: 'That sounds complicated. Let me look into it.',
-            next: [
-              { speaker: 'JP', text: 'Give me a day to research. I\'ll figure it out.' },
-            ] },
-        ] },
-      { speaker: 'DHL Manager', text: 'We\'ll pay whatever it takes.' },
-      { speaker: 'DHL Manager', text: 'Our warehouse team needs to understand the safety protocols. Lives depend on it.' },
-      { speaker: 'JP', text: 'Enterprise problems, enterprise solutions.' },
+      { speaker: 'WCT Owner', text: 'I need an online store. Products, cart, checkout. The whole thing.' },
+      { speaker: 'JP', text: 'I can do that. $900.' },
+      { speaker: 'WCT Owner', text: 'Can you handle it? This is my business.' },
+      { speaker: 'JP', text: '', choices: [
+        { text: '"I\'ve built three sites this month. I got you."', next: [
+          { speaker: 'WCT Owner', text: 'Three? In a month?' },
+          { speaker: 'JP', text: 'When you don\'t sleep, you ship.' },
+        ]},
+        { text: '"I\'ll be straight with you — I\'m still new. But I work harder than anyone."', next: [
+          { speaker: 'WCT Owner', text: 'You know what, I respect that more than the guys who oversell.' },
+        ]},
+      ]},
+      { speaker: 'WCT Owner', text: 'Alright. Two weeks. Don\'t let me down.' },
+      { speaker: 'JP\'s Mind', text: '$900. Biggest project yet. Built in two weeks while working another gig during the day.' },
+      { speaker: 'JP\'s Mind', text: 'A month ago I didn\'t know what a component was. Now I\'m shipping stores.' },
     ],
   },
   {
@@ -680,8 +698,11 @@ export const chapter5NPCs: NPCData[] = [
     y: 8,
     sprite: 'npc_generic',
     dialogue: [
-      { speaker: 'Vacaville Appliance', text: 'You fixed our website and now we\'re getting 3x the calls. How much for the Google Ads setup?' },
-      { speaker: 'JP', text: 'I\'ll send you a proposal tonight.' },
+      { speaker: 'Vacaville Appliance', text: 'You fixed our website and now we\'re getting 3x the calls.' },
+      { speaker: 'JP', text: 'That\'s what happens when it actually works.' },
+      { speaker: 'Vacaville Appliance', text: 'How much for Google Ads?' },
+      { speaker: 'JP', text: 'I\'ll send a proposal tonight.' },
+      { speaker: 'JP\'s Mind', text: 'Repeat client. They came back. That means the work is real.' },
     ],
   },
   {
@@ -692,16 +713,18 @@ export const chapter5NPCs: NPCData[] = [
     dialogue: [
       { speaker: 'Manza', text: 'JP, the website is fire. Exactly what I needed.' },
       { speaker: 'JP', text: 'Told you I\'d come through.' },
-      { speaker: 'Manza', text: 'I got like five friends who need sites too. I\'m sending them all your way.' },
+      { speaker: 'Manza', text: 'I got like five friends who need sites. I\'m sending them all your way.' },
       { speaker: 'JP', text: 'That\'s what I like to hear.' },
-      { speaker: 'Manza', text: 'Real talk, you\'re different from the other web guys. You actually care about the work.' },
+      { speaker: 'Manza', text: 'Real talk, you\'re different from the other web guys. You actually care.' },
+      { speaker: 'JP\'s Mind', text: 'Word of mouth. The only marketing that matters when you\'re starting from zero.' },
     ],
   },
 ];
 
 export const chapter5OutroText: string[] = [
-  'WCT. Sticker Smith. DHL. Vacaville Appliance. Manza Visuals.',
-  'The clients kept coming. The builds kept shipping. JP was operating.',
+  '$300. Then $500. Then $900. Then $1,000.',
+  'The prices went up because the work got better.',
+  'Jordi was building something. And people were starting to notice.',
 ];
 
 // ─── Chapter 6: Operator Mode ──────────────────────────────────────────
