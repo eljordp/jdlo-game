@@ -463,6 +463,8 @@ export const tractorMap: MapData = {
     player: { x: 5, y: 7 },
     npcs: [
       { id: 'ch4_boss', x: 14, y: 5, sprite: 'npc_farmer' },
+      { id: 'ch4_coworker', x: 3, y: 8, sprite: 'npc_jose' },
+      { id: 'ch4_eliseo', x: 20, y: 7, sprite: 'npc_generic' },
     ],
   },
   triggers: [

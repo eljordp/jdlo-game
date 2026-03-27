@@ -480,18 +480,26 @@ export const chapter4NPCs: NPCData[] = [
     y: 3,
     sprite: 'npc_farmer',
     dialogue: [
-      { speaker: 'Chuck', text: 'You show up on time. That already puts you ahead of the last three guys.' },
-      { speaker: 'JP', text: 'I just wanna work.' },
-      { speaker: 'Chuck', text: 'Good. That D8 Cat needs to clear the east block by noon. Cab Sauv vines going in next week.' },
-      { speaker: 'Chuck', text: 'Think you can handle it?', choices: [
-        { text: '"I\'ll figure it out."', next: [
-          { speaker: 'Chuck', text: 'That\'s what I like to hear.' },
+      { speaker: 'Ernesto', text: 'Oye, llegas a tiempo. Eso ya te pone mejor que los últimos tres.' },
+      { speaker: 'JP', text: 'Just wanna work.' },
+      { speaker: 'Ernesto', text: 'Bueno. El D8 Cat necesita limpiar el bloque este antes del mediodía. Las viñas de Cab Sauv van la próxima semana.' },
+      { speaker: 'JP\'s Mind', text: 'My Spanish is getting better every day out here. Not fluent. But enough.' },
+      { speaker: 'Ernesto', text: '¿Lo puedes manejar?', choices: [
+        { text: '"Sí. Lo voy a hacer."', next: [
+          { speaker: 'Ernesto', text: 'Eso me gusta. Me recuerdas a mí cuando era joven.' },
+          { speaker: 'Ernesto', text: 'Empecé aquí cortando uvas. Treinta años después, manejo toda la operación.' },
+          { speaker: 'Ernesto', text: 'No le hagas menos al trabajo. Todo imperio empezó en la tierra.' },
         ]},
         { text: '"Honestly? I\'d rather be doing something else."', next: [
-          { speaker: 'Chuck', text: 'Wouldn\'t we all. But this is what pays the bills.' },
+          { speaker: 'Ernesto', text: 'Todos queremos algo más. Pero sabes qué te enseña la viña?' },
+          { speaker: 'Ernesto', text: 'Paciencia. Plantas hoy, no tomas el vino hasta en tres años.' },
+          { speaker: 'Ernesto', text: 'Lo que hagas después — acuérdate de eso. Nada bueno es rápido.' },
         ]},
       ]},
-      { speaker: 'Chuck', text: 'This is Caymus. We don\'t cut corners. The grapes don\'t lie and neither does the land. Ask if you\'re stuck.' },
+      { speaker: 'Ernesto', text: 'Una cosa más. Te veo con el teléfono cada día en el almuerzo.' },
+      { speaker: 'JP', text: '...' },
+      { speaker: 'Ernesto', text: 'No me importa qué haces con él. Pero no lo lleves al tractor.' },
+      { speaker: 'JP\'s Mind', text: 'He noticed. Of course he noticed.' },
     ],
   },
   {
@@ -513,14 +521,46 @@ export const chapter4NPCs: NPCData[] = [
     id: 'ch4_coworker',
     x: 3,
     y: 8,
+    sprite: 'npc_jose',
+    dialogue: [
+      { speaker: 'Juan', text: '¿Qué haces siempre con el teléfono, güey? Ni comes.' },
+      { speaker: 'JP', text: 'Estoy aprendiendo a hacer websites.' },
+      { speaker: 'Juan', text: '¿Websites? Tú manejas un tractor, hermano.' },
+      { speaker: 'JP', text: 'Por ahora.' },
+      { speaker: 'Juan', text: 'Jaja, eso dicen todos. Y todos siguen aquí.' },
+      { speaker: 'JP', text: '', choices: [
+        { text: '"Yo no soy como ellos."', next: [
+          { speaker: 'Juan', text: '¿A ver? ¿Qué hiciste? Enséñame.' },
+          { speaker: 'JP', text: 'Mira. Este website lo hice yo. En mi teléfono. En el lunch.' },
+          { speaker: 'Juan', text: '...no mames. ¿Tú hiciste eso?' },
+          { speaker: 'JP', text: 'En tres días.' },
+          { speaker: 'Juan', text: 'Órale. Te la rifas, güey.' },
+        ]},
+        { text: '"Ya veremos."', next: [
+          { speaker: 'Juan', text: 'Sí, ya veremos.' },
+          { speaker: 'JP\'s Mind', text: 'He doesn\'t believe me. That\'s fine. I don\'t need him to.' },
+        ]},
+      ]},
+    ],
+  },
+  {
+    id: 'ch4_eliseo',
+    x: 20,
+    y: 7,
     sprite: 'npc_generic',
     dialogue: [
-      { speaker: 'Mike', text: 'Bro what are you always doing on your phone? You don\'t even look up at lunch.' },
-      { speaker: 'JP', text: 'Teaching myself how to build websites.' },
-      { speaker: 'Mike', text: 'Websites? You drive a tractor for a living.' },
-      { speaker: 'JP', text: 'Not for long.' },
-      { speaker: 'Mike', text: 'Man, you\'re tripping.' },
-      { speaker: 'JP', text: 'Maybe. But I\'m not doing this forever.' },
+      { speaker: 'Eliseo', text: 'Oye JP, ¿cómo se dice "irrigation" en español?' },
+      { speaker: 'JP', text: 'Uh... ¿irrigación?' },
+      { speaker: 'Eliseo', text: 'Jaja, casi. Riego. Se dice riego.' },
+      { speaker: 'JP', text: 'Riego. Got it.' },
+      { speaker: 'Eliseo', text: 'Tu español está mejorando, eh. Cuando llegaste no sabías nada.' },
+      { speaker: 'JP', text: 'I had no choice. Y\'all don\'t speak English.' },
+      { speaker: 'Eliseo', text: 'Jaja, exacto. Así se aprende. Sin opción.' },
+      { speaker: 'Eliseo', text: 'Sabes qué, me caes bien. La mayoría de los gringos no se molestan en hablar con nosotros.' },
+      { speaker: 'JP', text: 'You guys are the hardest workers here. I\'d be stupid not to.' },
+      { speaker: 'Eliseo', text: 'Eso. Respeto, hermano.' },
+      { speaker: 'JP\'s Mind', text: 'Juan and Eliseo taught me more Spanish in three months than two years of high school ever did.' },
+      { speaker: 'JP\'s Mind', text: 'They crossed a border for this job. I just drove thirty minutes. Perspective.' },
     ],
   },
 ];
@@ -1516,31 +1556,31 @@ const ch4Extras: Record<string, DialogueLine[]> = {
     { speaker: 'Narrator', text: 'One hand on the wheel. One on his phone. YouTube video about making money online.' },
     { speaker: 'Narrator', text: 'CRUNCH.' },
     { speaker: 'Narrator', text: 'The D8 lurches. Metal screams. JP just drove through an irrigation line.' },
-    { speaker: 'Narrator', text: 'Chuck comes sprinting from the farmhouse.' },
-    { speaker: 'Chuck', text: 'WHAT THE HELL DID YOU DO?!' },
+    { speaker: 'Narrator', text: 'Ernesto comes sprinting from the farmhouse.' },
+    { speaker: 'Ernesto', text: '¡¿QUÉ HICISTE?!' },
     { speaker: 'JP', text: 'I... it was an accident.', choices: [
       { text: '"The line was already cracked."', next: [
-        { speaker: 'Chuck', text: 'Cracked?! That line was brand new! You were on your phone!' },
+        { speaker: 'Ernesto', text: '¿Cracked? ¡Esa línea era nueva! ¡Estabas con el teléfono!' },
         { speaker: 'JP', text: '...' },
       ]},
-      { text: '"I was on my phone."', next: [
-        { speaker: 'Chuck', text: 'I KNEW IT. That phone is gonna cost you your job.' },
+      { text: '"Estaba con el teléfono."', next: [
+        { speaker: 'Ernesto', text: '¡LO SABÍA! Ese teléfono te va a costar el trabajo.' },
         { speaker: 'JP', text: 'Maybe that\'s the point.' },
       ]},
     ]},
-    { speaker: 'Chuck', text: 'That irrigation line costs more than your paycheck!' },
+    { speaker: 'Ernesto', text: '¡Esa línea de riego cuesta más que tu cheque!' },
     { speaker: 'JP\'s Mind', text: 'This is it. I can\'t do this forever. $12 an hour while people make thousands online.' },
-    { speaker: 'JP', text: 'Chuck, I\'m done.', choices: [
+    { speaker: 'JP', text: 'Ernesto, ya no puedo más.', choices: [
       { text: '"I appreciate everything. But I gotta go."', next: [
-        { speaker: 'Chuck', text: 'Go where? Do what?' },
+        { speaker: 'Ernesto', text: '¿A dónde? ¿A hacer qué?' },
         { speaker: 'JP', text: 'I don\'t know yet. But not this.' },
       ]},
       { text: '"This isn\'t my life."', next: [
-        { speaker: 'Chuck', text: 'Your life? Kid, this is a JOB.' },
+        { speaker: 'Ernesto', text: '¿Tu vida? Mijo, esto es un TRABAJO.' },
         { speaker: 'JP', text: 'Exactly. I need more than a job.' },
       ]},
     ]},
-    { speaker: 'Chuck', text: '...good luck, kid.' },
+    { speaker: 'Ernesto', text: '...buena suerte, mijo.' },
     { speaker: 'JP\'s Mind', text: 'I need a computer and an internet connection. That\'s the whole plan.' },
   ],
   ch4_vineyard_row: [
