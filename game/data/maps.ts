@@ -26,6 +26,7 @@ export const TILES = {
   HOUSE_WALL: 19,
   HARDWOOD: 20,
   COUNTER: 21,
+  JAIL_BAR: 22,
 } as const;
 
 export type InteractableType = 'examine' | 'item' | 'evolve' | 'showcase' | 'scratch';
@@ -64,6 +65,7 @@ const V = TILES.VINE;
 const K = TILES.HOUSE_WALL;
 const J = TILES.HARDWOOD;
 const N = TILES.COUNTER;
+const Z = TILES.JAIL_BAR;
 
 // Collision tiles shared across most maps
 const STANDARD_COLLISIONS = [
@@ -78,6 +80,7 @@ const STANDARD_COLLISIONS = [
   TILES.VINE,
   TILES.HOUSE_WALL,
   TILES.COUNTER,
+  TILES.JAIL_BAR,
 ];
 
 // ---------------------------------------------------------------------------
@@ -334,39 +337,39 @@ export const jailMap: MapData = {
     [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 0
     [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 1
 
-    // --- CELL BLOCK (rows 2-10) left side + COMMON AREA right side ---
-    [ X, X, F, F, F, X, X, F, F, F, X, X, D, D, D, D, X, X, D, D, D, D, F, F, D, D, D, D, D, D, D, D, D, X, X ], // 2  cell1 | cell2 | hall | common (floor cluster = table area)
-    [ X, X, F, F, F, X, X, F, F, F, X, X, D, D, D, D, X, X, D, D, D, D, F, F, D, D, D, D, D, D, D, D, D, X, X ], // 3
-    [ X, X, F, F, F, X, X, F, F, F, X, X, D, D, D, D, X, X, D, D, D, M, F, F, D, D, D, D, M, D, D, D, D, X, X ], // 4  tables in common area
-    [ X, X, X, O, X, X, X, X, O, X, X, X, D, D, D, D, X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 5  cell doors
-    [ X, X, F, F, F, X, X, F, F, F, X, X, D, D, D, D, X, X, D, D, D, D, D, D, D, D, F, F, D, D, D, D, D, X, X ], // 6  cell3 (JP's) | cell4 | another table zone
-    [ X, X, F, F, F, X, X, F, F, F, X, X, D, D, D, D, X, X, D, D, D, D, D, D, M, D, F, F, D, D, D, D, D, X, X ], // 7
-    [ X, X, F, F, F, X, X, F, F, F, X, X, D, D, D, D, X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 8
-    [ X, X, X, O, X, X, X, X, O, X, X, X, D, D, D, D, X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 9  cell doors
-    [ X, X, F, F, F, X, X, F, F, F, X, X, D, D, D, D, X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 10 cell5 | cell6 (extra)
+    // --- CELL BLOCK (rows 2-10) left: cells w/ jail bars | concrete hall | right: common area ---
+    [ X, X, D, D, D, Z, X, D, D, D, Z, X, C, C, C, C, X, X, D, D, D, D, F, F, D, D, D, D, D, D, D, D, D, X, X ], // 2  cell1 | cell2 | hall | common
+    [ X, X, D, D, D, Z, X, D, D, D, Z, X, C, C, C, C, X, X, D, D, D, D, F, F, D, D, D, D, D, D, D, D, D, X, X ], // 3
+    [ X, X, D, D, D, Z, X, D, D, D, Z, X, C, C, C, C, X, X, D, D, D, M, F, F, D, D, D, D, M, D, D, D, D, X, X ], // 4  tables in common area
+    [ X, X, X, O, Z, Z, X, X, O, Z, Z, X, C, C, C, C, X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 5  cell doors + bars
+    [ X, X, D, D, D, Z, X, D, D, D, Z, X, C, C, C, C, X, X, D, D, D, D, D, D, D, D, F, F, D, D, D, D, D, X, X ], // 6  JP's cell | cell4
+    [ X, X, D, D, D, Z, X, D, D, D, Z, X, C, C, C, C, X, X, D, D, D, D, D, D, M, D, F, F, D, D, D, D, D, X, X ], // 7
+    [ X, X, D, D, D, Z, X, D, D, D, Z, X, C, C, C, C, X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 8
+    [ X, X, X, O, Z, Z, X, X, O, Z, Z, X, C, C, C, C, X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 9  cell doors
+    [ X, X, D, D, D, Z, X, D, D, D, Z, X, C, C, C, C, X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 10
 
-    // --- MAIN HALLWAY (rows 11-14) ---
-    [ X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 11
-    [ X, X, D, D, D, D, D, D, D, D, D, D, D, D, F, F, F, F, F, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 12 guard station
-    [ X, X, D, D, D, D, D, D, D, D, D, D, D, D, F, M, F, F, F, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 13 guard desk
-    [ X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 14
+    // --- MAIN HALLWAY (rows 11-14) — concrete institutional ---
+    [ X, X, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, X, X ], // 11
+    [ X, X, C, C, C, C, C, C, C, C, C, C, C, C, E, F, F, F, E, C, C, C, C, C, C, C, C, C, C, C, C, C, C, X, X ], // 12 guard station (fenced)
+    [ X, X, C, C, C, C, C, C, C, C, C, C, C, C, E, F, M, F, E, C, C, C, C, C, C, C, C, C, C, C, C, C, C, X, X ], // 13 guard desk
+    [ X, X, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, X, X ], // 14
 
-    // --- YARD / EXERCISE AREA (rows 15-22) — more varied ---
-    [ X, X, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, P, P, C, C, C, C, C, C, C, C, C, X, X ], // 15 worn walkway (P)
-    [ X, X, C, C, I, C, E, E, E, C, C, I, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, X, X ], // 16 pull-up bars + dirt
-    [ X, X, C, C, C, C, C, C, C, C, I, C, C, C, C, P, P, P, C, C, C, C, P, C, C, E, E, C, C, C, C, C, C, X, X ], // 17 worn path + weight rack (E)
-    [ X, X, C, I, C, C, C, C, C, C, C, C, C, C, C, P, F, F, F, C, C, C, P, C, C, C, C, C, C, F, F, F, C, X, X ], // 18 covered area (F) + study corner
-    [ X, X, C, C, C, C, C, C, I, C, C, C, C, C, C, P, F, F, F, C, C, C, P, P, P, P, C, C, C, F, F, F, C, X, X ], // 19 covered area
-    [ X, X, C, C, C, C, C, C, C, C, C, C, I, C, C, C, C, C, C, C, C, C, C, C, C, C, I, C, C, C, C, C, C, X, X ], // 20 dirt exercise area
-    [ X, X, C, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, X, X ], // 21 worn walkway
-    [ X, X, C, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, X, X ], // 22
+    // --- YARD / EXERCISE AREA (rows 15-22) — fenced perimeter ---
+    [ X, X, E, E, E, E, E, E, E, E, E, E, E, E, E, C, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, X, X ], // 15 yard fence top
+    [ X, X, E, C, I, C, E, E, E, C, C, I, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, E, X, X ], // 16 pull-up bars + dirt
+    [ X, X, E, C, C, C, C, C, C, C, I, C, C, C, C, P, P, P, C, C, C, C, P, C, C, E, E, C, C, C, C, C, E, X, X ], // 17
+    [ X, X, E, I, C, C, C, C, C, C, C, C, C, C, C, P, F, F, F, C, C, C, P, C, C, C, C, C, C, F, F, F, E, X, X ], // 18 covered + study
+    [ X, X, E, C, C, C, C, C, I, C, C, C, C, C, C, P, F, F, F, C, C, C, P, P, P, P, C, C, C, F, F, F, E, X, X ], // 19
+    [ X, X, E, C, C, C, C, C, C, C, C, C, I, C, C, C, C, C, C, C, C, C, C, C, C, C, I, C, C, C, C, C, E, X, X ], // 20
+    [ X, X, E, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, E, X, X ], // 21
+    [ X, X, E, E, E, E, E, E, E, E, E, E, E, E, E, P, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, X, X ], // 22 yard fence bottom
 
-    // --- BOTTOM COMMON AREA (rows 23-25) ---
+    // --- BOTTOM COMMON AREA (rows 23-25) — chapel/classroom ---
     [ X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 23
     [ X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 24
     [ X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 25
 
-    // --- BOTTOM WALLS (rows 26-29) — reduced padding ---
+    // --- BOTTOM WALLS (rows 26-29) ---
     [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 26
     [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 27
     [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 28
@@ -403,7 +406,7 @@ export const jailMap: MapData = {
     // --- Cell scratches ---
     { id: 'ch3_wall_1',  x: 2, y: 7,  type: 'scratch', glow: true, sprite: 'item-scratch' },   // JP's cell wall
     { id: 'ch3_wall_2',  x: 2, y: 8,  type: 'scratch', glow: true, sprite: 'item-scratch' },   // JP's cell wall
-    { id: 'ch3_wall_3',  x: 14, y: 12, type: 'scratch', glow: true, sprite: 'item-scratch' },  // guard station
+    { id: 'ch3_wall_3',  x: 13, y: 12, type: 'scratch', glow: true, sprite: 'item-scratch' },  // near guard station
     { id: 'ch3_wall_4',  x: 5, y: 11, type: 'scratch', glow: true, sprite: 'item-scratch' },   // hallway wall
 
     // --- JP's cell items ---

@@ -2490,6 +2490,18 @@ function generateTiles(scene: Phaser.Scene) {
     px(g, 12, 28, 0x423a52, 1, 1);
     px(g, 2, 22, 0x504860, 1, 1);
     px(g, 26, 4, 0x504860, 1, 1);
+
+    // Scuff marks (shoe marks — slightly lighter streaks)
+    px(g, 16, 14, 0x585068, 6, 1);
+    px(g, 17, 15, 0x565066, 4, 1);
+    px(g, 6, 26, 0x585068, 5, 1);
+    px(g, 24, 8, 0x565066, 3, 1);
+
+    // Drain hole (small dark circle in corner area)
+    px(g, 14, 14, 0x282030, 2, 2);
+    px(g, 13, 15, 0x302838, 1, 1);
+    px(g, 16, 15, 0x302838, 1, 1);
+    px(g, 15, 13, 0x302838, 1, 1);
   });
 
   // -- Dirt (32x32) --
@@ -2569,6 +2581,20 @@ function generateTiles(scene: Phaser.Scene) {
     px(g, 2, 28, 0x464650, 1, 1);
     px(g, 20, 30, 0x464650, 1, 1);
     px(g, 30, 16, 0x464650, 1, 1);
+
+    // Expansion joints (thin scored lines forming grid)
+    g.fillStyle(0x383840);
+    g.fillRect(15, 0, 1, S);  // vertical joint
+    g.fillRect(0, 15, S, 1);  // horizontal joint
+    // Joint highlight (slight bevel)
+    g.fillStyle(0x4a4a52);
+    g.fillRect(16, 0, 1, S);
+    g.fillRect(0, 16, S, 1);
+
+    // Color variation patches (slightly warmer/cooler concrete)
+    px(g, 2, 2, 0x444850, 6, 4);
+    px(g, 20, 20, 0x424440, 5, 4);
+    px(g, 8, 22, 0x464450, 4, 3);
   });
 
   // -- Door (32x32) --
@@ -3015,6 +3041,31 @@ function generateTiles(scene: Phaser.Scene) {
     px(g, 10, 3, 0x908878, 5, 1);  // horizontal bar
     px(g, 10, 2, 0xb0a898, 5, 1);  // window top trim
     px(g, 10, 5, 0x807868, 5, 1);  // window bottom trim
+  });
+
+  // -- Jail Bars (32x32) — vertical steel bars with gap between --
+  makeTexture(scene, 'tile-jail-bar', S, S, (g) => {
+    // Dark floor background shows through (this is an overlay tile)
+    // Vertical bars every 8px
+    for (let bx = 2; bx < S; bx += 8) {
+      // Bar body (steel grey)
+      g.fillStyle(0x606068);
+      g.fillRect(bx, 0, 3, S);
+      // Highlight on left edge
+      g.fillStyle(0x808088);
+      g.fillRect(bx, 0, 1, S);
+      // Shadow on right edge
+      g.fillStyle(0x404048);
+      g.fillRect(bx + 2, 0, 1, S);
+    }
+    // Horizontal crossbar at top and bottom
+    g.fillStyle(0x505058);
+    g.fillRect(0, 1, S, 3);
+    g.fillRect(0, S - 4, S, 3);
+    // Crossbar highlights
+    g.fillStyle(0x707078);
+    g.fillRect(0, 1, S, 1);
+    g.fillRect(0, S - 4, S, 1);
   });
 }
 

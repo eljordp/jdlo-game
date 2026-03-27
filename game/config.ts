@@ -55,6 +55,9 @@ export const COLORS = {
   hardwoodDark: 0x705530,    // shadow grain
   counter: 0x404048,         // dark granite counter
   counterLight: 0x505058,    // granite highlight
+  jailBar: 0x606068,         // steel jail bar
+  jailBarDark: 0x404048,     // jail bar shadow
+  jailBarLight: 0x808088,    // jail bar highlight
 
   // Character — JP is tan with black hair, brown eyes
   skinTone: 0xd4a870,
@@ -103,4 +106,5 @@ export const TILE_IDS = {
   HOUSE_WALL: 19,
   HARDWOOD: 20,
   COUNTER: 21,
+  JAIL_BAR: 22,
 } as const;
