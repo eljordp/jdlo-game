@@ -107,7 +107,7 @@ export const homeMap: MapData = {
     [ G, G, G, K, A, A, A, A, A, A, K, A, A, A, A, A, K, A, A, A, A, A, A, A, A, A, A, A, A, A, A, K, F, F, F, F, K, G, G, G ], // 8
     [ G, G, G, K, K, K, K, K, O, K, K, K, K, O, K, K, K, K, K, K, O, K, K, K, K, K, K, K, O, K, K, K, K, O, K, K, K, G, G, G ], // 9  doors to hallway
     [ G, G, G, K, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, K, G, G, G ], // 10 hallway (hardwood)
-    [ G, G, G, K, K, K, K, O, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, G, G, G ], // 11 door to living area
+    [ G, G, G, K, K, K, K, O, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, O, K, K, K, G, G, G ], // 11 door to living area + bathroom door (col 33)
     [ G, G, G, K, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, N, N, N, J, J, J, N, N, N, N, J, J, J, J, J, J, J, K, G, G, G ], // 12 living + kitchen island + dining table
     [ G, G, G, K, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, K, G, G, G ], // 13
     [ G, G, G, K, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, N, N, N, N, J, K, G, G, G ], // 14 marble wall counters (kitchen right side)
