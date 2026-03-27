@@ -1313,8 +1313,8 @@ const ch1Extras: Record<string, DialogueLine[]> = {
     ]},
   ],
   ch1_girl_couch: [
-    { speaker: 'Narrator', text: 'She\'s passed out on the couch in a bikini. It\'s 2 PM.' },
-    { speaker: 'JP\'s Mind', text: 'She was here last night too. And the night before. I don\'t even know her name.' },
+    { speaker: 'Narrator', text: 'Some girl from the party. Already asleep. It\'s 2 PM.' },
+    { speaker: 'JP\'s Mind', text: 'Everyone here is just... floating.' },
   ],
   ch1_mess: [
     { speaker: 'JP\'s Mind', text: 'Clothes, trash, plates. This house is disgusting.' },
@@ -1330,12 +1330,13 @@ const ch1Extras: Record<string, DialogueLine[]> = {
     { speaker: 'Guy', text: 'Your loss bro!' },
   ],
   ch1_volleyball2: [
-    { speaker: 'Kid', text: 'Set it here! Set it here!' },
-    { speaker: 'JP\'s Mind', text: 'Just kids being kids. Must be nice.' },
+    { speaker: 'Narrator', text: 'Some kid from UCSB. Shirtless, backwards cap.' },
+    { speaker: 'Kid', text: 'You play? We need a fourth.' },
+    { speaker: 'JP', text: 'I play everything.' },
   ],
   ch1_sunbather: [
-    { speaker: 'JP\'s Mind', text: 'She\'s been laying there for hours. Not a care in the world.' },
-    { speaker: 'JP\'s Mind', text: 'Meanwhile I\'m out here counting bags.' },
+    { speaker: 'Narrator', text: 'Someone passed out on a towel. Empty Modelo next to her.' },
+    { speaker: 'Narrator', text: 'This is what Tuesday looks like in Santa Barbara.' },
   ],
   ch1_setup: [
     { speaker: 'JP\'s Mind', text: 'JP\'s setup. Dual monitors. Crypto charts on one, YouTube tutorials on the other.' },
@@ -1490,6 +1491,11 @@ const ch2Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'Pops called again. Twice.' },
     { speaker: 'JP\'s Mind', text: 'He doesn\'t leave voicemails anymore. He just calls. And waits.' },
     { speaker: 'JP\'s Mind', text: 'I\'ll call him tomorrow. That\'s what I said yesterday.' },
+  ],
+  ch2_unmarked_car: [
+    { speaker: 'JP\'s Mind', text: 'Black sedan. Tinted. No plates.' },
+    { speaker: 'JP\'s Mind', text: 'That car wasn\'t here last time.' },
+    { speaker: 'JP\'s Mind', text: '...probably nothing.' },
   ],
 };
 
@@ -2229,6 +2235,42 @@ const ch6Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP', text: 'How\'s it going?' },
     { speaker: 'Security', text: 'All clear. Your 2 o\'clock is here.' },
     { speaker: 'JP', text: 'Send them in.' },
+  ],
+  // Block 2 — restaurant, coworking, luxury
+  ch6_steak_dinner: [
+    { speaker: 'Narrator', text: 'The same restaurant where they celebrated the first deal.' },
+    { speaker: 'JP\'s Mind', text: 'Steak medium rare. Same order every time.' },
+  ],
+  ch6_cowork_laptop: [
+    { speaker: 'Narrator', text: 'Laptops open. Slack pinging. People building things.' },
+    { speaker: 'JP\'s Mind', text: 'This is what it looks like when everyone\'s locked in.' },
+  ],
+  ch6_luxury_view: [
+    { speaker: 'Narrator', text: 'Floor-to-ceiling windows. The city stretches out below.' },
+    { speaker: 'JP\'s Mind', text: 'A year ago I couldn\'t afford the view. Now I\'m in the building.' },
+  ],
+  ch6_restaurant: [
+    { speaker: 'Hostess', text: 'Welcome back. Your usual table?' },
+    { speaker: 'JP', text: 'Yeah. Thanks.' },
+    { speaker: 'Narrator', text: 'They know his name here now.' },
+  ],
+  ch6_coworker1: [
+    { speaker: 'Dev', text: 'Yo JP, your dashboard template is insane. Can I fork it?' },
+    { speaker: 'JP', text: 'Go ahead. Just credit the team.' },
+  ],
+  ch6_coworker2: [
+    { speaker: 'Designer', text: 'You built that client site in how long?' },
+    { speaker: 'JP', text: 'Two days. Claude helped.' },
+    { speaker: 'Designer', text: '...I need to learn that.' },
+  ],
+  ch6_luxury_npc: [
+    { speaker: 'Investor', text: 'I keep hearing your name. What exactly do you do?' },
+    { speaker: 'JP', text: 'I build systems. Websites, AI tools, ops dashboards. Whatever moves the needle.' },
+    { speaker: 'Investor', text: 'We should talk.' },
+  ],
+  ch6_park_bench: [
+    { speaker: 'Narrator', text: 'JP sits for a minute. Watches the city move.' },
+    { speaker: 'JP\'s Mind', text: 'Sometimes you gotta stop and look at what you built.' },
   ],
 };
 

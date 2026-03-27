@@ -25,7 +25,7 @@ export class OperatorScene extends BaseChapterScene {
     super.create();
 
     // Exit south -- head to Vegas
-    this.addNavArrow(19, 20, 'Vegas');
+    this.addNavArrow(19, 36, 'Vegas');
 
     // --- Ambient office atmosphere ---
 

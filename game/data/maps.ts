@@ -621,64 +621,66 @@ export const comeUpMap: MapData = {
     [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 7  street
     [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 8  street (solid concrete)
 
-    // --- CLIENT DISTRICT 1 (rows 9-14): bigger buildings ---
+    // --- CLIENT DISTRICT 1 (rows 9-15): 3 buildings with 3 interior rows each ---
     [ G, G, G, I, G, G, G, G, G, C, G, G, T, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 9  near building
-    [ G, G, B, B, B, B, B, B, G, C, G, G, G, B, B, B, B, B, B, B, B, G, G, G, G, B, B, B, B, B, B, B, B, B, G, G, G, G, G, G ], // 10 3 client buildings (bigger)
-    [ G, G, B, F, F, F, F, B, G, C, G, G, G, B, F, F, F, F, F, F, B, G, G, G, G, B, F, F, F, F, F, F, F, B, G, G, G, G, G, G ], // 11
-    [ G, G, B, F, N, F, F, B, G, C, G, G, G, B, F, F, F, F, F, F, B, G, G, G, G, B, F, F, F, F, F, F, F, B, G, G, G, G, G, G ], // 12 N=counter in print shop
-    [ G, G, B, B, B, O, B, B, G, C, G, G, G, B, B, B, B, O, B, B, B, G, G, G, G, B, B, B, B, O, B, B, B, B, G, G, G, G, G, G ], // 13 doors
-    [ G, G, I, G, G, C, G, G, G, C, G, G, I, G, G, G, G, C, G, G, G, G, G, G, I, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G ], // 14 worn dirt near walks
+    [ G, G, B, B, B, B, B, B, G, C, G, G, G, B, B, B, B, B, B, B, B, G, G, G, G, B, B, B, B, B, B, B, B, B, G, G, G, G, G, G ], // 10 3 client buildings
+    [ G, G, B, F, F, F, F, B, G, C, G, G, G, B, F, F, F, F, F, F, B, G, G, G, G, B, F, F, F, F, F, F, F, B, G, G, G, G, G, G ], // 11 interior row 1
+    [ G, G, B, F, N, F, F, B, G, C, G, G, G, B, F, F, F, F, F, F, B, G, G, G, G, B, F, F, F, F, F, F, F, B, G, G, G, G, G, G ], // 12 interior row 2 (N=counter)
+    [ G, G, B, F, F, F, F, B, G, C, G, G, G, B, F, F, F, F, F, F, B, G, G, G, G, B, F, F, F, F, F, F, F, B, G, G, G, G, G, G ], // 13 interior row 3 (new)
+    [ G, G, B, B, B, O, B, B, G, C, G, G, G, B, B, B, B, O, B, B, B, G, G, G, G, B, B, B, B, O, B, B, B, B, G, G, G, G, G, G ], // 14 doors
+    [ G, G, I, G, G, C, G, G, G, C, G, G, I, G, G, G, G, C, G, G, G, G, G, G, I, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G ], // 15 worn dirt near walks
 
-    // --- SECOND STREET (rows 15-16) ---
-    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 15 main street
-    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 16
+    // --- SECOND STREET (rows 16-17) ---
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 16 main street
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 17
 
-    // --- CLIENT DISTRICT 2 (rows 17-22): WCT store, DHL warehouse ---
-    [ G, G, G, G, G, G, G, G, C, G, G, B, B, B, B, B, B, G, G, G, G, G, G, G, E, B, B, B, B, B, B, B, B, B, B, B, G, G, G, G ], // 17 WCT store + DHL warehouse (E=signpost)
-    [ G, G, G, G, G, G, G, G, C, G, G, B, F, F, F, F, B, G, G, G, G, G, G, G, B, D, D, D, D, D, D, D, D, D, D, B, G, G, G, G ], // 18 WCT interior | DHL dark warehouse
-    [ G, G, G, G, G, G, G, G, C, G, G, B, F, F, F, F, B, G, G, G, G, G, G, G, B, D, D, D, D, D, D, D, D, D, D, B, G, G, G, G ], // 19 WCT interior | DHL warehouse
-    [ G, G, G, G, G, G, G, G, C, G, G, B, B, B, O, B, B, G, G, G, G, G, G, G, B, B, B, B, O, B, B, B, B, B, B, B, G, G, G, G ], // 20 doors
-    [ G, G, G, G, G, G, G, G, C, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G ], // 21 walks from doors
-    [ G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G ], // 22 bottom street
+    // --- CLIENT DISTRICT 2 (rows 18-24): WCT store + DHL warehouse with 3 interior rows ---
+    [ G, G, G, G, G, G, G, G, C, G, G, B, B, B, B, B, B, G, G, G, G, G, G, G, E, B, B, B, B, B, B, B, B, B, B, B, G, G, G, G ], // 18 WCT + DHL roofline
+    [ G, G, G, G, G, G, G, G, C, G, G, B, F, F, F, F, B, G, G, G, G, G, G, G, B, D, D, D, D, D, D, D, D, D, D, B, G, G, G, G ], // 19 interior row 1
+    [ G, G, G, G, G, G, G, G, C, G, G, B, F, F, F, F, B, G, G, G, G, G, G, G, B, D, D, D, D, D, D, D, D, D, D, B, G, G, G, G ], // 20 interior row 2
+    [ G, G, G, G, G, G, G, G, C, G, G, B, F, F, F, F, B, G, G, G, G, G, G, G, B, D, D, D, D, D, D, D, D, D, D, B, G, G, G, G ], // 21 interior row 3 (new)
+    [ G, G, G, G, G, G, G, G, C, G, G, B, B, B, O, B, B, G, G, G, G, G, G, G, B, B, B, B, O, B, B, B, B, B, B, B, G, G, G, G ], // 22 doors
+    [ G, G, G, G, G, G, G, G, C, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G ], // 23 walks from doors
+    [ G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G ], // 24 bottom street
 
-    // --- PARK / EXIT AREA (rows 23-27) ---
-    [ G, G, G, G, G, G, G, G, G, G, T, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, T, G, G, G, G, G, G, G, G ], // 23 park with trees
-    [ G, G, G, T, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, T, G, G, G, G, G, G, G, G, G, G, G, G ], // 24
-    [ G, G, G, G, G, G, G, G, G, G, G, G, T, G, G, G, G, G, G, G, C, G, G, G, G, T, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 25
-    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G ], // 26 walk to exit
-    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, G ], // 27 exit at bottom-right
+    // --- PARK / EXIT AREA (rows 25-29): park with pond, bench, pathway ---
+    [ G, G, G, G, G, G, G, G, G, G, T, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, T, G, G, G, G, G, G, G, G ], // 25 park entrance + pathway
+    [ G, G, G, T, G, G, G, G, B, C, C, B, G, G, G, W, W, G, G, G, C, G, G, G, G, G, G, T, G, G, G, G, G, G, G, G, G, G, G, G ], // 26 bench (B,C,C,B) + pond start
+    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, W, W, W, G, G, G, C, G, G, G, G, T, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 27 pond continues + pathway
+    [ G, G, G, G, G, G, G, G, G, G, G, G, T, G, G, G, G, G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G ], // 28 walk to exit
+    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, G ], // 29 exit at bottom-right
   ],
   collisions: STANDARD_COLLISIONS,
   spawns: {
     player: { x: 9, y: 3 },
     npcs: [
-      { id: 'ch5_first_client', x: 5,  y: 14, sprite: 'npc_client' },
-      { id: 'ch5_sticker',      x: 30, y: 14, sprite: 'npc_sticker_smith' },
-      { id: 'ch5_ghost',        x: 14, y: 21, sprite: 'npc_generic' },
+      { id: 'ch5_first_client', x: 5,  y: 15, sprite: 'npc_client' },
+      { id: 'ch5_sticker',      x: 30, y: 15, sprite: 'npc_sticker_smith' },
+      { id: 'ch5_ghost',        x: 14, y: 23, sprite: 'npc_generic' },
       { id: 'ch5_rejected',     x: 20, y: 8,  sprite: 'npc_generic' },
-      { id: 'ch5_wct',          x: 14, y: 16, sprite: 'npc_client' },
+      { id: 'ch5_wct',          x: 14, y: 17, sprite: 'npc_client' },
       { id: 'ch5_vacaville',    x: 10, y: 8,  sprite: 'npc_generic' },
       { id: 'ch5_manza',        x: 30, y: 8,  sprite: 'npc_manza' },
     ],
   },
   triggers: [
-    { x: 38, y: 27, action: 'scene', target: 'LAScene' },
+    { x: 38, y: 29, action: 'scene', target: 'LAScene' },
   ],
   interactables: [
-    // Showcases near client buildings
-    { id: 'ch5_wct_showcase', x: 5, y: 13, type: 'showcase', glow: true, sprite: 'item-money' },
-    { id: 'ch5_sticker_showcase', x: 29, y: 14, type: 'showcase', glow: true, sprite: 'item-money' },
-    { id: 'ch5_dhl_showcase', x: 28, y: 21, type: 'showcase', glow: true, sprite: 'item-tablet' },
+    // Showcases near client building doors
+    { id: 'ch5_wct_showcase', x: 5, y: 14, type: 'showcase', glow: true, sprite: 'item-money' },
+    { id: 'ch5_sticker_showcase', x: 29, y: 15, type: 'showcase', glow: true, sprite: 'item-money' },
+    { id: 'ch5_dhl_showcase', x: 28, y: 23, type: 'showcase', glow: true, sprite: 'item-tablet' },
     // JP's office — spread out, no overlapping positions, max 4 items
     { id: 'ch5_first_dollar', x: 5, y: 3, type: 'examine', glow: true, sprite: 'item-money' },
     { id: 'ch5_first_site', x: 8, y: 2, type: 'examine', glow: true, sprite: 'item-tablet' },
     { id: 'ch5_late_night', x: 11, y: 3, type: 'examine', glow: true },
     { id: 'ch5_github', x: 12, y: 4, type: 'examine', glow: true },
-    // Street — minimal items
+    // Street — minimal items, no unnecessary sprites
     { id: 'ch5_review', x: 35, y: 9, type: 'examine', glow: true },
-    { id: 'ch5_print_shop', x: 5, y: 15, type: 'examine', glow: true, sprite: 'item-letter' },
-    { id: 'ch5_dhl_building', x: 28, y: 22, type: 'examine', glow: true },
-    // Invisible "!" markers — no sprites on ground
+    { id: 'ch5_print_shop', x: 5, y: 16, type: 'examine', glow: true },
+    { id: 'ch5_dhl_building', x: 28, y: 24, type: 'examine', glow: true },
+    // Invisible "!" markers — no sprites
     { id: 'ch5_3am', x: 7, y: 4, type: 'examine', glow: true },
     { id: 'ch5_pricing', x: 9, y: 2, type: 'examine', glow: true },
     { id: 'ch5_stack', x: 6, y: 2, type: 'examine', glow: true },
@@ -715,21 +717,42 @@ export const operatorMap: MapData = {
     [ T, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, T ], // 11 main LA street
     [ G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G ], // 12
 
-    // --- DOWNTOWN (rows 13-18): shops + intentional plaza ---
+    // --- DOWNTOWN (rows 13-18): shops + fountain plaza ---
     [ G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G ], // 13 sidewalk
     [ G, C, B, B, B, B, B, B, B, C, T, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, B, B, B, B, B, B, B, B, B, B, C, C, C, G ], // 14 shop 1 + street tree + shop 2
-    [ G, C, B, F, F, F, F, F, B, C, C, C, C, C, C, C, G, G, G, C, G, G, G, C, C, C, B, F, F, F, F, F, F, F, F, B, C, C, C, G ], // 15 interiors + bordered plaza
-    [ G, C, B, F, F, F, F, F, B, C, C, C, C, C, C, C, G, T, G, C, G, T, G, C, C, C, B, F, F, F, F, F, F, F, F, B, C, C, C, G ], // 16 plaza center — 2 trees
-    [ G, C, B, B, B, O, B, B, B, C, C, C, C, C, C, C, G, G, G, C, G, G, G, C, C, C, B, B, B, B, B, O, B, B, B, B, C, C, C, G ], // 17 shop doors + plaza bottom
+    [ G, C, B, F, F, F, F, F, B, C, C, C, C, C, G, G, G, C, C, C, C, G, G, G, C, C, B, F, F, F, F, F, F, F, F, B, C, C, C, G ], // 15 interiors + plaza edges
+    [ G, C, B, F, F, F, F, F, B, C, C, C, C, C, G, T, G, C, C, W, C, G, T, G, C, C, B, F, F, F, F, F, F, F, F, B, C, C, C, G ], // 16 plaza — 2 trees + fountain
+    [ G, C, B, B, B, O, B, B, B, C, C, C, C, C, G, G, G, C, C, C, C, G, G, G, C, C, B, B, B, B, B, O, B, B, B, B, C, C, C, G ], // 17 shop doors + plaza bottom
     [ G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G ], // 18
 
-    // --- EXIT TO VEGAS (rows 19-24): road south ---
-    [ G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G ], // 19
-    [ G, G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G, G ], // 20
-    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 21 grass + exit road
-    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 22
-    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 23
-    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 24
+    // --- SECOND STREET (rows 19-20) ---
+    [ G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G ], // 19 street
+    [ T, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, T ], // 20 main street 2
+
+    // --- BLOCK 2 (rows 21-28): restaurant + coworking space + luxury building ---
+    [ G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G ], // 21 sidewalk
+    [ G, C, B, B, B, B, B, B, B, B, C, C, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, C, C, B, B, B, B, B, B, B, B, C, G ], // 22 restaurant + coworking + luxury bldg
+    [ G, C, B, J, J, J, J, J, J, B, C, C, B, J, J, J, J, J, J, J, J, J, J, J, J, J, J, B, C, C, B, J, J, J, J, J, J, B, C, G ], // 23 restaurant interior (hardwood) | coworking (14 wide) | luxury (6 wide)
+    [ G, C, B, J, J, J, N, J, J, B, C, C, B, J, J, J, J, J, J, J, J, J, J, J, J, J, J, B, C, C, B, J, J, J, J, J, J, B, C, G ], // 24 restaurant bar counter | coworking desks | luxury
+    [ G, C, B, J, J, J, J, J, J, B, C, C, B, J, J, J, J, J, J, J, J, J, J, J, J, J, J, B, C, C, B, J, J, J, J, J, J, B, C, G ], // 25
+    [ G, C, B, B, B, B, O, B, B, B, C, C, B, B, B, B, B, B, O, B, B, B, B, B, B, B, B, B, C, C, B, B, B, B, O, B, B, B, C, G ], // 26 doors
+    [ G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G ], // 27 sidewalk
+
+    // --- THIRD STREET (rows 28-29) ---
+    [ G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G ], // 28 street
+    [ T, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, T ], // 29 main street 3
+
+    // --- PARKING + PARK (rows 30-33) ---
+    [ G, C, C, C, B, B, B, B, C, I, T, I, C, C, C, C, C, G, G, G, G, G, G, C, C, C, C, C, I, T, I, C, B, B, B, B, C, C, C, G ], // 30 parking + landscaped trees + park start
+    [ G, C, C, C, B, C, C, B, C, C, C, C, C, C, C, C, G, G, T, G, G, T, G, G, C, C, C, C, C, C, C, C, B, C, C, B, C, C, C, G ], // 31 parking lots + park with trees
+    [ G, C, C, C, B, C, C, B, C, C, C, C, C, C, C, C, G, G, G, W, W, G, G, G, C, C, C, C, C, C, C, C, B, C, C, B, C, C, C, G ], // 32 parking + park pond
+    [ G, G, C, C, B, B, B, B, C, C, C, C, C, C, C, C, G, G, G, G, G, G, G, G, C, C, C, C, C, C, C, C, B, B, B, B, C, C, G, G ], // 33 lot ends + park bottom
+
+    // --- EXIT TO VEGAS (rows 34-37): road south ---
+    [ G, G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G, G ], // 34 sidewalk
+    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, C, C, C, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 35 road narrows (5 wide)
+    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, C, C, C, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 36 exit road
+    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, C, C, C, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 37 exit
   ],
   collisions: STANDARD_COLLISIONS,
   spawns: {
@@ -750,11 +773,20 @@ export const operatorMap: MapData = {
       { id: 'ch6_mentor',       x: 18, y: 13, sprite: 'npc_generic' },
       { id: 'ch6_team_member',  x: 5,  y: 16, sprite: 'npc_generic' },
       { id: 'ch6_manza',        x: 35, y: 12, sprite: 'npc_manza' },
+      // Block 2 — restaurant + coworking
+      { id: 'ch6_restaurant',   x: 6,  y: 24, sprite: 'npc_generic' },
+      { id: 'ch6_coworker1',    x: 16, y: 24, sprite: 'npc_tech' },
+      { id: 'ch6_coworker2',    x: 22, y: 24, sprite: 'npc_tech' },
+      { id: 'ch6_luxury_npc',   x: 34, y: 24, sprite: 'npc_suit' },
     ],
   },
   triggers: [
-    // Exit south — JP heads to Vegas
-    { x: 19, y: 24, action: 'scene', target: 'VegasScene' },
+    // Exit south — JP heads to Vegas (5-wide road at row 37)
+    { x: 17, y: 37, action: 'scene', target: 'VegasScene' },
+    { x: 18, y: 37, action: 'scene', target: 'VegasScene' },
+    { x: 19, y: 37, action: 'scene', target: 'VegasScene' },
+    { x: 20, y: 37, action: 'scene', target: 'VegasScene' },
+    { x: 21, y: 37, action: 'scene', target: 'VegasScene' },
   ],
   interactables: [
     // Pomaikai HQ — one tablet (dashboard), rest are invisible "!" markers
@@ -772,6 +804,12 @@ export const operatorMap: MapData = {
     { id: 'ch6_revenue', x: 33, y: 16, type: 'examine', glow: true, sprite: 'item-money' },
     { id: 'ch6_future', x: 30, y: 16, type: 'examine', glow: true, sprite: 'item-letter' },
     { id: 'ch6_security', x: 10, y: 10, type: 'examine', glow: true },
+    // Block 2
+    { id: 'ch6_steak_dinner', x: 7, y: 23, type: 'examine', glow: true },
+    { id: 'ch6_cowork_laptop', x: 19, y: 23, type: 'examine', glow: true, sprite: 'item-tablet' },
+    { id: 'ch6_luxury_view', x: 35, y: 23, type: 'examine', glow: true },
+    // Park
+    { id: 'ch6_park_bench', x: 20, y: 31, type: 'examine', glow: true },
   ],
 };
 
