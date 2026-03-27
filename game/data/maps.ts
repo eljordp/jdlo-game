@@ -112,10 +112,10 @@ export const homeMap: MapData = {
     [ G, G, G, K, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, K, G, G, G ], // 13
     [ G, G, G, K, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, N, N, N, N, J, K, G, G, G ], // 14 marble wall counters (kitchen right side)
     [ G, G, G, K, K, K, K, K, K, K, K, K, K, O, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, O, K, K, K, K, K, K, G, G, G ], // 15 front door + backyard door (col 30, kitchen side)
-    [ G, G, G, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G ], // 16 front walkway + kitchen door walkway
-    [ G, G, E, E, E, E, E, E, E, E, E, E, E, C, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, G, G ], // 17 fence top
-    [ G, G, E, G, G, I, T, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, I, G, G, G, G, G, G, G, G, G, G, G, G, G, G, E, G, G ], // 18 mulch near trees
-    [ G, G, E, G, G, G, I, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, E, G, G ], // 19 yard
+    [ G, G, G, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, B, B, B, B, B, B, G, G, G ], // 16 walkway + garage top wall
+    [ G, G, E, E, E, E, E, E, E, E, E, E, E, C, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, C, B, C, C, C, C, B, E, G, G ], // 17 fence + garage interior
+    [ G, G, E, G, G, I, T, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, I, G, G, G, G, G, G, G, G, B, C, C, C, C, B, E, G, G ], // 18 yard + garage interior
+    [ G, G, E, G, G, G, I, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, B, B, B, O, B, B, E, G, G ], // 19 yard + garage door (south)
     [ G, G, E, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, W, W, W, W, W, G, G, G, G, L, G, G, E, G, G ], // 20 pond + palm
     [ G, G, E, G, T, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, T, W, W, W, W, G, G, G, G, G, G, G, E, G, G ], // 21 tree near pond
     [ G, G, E, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, I, W, W, G, G, G, G, G, G, G, G, E, G, G ], // 22 dirt near pond edge
@@ -157,18 +157,34 @@ export const homeMap: MapData = {
     { id: 'ch0_hidden_stash',  x: 9,  y: 7,  type: 'examine', glow: true },                             // behind desk — bag of weed
     { id: 'ch0_journal',       x: 7,  y: 8,  type: 'examine', glow: true, sprite: 'item-book' },        // journal near door
     { id: 'ch0_crypto',        x: 4,  y: 8,  type: 'examine', glow: true, sprite: 'item-phone' },       // phone on floor by bed
-    // Sister's Room (cols 11-15, rows 4-8)
-    { id: 'ch0_sister_toys',   x: 13, y: 7,  type: 'examine', glow: true },
-    // Parents' Room (cols 17-23, rows 4-8)
-    { id: 'ch0_family_photo',  x: 19, y: 4,  type: 'examine', glow: true, sprite: 'item-photo' },
+    // Sister's Room (cols 11-15, rows 4-8) — pink girly room
+    { id: 'ch0_sister_bed',    x: 12, y: 4,  type: 'examine', glow: true, sprite: 'item-bed' },
+    { id: 'ch0_sister_toys',   x: 14, y: 5,  type: 'examine', glow: true },
+    { id: 'ch0_sister_mirror', x: 11, y: 7,  type: 'examine', glow: true, sprite: 'item-mirror' },
+    // Parents' Room (cols 17-23, rows 4-8) — clean, mature
+    { id: 'ch0_parents_bed',   x: 19, y: 4,  type: 'examine', glow: true, sprite: 'item-bed' },
+    { id: 'ch0_family_photo',  x: 22, y: 4,  type: 'examine', glow: true, sprite: 'item-photo' },
+    { id: 'ch0_parents_tv',    x: 17, y: 7,  type: 'examine', glow: true, sprite: 'item-tv' },
+    // Office / Spare Room (cols 25-30, rows 4-8) — Pops' workspace
+    { id: 'ch0_office_desk',   x: 27, y: 4,  type: 'examine', glow: true, sprite: 'item-desk' },
+    { id: 'ch0_office_books',  x: 29, y: 5,  type: 'examine', glow: true, sprite: 'item-book' },
+    { id: 'ch0_office_photo',  x: 25, y: 7,  type: 'examine', glow: true, sprite: 'item-photo' },
     // Bathroom (cols 32-35, rows 4-8)
     { id: 'ch0_mirror',        x: 34, y: 4,  type: 'examine', glow: true, sprite: 'item-mirror' },
-    // Living Room (left side of open concept, row 12-14)
+    { id: 'ch0_toilet',        x: 32, y: 7,  type: 'examine', glow: true, sprite: 'item-toilet' },
+    // Hallway (row 10)
+    { id: 'ch0_hallway_photo', x: 20, y: 10, type: 'examine', glow: true, sprite: 'item-photo' },
+    // Living Room (left side, row 12-14)
     { id: 'ch0_tv',            x: 4,  y: 13, type: 'examine', glow: true, sprite: 'item-tv' },
-    { id: 'ch0_couch',         x: 7,  y: 13, type: 'examine', glow: true, sprite: 'item-couch' },
-    // Kitchen (right side of open concept, row 12-14)
+    { id: 'ch0_couch',         x: 8,  y: 13, type: 'examine', glow: true, sprite: 'item-couch' },
+    { id: 'ch0_window_view',   x: 4,  y: 12, type: 'examine', glow: true, sprite: 'item-window' },
+    // Kitchen (right side, row 12-14)
     { id: 'ch0_fridge',        x: 35, y: 12, type: 'examine', glow: true, sprite: 'item-fridge' },
+    { id: 'ch0_food',          x: 33, y: 12, type: 'examine', glow: true, sprite: 'item-food' },
     { id: 'ch0_mail',          x: 28, y: 14, type: 'examine', glow: true, sprite: 'item-letter' },
+    // Garage (cols 32-36, rows 17-19)
+    { id: 'ch0_garage_car',    x: 34, y: 18, type: 'examine', glow: true },
+    { id: 'ch0_garage_tools',  x: 32, y: 17, type: 'examine', glow: true },
     // Yard
     { id: 'ch0_bbq',           x: 8,  y: 20, type: 'examine', glow: true, sprite: 'item-bbq' },
     // ch0_nolan_call removed — now triggers automatically as a surprise phone ring

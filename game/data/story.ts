@@ -1080,21 +1080,62 @@ const ch0Extras: Record<string, DialogueLine[]> = {
     { speaker: 'Narrator', text: '\'I\'m going to be somebody. I just don\'t know how yet.\'' },
     { speaker: 'Narrator', text: 'Dated six months ago.' },
   ],
+  ch0_nightstand: [
+    { speaker: 'Narrator', text: 'Phone charger, a half-empty water bottle, and a receipt from In-N-Out.' },
+    { speaker: 'Narrator', text: 'The essentials.' },
+  ],
   // --- Sister's Room ---
+  ch0_sister_bed: [
+    { speaker: 'Narrator', text: 'Pink comforter. Stuffed animals lined up like an army.' },
+    { speaker: 'Narrator', text: 'She makes her bed every morning. JP doesn\'t.' },
+  ],
   ch0_sister_toys: [
-    { speaker: 'Narrator', text: 'His sister\'s drawings are all over the walls.' },
+    { speaker: 'Narrator', text: 'Her drawings are all over the walls.' },
     { speaker: 'Narrator', text: 'One of them is JP with a cape. He didn\'t ask for that but it hits different.' },
   ],
+  ch0_sister_mirror: [
+    { speaker: 'Narrator', text: 'Little vanity mirror with stickers all over the frame.' },
+    { speaker: 'Narrator', text: 'She\'s growing up fast.' },
+  ],
   // --- Parents' Room ---
+  ch0_parents_bed: [
+    { speaker: 'Narrator', text: 'King size. Mom\'s side is always perfectly made. Pops\' side... not so much.' },
+  ],
   ch0_family_photo: [
     { speaker: 'Narrator', text: 'Family photo from when JP was 12.' },
     { speaker: 'Narrator', text: 'Everyone\'s smiling. Simpler times.' },
+  ],
+  ch0_parents_tv: [
+    { speaker: 'Narrator', text: 'Small TV in the corner. Mom watches Japanese dramas on it.' },
+    { speaker: 'Narrator', text: 'Pops pretends he doesn\'t like them. He does.' },
+  ],
+  // --- Office (was spare room) ---
+  ch0_office_desk: [
+    { speaker: 'Narrator', text: 'Pops\' desk. Tax returns, car insurance forms, a calculator.' },
+    { speaker: 'Narrator', text: 'This is where he runs the household from.' },
+  ],
+  ch0_office_books: [
+    { speaker: 'Narrator', text: 'Rich Dad Poor Dad. The Compound Effect. Think and Grow Rich.' },
+    { speaker: 'Narrator', text: 'Pops reads these but never talks about them.' },
+    { speaker: 'JP\'s Mind', text: 'JP borrowed a few. Never gave them back.' },
+  ],
+  ch0_office_photo: [
+    { speaker: 'Narrator', text: 'Framed photo of Pops at his old job. Hard hat. Work boots. Sun-burnt.' },
+    { speaker: 'Narrator', text: 'He built things his whole life. Now his son builds different things.' },
   ],
   // --- Bathroom ---
   ch0_mirror: [
     { speaker: 'JP\'s Mind', text: 'JP looks at himself in the mirror.' },
     { speaker: 'JP', text: 'What are you doing, bro?' },
     { speaker: 'Narrator', text: 'No answer.' },
+  ],
+  ch0_toilet: [
+    { speaker: 'Narrator', text: 'A toilet. What did you expect?' },
+  ],
+  // --- Hallway ---
+  ch0_hallway_photo: [
+    { speaker: 'Narrator', text: 'School photos going back to kindergarten. JP in every one.' },
+    { speaker: 'Narrator', text: 'The smile gets smaller each year.' },
   ],
   // --- Living Room ---
   ch0_tv: [
@@ -1104,13 +1145,30 @@ const ch0Extras: Record<string, DialogueLine[]> = {
     { speaker: 'Narrator', text: 'This couch has seen every family argument and every movie night.' },
     { speaker: 'Narrator', text: 'Same fabric.' },
   ],
+  ch0_window_view: [
+    { speaker: 'Narrator', text: 'View of the front yard through the window. Quiet neighborhood.' },
+    { speaker: 'JP\'s Mind', text: 'Same view every day. Same street. Same everything.' },
+  ],
   // --- Kitchen ---
   ch0_fridge: [
     { speaker: 'Narrator', text: 'Fridge is stocked. Mom keeps it right even when everything else is tense.' },
   ],
+  ch0_food: [
+    { speaker: 'Narrator', text: 'Leftovers from last night. Mom\'s cooking.' },
+    { speaker: 'JP\'s Mind', text: 'Best food in the world and she doesn\'t even know it.' },
+  ],
   ch0_mail: [
     { speaker: 'Narrator', text: 'Stack of mail on the counter. Bills, coupons, and JP\'s college acceptance letters.' },
     { speaker: 'Narrator', text: 'Mom keeps moving them to the top of the pile.' },
+  ],
+  // --- Garage ---
+  ch0_garage_car: [
+    { speaker: 'Narrator', text: 'Pops\' truck. Dented, dusty, still runs perfect.' },
+    { speaker: 'Narrator', text: 'He\'s had it since before JP was born.' },
+  ],
+  ch0_garage_tools: [
+    { speaker: 'Narrator', text: 'Toolbox, extension cords, half a bag of concrete.' },
+    { speaker: 'Narrator', text: 'Pops can fix anything in this house. Always has.' },
   ],
   // --- Yard ---
   ch0_fishing: [
