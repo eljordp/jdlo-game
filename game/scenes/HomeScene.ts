@@ -1023,90 +1023,237 @@ export class HomeScene extends BaseChapterScene {
 
   private showJournal() {
     this.frozen = true;
-    const objects: Phaser.GameObjects.GameObject[] = [];
+    const frameObjects: Phaser.GameObjects.GameObject[] = [];
+    let pageObjects: Phaser.GameObjects.GameObject[] = [];
 
     const cx = GAME_WIDTH / 2;
     const cy = GAME_HEIGHT / 2;
-
-    // Dark overlay
-    objects.push(this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.7)
-      .setScrollFactor(0).setDepth(300));
-
-    // Journal notebook — cream/tan paper
     const bookW = 500;
     const bookH = 440;
-    // Leather cover visible on edges
-    objects.push(this.add.rectangle(cx, cy, bookW + 16, bookH + 16, 0x5a3a20)
+    const textX = cx - bookW / 2 + 70;
+
+    // Journal pages — 2017 through June 2021
+    const pages = [
+      {
+        date: 'September 2017',
+        lines: [
+          'First day of senior year.',
+          'Everyone\'s talking about college apps.',
+          'I don\'t even know what I want to major in.',
+          '',
+          'Pops asked me what the plan is.',
+          'I said I\'d figure it out.',
+          'He gave me that look.',
+        ],
+      },
+      {
+        date: 'March 2018',
+        lines: [
+          'Graduated. Barely.',
+          'Everyone\'s going to college.',
+          'I\'m just... here.',
+          '',
+          'Got a job at Caymus with Pops\' connect.',
+          'Vineyard work. Early mornings.',
+          'It\'s honest but it\'s not me.',
+        ],
+      },
+      {
+        date: 'November 2018',
+        lines: [
+          'Same shit every day.',
+          'Wake up. Drive. Pick grapes. Drive home.',
+          '',
+          'Juan taught me how to say "a la verga"',
+          'today. Ernesto was NOT happy.',
+          '',
+          'I need something else.',
+          'I just don\'t know what.',
+        ],
+      },
+      {
+        date: 'June 2019',
+        lines: [
+          'Quit Caymus.',
+          'Couldn\'t do another summer in that heat.',
+          '',
+          'Pops didn\'t say anything.',
+          'That\'s worse than yelling.',
+          '',
+          'Started hanging out in SB more.',
+          'Nolan and them got a spot.',
+          'It\'s fun. Maybe too fun.',
+        ],
+      },
+      {
+        date: 'January 2020',
+        lines: [
+          'Everything stopped.',
+          'COVID hit. World shut down.',
+          '',
+          'Stuck in this room all day.',
+          'Playing games. Smoking.',
+          'Feeling like time is running out.',
+          '',
+          'I\'m 20 and I got nothing to show for it.',
+        ],
+      },
+      {
+        date: 'August 2020',
+        lines: [
+          'Nolan called.',
+          'Said we should link in SB when things open.',
+          '',
+          'Started thinking about money different.',
+          'Not a job. Something of my own.',
+          'But what?',
+          '',
+          'Pops says "do it all the way."',
+          'But what is "it"?',
+        ],
+      },
+      {
+        date: 'February 2021',
+        lines: [
+          'I\'m going to be somebody.',
+          'I just don\'t know how yet.',
+          '',
+          'Everyone around me has a plan.',
+          'College, job, whatever.',
+          'I don\'t have a plan.',
+          'I just know this isn\'t it.',
+          '',
+          'Something\'s coming. I can feel it.',
+        ],
+      },
+      {
+        date: 'June 2021',
+        lines: [
+          'Nolan hit me up. This weekend.',
+          'Santa Barbara. Frat house. The boys.',
+          '',
+          'Pops told me to be careful.',
+          'I told him I always am.',
+          '',
+          'He didn\'t believe me.',
+          'I don\'t blame him.',
+          '',
+          'Time to go.',
+        ],
+      },
+    ];
+
+    let currentPage = 0;
+
+    // Dark overlay
+    frameObjects.push(this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.7)
+      .setScrollFactor(0).setDepth(300));
+
+    // Leather cover
+    frameObjects.push(this.add.rectangle(cx, cy, bookW + 16, bookH + 16, 0x5a3a20)
       .setScrollFactor(0).setDepth(301));
     // Spine
-    objects.push(this.add.rectangle(cx - bookW / 2 - 4, cy, 8, bookH + 16, 0x4a2a18)
+    frameObjects.push(this.add.rectangle(cx - bookW / 2 - 4, cy, 8, bookH + 16, 0x4a2a18)
       .setScrollFactor(0).setDepth(302));
-    // Paper pages
-    objects.push(this.add.rectangle(cx + 4, cy, bookW, bookH, 0xf5edd8)
+    // Paper
+    frameObjects.push(this.add.rectangle(cx + 4, cy, bookW, bookH, 0xf5edd8)
       .setScrollFactor(0).setDepth(302));
 
     // Ruled lines
     for (let i = 0; i < 14; i++) {
       const lineY = cy - bookH / 2 + 50 + i * 28;
-      objects.push(this.add.rectangle(cx + 4, lineY, bookW - 40, 1, 0xc8c0b0)
+      frameObjects.push(this.add.rectangle(cx + 4, lineY, bookW - 40, 1, 0xc8c0b0)
         .setScrollFactor(0).setDepth(303).setAlpha(0.5));
     }
 
     // Red margin line
-    objects.push(this.add.rectangle(cx - bookW / 2 + 60, cy, 1, bookH - 20, 0xd08080)
+    frameObjects.push(this.add.rectangle(cx - bookW / 2 + 60, cy, 1, bookH - 20, 0xd08080)
       .setScrollFactor(0).setDepth(303).setAlpha(0.6));
 
-    // Date at top
-    objects.push(this.add.text(cx - bookW / 2 + 70, cy - bookH / 2 + 24, 'June 14', {
-      fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#8a7a6a',
-    }).setScrollFactor(0).setDepth(304));
+    // Nav buttons
+    const prevBtn = this.add.text(cx - bookW / 2 + 20, cy + bookH / 2 + 20, '< PREV', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#8a7a6a',
+    }).setScrollFactor(0).setDepth(305).setInteractive({ useHandCursor: true });
+    frameObjects.push(prevBtn);
 
-    // Journal entries — handwritten feel
-    const entries = [
-      'I\'m going to be somebody.',
-      'I just don\'t know how yet.',
-      '',
-      'Everyone around me has a plan.',
-      'College, job, whatever.',
-      'I don\'t have a plan.',
-      'I just know this isn\'t it.',
-      '',
-      'Pops says "do it all the way."',
-      'But what is "it"?',
-      '',
-      'Something\'s coming. I can feel it.',
-    ];
+    const nextBtn = this.add.text(cx + bookW / 2 - 20, cy + bookH / 2 + 20, 'NEXT >', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#8a7a6a',
+    }).setOrigin(1, 0).setScrollFactor(0).setDepth(305).setInteractive({ useHandCursor: true });
+    frameObjects.push(nextBtn);
 
-    let entryY = cy - bookH / 2 + 52;
-    for (const line of entries) {
-      if (line === '') { entryY += 14; continue; }
-      objects.push(this.add.text(cx - bookW / 2 + 70, entryY, line, {
-        fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#3a3028',
-      }).setScrollFactor(0).setDepth(304));
-      entryY += 28;
-    }
+    const pageNum = this.add.text(cx, cy + bookH / 2 + 20, '', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#999999',
+    }).setOrigin(0.5, 0).setScrollFactor(0).setDepth(305);
+    frameObjects.push(pageNum);
 
-    // Close hint
-    objects.push(this.add.text(cx, cy + bookH / 2 + 20, 'Press SPACE to close', {
-      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#666666',
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(304));
+    const closeHint = this.add.text(cx, cy + bookH / 2 + 38, 'ESC to close', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#666666',
+    }).setOrigin(0.5, 0).setScrollFactor(0).setDepth(305);
+    frameObjects.push(closeHint);
 
-    // Close on Space or click
+    const renderPage = () => {
+      // Clear previous page content
+      for (const obj of pageObjects) { if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy(); }
+      pageObjects = [];
+
+      const page = pages[currentPage];
+
+      // Date
+      const dateText = this.add.text(textX, cy - bookH / 2 + 24, page.date, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#8a7a6a',
+      }).setScrollFactor(0).setDepth(304);
+      pageObjects.push(dateText);
+
+      // Entries
+      let entryY = cy - bookH / 2 + 56;
+      for (const line of page.lines) {
+        if (line === '') { entryY += 14; continue; }
+        const t = this.add.text(textX, entryY, line, {
+          fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#3a3028',
+        }).setScrollFactor(0).setDepth(304);
+        pageObjects.push(t);
+        entryY += 26;
+      }
+
+      // Update nav
+      pageNum.setText(`${currentPage + 1} / ${pages.length}`);
+      prevBtn.setAlpha(currentPage > 0 ? 1 : 0.3);
+      nextBtn.setAlpha(currentPage < pages.length - 1 ? 1 : 0.3);
+    };
+
+    prevBtn.on('pointerdown', () => {
+      if (currentPage > 0) { currentPage--; renderPage(); }
+    });
+    nextBtn.on('pointerdown', () => {
+      if (currentPage < pages.length - 1) { currentPage++; renderPage(); }
+    });
+
+    // Keyboard nav
+    const leftKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
+    const rightKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
+    const escKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+    const spaceKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
+    const onLeft = () => { if (currentPage > 0) { currentPage--; renderPage(); } };
+    const onRight = () => { if (currentPage < pages.length - 1) { currentPage++; renderPage(); } };
+
     const closeJournal = () => {
-      spaceKey.off('down', closeJournal);
-      this.input.off('pointerdown', closeJournal);
-      for (const obj of objects) {
+      leftKey.off('down', onLeft); rightKey.off('down', onRight);
+      escKey.off('down', closeJournal); spaceKey.off('down', closeJournal);
+      for (const obj of [...frameObjects, ...pageObjects]) {
         if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
       }
       this.frozen = false;
     };
 
-    const spaceKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-    // Delay input registration so it doesn't immediately close
     this.time.delayedCall(300, () => {
+      leftKey.on('down', onLeft);
+      rightKey.on('down', onRight);
+      escKey.on('down', closeJournal);
       spaceKey.on('down', closeJournal);
-      this.input.on('pointerdown', closeJournal);
     });
+
+    renderPage();
   }
 
   private showComputerInterface() {
