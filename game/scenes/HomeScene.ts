@@ -44,6 +44,28 @@ export class HomeScene extends BaseChapterScene {
   create() {
     super.create();
     this.addNavArrow(14, 34, 'Leave home');
+
+    // Render windows directly on wall tiles (not floating sprites)
+    const windowPositions = [
+      { x: 6, y: 3 },   // JP's room
+      { x: 13, y: 3 },  // Sister's room
+      { x: 22, y: 3 },  // Parents' room
+      { x: 34, y: 3 },  // Bathroom
+      { x: 30, y: 15 }, // Kitchen (south wall)
+    ];
+    for (const pos of windowPositions) {
+      const wx = pos.x * SCALED_TILE + SCALED_TILE / 2;
+      const wy = pos.y * SCALED_TILE + SCALED_TILE / 2;
+      // Window frame on wall
+      this.add.rectangle(wx, wy, 24, 20, 0x90d0f8).setDepth(1); // glass
+      this.add.rectangle(wx, wy, 28, 24, 0x707880).setDepth(1).setAlpha(0); // frame behind
+      // Frame lines (cross)
+      this.add.rectangle(wx, wy, 2, 20, 0x808890).setDepth(2); // vertical bar
+      this.add.rectangle(wx, wy, 24, 2, 0x808890).setDepth(2); // horizontal bar
+      // Outer frame
+      this.add.rectangle(wx, wy, 28, 2, 0x707880).setDepth(2).setAlpha(0.7); // top
+      this.add.rectangle(wx, wy + 10, 28, 2, 0x606870).setDepth(2).setAlpha(0.7); // bottom
+    }
   }
 
   protected getObjectiveHint(): string {

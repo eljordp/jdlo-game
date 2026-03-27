@@ -154,62 +154,60 @@ export const homeMap: MapData = {
     { x: 18, y: 35, action: 'scene', target: 'TransitionScene', data: { text: 'Three weeks later...', nextScene: 'BeachScene' } },
   ],
   interactables: [
-    // JP's Room (cols 4-9, rows 4-8) — laid out like a real bedroom
-    { id: 'ch0_bed',           x: 5,  y: 4,  type: 'examine', glow: true, sprite: 'item-bed' },         // bed against back wall, left
-    { id: 'ch0_nightstand',    x: 7,  y: 4,  type: 'examine', glow: true, sprite: 'item-nightstand' },  // nightstand next to bed
-    { id: 'ch0_computer',      x: 9,  y: 5,  type: 'examine', glow: true, sprite: 'item-desk' },        // desk w/ computer, right wall
-    { id: 'ch0_college',       x: 9,  y: 6,  type: 'examine', glow: true, sprite: 'item-letter' },      // college letters on desk area
-    { id: 'ch0_poster',        x: 6,  y: 4,  type: 'examine', glow: true, sprite: 'item-poster' },      // poster on back wall (visible)
-    { id: 'ch0_hidden_stash',  x: 9,  y: 7,  type: 'examine', glow: true, sprite: 'item-weed-bag' },     // behind desk — bag of weed
-    { id: 'ch0_journal',       x: 7,  y: 8,  type: 'examine', glow: true, sprite: 'item-book' },        // journal near door
-    { id: 'ch0_crypto',        x: 8,  y: 4,  type: 'examine', glow: true, sprite: 'item-phone' },       // phone on nightstand — Coinbase open
-    // Sister's Room (cols 11-15, rows 4-8) — pink girly room
-    { id: 'ch0_sister_bed',    x: 12, y: 4,  type: 'examine', glow: true, sprite: 'item-bed-pink' },
-    { id: 'ch0_sister_toys',   x: 14, y: 5,  type: 'examine', glow: true },
-    { id: 'ch0_sister_mirror', x: 11, y: 7,  type: 'examine', glow: true, sprite: 'item-mirror' },
-    // Parents' Room (cols 17-23, rows 4-8) — clean, mature
-    { id: 'ch0_parents_bed',   x: 19, y: 4,  type: 'examine', glow: true, sprite: 'item-bed' },
-    { id: 'ch0_family_photo',  x: 22, y: 4,  type: 'examine', glow: true, sprite: 'item-photo' },
-    { id: 'ch0_parents_tv',    x: 17, y: 7,  type: 'examine', glow: true, sprite: 'item-tv' },
-    // Parents Master — expanded (cols 17-30, rows 4-8)
-    { id: 'ch0_parents_closet', x: 27, y: 4, type: 'examine', glow: true, sprite: 'item-bookshelf' },
-    { id: 'ch0_parents_dresser', x: 29, y: 7, type: 'examine', glow: true },
+    // JP's Room (cols 4-9, rows 4-8)
+    { id: 'ch0_bed',           x: 5,  y: 4,  type: 'examine', glow: false, sprite: 'item-bed' },        // bed — just furniture
+    { id: 'ch0_nightstand',    x: 7,  y: 4,  type: 'examine', glow: false, sprite: 'item-nightstand' }, // furniture
+    { id: 'ch0_computer',      x: 9,  y: 5,  type: 'examine', glow: true, sprite: 'item-desk' },        // MacBook — interactive
+    { id: 'ch0_college',       x: 9,  y: 6,  type: 'examine', glow: true, sprite: 'item-letter' },      // college letters — story
+    { id: 'ch0_poster',        x: 4,  y: 4,  type: 'examine', glow: false, sprite: 'item-poster' },     // poster on back wall (left side)
+    { id: 'ch0_hidden_stash',  x: 9,  y: 7,  type: 'examine', glow: true, sprite: 'item-weed-bag' },    // easter egg
+    { id: 'ch0_journal',       x: 7,  y: 8,  type: 'examine', glow: true, sprite: 'item-book' },        // journal — full UI
+    { id: 'ch0_crypto',        x: 8,  y: 4,  type: 'examine', glow: false, sprite: 'item-phone' },      // phone — points to computer
+    // Sister's Room (cols 11-15, rows 4-8)
+    { id: 'ch0_sister_bed',    x: 12, y: 4,  type: 'examine', glow: false, sprite: 'item-bed-pink' },   // furniture
+    { id: 'ch0_sister_toys',   x: 14, y: 5,  type: 'examine', glow: false },                            // scenery
+    { id: 'ch0_sister_mirror', x: 11, y: 4,  type: 'examine', glow: false, sprite: 'item-mirror' },     // mirror on back wall
+    // Parents' Room (cols 17-30, rows 4-8)
+    { id: 'ch0_parents_bed',   x: 19, y: 4,  type: 'examine', glow: false, sprite: 'item-bed' },        // furniture
+    { id: 'ch0_family_photo',  x: 24, y: 4,  type: 'examine', glow: true, sprite: 'item-photo' },       // photo on back wall — story
+    { id: 'ch0_parents_tv',    x: 17, y: 7,  type: 'examine', glow: false, sprite: 'item-tv' },         // furniture
+    { id: 'ch0_parents_closet', x: 27, y: 4, type: 'examine', glow: false, sprite: 'item-bookshelf' },  // furniture
+    { id: 'ch0_parents_dresser', x: 29, y: 7, type: 'examine', glow: false },                           // furniture
     // Bathroom (cols 32-35, rows 4-8)
-    { id: 'ch0_mirror',        x: 34, y: 4,  type: 'examine', glow: true, sprite: 'item-mirror' },
-    { id: 'ch0_toilet',        x: 32, y: 7,  type: 'examine', glow: false, sprite: 'item-toilet' },
-    { id: 'ch0_shower',        x: 35, y: 7,  type: 'examine', glow: true, sprite: 'item-shower' },
+    { id: 'ch0_mirror',        x: 34, y: 4,  type: 'examine', glow: true, sprite: 'item-mirror' },      // deep reflection — interactive
+    { id: 'ch0_toilet',        x: 32, y: 7,  type: 'examine', glow: false, sprite: 'item-toilet' },     // furniture
+    { id: 'ch0_shower',        x: 35, y: 7,  type: 'examine', glow: true, sprite: 'item-shower' },      // cart scene — interactive
     // Hallway (row 10)
-    { id: 'ch0_hallway_photo', x: 20, y: 10, type: 'examine', glow: true, sprite: 'item-photo' },
+    { id: 'ch0_hallway_photo', x: 20, y: 10, type: 'examine', glow: false, sprite: 'item-photo' },      // decoration
     // Living Room (left side, row 12-14)
-    { id: 'ch0_tv',            x: 4,  y: 13, type: 'examine', glow: true, sprite: 'item-tv' },
-    { id: 'ch0_couch',         x: 6,  y: 13, type: 'examine', glow: true, sprite: 'item-couch' },
-    { id: 'ch0_window_view',   x: 4,  y: 12, type: 'examine', glow: true, sprite: 'item-window' },
+    { id: 'ch0_tv',            x: 4,  y: 12, type: 'examine', glow: false, sprite: 'item-tv' },         // TV against wall (row 12)
+    { id: 'ch0_couch',         x: 6,  y: 13, type: 'examine', glow: false, sprite: 'item-couch' },      // furniture
+    { id: 'ch0_window_view',   x: 3,  y: 13, type: 'examine', glow: false },                            // window on side wall — no sprite
     // Kitchen (right side, row 12-14)
-    { id: 'ch0_fridge',        x: 35, y: 12, type: 'examine', glow: true, sprite: 'item-fridge' },
-    { id: 'ch0_food',          x: 33, y: 12, type: 'examine', glow: true, sprite: 'item-food' },
-    { id: 'ch0_mail',          x: 28, y: 14, type: 'examine', glow: true, sprite: 'item-letter' },
+    { id: 'ch0_fridge',        x: 35, y: 12, type: 'examine', glow: false, sprite: 'item-fridge' },     // appliance
+    { id: 'ch0_food',          x: 33, y: 12, type: 'examine', glow: false, sprite: 'item-food' },       // scenery
+    { id: 'ch0_mail',          x: 28, y: 14, type: 'examine', glow: true, sprite: 'item-letter' },      // story — college letters
     // Garage (cols 32-36, rows 17-19)
-    { id: 'ch0_garage_car',    x: 34, y: 18, type: 'examine', glow: true, sprite: 'item-car' },
-    { id: 'ch0_garage_tools',  x: 32, y: 17, type: 'examine', glow: true },
+    { id: 'ch0_garage_car',    x: 34, y: 18, type: 'examine', glow: false, sprite: 'item-car' },        // scenery
+    { id: 'ch0_garage_tools',  x: 32, y: 17, type: 'examine', glow: false },                            // scenery
     // Yard
-    { id: 'ch0_bbq',           x: 8,  y: 20, type: 'examine', glow: true, sprite: 'item-bbq' },
-    // ch0_nolan_call removed — now triggers automatically as a surprise phone ring
-    { id: 'ch0_frenchie_ball', x: 16, y: 21, type: 'examine', glow: true, sprite: 'item-ball' },
-    { id: 'ch0_fishing',       x: 24, y: 20, type: 'examine', glow: true },
-    { id: 'ch0_goodbye',       x: 13, y: 29, type: 'examine', glow: true },
+    { id: 'ch0_bbq',           x: 8,  y: 20, type: 'examine', glow: false, sprite: 'item-bbq' },       // scenery
+    { id: 'ch0_frenchie_ball', x: 16, y: 21, type: 'examine', glow: true, sprite: 'item-ball' },        // minigame
+    { id: 'ch0_fishing',       x: 24, y: 20, type: 'examine', glow: true },                              // minigame
+    { id: 'ch0_goodbye',       x: 13, y: 29, type: 'examine', glow: true },                              // cutscene
 
-    // Dynamic interactables (added by scene events)
-    { id: 'ch0_rooftop',       x: 3,  y: 15, type: 'examine', glow: true },
-    { id: 'ch0_record_player', x: 33, y: 17, type: 'examine', glow: true },
-    { id: 'ch0_shoebox',       x: 4,  y: 5,  type: 'examine', glow: true },
-    { id: 'ch0_tv_sitdown',    x: 5,  y: 13, type: 'examine', glow: true, sprite: 'item-couch' },
+    // Surprise elements
+    { id: 'ch0_rooftop',       x: 3,  y: 15, type: 'examine', glow: true },                              // easter egg
+    { id: 'ch0_record_player', x: 33, y: 17, type: 'examine', glow: true },                              // easter egg
+    { id: 'ch0_shoebox',       x: 4,  y: 5,  type: 'examine', glow: true },                              // easter egg
+    { id: 'ch0_tv_sitdown',    x: 5,  y: 13, type: 'examine', glow: true },                              // Pops moment — NO couch sprite (uses existing couch)
 
-    // Windows (exterior facing)
-    { id: 'ch0_window_jp',     x: 6,  y: 3,  type: 'examine', glow: false, sprite: 'item-window' },
-    { id: 'ch0_window_sister', x: 13, y: 3,  type: 'examine', glow: false, sprite: 'item-window' },
-    { id: 'ch0_window_parents',x: 22, y: 3,  type: 'examine', glow: false, sprite: 'item-window' },
-    { id: 'ch0_window_bath',   x: 34, y: 3,  type: 'examine', glow: false, sprite: 'item-window' },
-    { id: 'ch0_window_kitchen',x: 30, y: 15, type: 'examine', glow: false, sprite: 'item-window' },
+    // Windows — on wall tiles, no floating sprite
+    { id: 'ch0_window_jp',     x: 6,  y: 3,  type: 'examine', glow: false },
+    { id: 'ch0_window_sister', x: 13, y: 3,  type: 'examine', glow: false },
+    { id: 'ch0_window_parents',x: 22, y: 3,  type: 'examine', glow: false },
+    { id: 'ch0_window_bath',   x: 34, y: 3,  type: 'examine', glow: false },
+    { id: 'ch0_window_kitchen',x: 30, y: 15, type: 'examine', glow: false },
   ],
 };
 
@@ -283,18 +281,18 @@ export const beachMap: MapData = {
     { id: 'ch1_weed1',   x: 14, y: 4,  type: 'examine', glow: true, sprite: 'item-weed-bag' },
     { id: 'ch1_weed2',   x: 11, y: 6,  type: 'examine', glow: true, sprite: 'item-weed-bag' },
     { id: 'ch1_weed3',   x: 5,  y: 2,  type: 'examine', glow: true, sprite: 'item-weed-bag' },
-    { id: 'ch1_bottles', x: 19, y: 2,  type: 'examine', glow: true, sprite: 'item-bottle' },
-    { id: 'ch1_hottub',  x: 30, y: 6,  type: 'examine', glow: true },
-    { id: 'ch1_mess',    x: 2,  y: 7,  type: 'examine', glow: true, sprite: 'item-bottle' },
+    { id: 'ch1_bottles', x: 19, y: 2,  type: 'examine', glow: false, sprite: 'item-bottle' },
+    { id: 'ch1_hottub',  x: 30, y: 6,  type: 'examine', glow: false },
+    { id: 'ch1_mess',    x: 2,  y: 7,  type: 'examine', glow: false, sprite: 'item-bottle' },
     { id: 'ch1_view',    x: 20, y: 21, type: 'examine', glow: true },
     { id: 'ch1_smoke',   x: 8,  y: 11, type: 'examine', glow: true, sprite: 'item-joint' },
     { id: 'ch1_blunt',   x: 35, y: 6,  type: 'examine', glow: true, sprite: 'item-joint' },
     { id: 'ch1_bong',    x: 20, y: 1,  type: 'examine', glow: true, sprite: 'item-bong' },
     { id: 'ch1_setup',   x: 11, y: 2,  type: 'examine', glow: true, sprite: 'item-tablet' },
     { id: 'ch1_computer', x: 12, y: 3, type: 'examine', glow: true },
-    { id: 'ch1_bed',     x: 10, y: 1,  type: 'examine', glow: true, sprite: 'item-bed' },
-    { id: 'ch1_closet',  x: 15, y: 2,  type: 'examine', glow: true },
-    { id: 'ch1_speaker', x: 14, y: 1,  type: 'examine', glow: true },
+    { id: 'ch1_bed',     x: 10, y: 1,  type: 'examine', glow: false, sprite: 'item-bed' },
+    { id: 'ch1_closet',  x: 15, y: 2,  type: 'examine', glow: false },
+    { id: 'ch1_speaker', x: 14, y: 1,  type: 'examine', glow: false },
     { id: 'ch1_volleyball1', x: 15, y: 20, type: 'examine', glow: true },
     { id: 'ch1_shower',      x: 27, y: 7,  type: 'examine', glow: true, sprite: 'item-shower' },
   ],
@@ -383,7 +381,7 @@ export const wrongCrowdMap: MapData = {
   interactables: [
     // --- JP's Room (cols 15-20, rows 1-6) ---
     // Bed with weed PILED on both sides — overflowing from under the bed
-    { id: 'ch2_bed',       x: 15, y: 1, type: 'examine', glow: true, sprite: 'item-bed' },       // bed against north wall
+    { id: 'ch2_bed',       x: 15, y: 1, type: 'examine', glow: false, sprite: 'item-bed' },      // furniture
     { id: 'ch2_bed_pile_L', x: 15, y: 2, type: 'examine', glow: false, sprite: 'item-weed-bag' }, // pile LEFT of bed (stacked)
     { id: 'ch2_bed_pile_L2', x: 15, y: 2, type: 'examine', glow: false, sprite: 'item-weed-bag' }, // second bag same tile (visual stack)
     { id: 'ch2_bed_pile_L3', x: 15, y: 3, type: 'examine', glow: false, sprite: 'item-weed-bag' }, // spilling onto floor
@@ -399,15 +397,15 @@ export const wrongCrowdMap: MapData = {
     { id: 'ch2_pops_missed', x: 17, y: 5, type: 'examine', glow: true, sprite: 'item-phone' },   // missed call from pops
 
     // --- House common areas ---
-    { id: 'ch2_light1',    x: 10, y: 3, type: 'examine', glow: true },                            // light switch in living room
-    { id: 'ch2_light2',    x: 24, y: 3, type: 'examine', glow: true },                            // light switch in kitchen
-    { id: 'ch2_fridge',    x: 26, y: 1, type: 'examine', glow: true, sprite: 'item-fridge' },     // kitchen fridge against north + east wall
-    { id: 'ch2_hottub_night', x: 31, y: 4, type: 'examine', glow: true },                         // hot tub area (empty at night)
-    { id: 'ch2_front_door', x: 18, y: 8, type: 'examine', glow: true },                           // path from JP room door
+    { id: 'ch2_light1',    x: 10, y: 3, type: 'examine', glow: false },                           // light switch
+    { id: 'ch2_light2',    x: 24, y: 3, type: 'examine', glow: false },                           // light switch
+    { id: 'ch2_fridge',    x: 26, y: 1, type: 'examine', glow: false, sprite: 'item-fridge' },    // appliance
+    { id: 'ch2_hottub_night', x: 31, y: 4, type: 'examine', glow: false },                        // empty at night
+    { id: 'ch2_front_door', x: 18, y: 8, type: 'examine', glow: false },                          // door
 
     // --- Street & driving ---
     { id: 'ch2_car',       x: 18, y: 13, type: 'examine', glow: true, sprite: 'item-keys' },     // BMW parked on street
-    { id: 'ch2_streetlight', x: 25, y: 16, type: 'examine', glow: true },                         // streetlight on sidewalk
+    { id: 'ch2_streetlight', x: 25, y: 16, type: 'examine', glow: false },                        // streetlight — scenery
     { id: 'ch2_street_walk', x: 14, y: 14, type: 'examine', glow: true },                         // walking the dark street
     { id: 'ch2_nervous',   x: 12, y: 30, type: 'examine', glow: true },                           // nervous on second street
 
@@ -519,24 +517,24 @@ export const jailMap: MapData = {
 
     // --- JP's cell items ---
     { id: 'ch3_bed',         x: 3, y: 6,   type: 'examine', glow: true, sprite: 'item-bed' },      // BACK of JP's cell
-    { id: 'ch3_toilet',      x: 2, y: 6,   type: 'examine', glow: true, sprite: 'item-toilet' },   // JP's cell
+    { id: 'ch3_toilet',      x: 2, y: 6,   type: 'examine', glow: false, sprite: 'item-toilet' },  // furniture
     { id: 'ch3_book',        x: 5, y: 8,   type: 'examine', glow: true, sprite: 'item-book' },     // JP's cell
     { id: 'ch3_letter_home', x: 4, y: 6,   type: 'examine', glow: true, sprite: 'item-letter' },   // JP's cell
 
     // --- Hallway / common ---
     { id: 'ch3_phone',       x: 10, y: 13, type: 'examine', glow: true, sprite: 'item-phone' },    // hallway phone
-    { id: 'ch3_window',      x: 14, y: 16, type: 'examine', glow: true, sprite: 'item-window' },   // small window in hallway
+    { id: 'ch3_window',      x: 14, y: 16, type: 'examine', glow: false },                         // window — no floating sprite
     { id: 'ch3_transformation', x: 13, y: 16, type: 'examine', glow: true },                        // hallway mirror
 
     // --- Common area ---
     { id: 'ch3_commissary',  x: 28, y: 4,  type: 'examine', glow: true },                          // commissary counter
     { id: 'ch3_fight_watch', x: 23, y: 3,  type: 'examine', glow: true },                          // watching fight
     { id: 'ch3_dice_watch',  x: 34, y: 8,  type: 'examine', glow: true, sprite: 'item-dice' },     // watching dice
-    { id: 'ch3_anger_management', x: 24, y: 8, type: 'examine', glow: true },                      // anger mgmt poster
+    { id: 'ch3_anger_management', x: 24, y: 8, type: 'examine', glow: false },                     // wall poster — scenery
 
     // --- Yard ---
     { id: 'ch3_pushups',     x: 12, y: 19, type: 'examine', glow: true, sprite: 'item-weights' },  // yard
-    { id: 'ch3_yard',        x: 18, y: 23, type: 'examine', glow: true },                          // open yard area
+    { id: 'ch3_yard',        x: 18, y: 23, type: 'examine', glow: false },                         // scenery
     { id: 'ch3_birthday',    x: 30, y: 23, type: 'examine', glow: true },                          // yard, open area
     { id: 'ch3_faith',       x: 7, y: 22,  type: 'examine', glow: true },                          // quiet corner of yard
 
