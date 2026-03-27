@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, CHAR_SCALE } from '../config';
 import { SoundEffects } from './SoundEffects';
 import { InventorySystem } from './InventorySystem';
+import { virtualInput } from '../../components/GameCanvas';
 
 // ── Emote Definition ──────────────────────────────────────────────
 
@@ -401,6 +402,16 @@ export class EmoteSystem {
         }
       });
     }
+
+    // Mobile: poll virtualInput for emote button
+    scene.events.on('update', () => {
+      if (virtualInput.emoteJustPressed) {
+        virtualInput.emoteJustPressed = false;
+        if (this.playing) return;
+        if (this.wheelOpen) this.closeWheel();
+        else this.openWheel();
+      }
+    });
   }
 
   /** Play a specific emote by id */

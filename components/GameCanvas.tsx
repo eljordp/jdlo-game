@@ -37,6 +37,8 @@ export const virtualInput = {
   down: false,
   action: false,
   actionJustPressed: false,
+  phoneJustPressed: false,
+  emoteJustPressed: false,
   gameSpeed: 1,
 };
 
@@ -251,6 +253,30 @@ export default function GameCanvas() {
             onTouchCancel={() => releaseAction()}
           >
             <span className="text-white/60 text-xs font-mono font-bold">A</span>
+          </button>
+
+          {/* Phone button — above action button */}
+          <button
+            className="absolute bottom-24 right-6 z-30 w-10 h-10 bg-white/10 rounded-lg active:bg-white/30 flex items-center justify-center border border-white/15"
+            onTouchStart={(e) => {
+              e.preventDefault();
+              virtualInput.phoneJustPressed = true;
+              setTimeout(() => { virtualInput.phoneJustPressed = false; }, 100);
+            }}
+          >
+            <span className="text-white/60 text-lg">📱</span>
+          </button>
+
+          {/* Emote button — above phone button */}
+          <button
+            className="absolute bottom-[8.5rem] right-6 z-30 w-10 h-10 bg-white/10 rounded-lg active:bg-white/30 flex items-center justify-center border border-white/15"
+            onTouchStart={(e) => {
+              e.preventDefault();
+              virtualInput.emoteJustPressed = true;
+              setTimeout(() => { virtualInput.emoteJustPressed = false; }, 100);
+            }}
+          >
+            <span className="text-white/60 text-lg">😤</span>
           </button>
         </div>
       )}

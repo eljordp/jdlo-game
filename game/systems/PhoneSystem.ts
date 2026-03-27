@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '../config';
 import { InventorySystem } from './InventorySystem';
 import { BalanceSystem } from './BalanceSystem';
+import { virtualInput } from '../../components/GameCanvas';
 
 // ── Phone System (Singleton) ────────────────────────────────────
 // iPhone 16-style phone overlay. Opens with P or TAB.
@@ -65,6 +66,14 @@ export class PhoneSystem {
     });
     this.escKey.on('down', () => {
       if (this.isOpen) this.close();
+    });
+
+    // Mobile: poll virtualInput for phone button
+    scene.events.on('update', () => {
+      if (virtualInput.phoneJustPressed) {
+        virtualInput.phoneJustPressed = false;
+        this.toggle();
+      }
     });
   }
 
