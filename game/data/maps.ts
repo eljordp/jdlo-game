@@ -581,37 +581,22 @@ export const operatorMap: MapData = {
     [ G, C, C, C, C, C, C, C, C, T, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, T, C, C, C, C, C, C, C, C, C, C, C, C, C, G ], // 11
     [ G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G ], // 12
 
-    // ── TRANSITION ZONE (rows 13-20) — downtown feel with buildings + tree-lined streets ──
+    // ── DOWNTOWN (rows 13-17) — client offices + shops ──
     [ G, G, T, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, T, G, G ], // 13
     [ G, T, C, B, B, B, B, B, C, T, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, B, B, B, B, T, C, C, C, C, C, C, C, T, G, G ], // 14 shop buildings
     [ G, G, C, B, F, F, F, B, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, B, F, F, B, C, C, C, C, C, C, C, C, G, G, G ], // 15 shop interiors
     [ G, G, T, B, B, O, B, B, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, B, B, O, B, P, P, P, P, P, P, C, T, G, G, G ], // 16 cross street + shop doors
     [ G, G, C, C, C, C, C, C, C, C, C, C, T, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, T, C, C, C, C, C, G, G, G ], // 17
-    [ G, T, C, B, B, B, B, C, T, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, T, C, C, C, C, C, C, C, C, T, G, G ], // 18 another building
-    [ G, G, T, B, F, F, B, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, T, G, G, G ], // 19
-    [ G, G, G, B, B, O, B, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G, G, G, G ], // 20
 
-    // ── VEGAS (left) + HOME (right) ──
-    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, P, P, P, P, P, P, P, P, P, P, C, C, G, G, G, G, G, G, G, G, G, G ], // 21
-    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G, G, E, E, E, E, E, E, E, G, G ], // 22
-    [ C, C, B, B, B, B, B, B, B, B, B, B, B, B, B, C, C, C, C, C, C, C, C, C, C, C, C, C, G, G, E, G, G, G, G, T, G, E, G, G ], // 23 Vegas hotel/casino     Home fence
-    [ C, C, B, D, D, D, D, D, D, D, D, D, D, D, B, C, C, T, C, C, C, C, C, C, T, C, C, C, G, G, E, G, B, B, B, B, G, E, G, G ], // 24  DARK_FLOOR casino
-    [ C, C, B, D, D, D, E, D, D, D, D, E, D, D, B, C, C, C, C, C, C, C, C, C, C, C, C, P, P, P, P, G, B, F, F, B, G, E, G, G ], // 25 velvet ropes (E) + casino
-    [ C, C, B, D, D, M, D, D, D, D, D, M, D, D, B, C, C, C, C, C, C, C, C, C, C, C, C, C, G, G, E, G, B, F, F, B, G, E, G, G ], // 26 M=conference desks
-    [ C, C, B, D, D, D, D, D, D, D, D, D, D, D, B, C, C, C, C, C, C, C, C, C, C, C, C, C, G, G, E, G, B, B, O, B, G, E, G, G ], // 27
-    [ C, C, B, B, B, B, B, B, O, B, B, B, B, B, B, C, C, T, C, C, C, C, C, T, C, C, C, C, G, G, E, G, G, G, P, G, G, E, G, G ], // 28 casino door
-    [ C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G, G, E, G, G, G, P, G, G, E, G, G ], // 29
-    [ C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, P, P, P, P, P, P, P, P, P, G, G, E, T, G, G, P, G, T, E, G, G ], // 30 path connecting Vegas to home
-    [ C, C, C, C, C, C, C, C, P, P, P, P, P, P, P, P, P, P, P, P, C, C, C, C, C, C, C, C, G, G, V, G, V, G, P, G, V, E, G, G ], // 31 vine on home fence
-    [ C, C, C, C, T, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, T, C, C, C, C, C, G, G, E, I, V, G, P, G, V, E, G, G ], // 32 dirt in yard + vine
-    [ G, G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G, G, G, E, E, E, E, P, E, E, E, G, G ], // 33 home fence bottom
-    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 34
+    // ── EXIT STREET (rows 18-19) ──
+    [ G, C, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, C, G ], // 18 exit street
+    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 19 bottom edge — exit gap at center
   ],
   collisions: STANDARD_COLLISIONS,
   spawns: {
     player: { x: 19, y: 1 },
     npcs: [
-      // LA zone
+      // LA zone — offices
       { id: 'ch6_malachi',      x: 7,  y: 5,  sprite: 'npc_malachi' },
       { id: 'ch6_big_client',   x: 22, y: 5,  sprite: 'npc_suit' },
       { id: 'ch6_equal',        x: 15, y: 11, sprite: 'npc_whale' },
@@ -620,44 +605,29 @@ export const operatorMap: MapData = {
       { id: 'ch6_client2',      x: 33, y: 4,  sprite: 'npc_business' },
       { id: 'ch6_dhl',           x: 28, y: 11, sprite: 'npc_dhl_client' },
       { id: 'ch6_mentor',        x: 20, y: 8,  sprite: 'npc_generic' },
-      { id: 'ch6_team_member',   x: 24, y: 11, sprite: 'npc_generic' },
+      { id: 'ch6_team_member',   x: 24, y: 13, sprite: 'npc_generic' },
       { id: 'ch6_security',      x: 24, y: 8,  sprite: 'npc_security' },
       // LA zone — referrals
       { id: 'ch6_manza',         x: 30, y: 11, sprite: 'npc_manza' },
-      // Vegas zone
-      { id: 'ch6_vegas_contact', x: 10, y: 25, sprite: 'npc_suit' },
-      { id: 'ch6_casino_host',   x: 6,  y: 29, sprite: 'npc_business' },
-      // Home zone
-      { id: 'ch6_pops_home',    x: 33, y: 29, sprite: 'npc_pops' },
-      { id: 'ch6_sister_home',  x: 35, y: 24, sprite: 'npc_sister' },
-      { id: 'ch6_ivy_home',     x: 34, y: 31, sprite: 'npc_frenchie' },
     ],
   },
   triggers: [
-    // Exit at home — JP leaves home one last time. Full circle.
-    { x: 34, y: 34, action: 'scene', target: 'EndScene' },
+    // Exit south — JP heads to Vegas
+    { x: 19, y: 19, action: 'scene', target: 'VegasScene' },
   ],
   interactables: [
     // LA zone
     { id: 'ch6_dashboard', x: 8, y: 5, type: 'examine', glow: true, sprite: 'item-tablet' },
     { id: 'ch6_portfolio', x: 19, y: 10, type: 'examine', glow: true, sprite: 'item-tablet' },
-    { id: 'ch6_vegas', x: 5, y: 8, type: 'examine', glow: true },
     { id: 'ch6_team', x: 10, y: 11, type: 'examine', glow: true, sprite: 'item-phone' },
     { id: 'ch6_mirror', x: 33, y: 5, type: 'examine', glow: true },
     { id: 'ch6_pomaikai_office', x: 23, y: 3, type: 'examine', glow: true, sprite: 'item-tablet' },
-    { id: 'ch6_vegas_memory', x: 8, y: 8, type: 'examine', glow: true },
     { id: 'ch6_slack', x: 3, y: 8, type: 'examine', glow: true, sprite: 'item-phone' },
     { id: 'ch6_revenue', x: 36, y: 8, type: 'examine', glow: true, sprite: 'item-money' },
     { id: 'ch6_instagram', x: 16, y: 11, type: 'examine', glow: true, sprite: 'item-phone' },
     { id: 'ch6_future', x: 30, y: 8, type: 'examine', glow: true, sprite: 'item-letter' },
     { id: 'ch6_equal_moment', x: 22, y: 11, type: 'examine', glow: true },
-    // Transition zone — Vegas sign
-    { id: 'ch6_vegas_sign', x: 19, y: 15, type: 'examine', glow: true },
-    // Vegas zone
-    { id: 'ch6_vegas_table', x: 8, y: 26, type: 'examine', glow: true, sprite: 'item-tablet' },
-    // Home zone
-    { id: 'ch6_home_return', x: 34, y: 27, type: 'examine', glow: true },
-    { id: 'ch6_vineyard_view', x: 32, y: 31, type: 'examine', glow: true },
+    { id: 'ch6_security', x: 5, y: 15, type: 'examine', glow: true },
   ],
 };
 

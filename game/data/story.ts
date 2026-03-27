@@ -837,7 +837,7 @@ export const chapter6NPCs: NPCData[] = [
   {
     id: 'ch6_team_member',
     x: 19,
-    y: 23,
+    y: 13,
     sprite: 'npc_generic',
     dialogue: [
       { speaker: 'Team Member', text: 'JP, the dashboard you built is saving us 10 hours a week minimum.' },
@@ -853,33 +853,6 @@ export const chapter6NPCs: NPCData[] = [
       { speaker: 'Manza', text: 'My boy just hit me up. He needs a site by Friday. You want it?' },
       { speaker: 'JP', text: 'Send it over.' },
       { speaker: 'Manza', text: 'Already did. Check your DMs. I told him you\'re the guy.' },
-    ],
-  },
-  {
-    id: 'ch6_vegas_contact',
-    x: 12,
-    y: 26,
-    sprite: 'npc_suit',
-    dialogue: [
-      { speaker: 'Vegas Contact', text: 'JP. We heard about the Pomaika\'i system. Word travels fast in this town.' },
-      { speaker: 'JP', text: 'Good. I want it to.' },
-      { speaker: 'Vegas Contact', text: 'We\'ve got three properties that need what you built. Can you handle the volume?' },
-      { speaker: 'JP', text: 'I built the first one in a weekend. What do you think?' },
-      { speaker: 'Vegas Contact', text: 'I think we need to talk numbers over dinner.' },
-    ],
-  },
-  {
-    id: 'ch6_casino_host',
-    x: 16,
-    y: 26,
-    sprite: 'npc_business',
-    dialogue: [
-      { speaker: 'Casino Host', text: 'You\'re the kid Tony brought in? You look young.' },
-      { speaker: 'JP', text: 'I am young. That\'s not the problem you think it is.' },
-      { speaker: 'Casino Host', text: 'Fair enough. Show me this promoter bot.' },
-      { speaker: 'JP', text: 'Already running. Check your phone. I sent you a demo five minutes ago.' },
-      { speaker: 'Casino Host', text: '...You\'re serious.' },
-      { speaker: 'JP', text: 'Always.' },
     ],
   },
   {
@@ -921,59 +894,6 @@ export const chapter6NPCs: NPCData[] = [
       { speaker: 'JP', text: 'I\'m getting there.' },
       { speaker: 'Mentor', text: 'You\'re already there. You just don\'t believe it yet.' },
       { speaker: 'JP\'s Mind', text: 'First time someone in this industry looked at me like an equal. Not a kid. Not a project. An equal.' },
-    ],
-  },
-  {
-    id: 'ch6_pops_home',
-    x: 32,
-    y: 28,
-    sprite: 'npc_pops',
-    dialogue: [
-      { speaker: 'Pops', text: 'Son.' },
-      { speaker: 'JP', text: 'Pops.' },
-      { speaker: 'Pops', text: 'Come here.' },
-      { speaker: 'Narrator', text: 'Pops hugs him. Doesn\'t let go for a while.' },
-      { speaker: 'Pops', text: 'I saw the websites you built. The businesses. Your mom showed me everything.' },
-      { speaker: 'JP', text: 'Yeah? What\'d you think?' },
-      { speaker: 'Pops', text: 'I don\'t understand half of it. I don\'t know what a CRM is or why anyone needs an AI phone.' },
-      { speaker: 'Pops', text: 'But I know you built it yourself. With your own hands. From nothing.' },
-      { speaker: 'JP', text: '...' },
-      { speaker: 'Pops', text: 'I know what you went through, Jordan. The charges. The cell. Losing everything.' },
-      { speaker: 'Pops', text: 'Most people don\'t come back from that. You know that, right?' },
-      { speaker: 'JP', text: 'Yeah. I know.' },
-      { speaker: 'Pops', text: 'But you did. And you didn\'t just come back — you came back better.' },
-      { speaker: 'Pops', text: 'Whatever you do, just do it all the way. Don\'t half-ass it.' },
-      { speaker: 'JP', text: 'You told me that before I left for SB.' },
-      { speaker: 'Pops', text: 'And now you\'re finally listening.' },
-      { speaker: 'JP\'s Mind', text: 'Everything I built, everyone I helped, every 3 AM session — it was all for this moment.' },
-      { speaker: 'JP\'s Mind', text: 'To come home and make Pops proud.' },
-    ],
-  },
-  {
-    id: 'ch6_sister_home',
-    x: 35,
-    y: 26,
-    sprite: 'npc_sister',
-    dialogue: [
-      { speaker: 'Sister', text: 'JP! You\'re home!' },
-      { speaker: 'JP', text: 'Hey, kid. Miss me?' },
-      { speaker: 'Sister', text: 'Mom says you\'re like a CEO now or something.' },
-      { speaker: 'JP', text: 'COO. Close enough.' },
-      { speaker: 'Sister', text: 'Can you build me a website?' },
-      { speaker: 'JP', text: 'What for?' },
-      { speaker: 'Sister', text: 'I don\'t know yet. But if you can do it, I want one too.' },
-    ],
-  },
-  {
-    id: 'ch6_ivy_home',
-    x: 33,
-    y: 30,
-    sprite: 'npc_frenchie',
-    dialogue: [
-      { speaker: 'Narrator', text: 'Ivy sprints across the yard the second she hears JP\'s voice.' },
-      { speaker: 'Narrator', text: 'She doesn\'t care about the clients. The revenue. The title.' },
-      { speaker: 'Narrator', text: 'She just knows her person is home.' },
-      { speaker: 'JP', text: 'Hey girl. I missed you too.' },
     ],
   },
 ];
@@ -1761,11 +1681,6 @@ const ch6Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'Sticker Smith. WCT. DHL. Vacaville Appliance. Manza Visuals. And it\'s still just the beginning.' },
     { speaker: 'JP\'s Mind', text: 'People doing $400K a month treat me like an equal. Because I earned it.' },
   ],
-  ch6_vegas: [
-    { speaker: 'JP\'s Mind', text: 'Flew to Vegas for a business meeting. Six months ago I was on a tractor.' },
-    { speaker: 'JP\'s Mind', text: 'Sitting across from people closing million-dollar deals. And they\'re asking ME for advice.' },
-    { speaker: 'JP\'s Mind', text: 'Life doesn\'t change slowly. It waits until you\'re ready, then it hits you all at once.' },
-  ],
   ch6_team: [
     { speaker: 'JP\'s Mind', text: 'Three people count on me now. Can\'t let them down.' },
     { speaker: 'JP\'s Mind', text: 'Used to only worry about myself. Now there\'s a team. Responsibilities. People who trust me.' },
@@ -1781,10 +1696,6 @@ const ch6Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'Dashboard, team workflows, client pipeline — all running. All built by one person with a laptop.' },
     { speaker: 'JP\'s Mind', text: 'Malachi had the vision. I built the machine that makes it real.' },
     { speaker: 'JP\'s Mind', text: 'COO at 22. No degree. No connections. Just work.' },
-  ],
-  ch6_vegas_memory: [
-    { speaker: 'JP\'s Mind', text: 'Flew to Vegas for a meeting with Malachi. Sat across from people closing million-dollar deals.' },
-    { speaker: 'JP\'s Mind', text: 'They asked JP for advice. Six months ago he was on a tractor.' },
   ],
   ch6_slack: [
     { speaker: 'JP\'s Mind', text: 'Team Slack is blowing up. Three clients need updates. Two proposals due. A new lead from Instagram.' },
@@ -1811,26 +1722,6 @@ const ch6Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP', text: 'How\'s it going?' },
     { speaker: 'Security', text: 'All clear. Your 2 o\'clock is here.' },
     { speaker: 'JP', text: 'Send them in.' },
-  ],
-  ch6_vegas_table: [
-    { speaker: 'Narrator', text: 'Conference table. Malachi on one side, a seven-figure client on the other.' },
-    { speaker: 'Narrator', text: 'JP presents the system. Clean. Fast. No filler.' },
-    { speaker: 'Narrator', text: 'They sign.' },
-    { speaker: 'JP\'s Mind', text: 'Six months ago I was mowing lawns. Now I\'m closing deals in Vegas.' },
-  ],
-  ch6_home_return: [
-    { speaker: 'Narrator', text: 'JP walks through the front door.' },
-    { speaker: 'Narrator', text: 'Pops doesn\'t say anything. Just hugs him.' },
-    { speaker: 'JP\'s Mind', text: 'This is why I do all of it. This right here.' },
-  ],
-  ch6_vineyard_view: [
-    { speaker: 'JP\'s Mind', text: 'Caymus vineyards in the distance. I used to mow these fields.' },
-    { speaker: 'JP\'s Mind', text: 'Now I drive past them.' },
-    { speaker: 'JP\'s Mind', text: 'The rows haven\'t changed. I have.' },
-  ],
-  ch6_vegas_sign: [
-    { speaker: 'JP\'s Mind', text: 'Las Vegas. 270 miles from LA. A whole different world.' },
-    { speaker: 'JP\'s Mind', text: 'But the hustle is the same everywhere.' },
   ],
 };
 

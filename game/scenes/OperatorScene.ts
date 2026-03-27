@@ -7,7 +7,7 @@ export class OperatorScene extends BaseChapterScene {
   constructor() {
     super({ key: 'OperatorScene' });
     this.chapterTitle = 'Chapter 7: Operator Mode';
-    this.nextScene = 'EndScene';
+    this.nextScene = 'VegasScene';
     this.requiredInteractionId = 'ch6_equal_moment';
   }
 
@@ -21,12 +21,12 @@ export class OperatorScene extends BaseChapterScene {
 
   create() {
     super.create();
-    // Exit at home zone — bottom of the map
-    this.addNavArrow(34, 33, 'The End');
+    // Exit south — head to Vegas
+    this.addNavArrow(19, 18, 'Vegas');
   }
 
   protected getObjectiveHint(): string {
-    return 'LA. Vegas. Home. Explore it all. Head south to the end.';
+    return 'Run the LA operation. Talk to everyone, then head south to Vegas.';
   }
 
   getMapData(): MapData {

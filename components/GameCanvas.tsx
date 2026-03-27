@@ -16,6 +16,8 @@ import { LAScene } from "@/game/scenes/LAScene";
 import { OperatorScene } from "@/game/scenes/OperatorScene";
 import { ReleaseScene } from "@/game/scenes/ReleaseScene";
 import { EndScene } from "@/game/scenes/EndScene";
+import { VegasScene } from "@/game/scenes/VegasScene";
+import { HomeReturnScene } from "@/game/scenes/HomeReturnScene";
 import { TransitionScene } from "@/game/scenes/TransitionScene";
 import { GAME_WIDTH, GAME_HEIGHT } from "@/game/config";
 import { MusicSystem } from "@/game/systems/MusicSystem";
@@ -97,6 +99,8 @@ export default function GameCanvas() {
         ComeUpScene,
         LAScene,
         OperatorScene,
+        VegasScene,
+        HomeReturnScene,
         EndScene,
         TransitionScene,
       ],
