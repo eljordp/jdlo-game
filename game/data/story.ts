@@ -1134,8 +1134,8 @@ const ch0Extras: Record<string, DialogueLine[]> = {
   ],
   // --- Office (was spare room) ---
   ch0_parents_bookshelf: [
-    { speaker: 'Narrator', text: 'Self-help books. Bible. Photo albums from the 90s.' },
-    { speaker: 'Narrator', text: 'Pops reads more than people think.' },
+    { speaker: 'Narrator', text: 'Mom\'s bookshelf. Bible. Photo albums from the 90s. A couple self-help books.' },
+    { speaker: 'Narrator', text: 'Pops doesn\'t touch this side of the room.' },
   ],
   ch0_parents_closet: [
     { speaker: 'Narrator', text: 'Walk-in closet. Mom\'s side is organized. Pops\' side... not so much.' },
@@ -1248,6 +1248,42 @@ const ch0Extras: Record<string, DialogueLine[]> = {
     { speaker: 'Narrator', text: 'A plate of food on the counter. Still warm. No note.' },
     { speaker: 'JP\'s Mind', text: 'She\'s mad. But she still made me a plate.' },
     { speaker: 'Narrator', text: 'That\'s a mom.' },
+  ],
+  ch0_parents_safe: [
+    { speaker: 'Narrator', text: 'Something behind the dresser. A small safe.' },
+    { speaker: 'JP', text: 'I know the code. 0714. Sister\'s birthday.' },
+    { speaker: 'Narrator', text: 'Cash inside. Emergency fund. JP doesn\'t touch it.' },
+    { speaker: 'JP\'s Mind', text: 'That\'s Pops\' retirement money. Off limits.' },
+  ],
+  ch0_sister_drawing_wall: [
+    { speaker: 'Narrator', text: 'A crayon drawing of the family. Everyone holding hands.' },
+    { speaker: 'Narrator', text: 'JP is the tallest one. She gave him a cape.' },
+    { speaker: 'JP\'s Mind', text: '...a cape.' },
+    { speaker: 'JP\'s Mind', text: 'She thinks I\'m a superhero.' },
+  ],
+  ch0_cookie_jar: [
+    { speaker: 'Narrator', text: 'Mom\'s cookie jar. Shaped like a bear. Sister painted it.' },
+    { speaker: 'Narrator', text: 'JP opens it. Empty.' },
+    { speaker: 'JP', text: 'Of course.' },
+    { speaker: 'Narrator', text: 'He checks behind the cereal box. Finds two Oreos.' },
+    { speaker: 'JP\'s Mind', text: 'Mom hides the good ones.' },
+  ],
+  ch0_kitchen_knife: [
+    { speaker: 'Narrator', text: 'Knife block. Mom keeps them sharp.' },
+  ],
+  ch0_pops_truck: [
+    { speaker: 'Narrator', text: 'Pops\' truck. Dented, dusty, runs perfect.' },
+    { speaker: 'Narrator', text: 'He\'s had it since before JP was born.' },
+  ],
+  ch0_jp_car: [
+    { speaker: 'JP\'s Mind', text: 'My car. Nothing special yet but it gets me around.' },
+    { speaker: 'JP\'s Mind', text: 'One day I\'ll have something worth looking at in this driveway.' },
+  ],
+  ch0_basketball: [
+    { speaker: 'Narrator', text: 'JP shoots from the free throw line.' },
+    { speaker: 'Narrator', text: 'Swish. Nothing but net.' },
+    { speaker: 'JP\'s Mind', text: 'Used to be out here every day after school.' },
+    { speaker: 'JP\'s Mind', text: 'Haven\'t touched a ball in months.' },
   ],
   ch0_window_jp: [
     { speaker: 'Narrator', text: 'JP\'s window. Faces the backyard. Good for sneaking out.' },

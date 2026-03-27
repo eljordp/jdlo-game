@@ -114,16 +114,16 @@ export const homeMap: MapData = {
     [ G, G, G, K, K, K, K, K, K, K, K, K, K, O, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, O, K, K, K, K, K, K, G, G, G ], // 15 front door + backyard door (col 30, kitchen side)
     [ G, G, G, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, B, B, B, B, B, B, G, G, G ], // 16 walkway + garage top wall
     [ G, G, E, E, E, E, E, E, E, E, E, E, E, C, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, C, B, C, C, C, C, B, E, G, G ], // 17 fence + garage interior
-    [ G, G, E, G, G, I, T, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, I, G, G, G, G, G, G, G, G, B, C, C, C, C, B, E, G, G ], // 18 yard + garage interior
-    [ G, G, E, G, G, G, I, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, B, B, B, O, B, B, E, G, G ], // 19 yard + garage door (south)
-    [ G, G, E, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, W, W, W, W, W, G, G, G, G, G, G, G, E, G, G ], // 20 pond (palm removed for garage access)
-    [ G, G, E, G, T, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, T, W, W, W, W, G, G, G, G, G, G, G, E, G, G ], // 21 tree near pond
-    [ G, G, E, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, I, W, W, G, G, G, G, G, G, G, G, E, G, G ], // 22 dirt near pond edge
-    [ G, G, E, G, G, G, T, G, G, L, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, T, G, G, E, G, G ], // 23 trees + palm
-    [ G, G, E, G, G, G, G, G, G, G, G, G, G, C, G, G, G, I, I, I, I, I, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, E, G, G ], // 24 garden plot top
-    [ G, G, E, G, G, G, G, G, G, G, G, G, G, C, G, G, G, I, G, G, G, I, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, E, G, G ], // 25 garden interior
-    [ G, G, E, G, G, G, G, G, G, G, G, G, G, C, G, G, G, I, I, I, I, I, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, E, G, G ], // 26 garden plot bottom
-    [ G, G, E, G, G, G, G, T, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, L, G, G, G, G, G, G, G, E, G, G ], // 27 tree + palm
+    [ G, G, E, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, B, C, C, C, C, B, E, G, G ], // 18 yard + garage interior
+    [ G, G, E, G, G, G, G, G, G, L, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, B, B, B, O, B, B, E, G, G ], // 19 yard + garage door + palm
+    [ G, G, E, G, G, G, G, G, G, G, G, G, G, C, G, G, G, C, C, C, C, C, C, C, G, G, G, W, W, W, G, G, G, G, G, G, G, E, G, G ], // 20 basketball court top + pond
+    [ G, G, E, G, T, G, G, G, G, G, G, G, G, C, G, G, G, C, C, C, C, C, C, C, G, G, T, W, W, W, G, G, G, G, L, G, G, E, G, G ], // 21 court + pond + palms
+    [ G, G, E, G, G, G, G, G, G, G, G, G, G, C, G, G, G, C, C, C, C, C, C, C, G, G, G, W, W, G, G, G, G, G, G, G, G, E, G, G ], // 22 court bottom + pond edge
+    [ G, G, E, G, G, G, G, G, G, L, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, E, G, G ], // 23 palm
+    [ G, G, E, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, E, G, G ], // 24 open grass
+    [ G, G, E, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, E, G, G ], // 25 open grass
+    [ G, G, E, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, L, G, G, G, G, G, G, G, E, G, G ], // 26 palm
+    [ G, G, E, G, G, G, G, T, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, E, G, G ], // 27 tree
     [ G, G, E, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, E, G, G ], // 28 open grass
     [ G, G, E, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, E, G, G ], // 29 open grass
     [ G, G, E, E, E, E, E, E, E, E, E, E, E, C, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, G, G ], // 30 fence bottom
@@ -174,6 +174,13 @@ export const homeMap: MapData = {
     { id: 'ch0_parents_bookshelf', x: 25, y: 4, type: 'examine', glow: false, sprite: 'item-bookshelf' }, // bookshelf on back wall
     { id: 'ch0_parents_closet', x: 29, y: 4, type: 'examine', glow: false },                             // walk-in closet door (back wall)
     { id: 'ch0_parents_dresser', x: 27, y: 7, type: 'examine', glow: false },                            // dresser
+    // Parents — cool interactions
+    { id: 'ch0_parents_safe',   x: 30, y: 7,  type: 'examine', glow: true },                             // hidden safe behind dresser
+    // Sister — cool interactions
+    { id: 'ch0_sister_drawing_wall', x: 14, y: 4, type: 'examine', glow: true },                         // her drawings on the wall
+    // Kitchen — cool interactions
+    { id: 'ch0_kitchen_knife',  x: 32, y: 14, type: 'examine', glow: false },                            // knife block
+    { id: 'ch0_cookie_jar',    x: 34, y: 14, type: 'examine', glow: true },                              // cookie jar — mom's
     // Bathroom (cols 32-35, rows 4-8)
     { id: 'ch0_mirror',        x: 34, y: 4,  type: 'examine', glow: true, sprite: 'item-mirror' },      // deep reflection — interactive
     { id: 'ch0_toilet',        x: 32, y: 7,  type: 'examine', glow: false, sprite: 'item-toilet' },     // furniture
@@ -189,12 +196,14 @@ export const homeMap: MapData = {
     { id: 'ch0_food',          x: 33, y: 12, type: 'examine', glow: false, sprite: 'item-food' },       // scenery
     { id: 'ch0_mail',          x: 28, y: 14, type: 'examine', glow: true, sprite: 'item-letter' },      // story — college letters
     // Garage (cols 32-36, rows 17-19)
-    { id: 'ch0_garage_car',    x: 34, y: 18, type: 'examine', glow: false, sprite: 'item-car' },        // scenery
-    { id: 'ch0_garage_tools',  x: 32, y: 17, type: 'examine', glow: false },                            // scenery
+    { id: 'ch0_pops_truck',    x: 34, y: 18, type: 'examine', glow: false, sprite: 'item-car' },        // Pops' truck in garage
+    { id: 'ch0_garage_tools',  x: 32, y: 17, type: 'examine', glow: false },                            // tools
+    { id: 'ch0_jp_car',        x: 14, y: 16, type: 'examine', glow: false, sprite: 'item-car' },        // JP's whip in driveway
     // Yard
-    { id: 'ch0_bbq',           x: 8,  y: 20, type: 'examine', glow: false, sprite: 'item-bbq' },       // scenery
-    { id: 'ch0_frenchie_ball', x: 16, y: 21, type: 'examine', glow: true, sprite: 'item-ball' },        // minigame
-    { id: 'ch0_fishing',       x: 24, y: 20, type: 'examine', glow: true },                              // minigame
+    { id: 'ch0_bbq',           x: 5,  y: 18, type: 'examine', glow: false, sprite: 'item-bbq' },       // BBQ near house
+    { id: 'ch0_basketball',    x: 20, y: 20, type: 'examine', glow: true },                              // basketball court — shoot hoops
+    { id: 'ch0_frenchie_ball', x: 8,  y: 24, type: 'examine', glow: true, sprite: 'item-ball' },        // fetch — open grass area
+    { id: 'ch0_fishing',       x: 27, y: 20, type: 'examine', glow: true },                              // fishing at pond
     { id: 'ch0_goodbye',       x: 13, y: 29, type: 'examine', glow: true },                              // cutscene
 
     // Surprise elements

@@ -772,6 +772,45 @@ export class HomeScene extends BaseChapterScene {
       this.trackForPhoneCall(interactable.id);
       return;
     }
+    // Basketball — quick shoot animation
+    if (interactable.id === 'ch0_basketball') {
+      Analytics.trackInteraction(interactable.id);
+      this.trackForPhoneCall(interactable.id);
+      this.frozen = true;
+
+      // Ball arc animation
+      const courtX = 20 * SCALED_TILE + SCALED_TILE / 2;
+      const courtY = 20 * SCALED_TILE;
+      const ball = this.add.circle(this.player.x, this.player.y - 20, 8, 0xf08030)
+        .setDepth(12);
+      // Arc to hoop
+      this.tweens.add({
+        targets: ball,
+        x: courtX,
+        y: courtY - 40,
+        duration: 600,
+        ease: 'Quad.easeOut',
+        onComplete: () => {
+          // Drop into hoop
+          this.tweens.add({
+            targets: ball,
+            y: courtY,
+            duration: 200,
+            ease: 'Bounce.easeOut',
+            onComplete: () => {
+              ball.destroy();
+              const chapterDialogue = this.getChapterDialogue();
+              const lines = chapterDialogue.npcs['ch0_basketball'] || [
+                { speaker: 'Narrator', text: 'Swish.' },
+              ];
+              this.dialogue.show(lines, () => { this.frozen = false; });
+            },
+          });
+        },
+      });
+      return;
+    }
+
     // Shower — JP hops in, hits the cart, smoke comes out
     if (interactable.id === 'ch0_shower') {
       Analytics.trackInteraction(interactable.id);
@@ -2114,7 +2153,31 @@ export class HomeScene extends BaseChapterScene {
           { speaker: 'Pops', text: 'Not bad. Remember when we used to do this every weekend?' },
           { speaker: 'JP', text: 'Yeah. I miss that.' },
           { speaker: 'Pops', text: 'We\'ll do it again. When you come back.' },
-        ], () => { this.frozen = false; });
+          { speaker: 'Pops', text: 'Alright, I gotta head to work. Early shift.' },
+          { speaker: 'Narrator', text: 'Pops daps up JP and walks toward the truck.' },
+        ], () => {
+          // Pops walks to garage and "drives to work"
+          this.moveNPCTo('ch0_pops', 34, 18, 2500, () => {
+            const pops = this.findNPC('ch0_pops');
+            if (pops) {
+              // Pops disappears (drove away)
+              this.tweens.add({
+                targets: pops.sprite,
+                alpha: 0,
+                duration: 800,
+                onComplete: () => {
+                  // Remove collision
+                  this.collisionTiles.delete('34,18');
+                  // Update dialogue if player finds him somehow
+                  pops.dialogue = [
+                    { speaker: 'Narrator', text: 'Pops already left for work.' },
+                  ];
+                },
+              });
+            }
+            this.frozen = false;
+          });
+        });
       });
     };
 
