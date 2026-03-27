@@ -199,18 +199,18 @@ export const beachMap: MapData = {
     [ G, G, G, G, G, P, G, G, G, G, G, G, P, G, G, G, G, G, P, G, G, G, G, G, P, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G ], // 11
     [ C, C, C, C, P, C, C, P, C, C, C, C, C, C, P, C, C, C, C, C, P, C, C, C, C, C, P, C, C, C, C, P, C, C, C, P, C, C, C, C ], // 12 concrete street + crosswalks
     [ C, C, C, P, C, C, P, C, C, C, C, C, C, P, C, C, C, C, C, P, C, C, C, C, C, P, C, C, C, C, P, C, C, C, P, C, C, C, C, C ], // 13 offset crosswalk
-    [ G, G, T, G, G, I, G, G, V, G, G, G, G, G, G, G, I, G, G, G, G, G, G, G, V, G, G, G, G, I, G, G, G, G, G, G, T, G, G, G ], // 14 grass transition + dirt + vine + trees
-    [ G, I, L, G, G, G, G, L, G, G, I, G, G, G, V, G, G, G, G, G, G, I, G, L, G, G, G, G, G, G, G, L, G, G, G, G, L, I, G, G ], // 15 more palms + dirt + vine
-    [ S, S, S, G, S, S, S, S, G, S, S, S, S, S, S, G, S, S, S, S, S, S, S, S, G, S, S, S, S, S, G, S, S, S, S, S, S, S, S, S ], // 16 grass-to-sand transition
-    [ S, S, S, S, S, P, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, P, S, S, S, S, S, S ], // 17 sand + footpaths
-    [ S, S, S, I, S, P, S, S, L, S, S, S, S, S, S, S, S, S, S, L, S, S, S, S, S, S, S, S, S, S, S, S, S, P, S, S, S, I, S, S ], // 18 wet sand, palms
-    [ S, S, S, S, S, P, S, S, S, S, S, S, E, S, S, S, S, S, E, S, S, S, S, S, S, S, S, S, L, S, S, S, S, P, S, S, S, S, S, S ], // 19 volleyball posts (E)
-    [ S, S, S, L, S, P, S, I, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, I, S, S, P, S, L, S, S, S, S ], // 20 volleyball area, footpath
-    [ S, S, I, S, S, S, S, S, S, I, S, S, S, S, S, S, S, S, S, S, I, S, S, S, L, S, S, S, S, S, S, S, S, S, S, S, S, S, I, S ], // 21 wet sand scattered
+    [ G, G, T, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, T, G, G, G ], // 14 grass with trees
+    [ G, G, G, G, G, L, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, L, G, G, G, G, G, G ], // 15 two palms marking beach entrance
+    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 16 sand starts — clean
+    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 17 open sand
+    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, L, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 18 one palm on beach
+    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 19 open sand — volleyball area
+    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 20 open sand
+    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 21 open sand
     [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 22 open sand
     [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 23 open sand
-    [ S, S, S, S, I, S, S, S, S, S, S, S, S, S, I, S, S, S, S, S, S, S, I, S, S, S, S, S, S, S, I, S, S, S, S, S, S, I, S, S ], // 24 wet sand near water
-    [ S, S, S, W, S, S, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, S, S, W, S, S, S ], // 25 shore break
+    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 24 sand near water
+    [ S, S, S, S, S, S, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, S, S, S, S, S, S ], // 25 shore break
     [ W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W ], // 26 ocean
     [ W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W ], // 27 ocean
   ],
@@ -295,7 +295,7 @@ export const wrongCrowdMap: MapData = {
 
     // === ROWS 16-20: ACROSS THE STREET — sidewalk, neighborhood, CONVENIENCE STORE ===
     [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 16 sidewalk
-    [ G, G, L, G, G, B, B, B, B, B, B, B, B, B, G, G, T, G, G, G, G, G, G, G, T, G, G, G, G, G, L, G, G, G, G, G, G, L, G, G ], // 17 store top wall + palms + trees
+    [ G, G, G, G, G, B, B, B, B, B, B, B, B, B, G, G, T, G, G, G, G, G, G, G, T, G, G, G, G, G, G, G, G, G, G, G, G, L, G, G ], // 17 store top wall + tree + palm
     [ G, G, G, G, G, B, F, F, F, F, F, E, F, B, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 18 store interior: shelving (E)
     [ G, G, G, G, G, B, F, F, M, F, F, E, F, B, G, G, G, G, T, G, G, G, G, G, G, G, T, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 19 store: cash register (M), more shelving
     [ G, G, G, G, G, B, F, F, F, F, F, F, O, B, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 20 store door faces south, grass
