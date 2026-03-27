@@ -979,8 +979,8 @@ function generateAllNPCs(scene: Phaser.Scene) {
     }
   );
 
-  // Inmate 2 — tatted, bald
-  generateNPC(
+  // Inmate 2 — tatted, bald — 32x32
+  generateNPC32(
     scene,
     'npc_inmate2',
     0x303030,
@@ -988,24 +988,24 @@ function generateAllNPCs(scene: Phaser.Scene) {
     0xd07020,
     0xc06018,
     0xd07020,
-    0xd0a070, // slightly different skin
+    0xd0a070,
     0xb08858,
     (g) => {
-      // Face tats — teardrop under left eye, cross on forehead, neck tats
-      px(g, 5, 5, 0x304030, 1, 1); // teardrop under left eye
-      px(g, 5, 6, 0x304030, 1, 1); // teardrop drip
-      px(g, 7, 2, 0x304030, 2, 1); // cross on forehead (horizontal)
-      px(g, 7, 1, 0x304030, 1, 2); // cross on forehead (vertical)
-      px(g, 11, 4, 0x304030, 1, 2); // tat near right eye
-      px(g, 5, 7, 0x304030, 3, 1); // neck tat left
-      px(g, 9, 7, 0x304030, 3, 1); // neck tat right
-      px(g, 3, 8, 0x304030, 1, 2); // arm sleeve tat
-      px(g, 12, 8, 0x304030, 1, 2); // arm sleeve tat
+      // Face tats — teardrop, cross on forehead, neck tats
+      px(g, 10, 9, 0x304030, 2, 2); // teardrop under left eye
+      px(g, 10, 11, 0x304030, 2, 1); // teardrop drip
+      px(g, 14, 3, 0x304030, 4, 1); // cross horizontal
+      px(g, 15, 2, 0x304030, 2, 3); // cross vertical
+      px(g, 22, 8, 0x304030, 2, 2); // tat near right eye
+      px(g, 10, 12, 0x304030, 4, 1); // neck tat left
+      px(g, 18, 12, 0x304030, 4, 1); // neck tat right
+      px(g, 5, 16, 0x304030, 2, 3); // arm sleeve tat
+      px(g, 25, 16, 0x304030, 2, 3); // arm sleeve tat
     }
   );
 
-  // Inmate 3 — big/tough, face scar + tats
-  generateNPC(
+  // Inmate 3 — big/tough, face scar + tats — 32x32
+  generateNPC32(
     scene,
     'npc_inmate3',
     0x202020,
@@ -1016,24 +1016,24 @@ function generateAllNPCs(scene: Phaser.Scene) {
     0xc09060,
     0xa07848,
     (g) => {
-      // Wider shoulders
-      px(g, 1, 8, 0xd07020, 1, 2);
-      px(g, 14, 8, 0xd07020, 1, 2);
-      px(g, 1, 10, 0xc09060, 1, 1);
-      px(g, 14, 10, 0xc09060, 1, 1);
+      // Wider shoulders (bigger build)
+      px(g, 3, 14, 0xd07020, 2, 4);
+      px(g, 27, 14, 0xd07020, 2, 4);
+      px(g, 3, 18, 0xc09060, 2, 2);
+      px(g, 27, 18, 0xc09060, 2, 2);
       // Face scar across right cheek
-      px(g, 9, 4, 0x805040, 3, 1);
-      px(g, 10, 5, 0x805040, 2, 1);
+      px(g, 18, 8, 0x805040, 5, 1);
+      px(g, 20, 9, 0x805040, 3, 1);
       // Neck tattoo — thick
-      px(g, 5, 7, 0x304030, 6, 1);
+      px(g, 10, 12, 0x304030, 12, 1);
       // Arm tats
-      px(g, 2, 9, 0x304030, 1, 2);
-      px(g, 13, 9, 0x304030, 1, 2);
+      px(g, 4, 17, 0x304030, 2, 3);
+      px(g, 26, 17, 0x304030, 2, 3);
     }
   );
 
-  // Inmate 4 — skinny, tired, face tat "13" on cheek
-  generateNPC(
+  // Inmate 4 — skinny, tired, face tat dots — 32x32
+  generateNPC32(
     scene,
     'npc_inmate4',
     0x504030,
@@ -1045,13 +1045,13 @@ function generateAllNPCs(scene: Phaser.Scene) {
     0xc8a878,
     (g) => {
       // Dark circles under eyes
-      px(g, 5, 5, 0x907060, 2, 1);
-      px(g, 9, 5, 0x907060, 2, 1);
+      px(g, 10, 9, 0x907060, 3, 1);
+      px(g, 19, 9, 0x907060, 3, 1);
       // Face tat dots near eye
-      px(g, 4, 4, 0x405040, 1, 1);
-      px(g, 3, 5, 0x405040, 1, 1);
+      px(g, 8, 7, 0x405040, 2, 2);
+      px(g, 6, 9, 0x405040, 2, 2);
       // Neck tat
-      px(g, 6, 7, 0x405040, 4, 1);
+      px(g, 12, 12, 0x405040, 8, 1);
     }
   );
 
@@ -1079,8 +1079,8 @@ function generateAllNPCs(scene: Phaser.Scene) {
     }
   );
 
-  // Mirror — JP looking at himself (same as player but facing forward)
-  generateNPC(
+  // Mirror — JP looking at himself (same as player but facing forward) — 32x32
+  generateNPC32(
     scene,
     'npc_mirror',
     0x302020,
@@ -1092,8 +1092,8 @@ function generateAllNPCs(scene: Phaser.Scene) {
     0xd0a070
   );
 
-  // Farmer (underscore alias)
-  generateNPC(
+  // Farmer (underscore alias) — 32x32
+  generateNPC32(
     scene,
     'npc_farmer',
     0xc09040,
@@ -1104,13 +1104,14 @@ function generateAllNPCs(scene: Phaser.Scene) {
     0xe8b878,
     0xc89858,
     (g) => {
-      px(g, 5, 8, 0x6080c0, 1, 3);
-      px(g, 10, 8, 0x6080c0, 1, 3);
+      // Overall straps
+      px(g, 10, 16, 0x6080c0, 2, 4);
+      px(g, 20, 16, 0x6080c0, 2, 4);
     }
   );
 
   // Computer NPC (placeholder — looks like a monitor)
-  generateNPC(
+  generateNPC32(
     scene,
     'npc_computer',
     0x404050,
@@ -1123,7 +1124,7 @@ function generateAllNPCs(scene: Phaser.Scene) {
   );
 
   // Client — first client, casual
-  generateNPC(
+  generateNPC32(
     scene,
     'npc_client',
     0x604020,
@@ -1136,7 +1137,7 @@ function generateAllNPCs(scene: Phaser.Scene) {
   );
 
   // Sticker Smith client (legacy key kept for backward compat)
-  generateNPC(
+  generateNPC32(
     scene,
     'npc_sticker',
     0x181818,
@@ -1242,7 +1243,7 @@ function generateAllNPCs(scene: Phaser.Scene) {
   );
 
   // DHL Client — professional, dark skin, DHL-ish yellow shirt
-  generateNPC(
+  generateNPC32(
     scene,
     'npc_dhl_client',
     0x202020, // short dark hair
@@ -1255,7 +1256,7 @@ function generateAllNPCs(scene: Phaser.Scene) {
   );
 
   // Mentor figure
-  generateNPC(
+  generateNPC32(
     scene,
     'npc_mentor',
     0x404040,
@@ -1273,7 +1274,7 @@ function generateAllNPCs(scene: Phaser.Scene) {
   );
 
   // Biz — impressed person
-  generateNPC(
+  generateNPC32(
     scene,
     'npc_biz',
     0x302828,
@@ -1326,7 +1327,7 @@ function generateAllNPCs(scene: Phaser.Scene) {
   );
 
   // Suit — big client
-  generateNPC(
+  generateNPC32(
     scene,
     'npc_suit',
     0x404040,
@@ -1345,7 +1346,7 @@ function generateAllNPCs(scene: Phaser.Scene) {
   );
 
   // Whale — $400K/mo person
-  generateNPC(
+  generateNPC32(
     scene,
     'npc_whale',
     0x503828,
@@ -1979,7 +1980,7 @@ function generateAllNPCs(scene: Phaser.Scene) {
   });
 
   // Narrator / Professor — older, grey hair, wise
-  generateNPC(
+  generateNPC32(
     scene,
     'npc-narrator',
     0xb0b0b0, // grey/white hair
