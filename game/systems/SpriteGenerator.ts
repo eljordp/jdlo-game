@@ -1326,6 +1326,19 @@ function generateAllNPCs(scene: Phaser.Scene) {
     }
   );
 
+  // Higo — JP's white boy, light skin, brown hair — 32x32
+  generateNPC32(
+    scene,
+    'npc_higo',
+    0x6B4F30,   // medium brown hair
+    'short',
+    0xF0F0F0,   // white tee
+    0xE0E0E0,
+    0x2a2a2a,   // black jeans
+    0xF5D6B8,   // light/white skin
+    0xDFC0A0,
+  );
+
   // Suit — big client
   generateNPC32(
     scene,
@@ -3482,10 +3495,10 @@ function generateCorvetteC8(scene: Phaser.Scene) {
   const g = canvas.getContext('2d')!;
   g.clearRect(0, 0, w, h);
 
-  const bodyMain = '#e0e0e8';
-  const bodyShadow = '#c8c8d0';
-  const bodyHighlight = '#f0f0f8';
-  const bodyPearl = '#e8e0f0';
+  const bodyMain = '#2a6b3a';      // Racing green
+  const bodyShadow = '#1e5530';
+  const bodyHighlight = '#3a8b4a';
+  const bodyPearl = '#308040';
   const black = '#1a1a1e';
   const windowTint = '#101828';
   const windowShine = '#1a2848';
