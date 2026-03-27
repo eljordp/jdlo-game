@@ -167,11 +167,12 @@ export const homeMap: MapData = {
     { id: 'ch0_parents_tv',    x: 17, y: 7,  type: 'examine', glow: true, sprite: 'item-tv' },
     // Office / Spare Room (cols 25-30, rows 4-8) — Pops' workspace
     { id: 'ch0_office_desk',   x: 27, y: 4,  type: 'examine', glow: true, sprite: 'item-desk' },
-    { id: 'ch0_office_books',  x: 29, y: 5,  type: 'examine', glow: true, sprite: 'item-book' },
+    { id: 'ch0_office_books',  x: 29, y: 4,  type: 'examine', glow: true, sprite: 'item-bookshelf' },
     { id: 'ch0_office_photo',  x: 25, y: 7,  type: 'examine', glow: true, sprite: 'item-photo' },
     // Bathroom (cols 32-35, rows 4-8)
     { id: 'ch0_mirror',        x: 34, y: 4,  type: 'examine', glow: true, sprite: 'item-mirror' },
     { id: 'ch0_toilet',        x: 32, y: 7,  type: 'examine', glow: true, sprite: 'item-toilet' },
+    { id: 'ch0_shower',        x: 35, y: 7,  type: 'examine', glow: true },
     // Hallway (row 10)
     { id: 'ch0_hallway_photo', x: 20, y: 10, type: 'examine', glow: true, sprite: 'item-photo' },
     // Living Room (left side, row 12-14)

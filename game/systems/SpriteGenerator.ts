@@ -4607,6 +4607,39 @@ function generateMoreItems(scene: Phaser.Scene) {
     px(g, 14, 8, 0xf0e8a0, 1, 1);  // light dot
   });
 
+  // --- item-bookshelf ---
+  makeTexture(scene, 'item-bookshelf', TILE_SIZE, TILE_SIZE, (g) => {
+    // Tall bookshelf — dark wood frame with colorful book spines
+    // Frame (dark wood)
+    px(g, 4, 2, 0x4a2a18, 24, 28);
+    // Frame edges
+    px(g, 4, 2, 0x5a3a20, 24, 1);  // top
+    px(g, 4, 2, 0x5a3a20, 1, 28);  // left
+    px(g, 27, 2, 0x3a2010, 1, 28); // right shadow
+    px(g, 4, 29, 0x3a2010, 24, 1); // bottom shadow
+    // Shelves (3 rows)
+    px(g, 5, 11, 0x5a3a20, 22, 2);
+    px(g, 5, 20, 0x5a3a20, 22, 2);
+    // Book spines — row 1 (top shelf)
+    px(g, 6, 3, 0xc03030, 3, 8);   // red book
+    px(g, 10, 3, 0x3050a0, 3, 8);  // blue book
+    px(g, 14, 4, 0x30a050, 2, 7);  // thin green
+    px(g, 17, 3, 0xd0a030, 3, 8);  // yellow book
+    px(g, 21, 3, 0x806040, 4, 8);  // brown book
+    // Book spines — row 2 (middle shelf)
+    px(g, 6, 13, 0x8040a0, 3, 7);  // purple book
+    px(g, 10, 13, 0xa06030, 4, 7); // orange book
+    px(g, 15, 14, 0x404040, 2, 6); // thin dark
+    px(g, 18, 13, 0xc05050, 3, 7); // red book
+    px(g, 22, 13, 0x2070a0, 3, 7); // blue book
+    // Book spines — row 3 (bottom shelf)
+    px(g, 6, 22, 0x50a050, 4, 7);  // green book
+    px(g, 11, 22, 0xb0b0b0, 3, 7); // grey book
+    px(g, 15, 22, 0xd08040, 3, 7); // orange
+    px(g, 19, 23, 0x606080, 2, 6); // thin navy
+    px(g, 22, 22, 0xc0a060, 3, 7); // tan book
+  });
+
   // --- item-poster ---
   makeTexture(scene, 'item-poster', TILE_SIZE, TILE_SIZE, (g) => {
     // Wall poster — rectangular, slightly tilted feel

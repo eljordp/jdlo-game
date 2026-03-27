@@ -1134,6 +1134,12 @@ const ch0Extras: Record<string, DialogueLine[]> = {
   ch0_toilet: [
     { speaker: 'Narrator', text: 'A toilet. What did you expect?' },
   ],
+  ch0_shower: [
+    { speaker: 'Narrator', text: 'JP hops in the shower.' },
+    { speaker: 'Narrator', text: 'Hits the blinkers on the cart. Gets faded.' },
+    { speaker: 'Narrator', text: 'Steam fills the bathroom. Best part of the day.' },
+    { speaker: 'JP\'s Mind', text: 'This is where all the good ideas come from.' },
+  ],
   // --- Hallway ---
   ch0_hallway_photo: [
     { speaker: 'Narrator', text: 'School photos going back to kindergarten. JP in every one.' },
