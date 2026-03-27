@@ -1388,20 +1388,34 @@ const ch2Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'Bags on bags. More than anyone needs for a Tuesday night.' },
     { speaker: 'JP\'s Mind', text: 'Same routine. Didn\'t even think about it anymore.' },
   ],
-  ch2_weed2: [
-    { speaker: 'JP\'s Mind', text: 'Bags on the bed. On the pillow. He sleeps next to this stuff.' },
+  ch2_bed_pile_L: [
+    { speaker: 'Narrator', text: 'Bags stacked to the mattress. Spilling onto the floor.' },
+    { speaker: 'JP\'s Mind', text: 'This used to be one bag. Now it\'s a whole operation.' },
   ],
-  ch2_weed3: [
-    { speaker: 'JP\'s Mind', text: 'More bags. At least a QP just sitting in the open.' },
+  ch2_bed_pile_L2: [
+    { speaker: 'JP\'s Mind', text: 'The pile doesn\'t even fit anymore. Some bags are crushed at the bottom.' },
   ],
-  ch2_weed4: [
-    { speaker: 'JP\'s Mind', text: 'Bag on the floor. Stepped on it twice already today.' },
+  ch2_bed_pile_L3: [
+    { speaker: 'JP\'s Mind', text: 'Bags on the floor. Kicked one under the bed this morning.' },
   ],
-  ch2_weed5: [
-    { speaker: 'JP\'s Mind', text: 'Stash against the wall. This used to feel exciting. Now it\'s just inventory.' },
+  ch2_bed_pile_R: [
+    { speaker: 'Narrator', text: 'More bags on the other side. Both sides of the bed. Like bookends.' },
+    { speaker: 'JP\'s Mind', text: 'He sleeps in a fort made of weed. That\'s where he\'s at.' },
   ],
-  ch2_weed6: [
-    { speaker: 'JP\'s Mind', text: 'The room smells like a dispensary. Windows been closed all week.' },
+  ch2_bed_pile_R2: [
+    { speaker: 'JP\'s Mind', text: 'Stacked two high. One wrong move and they all tumble.' },
+  ],
+  ch2_bed_under: [
+    { speaker: 'Narrator', text: 'A bag poking out from under the bed. There\'s more under there.' },
+    { speaker: 'JP\'s Mind', text: 'At least a QP under the mattress. Maybe more. Lost count.' },
+  ],
+  ch2_closet: [
+    { speaker: 'Narrator', text: 'JP opens the closet.' },
+    { speaker: 'Narrator', text: 'Three bags tumble out onto the floor.' },
+    { speaker: 'JP', text: 'Shit—' },
+    { speaker: 'Narrator', text: 'He shoves them back in. Pushes the door shut with his shoulder.' },
+    { speaker: 'Narrator', text: 'The door doesn\'t close all the way. A corner of a bag sticks out.' },
+    { speaker: 'JP\'s Mind', text: 'This is getting out of hand.' },
   ],
   ch2_car: [
     { speaker: 'JP\'s Mind', text: 'Black 2008 BMW 335i. N54 twin turbo.' },

@@ -482,6 +482,68 @@ export class WrongCrowdScene extends BaseChapterScene {
       return;
     }
 
+    // Closet — bags fall out animation
+    if (interactable.id === 'ch2_closet') {
+      Analytics.trackInteraction(interactable.id);
+      this.frozen = true;
+      this.interactions.consume(interactable.id);
+
+      // Camera shake — door opens
+      this.cameras.main.shake(150, 0.003);
+
+      // Spawn 3 bags that tumble out from closet position
+      const closetX = 20 * SCALED_TILE + SCALED_TILE / 2;
+      const closetY = 1 * SCALED_TILE + SCALED_TILE / 2;
+      const fallingBags: Phaser.GameObjects.Sprite[] = [];
+
+      for (let i = 0; i < 3; i++) {
+        const bag = this.add.sprite(closetX, closetY, 'item-weed-bag')
+          .setScale(SCALE).setDepth(11).setAlpha(0);
+
+        this.tweens.add({
+          targets: bag,
+          x: closetX - 20 + i * 30,
+          y: closetY + 40 + i * 15,
+          alpha: 1,
+          angle: Phaser.Math.Between(-30, 30),
+          duration: 300,
+          delay: i * 150,
+          ease: 'Bounce.easeOut',
+        });
+        fallingBags.push(bag);
+      }
+
+      // Show dialogue, then shove bags back
+      this.time.delayedCall(800, () => {
+        const chapterDialogue = this.getChapterDialogue();
+        const lines = chapterDialogue.npcs['ch2_closet'] || [
+          { speaker: 'JP', text: 'Shit—' },
+        ];
+        this.dialogue.show(lines, () => {
+          // Shove bags back — they slide back into closet
+          for (let i = 0; i < fallingBags.length; i++) {
+            this.tweens.add({
+              targets: fallingBags[i],
+              x: closetX,
+              y: closetY,
+              alpha: 0,
+              angle: 0,
+              duration: 250,
+              delay: i * 100,
+              onComplete: () => fallingBags[i].destroy(),
+            });
+          }
+          // One bag corner still sticks out
+          const stickOut = this.add.sprite(closetX + 8, closetY + 10, 'item-weed-bag')
+            .setScale(SCALE * 0.6).setDepth(5).setAngle(20);
+          this.time.delayedCall(500, () => {
+            this.frozen = false;
+          });
+        });
+      });
+      return;
+    }
+
     // Weighing minigame — triggered by grabbing the weed
     if (interactable.id === 'ch2_grab_weed') {
       Analytics.trackInteraction(interactable.id);
