@@ -146,52 +146,57 @@ export class HomeScene extends BaseChapterScene {
     });
   }
 
-  // ─── IVY FOLLOWING SYSTEM ─────────────────────────────────────────
-  protected onPlayerMove(tileX: number, tileY: number): void {
-    // Track movement history for Ivy following
-    this.ivyFollowHistory.push({ x: tileX, y: tileY });
-    if (this.ivyFollowHistory.length > 3) this.ivyFollowHistory.shift();
+  // ─── IVY FOLLOWING SYSTEM (Pokemon-style: 1 tile behind) ─────────
+  private lastPlayerTileX = -1;
+  private lastPlayerTileY = -1;
 
+  protected onPlayerMove(tileX: number, tileY: number): void {
     if (this.ivyFollowing) {
       const ivy = this.findNPC('ch0_frenchie');
-      if (!ivy) return;
+      if (ivy && this.lastPlayerTileX >= 0) {
+        // Ivy moves to where JP JUST was (1 tile behind, every step)
+        const prevX = this.lastPlayerTileX;
+        const prevY = this.lastPlayerTileY;
 
-      // Ivy follows 2 tiles behind (uses history)
-      const target = this.ivyFollowHistory[0];
-      if (!target) return;
+        const ivyTileX = Math.round((ivy.sprite.x - SCALED_TILE / 2) / SCALED_TILE);
+        const ivyTileY = Math.round((ivy.sprite.y - SCALED_TILE / 2) / SCALED_TILE);
 
-      const ivyTileX = Math.round((ivy.sprite.x - SCALED_TILE / 2) / SCALED_TILE);
-      const ivyTileY = Math.round((ivy.sprite.y - SCALED_TILE / 2) / SCALED_TILE);
-      const dist = Math.abs(ivyTileX - tileX) + Math.abs(ivyTileY - tileY);
+        // Only move if the target tile is different from current
+        if (prevX !== ivyTileX || prevY !== ivyTileY) {
+          // Remove old collision
+          this.collisionTiles.delete(`${ivyTileX},${ivyTileY}`);
 
-      // Only move if far enough and not too close
-      if (dist > 2) {
-        // Remove old collision
-        this.collisionTiles.delete(`${ivyTileX},${ivyTileY}`);
+          const targetPixelX = prevX * SCALED_TILE + SCALED_TILE / 2;
+          const targetPixelY = prevY * SCALED_TILE + SCALED_TILE / 2;
 
-        const targetPixelX = target.x * SCALED_TILE + SCALED_TILE / 2;
-        const targetPixelY = target.y * SCALED_TILE + SCALED_TILE / 2;
+          // Kill any existing movement tween
+          this.tweens.killTweensOf(ivy.sprite);
 
-        this.tweens.add({
-          targets: ivy.sprite,
-          x: targetPixelX,
-          y: targetPixelY,
-          duration: 250,
-          ease: 'Linear',
-          onComplete: () => {
-            this.collisionTiles.add(`${target.x},${target.y}`);
-          },
-        });
+          this.tweens.add({
+            targets: ivy.sprite,
+            x: targetPixelX,
+            y: targetPixelY,
+            duration: 200,
+            ease: 'Linear',
+            onComplete: () => {
+              this.collisionTiles.add(`${prevX},${prevY}`);
+            },
+          });
 
-        // Tail wag while moving
-        this.tweens.add({
-          targets: ivy.sprite,
-          angle: 5,
-          duration: 100,
-          yoyo: true,
-        });
+          // Tail wag while moving
+          this.tweens.add({
+            targets: ivy.sprite,
+            angle: 4,
+            duration: 80,
+            yoyo: true,
+          });
+        }
       }
     }
+
+    // Store where JP was BEFORE this move (so Ivy follows there next step)
+    this.lastPlayerTileX = tileX;
+    this.lastPlayerTileY = tileY;
 
     // Sister follow hook
     if (this.sisterFollowHook) {
