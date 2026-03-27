@@ -387,43 +387,58 @@ export abstract class BaseChapterScene extends Phaser.Scene {
       return;
     }
 
-    // Smoker — subtle sway + smoke particles + lit ember
+    // Smoker — subtle sway + smoke particles rising from hand + lit ember at hand height
     if (id.includes('smoker') || id.includes('smoke')) {
+      // Slight sway (breathing while leaning)
       this.tweens.add({
         targets: sprite,
-        x: baseX + 3,
-        duration: 2000,
+        x: baseX + 2,
+        duration: 2500,
         yoyo: true,
         repeat: -1,
         ease: 'Sine.easeInOut',
       });
-      // Smoke puff rising — bigger, brighter, more frequent
-      this.time.addEvent({
-        delay: 1500,
-        loop: true,
-        callback: () => {
-          const smoke = this.add.text(
-            sprite.x + 8, sprite.y - 20, '~',
-            { fontFamily: 'monospace', fontSize: '16px', color: '#bbbbbb' }
-          ).setDepth(20).setAlpha(0.7);
-          this.tweens.add({
-            targets: smoke,
-            y: smoke.y - 30,
-            alpha: 0,
-            duration: 1500,
-            onComplete: () => smoke.destroy(),
-          });
-        },
-      });
 
-      // Lit cigarette ember — orange/red glow near hand
-      const ember = this.add.circle(sprite.x + 6, sprite.y + 4, 2, 0xff4400).setDepth(20);
+      // Lit cigarette ember — at HAND height (sprite.y - 12), not on the floor
+      const ember = this.add.circle(baseX + 12, baseY - 12, 3, 0xff4400).setDepth(20);
       this.tweens.add({
         targets: ember,
         alpha: 0.3,
+        scaleX: 0.6,
+        scaleY: 0.6,
         duration: 800,
         yoyo: true,
         repeat: -1,
+      });
+      // Ember follows sprite sway
+      this.tweens.add({
+        targets: ember,
+        x: baseX + 14,
+        duration: 2500,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+      });
+
+      // Smoke particles rising from ember — grey circles drifting up and fading
+      this.time.addEvent({
+        delay: 600,
+        loop: true,
+        callback: () => {
+          const sx = ember.x + (Math.random() * 6 - 3);
+          const sy = ember.y;
+          const particle = this.add.circle(sx, sy, 2, 0xaaaaaa, 0.5).setDepth(19);
+          this.tweens.add({
+            targets: particle,
+            y: sy - 40 - Math.random() * 20,
+            x: sx + (Math.random() * 16 - 8),
+            alpha: 0,
+            scaleX: 2,
+            scaleY: 2,
+            duration: 1500 + Math.random() * 800,
+            onComplete: () => particle.destroy(),
+          });
+        },
       });
       return;
     }
@@ -518,6 +533,55 @@ export abstract class BaseChapterScene extends Phaser.Scene {
       });
       return;
     }
+
+    // Book inmate / reading NPC — subtle page-turn rock
+    if (id.includes('book') || id.includes('read') || id.includes('psych')) {
+      this.tweens.add({
+        targets: sprite,
+        angle: -3,
+        duration: 1500,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+      });
+      return;
+    }
+
+    // Music/speaker — head bob (y oscillation)
+    if (id.includes('speaker') || id.includes('music') || id.includes('terrell')) {
+      this.tweens.add({
+        targets: sprite,
+        y: baseY - 4,
+        duration: 400,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+      });
+      return;
+    }
+
+    // Guard — stands rigid, slight weight shift
+    if (id.includes('guard')) {
+      this.tweens.add({
+        targets: sprite,
+        x: baseX + 1,
+        duration: 3000,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+      });
+      return;
+    }
+
+    // Generic idle — very subtle breathing (scale pulse)
+    this.tweens.add({
+      targets: sprite,
+      scaleY: sprite.scaleY * 1.015,
+      duration: 2000,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
+    });
   }
 
   private playDiscoveryScene(onComplete: () => void) {
@@ -813,11 +877,16 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     const walkFrame = frameMap[this.facing] + 1;
     this.player.setFrame(walkFrame);
 
+    // Sprint — SHIFT key makes movement faster
+    const shiftKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
+    const isSprinting = shiftKey.isDown;
+    const moveDuration = isSprinting ? 110 : 200;
+
     this.tweens.add({
       targets: this.player,
       x: targetX,
       y: targetY,
-      duration: 200,
+      duration: moveDuration,
       onComplete: () => {
         this.isMoving = false;
         this.player.setFrame(frameMap[this.facing]);
