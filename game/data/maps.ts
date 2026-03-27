@@ -176,15 +176,15 @@ export const homeMap: MapData = {
     { id: 'ch0_journal',       x: 8,  y: 8,  type: 'examine', glow: true, sprite: 'item-book' },        // journal near door
     { id: 'ch0_crypto',        x: 8,  y: 4,  type: 'examine', glow: false, sprite: 'item-phone' },      // phone on nightstand
     // Upstairs Hall / Guest Room (cols 12-17, rows 4-8) — storage + laundry
-    { id: 'ch0_laundry',       x: 13, y: 4,  type: 'examine', glow: false },                            // laundry basket
-    { id: 'ch0_storage_boxes', x: 16, y: 4,  type: 'examine', glow: false },                            // storage boxes
-    { id: 'ch0_ironing_board', x: 14, y: 7,  type: 'examine', glow: false },                            // ironing board
-    { id: 'ch0_family_albums', x: 17, y: 7,  type: 'examine', glow: true },                             // old photo albums — story
+    { id: 'ch0_laundry',       x: 13, y: 4,  type: 'examine', glow: false, sprite: 'item-bed' },       // laundry basket (bed sprite as placeholder)
+    { id: 'ch0_storage_boxes', x: 16, y: 4,  type: 'examine', glow: false, sprite: 'item-nightstand' },// storage boxes
+    { id: 'ch0_ironing_board', x: 14, y: 7,  type: 'examine', glow: false, sprite: 'item-nightstand' },// ironing board
+    { id: 'ch0_family_albums', x: 17, y: 7,  type: 'examine', glow: true, sprite: 'item-book' },       // photo albums — story
     // Sister's Room — UPSTAIRS (cols 23-28, rows 4-8)
     { id: 'ch0_sister_bed',    x: 24, y: 4,  type: 'examine', glow: false, sprite: 'item-bed-pink' },   // bed
     { id: 'ch0_sister_toys',   x: 27, y: 6,  type: 'examine', glow: false },                            // toys
     { id: 'ch0_sister_mirror', x: 23, y: 4,  type: 'examine', glow: false, sprite: 'item-mirror' },     // mirror on wall
-    { id: 'ch0_sister_nightlight', x: 28, y: 4, type: 'examine', glow: false },                         // nightlight
+    { id: 'ch0_sister_nightlight', x: 28, y: 8, type: 'examine', glow: false, sprite: 'item-phone' },   // nightlight (glow on floor)
     // Parents' Room — DOWNSTAIRS (rows 12-16, they keep the master)
     { id: 'ch0_parents_bed',   x: 5,  y: 12, type: 'examine', glow: false, sprite: 'item-bed' },
     { id: 'ch0_family_photo',  x: 8,  y: 12, type: 'examine', glow: true, sprite: 'item-photo' },
@@ -196,11 +196,11 @@ export const homeMap: MapData = {
     // Downstairs living extension (cols 16-36, rows 12-16) — den / family room
     { id: 'ch0_den_couch',     x: 20, y: 14, type: 'examine', glow: false, sprite: 'item-couch' },     // big couch
     { id: 'ch0_den_tv',        x: 18, y: 12, type: 'examine', glow: false, sprite: 'item-tv' },        // TV on wall
-    { id: 'ch0_den_rug',       x: 22, y: 14, type: 'examine', glow: false },                            // rug
-    { id: 'ch0_den_lamp',      x: 24, y: 12, type: 'examine', glow: false },                            // floor lamp
-    { id: 'ch0_den_plant',     x: 30, y: 12, type: 'examine', glow: false },                            // potted plant
+    { id: 'ch0_den_rug',       x: 22, y: 14, type: 'examine', glow: false, sprite: 'item-bed' },       // rug (placeholder)
+    { id: 'ch0_den_lamp',      x: 24, y: 12, type: 'examine', glow: false, sprite: 'item-nightstand' },// floor lamp
+    { id: 'ch0_den_plant',     x: 30, y: 12, type: 'examine', glow: false, sprite: 'item-food' },      // potted plant
     { id: 'ch0_den_shelf',     x: 28, y: 12, type: 'examine', glow: false, sprite: 'item-bookshelf' }, // bookshelf
-    { id: 'ch0_den_table',     x: 34, y: 14, type: 'examine', glow: false },                            // side table
+    { id: 'ch0_den_table',     x: 34, y: 14, type: 'examine', glow: false, sprite: 'item-nightstand' },// side table
     // Sister drawings — UPSTAIRS
     { id: 'ch0_sister_drawing_wall', x: 24, y: 4, type: 'examine', glow: true },
     // Kitchen (rows 20-22)
