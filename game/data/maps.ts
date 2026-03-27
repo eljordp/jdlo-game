@@ -106,7 +106,7 @@ export const homeMap: MapData = {
     [ _, _, _, _, K, A, A, A, A, A, A, K, A, A, A, A, A, A, K, J, J, J, K, A, A, A, A, A, A, K, F, F, F, F, K, _, _, _, _, _ ], // 6
     [ _, _, _, _, K, A, A, A, A, A, A, K, A, A, A, A, A, A, K, J, J, J, K, A, A, A, A, A, A, K, F, F, F, F, K, _, _, _, _, _ ], // 7
     [ _, _, _, _, K, A, A, A, A, A, A, K, A, A, A, A, A, A, K, J, J, J, K, A, A, A, A, A, A, K, F, F, F, F, K, _, _, _, _, _ ], // 8
-    [ _, _, _, _, K, K, K, O, O, O, K, K, K, O, O, O, K, K, K, O, O, O, K, K, O, O, O, K, K, K, O, O, O, K, K, _, _, _, _, _ ], // 9  wider doors (3-tile) to upstairs hallway
+    [ _, _, _, _, K, K, K, K, O, K, K, K, K, K, O, K, K, K, K, K, O, K, K, K, K, K, O, K, K, K, K, O, K, K, K, _, _, _, _, _ ], // 9  single doors centered in each room
     [ _, _, _, _, K, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, K, _, _, _, _, _ ], // 10 upstairs hallway
     [ _, _, _, _, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, _, _, _, _, _ ], // 11 upstairs floor
     [ G, G, G, K, A, A, A, A, A, A, A, A, A, A, A, K, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, K, G, G, G ], // 12 parents master (left) | open living extension (right)
