@@ -731,8 +731,8 @@ export const chapter5OutroText: string[] = [
 
 export const chapter6IntroText: string[] = [
   'Operator Mode',
-  'LA. Vegas. Home.',
-  'Full circle.',
+  'Enterprise clients. Closing deals. Building teams.',
+  'The kid from the vineyard is running the operation now.',
 ];
 
 export const chapter6NPCs: NPCData[] = [
@@ -744,12 +744,17 @@ export const chapter6NPCs: NPCData[] = [
     dialogue: [
       { speaker: 'Malachi', text: 'JP. That dashboard you built for the team — everyone\'s using it.' },
       { speaker: 'JP', text: 'Good. That was the point.' },
+      { speaker: 'Malachi', text: 'I gotta be real with you. When I first met you I thought you were just another guy talking big.' },
+      { speaker: 'JP', text: 'And now?' },
+      { speaker: 'Malachi', text: 'Now you\'re the reason this company runs. Every system, every workflow, every automation — that\'s you.' },
       { speaker: 'Malachi', text: 'Big meeting tomorrow. New client. You ready?', choices: [
         { text: '"Always ready."', next: [
-          { speaker: 'Malachi', text: 'That\'s why you\'re COO, bro.' },
+          { speaker: 'Malachi', text: 'That\'s why you\'re COO. Not because of a title. Because you operate.' },
+          { speaker: 'JP\'s Mind', text: 'COO at 22. No degree. No connections. Just work.' },
         ]},
         { text: '"Send me the details. I\'ll have the proposal by morning."', next: [
           { speaker: 'Malachi', text: 'By morning? You\'re insane. That\'s why this works.' },
+          { speaker: 'JP\'s Mind', text: 'He doesn\'t know I was up until 4 AM last night building the last system. But he trusts me.' },
         ]},
       ]},
     ],
@@ -877,6 +882,47 @@ export const chapter6NPCs: NPCData[] = [
     ],
   },
   {
+    id: 'ch6_dhl',
+    x: 28,
+    y: 11,
+    sprite: 'npc_dhl_client',
+    dialogue: [
+      { speaker: 'DHL Manager', text: 'We have a problem. Our warehouse team speaks four different languages.' },
+      { speaker: 'DHL Manager', text: 'Safety protocols aren\'t getting through. Three incidents this quarter.' },
+      { speaker: 'DHL Manager', text: 'Our dev team\'s been working on a translator app for two months. Nothing.' },
+      { speaker: 'JP', text: '', choices: [
+        { text: '"I can have a demo by Friday."', next: [
+          { speaker: 'DHL Manager', text: 'End of WEEK? Our team said six months minimum.' },
+          { speaker: 'JP', text: 'Different tools. Different approach.' },
+          { speaker: 'DHL Manager', text: 'You\'re serious?' },
+          { speaker: 'JP', text: 'Dead serious.' },
+        ]},
+        { text: '"People\'s safety is on the line. I\'ll figure it out."', next: [
+          { speaker: 'DHL Manager', text: 'That\'s the right answer. Most devs ask about the budget first.' },
+          { speaker: 'JP\'s Mind', text: 'Enterprise. Lives depending on code I haven\'t written yet.' },
+        ]},
+      ]},
+      { speaker: 'DHL Manager', text: 'We\'ll pay whatever it takes. This is infrastructure, not a website.' },
+      { speaker: 'JP\'s Mind', text: 'Their whole dev team couldn\'t crack it. And I\'m about to do it alone in a week.' },
+      { speaker: 'JP\'s Mind', text: 'That\'s the play. Move fast. Figure it out. Ship it.' },
+    ],
+  },
+  {
+    id: 'ch6_mentor',
+    x: 20,
+    y: 8,
+    sprite: 'npc_generic',
+    dialogue: [
+      { speaker: 'Mentor', text: 'You built all this in five months? Self-taught?' },
+      { speaker: 'JP', text: 'Yeah. AI helped. But I had to learn how to use it right.' },
+      { speaker: 'Mentor', text: 'Most people with CS degrees can\'t ship this fast.' },
+      { speaker: 'Mentor', text: 'Stop charging a thousand. You\'re leaving money on the table.' },
+      { speaker: 'JP', text: 'I\'m getting there.' },
+      { speaker: 'Mentor', text: 'You\'re already there. You just don\'t believe it yet.' },
+      { speaker: 'JP\'s Mind', text: 'First time someone in this industry looked at me like an equal. Not a kid. Not a project. An equal.' },
+    ],
+  },
+  {
     id: 'ch6_pops_home',
     x: 32,
     y: 28,
@@ -884,11 +930,22 @@ export const chapter6NPCs: NPCData[] = [
     dialogue: [
       { speaker: 'Pops', text: 'Son.' },
       { speaker: 'JP', text: 'Pops.' },
-      { speaker: 'Pops', text: 'I saw the website you built. The business stuff. Your mom showed me.' },
-      { speaker: 'JP', text: 'Yeah?' },
-      { speaker: 'Pops', text: 'I don\'t understand half of it. But I know you built it yourself. And I know you didn\'t quit.' },
+      { speaker: 'Pops', text: 'Come here.' },
+      { speaker: 'Narrator', text: 'Pops hugs him. Doesn\'t let go for a while.' },
+      { speaker: 'Pops', text: 'I saw the websites you built. The businesses. Your mom showed me everything.' },
+      { speaker: 'JP', text: 'Yeah? What\'d you think?' },
+      { speaker: 'Pops', text: 'I don\'t understand half of it. I don\'t know what a CRM is or why anyone needs an AI phone.' },
+      { speaker: 'Pops', text: 'But I know you built it yourself. With your own hands. From nothing.' },
       { speaker: 'JP', text: '...' },
-      { speaker: 'Pops', text: 'That\'s all I ever wanted for you, JP. To not quit.' },
+      { speaker: 'Pops', text: 'I know what you went through, Jordan. The charges. The cell. Losing everything.' },
+      { speaker: 'Pops', text: 'Most people don\'t come back from that. You know that, right?' },
+      { speaker: 'JP', text: 'Yeah. I know.' },
+      { speaker: 'Pops', text: 'But you did. And you didn\'t just come back — you came back better.' },
+      { speaker: 'Pops', text: 'Whatever you do, just do it all the way. Don\'t half-ass it.' },
+      { speaker: 'JP', text: 'You told me that before I left for SB.' },
+      { speaker: 'Pops', text: 'And now you\'re finally listening.' },
+      { speaker: 'JP\'s Mind', text: 'Everything I built, everyone I helped, every 3 AM session — it was all for this moment.' },
+      { speaker: 'JP\'s Mind', text: 'To come home and make Pops proud.' },
     ],
   },
   {
@@ -921,8 +978,9 @@ export const chapter6NPCs: NPCData[] = [
 ];
 
 export const chapter6OutroText: string[] = [
-  'From a cell to the boardroom. Five months from zero to full-stack operator.',
-  'But this isn\'t the end. It\'s the launchpad.',
+  'From a cell to a courtroom to a vineyard to a laptop to the boardroom.',
+  'Self-taught. No degree. No bootcamp. No connections. No excuses.',
+  'The story isn\'t over. It\'s just getting started.',
 ];
 
 // ─── End Screen ────────────────────────────────────────────────────────

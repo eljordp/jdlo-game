@@ -614,8 +614,10 @@ export const operatorMap: MapData = {
       { id: 'ch6_office_kult',  x: 6,  y: 4,  sprite: 'npc_tech' },
       { id: 'ch6_tony',         x: 12, y: 8,  sprite: 'npc_suit' },
       { id: 'ch6_client2',      x: 33, y: 4,  sprite: 'npc_business' },
-      { id: 'ch6_team_member',  x: 24, y: 11, sprite: 'npc_generic' },
-      { id: 'ch6_security',     x: 24, y: 8,  sprite: 'npc_security' },
+      { id: 'ch6_dhl',           x: 28, y: 11, sprite: 'npc_dhl_client' },
+      { id: 'ch6_mentor',        x: 20, y: 8,  sprite: 'npc_generic' },
+      { id: 'ch6_team_member',   x: 24, y: 11, sprite: 'npc_generic' },
+      { id: 'ch6_security',      x: 24, y: 8,  sprite: 'npc_security' },
       // LA zone — referrals
       { id: 'ch6_manza',         x: 30, y: 11, sprite: 'npc_manza' },
       // Vegas zone
