@@ -111,21 +111,29 @@ export const homeMap: MapData = {
     [ G, G, G, K, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, N, N, N, J, J, J, N, N, N, N, J, J, J, J, J, J, J, K, G, G, G ], // 12 living + kitchen island + dining table
     [ G, G, G, K, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, K, G, G, G ], // 13
     [ G, G, G, K, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, N, N, N, N, J, K, G, G, G ], // 14 marble wall counters (kitchen right side)
-    [ G, G, G, K, K, K, K, K, K, K, K, K, K, O, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, G, G, G ], // 15 front door only (no back door)
+    [ G, G, G, K, K, K, K, K, K, K, K, K, K, O, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, O, K, K, K, K, K, K, G, G, G ], // 15 front door + side door to yard
 
-    // === FRONT YARD — basketball court, palms, pond, garage, driveway ===
-    [ G, G, G, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, B, B, B, B, B, B, G, G, G ], // 16 walkway + garage top wall
-    [ G, G, G, G, G, G, G, L, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, B, C, C, C, C, B, G, G, G ], // 17 palm + garage interior
-    [ G, G, G, G, G, G, G, G, G, G, G, G, G, C, G, G, C, C, C, C, C, C, C, G, G, G, W, W, W, G, G, B, C, C, C, C, B, G, G, G ], // 18 basketball court + pond + garage
-    [ G, G, G, G, G, G, G, G, G, G, G, G, G, C, G, G, C, C, C, C, C, C, C, G, G, T, W, W, W, G, G, B, B, B, O, B, B, G, G, G ], // 19 court + pond + tree + garage door
-    [ G, G, G, G, T, G, G, G, G, G, G, G, G, C, G, G, C, C, C, C, C, C, C, G, G, G, W, W, G, G, G, G, G, G, G, L, G, G, G, G ], // 20 court bottom + pond edge + palm
-    [ G, G, G, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 21 open grass
-    [ G, G, G, G, G, G, G, G, G, L, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 22 palm
-    [ E, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, E ], // 23 curb + driveway
-    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 24 road
-    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 25 road
-    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 26 road
-    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 27 road
+    // === FRONT YARD — big, open, things to do ===
+    [ G, G, G, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G ], // 16 walkway from front door + side path
+    [ G, G, G, G, G, G, G, L, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G ], // 17 palm + paths
+    [ G, G, G, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, B, B, B, B, B, B, B, B, G ], // 18 garage top wall (bigger, 8 wide)
+    [ G, G, G, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, B, C, C, C, C, C, C, B, G ], // 19 garage interior — tools, workbench
+    [ G, G, G, G, T, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, B, C, C, C, C, C, C, B, G ], // 20 garage interior — cars
+    [ G, G, G, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, B, C, C, C, C, C, C, B, G ], // 21 garage interior
+    [ G, G, G, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, B, B, B, B, O, B, B, B, G ], // 22 garage door (south facing)
+    [ G, G, G, G, G, G, G, G, G, L, G, G, G, C, G, G, C, C, C, C, C, C, C, C, G, G, G, G, G, G, C, C, C, C, C, C, C, C, C, G ], // 23 basketball court top + driveway to garage
+    [ G, G, G, G, G, G, G, G, G, G, G, G, G, C, G, G, C, C, C, C, C, C, C, C, G, G, W, W, W, G, C, C, C, C, C, C, C, C, C, G ], // 24 court + pond
+    [ G, G, G, G, G, G, G, G, G, G, G, G, G, C, G, G, C, C, C, C, C, C, C, C, G, G, W, W, W, G, G, G, G, G, G, L, G, G, G, G ], // 25 court + pond + palm
+    [ G, G, G, G, G, G, G, G, G, G, G, G, G, C, G, G, C, C, C, C, C, C, C, C, G, G, G, W, G, G, G, G, G, G, G, G, G, G, G, G ], // 26 court bottom + pond edge
+    [ G, G, G, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 27 open grass
+    [ G, G, G, G, G, G, L, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, T, G, G, G, G, G, G ], // 28 palms + tree
+    [ G, G, G, G, G, G, G, G, G, G, G, G, G, C, G, G, G, F, F, F, F, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 29 patio seating area
+    [ G, G, G, G, G, G, G, G, G, G, G, G, G, C, G, G, G, F, F, F, F, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 30 patio
+    [ E, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, E ], // 31 curb
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 32 road
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 33 road
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 34 road
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 35 road
   ],
   collisions: [...STANDARD_COLLISIONS],
   spawns: {
@@ -134,18 +142,18 @@ export const homeMap: MapData = {
       { id: 'ch0_pops',    x: 8,  y: 13, sprite: 'npc_pops' },
       { id: 'ch0_mom',     x: 26, y: 13, sprite: 'npc_female' },
       { id: 'ch0_sister',  x: 13, y: 6,  sprite: 'npc_sister' },
-      { id: 'ch0_frenchie', x: 10, y: 18, sprite: 'npc_frenchie' },
+      { id: 'ch0_frenchie', x: 10, y: 23, sprite: 'npc_frenchie' },
     ],
   },
   triggers: [
-    { x: 11, y: 27, action: 'scene', target: 'TransitionScene', data: { text: 'Three weeks later...', nextScene: 'BeachScene' } },
-    { x: 12, y: 27, action: 'scene', target: 'TransitionScene', data: { text: 'Three weeks later...', nextScene: 'BeachScene' } },
-    { x: 13, y: 27, action: 'scene', target: 'TransitionScene', data: { text: 'Three weeks later...', nextScene: 'BeachScene' } },
-    { x: 14, y: 27, action: 'scene', target: 'TransitionScene', data: { text: 'Three weeks later...', nextScene: 'BeachScene' } },
-    { x: 15, y: 27, action: 'scene', target: 'TransitionScene', data: { text: 'Three weeks later...', nextScene: 'BeachScene' } },
-    { x: 16, y: 27, action: 'scene', target: 'TransitionScene', data: { text: 'Three weeks later...', nextScene: 'BeachScene' } },
-    { x: 17, y: 27, action: 'scene', target: 'TransitionScene', data: { text: 'Three weeks later...', nextScene: 'BeachScene' } },
-    { x: 18, y: 27, action: 'scene', target: 'TransitionScene', data: { text: 'Three weeks later...', nextScene: 'BeachScene' } },
+    { x: 11, y: 35, action: 'scene', target: 'TransitionScene', data: { text: 'Three weeks later...', nextScene: 'BeachScene' } },
+    { x: 12, y: 35, action: 'scene', target: 'TransitionScene', data: { text: 'Three weeks later...', nextScene: 'BeachScene' } },
+    { x: 13, y: 35, action: 'scene', target: 'TransitionScene', data: { text: 'Three weeks later...', nextScene: 'BeachScene' } },
+    { x: 14, y: 35, action: 'scene', target: 'TransitionScene', data: { text: 'Three weeks later...', nextScene: 'BeachScene' } },
+    { x: 15, y: 35, action: 'scene', target: 'TransitionScene', data: { text: 'Three weeks later...', nextScene: 'BeachScene' } },
+    { x: 16, y: 35, action: 'scene', target: 'TransitionScene', data: { text: 'Three weeks later...', nextScene: 'BeachScene' } },
+    { x: 17, y: 35, action: 'scene', target: 'TransitionScene', data: { text: 'Three weeks later...', nextScene: 'BeachScene' } },
+    { x: 18, y: 35, action: 'scene', target: 'TransitionScene', data: { text: 'Three weeks later...', nextScene: 'BeachScene' } },
   ],
   interactables: [
     // JP's Room (cols 4-9, rows 4-8)
@@ -190,19 +198,21 @@ export const homeMap: MapData = {
     { id: 'ch0_food',          x: 33, y: 12, type: 'examine', glow: false, sprite: 'item-food' },       // scenery
     { id: 'ch0_mail',          x: 28, y: 14, type: 'examine', glow: true, sprite: 'item-letter' },      // story — college letters
     // Garage (cols 32-36, rows 17-19)
-    { id: 'ch0_pops_truck',    x: 34, y: 18, type: 'examine', glow: false, sprite: 'item-car' },        // Pops' truck in garage
-    { id: 'ch0_garage_tools',  x: 32, y: 17, type: 'examine', glow: false },                            // tools
-    { id: 'ch0_jp_car',        x: 12, y: 16, type: 'examine', glow: false, sprite: 'item-car' },        // JP's whip in driveway
+    { id: 'ch0_pops_truck',    x: 34, y: 20, type: 'examine', glow: false, sprite: 'item-car' },        // Pops' truck in garage
+    { id: 'ch0_jp_car',        x: 36, y: 20, type: 'examine', glow: false, sprite: 'item-car' },        // JP's car next to Pops in garage
+    { id: 'ch0_garage_tools',  x: 32, y: 19, type: 'examine', glow: false },                            // tools on wall
+    { id: 'ch0_workbench',     x: 34, y: 19, type: 'examine', glow: true },                             // Pops' workbench
+    { id: 'ch0_record_player', x: 37, y: 19, type: 'examine', glow: true },                             // record player in garage corner
     // Yard
-    { id: 'ch0_bbq',           x: 5,  y: 16, type: 'examine', glow: false, sprite: 'item-bbq' },       // BBQ near house
-    { id: 'ch0_basketball',    x: 19, y: 18, type: 'examine', glow: true },                              // basketball court
-    { id: 'ch0_frenchie_ball', x: 8,  y: 21, type: 'examine', glow: true, sprite: 'item-ball' },        // fetch in front yard
-    { id: 'ch0_fishing',       x: 27, y: 18, type: 'examine', glow: true },                              // fishing at pond
-    { id: 'ch0_goodbye',       x: 13, y: 22, type: 'examine', glow: true },                              // cutscene — near curb
+    { id: 'ch0_bbq',           x: 5,  y: 17, type: 'examine', glow: false, sprite: 'item-bbq' },       // BBQ near house
+    { id: 'ch0_basketball',    x: 20, y: 24, type: 'examine', glow: true },                              // basketball half-court
+    { id: 'ch0_frenchie_ball', x: 8,  y: 27, type: 'examine', glow: true, sprite: 'item-ball' },        // fetch in open grass
+    { id: 'ch0_fishing',       x: 27, y: 24, type: 'examine', glow: true },                              // fishing at pond
+    { id: 'ch0_goodbye',       x: 13, y: 30, type: 'examine', glow: true },                              // goodbye near curb
+    { id: 'ch0_patio',         x: 19, y: 29, type: 'examine', glow: false },                             // patio seating area
 
     // Surprise elements
     { id: 'ch0_rooftop',       x: 3,  y: 2,  type: 'examine', glow: true },                              // easter egg — climb from back of house
-    { id: 'ch0_record_player', x: 33, y: 17, type: 'examine', glow: true },                              // easter egg
     { id: 'ch0_shoebox',       x: 4,  y: 5,  type: 'examine', glow: true },                              // easter egg
     // tv_sitdown removed — Pops already has fishing moment
 
@@ -614,7 +624,7 @@ export const tractorMap: MapData = {
   },
   triggers: [
     { x: 7,  y: 5,  action: 'dialogue', target: 'ch4_computer' },
-    { x: 20, y: 27, action: 'scene', target: 'TransitionScene', data: { text: 'Two months later...', subtext: 'JP is building.', nextScene: 'ComeUpScene' } },
+    { x: 20, y: 35, action: 'scene', target: 'TransitionScene', data: { text: 'Two months later...', subtext: 'JP is building.', nextScene: 'ComeUpScene' } },
   ],
   interactables: [
     { id: 'ch4_tractor', x: 13, y: 9, type: 'examine', glow: true },

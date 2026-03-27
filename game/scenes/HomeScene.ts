@@ -43,7 +43,7 @@ export class HomeScene extends BaseChapterScene {
 
   create() {
     super.create();
-    this.addNavArrow(14, 26, 'Leave home');
+    this.addNavArrow(14, 34, 'Leave home');
 
     // Sister's crayon drawings on walls (cols 11-15, rows 4-8)
     const drawingColors = [0xff69b4, 0xf0c040, 0x40c060, 0x4080e0, 0xff4444, 0xc040f0];
@@ -2162,7 +2162,7 @@ export class HomeScene extends BaseChapterScene {
           { speaker: 'Narrator', text: 'Pops daps up JP and walks toward the truck.' },
         ], () => {
           // Pops walks to garage and "drives to work"
-          this.moveNPCTo('ch0_pops', 34, 18, 2500, () => {
+          this.moveNPCTo('ch0_pops', 34, 20, 2500, () => {
             const pops = this.findNPC('ch0_pops');
             if (pops) {
               // Pops disappears (drove away)

@@ -1271,6 +1271,16 @@ const ch0Extras: Record<string, DialogueLine[]> = {
   ch0_kitchen_knife: [
     { speaker: 'Narrator', text: 'Knife block. Mom keeps them sharp.' },
   ],
+  ch0_workbench: [
+    { speaker: 'Narrator', text: 'Pops\' workbench. Sawdust, screws, a half-finished birdhouse.' },
+    { speaker: 'JP\'s Mind', text: 'He\'s been working on that birdhouse for like three years.' },
+    { speaker: 'JP\'s Mind', text: 'He\'ll finish it. He finishes everything. Eventually.' },
+  ],
+  ch0_patio: [
+    { speaker: 'Narrator', text: 'Patio chairs. This is where the family sits on summer nights.' },
+    { speaker: 'JP\'s Mind', text: 'Pops on the grill. Mom on the phone. Sister running around.' },
+    { speaker: 'JP\'s Mind', text: 'Simple. I didn\'t appreciate it enough.' },
+  ],
   ch0_pops_truck: [
     { speaker: 'Narrator', text: 'Pops\' truck. Dented, dusty, runs perfect.' },
     { speaker: 'Narrator', text: 'He\'s had it since before JP was born.' },
