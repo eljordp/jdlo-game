@@ -111,14 +111,14 @@ export const homeMap: MapData = {
     [ G, G, G, K, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, N, N, N, N, J, K, G, G, G ], // 14 wall counters on right
     [ G, G, G, K, K, K, K, K, K, K, K, K, K, O, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, G, G, G ], // 15 front door
     [ G, G, G, G, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 16 front walkway
-    [ G, G, V, E, E, E, E, E, E, E, E, E, E, P, E, E, E, V, E, E, E, E, E, E, E, V, E, E, E, E, E, E, E, E, E, E, E, V, G, G ], // 17 fence top + vine accents
-    [ G, G, E, G, G, I, T, G, G, L, G, G, G, P, G, G, G, G, G, G, G, G, I, G, G, G, G, G, G, G, G, T, G, G, G, G, G, E, G, G ], // 18 mulch near trees, palm
-    [ G, G, E, G, G, G, I, G, G, G, G, G, G, P, G, G, G, I, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, E, G, G ], // 19 dirt path
-    [ G, G, E, G, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, L, G, G, G, G, W, W, W, W, W, G, G, G, G, L, G, G, E, G, G ], // 20 pond + palms
+    [ G, G, E, E, E, E, E, E, E, E, E, E, E, P, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, G, G ], // 17 fence top
+    [ G, G, E, G, G, I, T, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, I, G, G, G, G, G, G, G, G, T, G, G, G, G, G, E, G, G ], // 18 mulch near trees
+    [ G, G, E, G, G, G, I, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, E, G, G ], // 19 yard
+    [ G, G, E, G, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, W, W, W, W, W, G, G, G, G, L, G, G, E, G, G ], // 20 pond + palm
     [ G, G, E, G, T, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, T, W, W, W, W, G, G, G, G, G, G, G, E, G, G ], // 21 tree near pond
-    [ G, G, E, G, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, I, W, W, G, G, G, L, G, G, G, G, E, G, G ], // 22 dirt near pond edge
-    [ G, G, E, G, G, G, T, G, G, L, G, G, G, P, G, G, G, G, G, G, G, G, G, I, G, G, G, G, G, G, G, G, G, G, T, G, G, E, G, G ], // 23 trees + palm
-    [ G, G, V, E, E, E, E, E, E, E, E, E, E, P, E, E, E, V, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, V, E, E, E, E, G, G ], // 24 fence bottom + vine
+    [ G, G, E, G, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, I, W, W, G, G, G, G, G, G, G, G, E, G, G ], // 22 dirt near pond edge
+    [ G, G, E, G, G, G, T, G, G, L, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, T, G, G, E, G, G ], // 23 trees + palm
+    [ G, G, E, E, E, E, E, E, E, E, E, E, E, P, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, G, G ], // 24 fence bottom
     [ E, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, E ], // 25 curb + driveway
     [ C, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 26 road
     [ C, C, C, P, P, C, C, C, C, C, C, C, C, P, C, C, C, C, C, P, C, C, C, P, C, C, C, C, P, C, C, C, C, C, C, C, P, P, C, C ], // 27 road markings (PATH)
@@ -289,28 +289,28 @@ export const wrongCrowdMap: MapData = {
 
     // === ROWS 12-15: STREET (real SB paved road) — concrete with PATH lane markings ===
     [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 12 sidewalk / curb
-    [ E, C, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, P, C, C, C, C, P, C, C, C, C, P, C, C, C, C, C, C, C, C, C, E ], // 13 lane markings (dashed), parked cars on edges
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, P, C, C, C, C, P, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C ], // 13 lane markings (dashed)
     [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, P, C, C, C, C, P, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C ], // 14 road continues
-    [ E, C, C, E, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, E, C, C, E ], // 15 parked cars (fence) on sides
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 15 road continues
 
     // === ROWS 16-20: ACROSS THE STREET — sidewalk, neighborhood, CONVENIENCE STORE ===
     [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 16 sidewalk
     [ G, G, G, G, G, B, B, B, B, B, B, B, B, B, G, G, T, G, G, G, G, G, G, G, T, G, G, G, G, G, G, G, G, G, G, G, G, L, G, G ], // 17 store top wall + tree + palm
-    [ G, G, G, G, G, B, F, F, F, F, F, E, F, B, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 18 store interior: shelving (E)
-    [ G, G, G, G, G, B, F, F, M, F, F, E, F, B, G, G, G, G, T, G, G, G, G, G, G, G, T, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 19 store: cash register (M), more shelving
+    [ G, G, G, G, G, B, F, F, F, F, F, N, F, B, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 18 store interior: shelving (N=counter)
+    [ G, G, G, G, G, B, F, F, M, F, F, N, F, B, G, G, G, G, T, G, G, G, G, G, G, G, T, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 19 store: cash register (M), shelving (N=counter)
     [ G, G, G, G, G, B, F, F, F, F, F, F, O, B, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 20 store door faces south, grass
 
     // === ROWS 21-23: MORE STREET leading to buyer's block ===
     [ G, G, L, G, G, G, G, G, G, G, G, G, P, G, G, G, G, T, G, G, G, G, G, G, G, G, G, G, T, G, G, G, G, G, G, G, G, L, G, G ], // 21 path from store to street, trees
     [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 22 second street
-    [ E, C, C, C, C, C, C, C, C, P, C, C, C, C, P, C, C, C, C, P, C, C, C, C, P, C, C, C, C, P, C, C, C, C, C, C, C, C, C, E ], // 23 lane markings, parked cars
+    [ C, C, C, C, C, C, C, C, C, P, C, C, C, C, P, C, C, C, C, P, C, C, C, C, P, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C ], // 23 lane markings
 
     // === ROWS 24-31: BUYER'S HOUSE and surroundings ===
     [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 24 sidewalk
     [ G, G, G, G, T, G, G, G, G, G, G, G, G, G, G, L, G, G, G, G, G, G, G, B, B, B, B, B, B, B, B, B, B, G, G, G, G, T, G, G ], // 25 buyer house top wall, trees
     [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, C, C, B, D, D, D, B, D, D, D, D, B, G, G, G, G, G, G, G ], // 26 driveway leading to house, rooms visible
     [ G, G, G, T, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, G, G, B, D, D, D, O, D, D, D, D, B, G, G, G, T, G, G, G ], // 27 driveway, door between rooms
-    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, L, G, G, G, G, G, C, G, G, B, D, D, D, B, D, D, M, D, B, G, G, G, G, G, G, G ], // 28 M=table in back room (sketchy)
+    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, G, G, B, D, D, D, B, D, D, M, D, B, G, G, G, G, G, G, G ], // 28 M=table in back room (sketchy)
     [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, C, C, O, D, D, D, B, D, D, D, D, B, G, G, G, G, G, G, G ], // 29 front door (O) faces west onto driveway
     [ G, G, G, G, T, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, B, B, B, B, B, B, B, B, B, B, G, G, G, T, G, G, G ], // 30 buyer house bottom wall
     [ T, G, G, G, G, G, T, G, G, G, G, G, T, G, G, G, G, G, G, T, G, G, G, G, G, G, G, G, G, G, G, G, G, T, G, G, G, G, G, T ], // 31 bottom border — trees
@@ -396,11 +396,11 @@ export const jailMap: MapData = {
     [ X, X, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, C, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, X, X ], // 17 yard fence top (gap at col 17)
     [ X, X, E, C, C, I, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, P, P, P, C, C, C, C, C, C, C, C, C, C, C, E, X, X ], // 18 dirt exercise zone + worn path
     [ X, X, E, C, I, C, C, C, C, C, C, C, C, C, C, C, P, P, P, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, E, X, X ], // 19 worn walkway
-    [ X, X, E, C, C, C, C, C, C, I, C, C, C, C, C, C, P, F, F, F, F, C, C, P, C, C, E, E, C, C, C, C, C, C, C, C, C, E, X, X ], // 20 covered study area (F + E pillars)
+    [ X, X, E, C, C, C, C, C, C, I, C, C, C, C, C, C, P, F, F, F, F, C, C, P, C, C, B, B, C, C, C, C, C, C, C, C, C, E, X, X ], // 20 covered study area (F + B pillars)
     [ X, X, E, C, C, C, C, C, I, C, C, C, C, C, C, C, P, F, F, F, F, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, E, X, X ], // 21
-    [ X, X, E, C, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, P, P, P, P, P, C, C, C, C, I, C, C, C, C, E, X, X ], // 22
-    [ X, X, E, C, C, C, C, C, C, C, I, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, I, C, E, X, X ], // 23 open space
-    [ X, X, E, I, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, I, C, C, F, F, F, F, C, C, E, X, X ], // 24 weight rack area (F)
+    [ X, X, E, C, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, P, P, P, P, P, C, C, C, C, C, C, C, C, C, E, X, X ], // 22
+    [ X, X, E, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, E, X, X ], // 23 open space
+    [ X, X, E, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, F, F, F, F, C, C, E, X, X ], // 24 weight rack area (F)
     [ X, X, E, C, C, C, C, C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, F, F, F, F, C, C, E, X, X ], // 25
     [ X, X, E, E, E, E, E, E, E, E, E, E, E, E, E, P, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, X, X ], // 26 yard fence bottom (gap at col 15)
 
@@ -521,14 +521,14 @@ export const tractorMap: MapData = {
 
     // --- VINEYARD ROW 2 bottom + connecting paths (rows 19-22) ---
     [ G, G, G, G, G, G, G, G, G, P, G, G, I, G, G, G, G, G, G, G, P, G, G, G, G, G, G, P, G, G, G, G, G, I, G, G, G, G, G, G ], // 19 paths connecting blocks
-    [ G, G, I, G, G, G, G, G, G, P, G, G, G, G, G, W, G, G, G, G, P, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, I, G, G ], // 20 irrigation puddle
+    [ G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, W, G, G, G, G, P, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G ], // 20 irrigation puddle
     [ G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G ], // 21
     [ G, G, G, G, G, T, G, G, G, P, G, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, P, G, G, T, G, G, G, G, G, G, G, G, G ], // 22 scattered trees
 
     // --- OPEN GRASSLAND + DIRT PATHS (rows 23-25) ---
-    [ G, G, G, I, G, G, G, G, G, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, G, G, G, G, G, T, G, G, G, G, G, G ], // 23 main path south
+    [ G, G, G, G, G, G, G, G, G, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, G, G, G, G, G, T, G, G, G, G, G, G ], // 23 main path south
     [ G, G, T, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, T, G, G ], // 24 trees
-    [ G, G, G, G, G, G, G, G, I, G, G, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, I, G, G, G, G, G, G, G, G, G, G ], // 25 dirt
+    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 25 open grassland
 
     // --- EXIT AREA (rows 26-27) ---
     [ G, G, G, G, G, G, G, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, G, G, G, G, G, G, G ], // 26 path to exit
@@ -577,14 +577,14 @@ export const comeUpMap: MapData = {
     [ G, G, G, G, B, J, J, J, J, J, J, B, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 3
     [ G, G, G, G, B, J, J, J, J, J, J, B, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 4
     [ G, G, G, G, B, B, B, B, O, B, B, B, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 5  office door
-    [ G, G, T, G, G, I, G, G, P, G, G, G, G, T, G, G, I, G, G, G, G, T, G, G, G, G, G, I, G, G, G, T, G, G, G, G, G, G, G, G ], // 6  yard + driveway path
+    [ G, G, T, G, G, I, G, G, P, G, G, G, G, T, G, G, G, G, G, G, G, T, G, G, G, G, G, G, G, G, G, T, G, G, G, G, G, G, G, G ], // 6  yard + driveway path
 
     // --- STREET (rows 7-8) ---
     [ C, C, C, C, C, C, C, C, P, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 7  street
     [ C, C, P, P, C, C, C, C, P, C, C, P, P, C, C, C, P, P, C, C, C, C, P, P, C, C, C, C, P, P, C, C, C, P, P, C, C, C, C, C ], // 8  crosswalk markings
 
     // --- CLIENT DISTRICT 1 (rows 9-14): first row of buildings ---
-    [ G, G, G, I, G, G, G, G, P, G, G, T, G, G, G, G, G, G, G, G, I, G, G, G, G, G, G, G, G, G, G, T, G, G, G, G, G, G, G, G ], // 9  dirt patches
+    [ G, G, G, I, G, G, G, G, P, G, G, T, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, T, G, G, G, G, G, G, G, G ], // 9  near building
     [ G, G, B, B, B, B, B, G, P, G, G, G, G, G, B, B, B, B, B, B, G, G, G, G, G, G, B, B, B, B, B, B, B, G, G, G, G, T, G, G ], // 10 3 client buildings
     [ G, G, B, F, F, F, B, G, P, G, G, T, G, G, B, F, F, F, F, B, G, G, G, T, G, G, B, F, F, F, F, F, B, G, G, G, G, G, G, G ], // 11
     [ G, G, B, F, N, F, B, G, P, G, G, G, G, G, B, F, F, F, F, B, G, G, G, G, G, G, B, F, F, F, F, F, B, G, G, G, G, G, G, G ], // 12 N=counter in print shop
@@ -663,8 +663,8 @@ export const operatorMap: MapData = {
     [ G, C, C, B, B, B, B, B, B, B, B, B, B, B, C, C, C, C, C, B, B, B, B, B, B, B, B, C, C, C, B, B, B, B, B, B, B, C, C, G ], // 3  Pomaikai office (big) + office2 + office3
     [ G, C, C, B, J, J, J, J, J, J, J, J, J, B, C, C, C, C, C, B, J, J, J, J, J, J, B, C, C, C, B, F, F, M, F, F, B, C, C, G ], // 4  hardwood floors
     [ G, C, C, B, J, J, M, J, J, J, J, J, J, B, C, C, C, C, C, B, J, J, M, J, J, J, B, C, C, C, B, F, F, F, F, F, B, C, C, G ], // 5  M=desks
-    [ G, C, C, B, J, J, J, J, E, J, J, J, J, B, C, C, C, C, C, B, J, J, J, J, J, J, B, C, C, C, B, F, F, F, F, F, B, C, C, G ], // 6  E=conference room divider in Pomaikai
-    [ G, C, C, B, J, J, J, J, E, J, J, M, J, B, C, C, C, C, C, B, J, J, J, J, J, J, B, C, C, C, B, B, B, O, B, B, B, C, C, G ], // 7  conference room right side + M=desk
+    [ G, C, C, B, J, J, J, J, N, J, J, J, J, B, C, C, C, C, C, B, J, J, J, J, J, J, B, C, C, C, B, F, F, F, F, F, B, C, C, G ], // 6  N=conference room divider in Pomaikai
+    [ G, C, C, B, J, J, J, J, N, J, J, M, J, B, C, C, C, C, C, B, J, J, J, J, J, J, B, C, C, C, B, B, B, O, B, B, B, C, C, G ], // 7  conference room right side + M=desk
     [ G, C, C, B, J, J, J, J, J, J, J, J, J, B, C, C, C, C, C, B, J, J, J, J, J, J, B, C, C, C, C, C, C, C, C, C, C, C, C, G ], // 8
     [ G, C, C, B, B, B, B, B, O, B, B, B, B, B, C, C, T, C, C, B, B, B, B, O, B, B, B, C, C, C, C, C, C, C, C, C, C, C, C, G ], // 9  doors
     [ G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G ], // 10
