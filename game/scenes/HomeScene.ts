@@ -44,48 +44,43 @@ export class HomeScene extends BaseChapterScene {
 
   create() {
     super.create();
-    this.addNavArrow(14, 34, 'Leave home');
+    this.addNavArrow(14, 42, 'Leave home');
 
-    // Player starts upstairs — hide downstairs tiles (Pokemon-style)
-    const downRows = Array.from({ length: 33 }, (_, i) => i + 3);
-    for (const row of downRows) {
-      const sprites = this.tilesByRow.get(row);
-      if (sprites) sprites.forEach(s => s.setVisible(false));
-    }
-    // Hide downstairs NPCs
-    for (const npc of this.npcs) {
-      const npcTileY = Math.round((npc.sprite.y - SCALED_TILE / 2) / SCALED_TILE);
-      if (npcTileY >= 3) npc.sprite.setVisible(false);
-    }
+    // Player starts upstairs — hide everything below row 12 (Pokemon-style)
+    const upRows = Array.from({ length: 12 }, (_, i) => i); // rows 0-11
+    const downRows = Array.from({ length: this.mapHeight - 12 }, (_, i) => i + 12);
+    this.setFloorVisibility(upRows, downRows);
+    // Clamp camera to upstairs area
+    this.cameras.main.setBounds(0, 0, this.mapWidth * SCALED_TILE, 12 * SCALED_TILE);
 
-    // Sister's crayon drawings on walls — UPSTAIRS (cols 22-27, row 0-1)
+    // Sister's crayon drawings on walls — UPSTAIRS (cols 22-27, row 3)
     // Drawing 1: Sun on back wall
-    this.add.circle(23 * SCALED_TILE + 20, 0 * SCALED_TILE + 40, 8, 0xf0c040).setDepth(1);
+    this.add.circle(23 * SCALED_TILE + 20, 3 * SCALED_TILE + 40, 8, 0xf0c040).setDepth(1);
     for (let i = 0; i < 6; i++) {
       const angle = (Math.PI * 2 / 6) * i;
       this.add.rectangle(
         23 * SCALED_TILE + 20 + Math.cos(angle) * 12,
-        0 * SCALED_TILE + 40 + Math.sin(angle) * 12,
+        3 * SCALED_TILE + 40 + Math.sin(angle) * 12,
         3, 6, 0xf0c040
       ).setDepth(1).setAngle(angle * 180 / Math.PI);
     }
     // Drawing 2: Heart
-    this.add.rectangle(26 * SCALED_TILE + 20, 0 * SCALED_TILE + 40, 6, 6, 0xff69b4).setDepth(1);
-    this.add.rectangle(26 * SCALED_TILE + 17, 0 * SCALED_TILE + 37, 4, 4, 0xff69b4).setDepth(1);
-    this.add.rectangle(26 * SCALED_TILE + 23, 0 * SCALED_TILE + 37, 4, 4, 0xff69b4).setDepth(1);
+    this.add.rectangle(26 * SCALED_TILE + 20, 3 * SCALED_TILE + 40, 6, 6, 0xff69b4).setDepth(1);
+    this.add.rectangle(26 * SCALED_TILE + 17, 3 * SCALED_TILE + 37, 4, 4, 0xff69b4).setDepth(1);
+    this.add.rectangle(26 * SCALED_TILE + 23, 3 * SCALED_TILE + 37, 4, 4, 0xff69b4).setDepth(1);
     // Drawing 3: Rainbow stripes
     const rainbowColors = [0xff4444, 0xf0a030, 0xf0f040, 0x40c060, 0x4080e0, 0xc040f0];
     for (let i = 0; i < 6; i++) {
-      this.add.rectangle(24 * SCALED_TILE + 30, 0 * SCALED_TILE + 30 + i * 4, 20, 2, rainbowColors[i])
+      this.add.rectangle(24 * SCALED_TILE + 30, 3 * SCALED_TILE + 30 + i * 4, 20, 2, rainbowColors[i])
         .setDepth(1).setAlpha(0.7);
     }
 
     // Render windows directly on wall tiles (not floating sprites)
     const windowPositions = [
-      { x: 4, y: 0 },   // JP's room (upstairs back wall)
-      { x: 25, y: 0 },  // Sister's room (upstairs back wall)
-      { x: 31, y: 0 },  // Bathroom (upstairs back wall)
-      { x: 8, y: 3 },   // Parents' room (downstairs)
+      { x: 4, y: 3 },   // JP's room (upstairs back wall)
+      { x: 25, y: 3 },  // Sister's room (upstairs back wall)
+      { x: 31, y: 3 },  // Bathroom (upstairs back wall)
+      { x: 8, y: 11 },  // Parents' room (downstairs)
     ];
     for (const pos of windowPositions) {
       const wx = pos.x * SCALED_TILE + SCALED_TILE / 2;
@@ -264,7 +259,7 @@ export class HomeScene extends BaseChapterScene {
     const pops = this.findNPC('ch0_pops');
     if (pops) {
       this.time.delayedCall(2000, () => {
-        this.moveNPCTo('ch0_pops', 8, 13, 1500, () => {
+        this.moveNPCTo('ch0_pops', 8, 21, 1500, () => {
           // Pops "sleeping" — gentle breathing animation
           this.tweens.add({
             targets: pops!.sprite,
@@ -327,18 +322,18 @@ export class HomeScene extends BaseChapterScene {
     if (!mom) return;
 
     // Mom walks a REAL PATH: kitchen → hallway → parents room door → inside
-    // Step 1: Walk to hallway door area (through kitchen to row 10)
-    this.moveNPCTo('ch0_mom', 20, 10, 1200, () => {
+    // Step 1: Walk to hallway door area (through kitchen to row 18)
+    this.moveNPCTo('ch0_mom', 20, 18, 1200, () => {
       // Step 2: Walk down hallway toward parents room door
-      this.moveNPCTo('ch0_mom', 20, 9, 400, () => {
+      this.moveNPCTo('ch0_mom', 20, 17, 400, () => {
         // Step 3: Walk into parents room through door
-        this.moveNPCTo('ch0_mom', 22, 6, 1200, () => {
+        this.moveNPCTo('ch0_mom', 22, 14, 1200, () => {
           // Block the parents room door — Mom locked it
-          this.collisionTiles.add('20,9');
+          this.collisionTiles.add('20,17');
 
-          // Dark overlay on parents' room (cols 17-30, rows 4-8)
+          // Dark overlay on parents' room (cols 17-30, rows 12-16)
           const roomCenterX = 23.5 * SCALED_TILE + SCALED_TILE / 2;
-          const roomCenterY = 6 * SCALED_TILE + SCALED_TILE / 2;
+          const roomCenterY = 14 * SCALED_TILE + SCALED_TILE / 2;
           const roomW = 14 * SCALED_TILE;
           const roomH = 5 * SCALED_TILE;
 
@@ -363,7 +358,7 @@ export class HomeScene extends BaseChapterScene {
           this.time.delayedCall(5000, () => {
             if (!this.momFoodSpawned) {
               this.momFoodSpawned = true;
-              this.spawnDynamicInteractable('ch0_mom_food', 28, 12, 'item-plate');
+              this.spawnDynamicInteractable('ch0_mom_food', 28, 20, 'item-plate');
             }
           });
         });
@@ -437,7 +432,7 @@ export class HomeScene extends BaseChapterScene {
     this.time.delayedCall(10000, () => {
       if (!this.sisterDrawingSpawned) {
         this.sisterDrawingSpawned = true;
-        this.spawnDynamicInteractable('ch0_sister_drawing', 30, 12, 'item-drawing');
+        this.spawnDynamicInteractable('ch0_sister_drawing', 30, 20, 'item-drawing');
       }
     });
   }
@@ -457,7 +452,7 @@ export class HomeScene extends BaseChapterScene {
       { speaker: 'Pops', text: 'Hold on, let me grab the rods.' },
     ], () => {
       // Pops runs to the pond
-      this.moveNPCTo('ch0_pops', 23, 20, 1500, () => {
+      this.moveNPCTo('ch0_pops', 23, 28, 1500, () => {
         // Pops excited bounce
         this.tweens.add({
           targets: pops.sprite,
@@ -660,8 +655,8 @@ export class HomeScene extends BaseChapterScene {
       const popsTX = Math.round((pops.sprite.x - SCALED_TILE / 2) / SCALED_TILE);
       const popsTY = Math.round((pops.sprite.y - SCALED_TILE / 2) / SCALED_TILE);
       // If Pops isn't near the garage, walk him over
-      if (Math.abs(popsTX - 33) > 3 || Math.abs(popsTY - 18) > 3) {
-        this.moveNPCTo('ch0_pops', 33, 18, 1500);
+      if (Math.abs(popsTX - 33) > 3 || Math.abs(popsTY - 26) > 3) {
+        this.moveNPCTo('ch0_pops', 33, 26, 1500);
       }
     }
 
@@ -783,11 +778,13 @@ export class HomeScene extends BaseChapterScene {
       this.frozen = true;
       this.cameras.main.fadeOut(300, 0, 0, 0);
       this.cameras.main.once('camerafadeoutcomplete', () => {
-        this.player.setPosition(18 * SCALED_TILE + SCALED_TILE / 2, 1 * SCALED_TILE + SCALED_TILE / 2);
-        const upRows = [0, 1, 2];
-        const downRows = Array.from({ length: 33 }, (_, i) => i + 3);
+        this.player.setPosition(18 * SCALED_TILE + SCALED_TILE / 2, 6 * SCALED_TILE + SCALED_TILE / 2);
+        const upRows = Array.from({ length: 12 }, (_, i) => i); // rows 0-11
+        const downRows = Array.from({ length: this.mapHeight - 12 }, (_, i) => i + 12);
         this.setFloorVisibility(upRows, downRows);
         this.currentFloor = 'up';
+        // Camera only sees upstairs
+        this.cameras.main.setBounds(0, 0, this.mapWidth * SCALED_TILE, 12 * SCALED_TILE);
         this.cameras.main.fadeIn(300, 0, 0, 0);
         this.frozen = false;
       });
@@ -797,11 +794,13 @@ export class HomeScene extends BaseChapterScene {
       this.frozen = true;
       this.cameras.main.fadeOut(300, 0, 0, 0);
       this.cameras.main.once('camerafadeoutcomplete', () => {
-        this.player.setPosition(18 * SCALED_TILE + SCALED_TILE / 2, 10 * SCALED_TILE + SCALED_TILE / 2);
-        const upRows = [0, 1, 2];
-        const downRows = Array.from({ length: 33 }, (_, i) => i + 3);
+        this.player.setPosition(18 * SCALED_TILE + SCALED_TILE / 2, 18 * SCALED_TILE + SCALED_TILE / 2);
+        const upRows = Array.from({ length: 12 }, (_, i) => i); // rows 0-11
+        const downRows = Array.from({ length: this.mapHeight - 12 }, (_, i) => i + 12);
         this.setFloorVisibility(downRows, upRows);
         this.currentFloor = 'down';
+        // Camera sees full downstairs + yard
+        this.cameras.main.setBounds(0, 12 * SCALED_TILE, this.mapWidth * SCALED_TILE, (this.mapHeight - 12) * SCALED_TILE);
         this.cameras.main.fadeIn(300, 0, 0, 0);
         this.frozen = false;
       });
@@ -816,7 +815,7 @@ export class HomeScene extends BaseChapterScene {
 
       // Ball arc animation
       const courtX = 20 * SCALED_TILE + SCALED_TILE / 2;
-      const courtY = 20 * SCALED_TILE;
+      const courtY = 28 * SCALED_TILE;
       const ball = this.add.circle(this.player.x, this.player.y - 20, 8, 0xf08030)
         .setDepth(12);
       // Arc to hoop
@@ -2193,10 +2192,10 @@ export class HomeScene extends BaseChapterScene {
           { speaker: 'Narrator', text: 'Pops daps up JP and walks toward the truck.' },
         ], () => {
           // Pops walks to garage
-          this.moveNPCTo('ch0_pops', 34, 20, 2500, () => {
+          this.moveNPCTo('ch0_pops', 34, 28, 2500, () => {
             // Garage door opens — white folding panels roll up
             const doorX = 35 * SCALED_TILE + SCALED_TILE / 2;
-            const doorY = 22 * SCALED_TILE + SCALED_TILE / 2;
+            const doorY = 30 * SCALED_TILE + SCALED_TILE / 2;
 
             // Door panels that slide up (like a real garage door)
             const panel1 = this.add.rectangle(doorX, doorY, SCALED_TILE * 3, SCALED_TILE * 0.25, 0xe8e0d4).setDepth(6);
@@ -2210,7 +2209,7 @@ export class HomeScene extends BaseChapterScene {
             this.tweens.add({ targets: panel1, y: doorY - SCALED_TILE - 16, alpha: 0, duration: 400, delay: 200 });
 
             // Remove door collision so it's now open
-            this.collisionTiles.delete('35,22');
+            this.collisionTiles.delete('35,30');
 
             // Cover the door tile with concrete (open garage)
             const openDoor = this.add.rectangle(doorX, doorY, SCALED_TILE * 3, SCALED_TILE, 0x505058).setDepth(0);
@@ -2220,15 +2219,15 @@ export class HomeScene extends BaseChapterScene {
               const pops = this.findNPC('ch0_pops');
               if (pops) {
                 // Pops moves out through the open door and down the driveway
-                this.moveNPCTo('ch0_pops', 35, 23, 600, () => {
-                  this.moveNPCTo('ch0_pops', 35, 31, 1500, () => {
+                this.moveNPCTo('ch0_pops', 35, 31, 600, () => {
+                  this.moveNPCTo('ch0_pops', 35, 39, 1500, () => {
                     // Pops disappears (drove away)
                     this.tweens.add({
                       targets: pops.sprite,
                       alpha: 0,
                       duration: 500,
                       onComplete: () => {
-                        this.collisionTiles.delete('35,31');
+                        this.collisionTiles.delete('35,39');
                         pops.dialogue = [
                           { speaker: 'Narrator', text: 'Pops already left for work.' },
                         ];
