@@ -96,6 +96,13 @@ export class InteractionSystem {
     return null;
   }
 
+  // Decoration sprites that should STAY visible after interaction
+  private static readonly DECORATION_SPRITES = new Set([
+    'item-bed', 'item-fridge', 'item-couch', 'item-tv', 'item-bbq',
+    'item-bong', 'item-mirror', 'item-tablet', 'item-computer',
+    'item-gun', 'item-bottle', 'item-food',
+  ]);
+
   consume(id: string): void {
     const obj = this.interactables.find((i) => i.id === id);
     if (obj) {
@@ -109,10 +116,13 @@ export class InteractionSystem {
       this.glowTweens.delete(id);
     }
 
-    // Hide the sprite
+    // Hide the sprite ONLY if it's a pickup item, not decoration
     const sprite = this.sprites.get(id);
     if (sprite) {
-      sprite.setVisible(false);
+      const isDecoration = obj?.sprite && InteractionSystem.DECORATION_SPRITES.has(obj.sprite);
+      if (!isDecoration) {
+        sprite.setVisible(false);
+      }
     }
 
     // Destroy the "!" marker
