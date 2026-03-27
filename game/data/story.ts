@@ -1049,8 +1049,10 @@ const ch0Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'Everyone else seems to know what they\'re doing.' },
   ],
   ch0_poster: [
-    { speaker: 'Narrator', text: 'A motivational poster JP put up ironically.' },
-    { speaker: 'Narrator', text: 'But he reads it every morning anyway.' },
+    { speaker: 'Narrator', text: 'A poster on the wall. Big bold letters:' },
+    { speaker: 'Poster', text: '"THE ONLY PERSON YOU\'RE COMPETING WITH IS WHO YOU WERE YESTERDAY."' },
+    { speaker: 'Narrator', text: 'JP put it up as a joke. But some mornings, it\'s the first thing he reads.' },
+    { speaker: 'JP\'s Mind', text: 'Yesterday I did nothing. So the bar is low.' },
   ],
   ch0_nolan_call: [
     { speaker: 'Narrator', text: 'JP\'s phone rings. It\'s Nolan.' },

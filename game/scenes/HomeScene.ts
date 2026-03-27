@@ -79,13 +79,23 @@ export class HomeScene extends BaseChapterScene {
     this.trackedInteractions.add(id);
     this.interactionCount++;
 
-    // After 4 unique interactions, trigger surprise phone call
+    // After 4 unique interactions, queue surprise phone call
     if (this.interactionCount >= 4) {
       this.phoneTriggered = true;
-      // Delay so current interaction finishes first
-      this.time.delayedCall(2000, () => {
-        if (this.scene.isActive()) this.triggerPhoneCall();
-      });
+      // Wait until player is unfrozen (dialogue finished) before ringing
+      const checkReady = () => {
+        if (!this.scene.isActive()) return;
+        if (this.frozen) {
+          // Still in dialogue — check again in 500ms
+          this.time.delayedCall(500, checkReady);
+        } else {
+          // Dialogue done — wait a beat then ring
+          this.time.delayedCall(1500, () => {
+            if (this.scene.isActive() && !this.frozen) this.triggerPhoneCall();
+          });
+        }
+      };
+      this.time.delayedCall(1000, checkReady);
     }
   }
 
@@ -353,17 +363,16 @@ export class HomeScene extends BaseChapterScene {
       winObjs.push(closeBtn);
 
       const closeWin = () => {
+        winSpace.off('down', winSpaceHandler);
         for (const o of winObjs) { if (o && o.active) (o as Phaser.GameObjects.GameObject).destroy(); }
         active = true;
       };
       closeBtn.on('pointerdown', closeWin);
 
-      // Also close on ESC or Space
-      const winEsc = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+      // Space or click red dot to close app window (NOT ESC — ESC closes whole MacBook)
       const winSpace = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-      const winCloseHandler = () => { closeWin(); winEsc.off('down', winCloseHandler); winSpace.off('down', winCloseHandler); };
-      winEsc.on('down', winCloseHandler);
-      winSpace.on('down', winCloseHandler);
+      const winSpaceHandler = () => closeWin();
+      winSpace.on('down', winSpaceHandler);
 
       for (const o of winObjs) objects.push(o);
     };
@@ -488,15 +497,16 @@ export class HomeScene extends BaseChapterScene {
       winObjs.push(closeBtn);
 
       const closeWin = () => {
+        igSpace.off('down', igSpaceHandler);
         for (const o of winObjs) { if (o && o.active) (o as Phaser.GameObjects.GameObject).destroy(); }
         active = true;
       };
       closeBtn.on('pointerdown', closeWin);
-      const winEsc = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
-      const winSpace = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-      const winCloseHandler = () => { closeWin(); winEsc.off('down', winCloseHandler); winSpace.off('down', winCloseHandler); };
-      winEsc.on('down', winCloseHandler);
-      winSpace.on('down', winCloseHandler);
+
+      // Space or click red dot to close (NOT ESC)
+      const igSpace = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+      const igSpaceHandler = () => closeWin();
+      igSpace.on('down', igSpaceHandler);
 
       for (const o of winObjs) objects.push(o);
     };
