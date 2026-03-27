@@ -10,6 +10,19 @@ export class HomeScene extends BaseChapterScene {
   private phoneTriggered = false;
   private trackedInteractions = new Set<string>();
 
+  // Surprise element state
+  private momArgued = false;
+  private sisterPromised = false;
+  private fetchPlayed = false;
+  private isNightMode = false;
+  private ivyFollowing = false;
+  private ivyGiftGiven = false;
+  private momFoodSpawned = false;
+  private sisterDrawingSpawned = false;
+  private popsRecordPlayed = false;
+  private nightOverlay: Phaser.GameObjects.Rectangle | null = null;
+  private ivyFollowHistory: { x: number; y: number }[] = [];
+
   constructor() {
     super({ key: 'HomeScene' });
     this.chapterTitle = 'Chapter 1: Home';
@@ -27,11 +40,593 @@ export class HomeScene extends BaseChapterScene {
 
   create() {
     super.create();
-    this.addNavArrow(10, 29, 'Leave home');
+    this.addNavArrow(14, 34, 'Leave home');
   }
 
   protected getObjectiveHint(): string {
     return 'Explore your house. Talk to family. Leave when ready.';
+  }
+
+  // ─── NPC MOVEMENT SYSTEM ──────────────────────────────────────────
+  private findNPC(id: string) {
+    return this.npcs.find(n => n.id === id);
+  }
+
+  private moveNPCTo(id: string, tileX: number, tileY: number, duration = 800, onComplete?: () => void) {
+    const npc = this.findNPC(id);
+    if (!npc) return;
+
+    // Remove old collision
+    const oldTileX = Math.round((npc.sprite.x - SCALED_TILE / 2) / SCALED_TILE);
+    const oldTileY = Math.round((npc.sprite.y - SCALED_TILE / 2) / SCALED_TILE);
+    this.collisionTiles.delete(`${oldTileX},${oldTileY}`);
+
+    const targetX = tileX * SCALED_TILE + SCALED_TILE / 2;
+    const targetY = tileY * SCALED_TILE + SCALED_TILE / 2;
+
+    // Walking bounce
+    this.tweens.add({
+      targets: npc.sprite,
+      scaleY: SCALE * 1.05,
+      scaleX: SCALE * 0.95,
+      duration: 150,
+      yoyo: true,
+      repeat: Math.floor(duration / 300),
+    });
+
+    this.tweens.add({
+      targets: npc.sprite,
+      x: targetX,
+      y: targetY,
+      duration,
+      ease: 'Linear',
+      onComplete: () => {
+        // Add new collision
+        this.collisionTiles.add(`${tileX},${tileY}`);
+        if (onComplete) onComplete();
+      },
+    });
+  }
+
+  // ─── IVY FOLLOWING SYSTEM ─────────────────────────────────────────
+  protected onPlayerMove(tileX: number, tileY: number): void {
+    // Track movement history for Ivy following
+    this.ivyFollowHistory.push({ x: tileX, y: tileY });
+    if (this.ivyFollowHistory.length > 3) this.ivyFollowHistory.shift();
+
+    if (this.ivyFollowing) {
+      const ivy = this.findNPC('ch0_frenchie');
+      if (!ivy) return;
+
+      // Ivy follows 2 tiles behind (uses history)
+      const target = this.ivyFollowHistory[0];
+      if (!target) return;
+
+      const ivyTileX = Math.round((ivy.sprite.x - SCALED_TILE / 2) / SCALED_TILE);
+      const ivyTileY = Math.round((ivy.sprite.y - SCALED_TILE / 2) / SCALED_TILE);
+      const dist = Math.abs(ivyTileX - tileX) + Math.abs(ivyTileY - tileY);
+
+      // Only move if far enough and not too close
+      if (dist > 2) {
+        // Remove old collision
+        this.collisionTiles.delete(`${ivyTileX},${ivyTileY}`);
+
+        const targetPixelX = target.x * SCALED_TILE + SCALED_TILE / 2;
+        const targetPixelY = target.y * SCALED_TILE + SCALED_TILE / 2;
+
+        this.tweens.add({
+          targets: ivy.sprite,
+          x: targetPixelX,
+          y: targetPixelY,
+          duration: 250,
+          ease: 'Linear',
+          onComplete: () => {
+            this.collisionTiles.add(`${target.x},${target.y}`);
+          },
+        });
+
+        // Tail wag while moving
+        this.tweens.add({
+          targets: ivy.sprite,
+          angle: 5,
+          duration: 100,
+          yoyo: true,
+        });
+      }
+    }
+
+    // Sister follow hook
+    if (this.sisterFollowHook) {
+      this.sisterFollowHook(tileX, tileY);
+    }
+
+    // Late night trigger
+    if (!this.isNightMode && this.trackedInteractions.size >= 15) {
+      this.triggerNightMode();
+    }
+
+    // Ivy gift — after fetch, when walking near Ivy
+    if (this.fetchPlayed && !this.ivyGiftGiven && this.ivyFollowing) {
+      const ivy = this.findNPC('ch0_frenchie');
+      if (ivy) {
+        const ivyTileX = Math.round((ivy.sprite.x - SCALED_TILE / 2) / SCALED_TILE);
+        const ivyTileY = Math.round((ivy.sprite.y - SCALED_TILE / 2) / SCALED_TILE);
+        const dist = Math.abs(ivyTileX - tileX) + Math.abs(ivyTileY - tileY);
+        if (dist <= 2) {
+          this.ivyGiftGiven = true;
+          this.triggerIvyGift();
+        }
+      }
+    }
+  }
+
+  // ─── LATE NIGHT MODE ──────────────────────────────────────────────
+  private triggerNightMode() {
+    this.isNightMode = true;
+
+    // Dim overlay — evening settling in
+    this.nightOverlay = this.add.rectangle(
+      GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH * 3, GAME_HEIGHT * 3, 0x0a0820, 0
+    ).setDepth(8).setAlpha(0);
+
+    this.tweens.add({
+      targets: this.nightOverlay,
+      alpha: 0.35,
+      duration: 3000,
+      ease: 'Sine.easeIn',
+    });
+
+    // Cricket sounds (text-based since no audio files)
+    const cricketTexts = ['*chirp*', '*chirp chirp*'];
+    const spawnCricket = () => {
+      if (!this.scene.isActive()) return;
+      const text = cricketTexts[Math.floor(Math.random() * cricketTexts.length)];
+      const x = this.player.x + Phaser.Math.Between(-200, 200);
+      const y = this.player.y + Phaser.Math.Between(-150, 150);
+      const cricket = this.add.text(x, y, text, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#406030',
+      }).setDepth(9).setAlpha(0);
+      this.tweens.add({
+        targets: cricket,
+        alpha: 0.5,
+        duration: 800,
+        yoyo: true,
+        onComplete: () => cricket.destroy(),
+      });
+    };
+    this.time.addEvent({ delay: 3000, callback: spawnCricket, loop: true });
+
+    // Move Pops to couch (sleeping)
+    const pops = this.findNPC('ch0_pops');
+    if (pops) {
+      this.time.delayedCall(2000, () => {
+        this.moveNPCTo('ch0_pops', 8, 13, 1500, () => {
+          // Pops "sleeping" — gentle breathing animation
+          this.tweens.add({
+            targets: pops!.sprite,
+            scaleY: SCALE * 0.95,
+            duration: 1200,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut',
+          });
+          // Update dialogue
+          pops!.dialogue = [
+            { speaker: 'Narrator', text: 'Pops fell asleep on the couch. Game still on.' },
+            { speaker: 'Narrator', text: 'He looks peaceful. Let him rest.' },
+          ];
+        });
+      });
+    }
+  }
+
+  // ─── IVY GIFT (post-fetch surprise) ───────────────────────────────
+  private triggerIvyGift() {
+    this.frozen = true;
+
+    // Ivy drops a sock at JP's feet
+    const chapterDialogue = this.getChapterDialogue();
+    const lines = chapterDialogue.npcs['ch0_ivy_gift'] || [
+      { speaker: 'Narrator', text: 'Ivy drops something at JP\'s feet. It\'s... a sock.' },
+      { speaker: 'Narrator', text: 'She wags her tail. This is her best sock.' },
+      { speaker: 'JP', text: 'Thanks Ivy.' },
+    ];
+
+    // Show sock sprite briefly
+    const sockSprite = this.add.sprite(
+      this.player.x, this.player.y + SCALED_TILE / 2, 'item-sock'
+    ).setScale(SCALE).setDepth(11).setAlpha(0);
+
+    this.tweens.add({
+      targets: sockSprite,
+      alpha: 1,
+      duration: 300,
+    });
+
+    this.dialogue.show(lines, () => {
+      this.tweens.add({
+        targets: sockSprite,
+        alpha: 0,
+        duration: 500,
+        onComplete: () => {
+          sockSprite.destroy();
+          this.frozen = false;
+        },
+      });
+    });
+  }
+
+  // ─── MOM ROOM DARKEN (post-argument) ──────────────────────────────
+  private triggerMomWalkaway() {
+    this.momArgued = true;
+    const mom = this.findNPC('ch0_mom');
+    if (!mom) return;
+
+    // Mom walks to parents room
+    this.moveNPCTo('ch0_mom', 22, 6, 2000, () => {
+      // Dark overlay on parents' room (cols 17-30, rows 4-8)
+      const roomCenterX = 23.5 * SCALED_TILE + SCALED_TILE / 2;
+      const roomCenterY = 6 * SCALED_TILE + SCALED_TILE / 2;
+      const roomW = 14 * SCALED_TILE;
+      const roomH = 5 * SCALED_TILE;
+
+      const darkness = this.add.rectangle(roomCenterX, roomCenterY, roomW, roomH, 0x000000, 0)
+        .setDepth(7);
+      this.tweens.add({
+        targets: darkness,
+        alpha: 0.5,
+        duration: 1000,
+        ease: 'Sine.easeIn',
+      });
+
+      // Door closing sound effect — just visual "thud"
+      this.cameras.main.shake(100, 0.002);
+
+      // Update Mom's dialogue to reflect state
+      mom.dialogue = [
+        { speaker: 'Narrator', text: 'The door is closed. She\'s done talking.' },
+      ];
+
+      // Spawn food on counter after a delay
+      this.time.delayedCall(5000, () => {
+        if (!this.momFoodSpawned) {
+          this.momFoodSpawned = true;
+          this.spawnDynamicInteractable('ch0_mom_food', 28, 12, 'item-plate');
+        }
+      });
+    });
+  }
+
+  // ─── SISTER FOLLOWS (after birthday promise) ─────────────────────
+  private triggerSisterFollow() {
+    this.sisterPromised = true;
+    const sister = this.findNPC('ch0_sister');
+    if (!sister) return;
+
+    // Sister follows for a bit then goes back
+    let followSteps = 0;
+    const maxFollowSteps = 8;
+
+    const originalTileX = Math.round((sister.sprite.x - SCALED_TILE / 2) / SCALED_TILE);
+    const originalTileY = Math.round((sister.sprite.y - SCALED_TILE / 2) / SCALED_TILE);
+
+    const originalOnPlayerMove = this.onPlayerMove.bind(this);
+
+    const sisterFollow = (tileX: number, tileY: number) => {
+      followSteps++;
+
+      const sisterTX = Math.round((sister.sprite.x - SCALED_TILE / 2) / SCALED_TILE);
+      const sisterTY = Math.round((sister.sprite.y - SCALED_TILE / 2) / SCALED_TILE);
+      const dist = Math.abs(sisterTX - tileX) + Math.abs(sisterTY - tileY);
+
+      if (dist > 2 && followSteps <= maxFollowSteps) {
+        // Move sister closer
+        const dx = tileX > sisterTX ? 1 : tileX < sisterTX ? -1 : 0;
+        const dy = tileY > sisterTY ? 1 : tileY < sisterTY ? -1 : 0;
+        const newX = sisterTX + dx;
+        const newY = sisterTY + dy;
+
+        if (!this.collisionTiles.has(`${newX},${newY}`)) {
+          this.collisionTiles.delete(`${sisterTX},${sisterTY}`);
+          const targetPx = newX * SCALED_TILE + SCALED_TILE / 2;
+          const targetPy = newY * SCALED_TILE + SCALED_TILE / 2;
+          this.tweens.add({
+            targets: sister.sprite,
+            x: targetPx,
+            y: targetPy,
+            duration: 250,
+            ease: 'Linear',
+            onComplete: () => {
+              this.collisionTiles.add(`${newX},${newY}`);
+            },
+          });
+        }
+      }
+
+      if (followSteps >= maxFollowSteps) {
+        // Sister goes back to her room
+        this.time.delayedCall(1000, () => {
+          this.dialogue.show([
+            { speaker: 'Sister', text: 'I\'m going back to my room. Don\'t forget, okay?' },
+          ], () => {
+            this.moveNPCTo('ch0_sister', originalTileX, originalTileY, 1200);
+          });
+        });
+        // Remove the follow hook
+        this.sisterFollowHook = null;
+      }
+    };
+
+    this.sisterFollowHook = sisterFollow;
+
+    // Spawn drawing on fridge after she follows
+    this.time.delayedCall(10000, () => {
+      if (!this.sisterDrawingSpawned) {
+        this.sisterDrawingSpawned = true;
+        this.spawnDynamicInteractable('ch0_sister_drawing', 30, 12, 'item-drawing');
+      }
+    });
+  }
+
+  private sisterFollowHook: ((tileX: number, tileY: number) => void) | null = null;
+
+  // ─── POPS RUNS TO FISHING ─────────────────────────────────────────
+  private triggerPopsRunsToFishing() {
+    const pops = this.findNPC('ch0_pops');
+    if (!pops) return;
+
+    this.frozen = true;
+
+    // Pops gets excited
+    this.dialogue.show([
+      { speaker: 'Pops', text: 'Oh hell yeah! Just like when you were little!' },
+      { speaker: 'Pops', text: 'Hold on, let me grab the rods.' },
+    ], () => {
+      // Pops runs to the pond
+      this.moveNPCTo('ch0_pops', 23, 20, 1500, () => {
+        // Pops excited bounce
+        this.tweens.add({
+          targets: pops.sprite,
+          y: pops.sprite.y - 10,
+          duration: 200,
+          yoyo: true,
+          repeat: 2,
+          onComplete: () => {
+            this.frozen = false;
+            this.playFishing();
+          },
+        });
+      });
+    });
+  }
+
+  // ─── POPS TV SIT-DOWN MOMENT ──────────────────────────────────────
+  private triggerTVMoment() {
+    this.frozen = true;
+    const objects: Phaser.GameObjects.GameObject[] = [];
+
+    // Dark overlay
+    objects.push(this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.75)
+      .setScrollFactor(0).setDepth(300));
+
+    // Living room scene — couch + TV glow
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+
+    // Couch (dark)
+    objects.push(this.add.rectangle(cx, cy + 60, 400, 80, 0x3a3028)
+      .setScrollFactor(0).setDepth(301));
+    objects.push(this.add.rectangle(cx, cy + 30, 380, 20, 0x4a3a28)
+      .setScrollFactor(0).setDepth(301));
+
+    // TV glow
+    objects.push(this.add.rectangle(cx, cy - 100, 300, 180, 0x102030)
+      .setScrollFactor(0).setDepth(301));
+    const tvScreen = this.add.rectangle(cx, cy - 100, 280, 160, 0x1a3050)
+      .setScrollFactor(0).setDepth(302);
+    objects.push(tvScreen);
+
+    // Flickering TV light
+    this.tweens.add({
+      targets: tvScreen,
+      fillColor: 0x203860,
+      duration: 500,
+      yoyo: true,
+      repeat: -1,
+    });
+
+    // JP and Pops silhouettes on couch
+    const jpSil = this.add.sprite(cx - 60, cy + 40, this.getPlayerTexture(), 2)
+      .setScale(3).setScrollFactor(0).setDepth(303).setTint(0x404040);
+    objects.push(jpSil);
+    const popsSil = this.add.sprite(cx + 60, cy + 40, 'npc_pops', 0)
+      .setScale(3).setScrollFactor(0).setDepth(303).setTint(0x404040);
+    objects.push(popsSil);
+
+    // TV glow on faces
+    objects.push(this.add.rectangle(cx, cy + 20, 160, 40, 0x203050, 0.15)
+      .setScrollFactor(0).setDepth(304));
+
+    // Sequence
+    this.time.delayedCall(1500, () => {
+      // Pops leans forward
+      this.tweens.add({
+        targets: popsSil,
+        y: cy + 25,
+        scaleX: 3.2,
+        duration: 400,
+        ease: 'Quad.easeOut',
+      });
+
+      this.time.delayedCall(600, () => {
+        // JP does the same without realizing
+        this.tweens.add({
+          targets: jpSil,
+          y: cy + 25,
+          scaleX: 3.2,
+          duration: 400,
+          ease: 'Quad.easeOut',
+        });
+      });
+    });
+
+    // Text after a beat
+    this.time.delayedCall(3500, () => {
+      const text = this.add.text(cx, cy + 140, 'Some moments don\'t need words.', {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#808090',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(305).setAlpha(0);
+      objects.push(text);
+
+      this.tweens.add({
+        targets: text,
+        alpha: 1,
+        duration: 1000,
+        hold: 2000,
+        yoyo: true,
+        onComplete: () => {
+          for (const obj of objects) {
+            if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
+          }
+          this.frozen = false;
+        },
+      });
+    });
+  }
+
+  // ─── ROOFTOP EASTER EGG ──────────────────────────────────────────
+  private triggerRooftop() {
+    this.frozen = true;
+    const objects: Phaser.GameObjects.GameObject[] = [];
+
+    // Night sky
+    objects.push(this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x0a0820)
+      .setScrollFactor(0).setDepth(300));
+
+    // Stars
+    for (let i = 0; i < 40; i++) {
+      const star = this.add.circle(
+        Math.random() * GAME_WIDTH, Math.random() * (GAME_HEIGHT * 0.6),
+        Math.random() * 1.5 + 0.5, 0xffffff, 0.3 + Math.random() * 0.5
+      ).setScrollFactor(0).setDepth(301);
+      objects.push(star);
+      this.tweens.add({
+        targets: star,
+        alpha: star.alpha * 0.3,
+        duration: 1000 + Math.random() * 2000,
+        yoyo: true,
+        repeat: -1,
+      });
+    }
+
+    // Rooftop edge (dark brown shingles)
+    objects.push(this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT - 150, GAME_WIDTH, 200, 0x3a2a1a)
+      .setScrollFactor(0).setDepth(302));
+    // Roof texture
+    for (let i = 0; i < 20; i++) {
+      objects.push(this.add.rectangle(
+        i * 70 + 20, GAME_HEIGHT - 180 + Math.random() * 20, 60, 3, 0x4a3a2a
+      ).setScrollFactor(0).setDepth(303).setAlpha(0.5));
+    }
+
+    // Neighborhood below — tiny lit windows
+    const houseColors = [0xf0d060, 0xe0c050, 0xf0e080, 0xd0b040];
+    for (let i = 0; i < 8; i++) {
+      const hx = 100 + i * 140 + Math.random() * 40;
+      const hy = GAME_HEIGHT - 80 + Math.random() * 30;
+      // House silhouette
+      objects.push(this.add.rectangle(hx, hy, 40 + Math.random() * 30, 25, 0x1a1a2a)
+        .setScrollFactor(0).setDepth(303));
+      // Lit window
+      if (Math.random() > 0.3) {
+        const wc = houseColors[Math.floor(Math.random() * houseColors.length)];
+        objects.push(this.add.rectangle(hx, hy - 4, 6, 6, wc, 0.7)
+          .setScrollFactor(0).setDepth(304));
+      }
+    }
+
+    // JP silhouette sitting on roof edge
+    const jp = this.add.sprite(GAME_WIDTH / 2 - 40, GAME_HEIGHT - 220, this.getPlayerTexture(), 0)
+      .setScale(3).setScrollFactor(0).setDepth(305);
+    objects.push(jp);
+
+    // Dialogue sequence
+    const chapterDialogue = this.getChapterDialogue();
+    const lines = chapterDialogue.npcs['ch0_rooftop'] || [
+      { speaker: 'Narrator', text: 'From up here, everything looks small. That\'s the problem.' },
+    ];
+
+    this.time.delayedCall(1500, () => {
+      this.dialogue.show(lines, () => {
+        // Fade out
+        const fade = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0)
+          .setScrollFactor(0).setDepth(400);
+        this.tweens.add({
+          targets: fade,
+          alpha: 1,
+          duration: 800,
+          onComplete: () => {
+            for (const obj of objects) {
+              if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
+            }
+            fade.destroy();
+            this.frozen = false;
+          },
+        });
+      });
+    });
+  }
+
+  // ─── RECORD PLAYER ────────────────────────────────────────────────
+  private triggerRecordPlayer() {
+    this.popsRecordPlayed = true;
+    const pops = this.findNPC('ch0_pops');
+
+    // Move Pops to garage if he's not already there
+    if (pops) {
+      const popsTX = Math.round((pops.sprite.x - SCALED_TILE / 2) / SCALED_TILE);
+      const popsTY = Math.round((pops.sprite.y - SCALED_TILE / 2) / SCALED_TILE);
+      // If Pops isn't near the garage, walk him over
+      if (Math.abs(popsTX - 33) > 3 || Math.abs(popsTY - 18) > 3) {
+        this.moveNPCTo('ch0_pops', 33, 18, 1500);
+      }
+    }
+
+    this.frozen = true;
+    const chapterDialogue = this.getChapterDialogue();
+    const lines = chapterDialogue.npcs['ch0_record_player'] || [
+      { speaker: 'Narrator', text: 'A warm crackle fills the garage.' },
+    ];
+
+    this.dialogue.show(lines, () => {
+      this.frozen = false;
+    });
+  }
+
+  // ─── DYNAMIC INTERACTABLE SPAWNING ────────────────────────────────
+  private spawnDynamicInteractable(id: string, x: number, y: number, sprite?: string) {
+    // Add to interaction system with a glow effect
+    this.interactions.addInteractable({
+      id, x, y, type: 'examine', glow: true, sprite,
+    });
+
+    // Visual spawn — sparkle effect
+    const worldX = x * SCALED_TILE + SCALED_TILE / 2;
+    const worldY = y * SCALED_TILE + SCALED_TILE / 2;
+    for (let i = 0; i < 5; i++) {
+      const sparkle = this.add.circle(
+        worldX + Phaser.Math.Between(-15, 15),
+        worldY + Phaser.Math.Between(-15, 15),
+        2, 0xf0c040, 0.8
+      ).setDepth(12);
+      this.tweens.add({
+        targets: sparkle,
+        alpha: 0,
+        y: sparkle.y - 20,
+        duration: 600,
+        delay: i * 100,
+        onComplete: () => sparkle.destroy(),
+      });
+    }
   }
 
   getMapData(): MapData {
@@ -42,7 +637,7 @@ export class HomeScene extends BaseChapterScene {
     return homeDialogue;
   }
 
-  // Override to add computer interface, fetch, goodbye, phone ring
+  // Override to add computer interface, fetch, goodbye, phone ring, + all surprise elements
   protected handleInteractable(interactable: { id: string; type: string; consumed?: boolean }) {
     if (interactable.id === 'ch0_journal') {
       Analytics.trackInteraction(interactable.id);
@@ -51,7 +646,7 @@ export class HomeScene extends BaseChapterScene {
       return;
     }
     if (interactable.id === 'ch0_computer') {
-      if (this.frozen) return; // prevent re-opening while interface is up
+      if (this.frozen) return;
       Analytics.trackInteraction(interactable.id);
       this.showComputerInterface();
       this.trackForPhoneCall(interactable.id);
@@ -59,13 +654,16 @@ export class HomeScene extends BaseChapterScene {
     }
     if (interactable.id === 'ch0_frenchie_ball') {
       Analytics.trackInteraction(interactable.id);
+      this.fetchPlayed = true;
+      // Start Ivy following after fetch
       this.playFetch();
       this.interactions.consume(interactable.id);
       return;
     }
     if (interactable.id === 'ch0_fishing') {
       Analytics.trackInteraction(interactable.id);
-      this.playFishing();
+      // Pops gets excited and runs to the pond!
+      this.triggerPopsRunsToFishing();
       this.interactions.consume(interactable.id);
       return;
     }
@@ -75,8 +673,110 @@ export class HomeScene extends BaseChapterScene {
       this.interactions.consume(interactable.id);
       return;
     }
+    // Rooftop easter egg
+    if (interactable.id === 'ch0_rooftop') {
+      Analytics.trackInteraction(interactable.id);
+      this.triggerRooftop();
+      this.trackForPhoneCall(interactable.id);
+      return;
+    }
+    // Record player in garage
+    if (interactable.id === 'ch0_record_player') {
+      Analytics.trackInteraction(interactable.id);
+      this.triggerRecordPlayer();
+      this.interactions.consume(interactable.id);
+      this.trackForPhoneCall(interactable.id);
+      return;
+    }
+    // Shoebox under the bed
+    if (interactable.id === 'ch0_shoebox') {
+      Analytics.trackInteraction(interactable.id);
+      this.interactions.consume(interactable.id);
+      this.trackForPhoneCall(interactable.id);
+      super.handleInteractable(interactable);
+      return;
+    }
+    // TV sit-down with Pops
+    if (interactable.id === 'ch0_tv_sitdown') {
+      Analytics.trackInteraction(interactable.id);
+      this.triggerTVMoment();
+      this.interactions.consume(interactable.id);
+      this.trackForPhoneCall(interactable.id);
+      return;
+    }
+    // Deep mirror reflection (replaces generic mirror dialogue)
+    if (interactable.id === 'ch0_mirror') {
+      Analytics.trackInteraction(interactable.id);
+      this.frozen = true;
+      const chapterDialogue = this.getChapterDialogue();
+      const lines = chapterDialogue.npcs['ch0_mirror_deep'] || [
+        { speaker: 'Narrator', text: 'Jordi stares at himself. Really stares.' },
+        { speaker: 'JP\'s Mind', text: 'I don\'t know who this person is yet.' },
+      ];
+      this.dialogue.show(lines, () => { this.frozen = false; });
+      this.trackForPhoneCall(interactable.id);
+      return;
+    }
+    // Mom food plate (dynamically spawned)
+    if (interactable.id === 'ch0_mom_food') {
+      Analytics.trackInteraction(interactable.id);
+      this.interactions.consume(interactable.id);
+      this.trackForPhoneCall(interactable.id);
+      super.handleInteractable(interactable);
+      return;
+    }
+    // Sister drawing (dynamically spawned)
+    if (interactable.id === 'ch0_sister_drawing') {
+      Analytics.trackInteraction(interactable.id);
+      this.interactions.consume(interactable.id);
+      this.trackForPhoneCall(interactable.id);
+      super.handleInteractable(interactable);
+      return;
+    }
     this.trackForPhoneCall(interactable.id);
     super.handleInteractable(interactable);
+  }
+
+  // Override NPC dialogue to add reactive behaviors
+  protected handleNPCDialogue(npcId: string, dialogue: DialogueLine[]) {
+    if (npcId === 'ch0_mom' && !this.momArgued) {
+      // Show normal dialogue, then trigger walkaway
+      this.dialogue.show(dialogue, () => {
+        this.triggerMomWalkaway();
+      });
+      return;
+    }
+
+    if (npcId === 'ch0_sister' && !this.sisterPromised) {
+      // Show dialogue, then check if they promised birthday
+      this.dialogue.show(dialogue, () => {
+        // Trigger sister follow regardless of choice
+        this.triggerSisterFollow();
+      });
+      return;
+    }
+
+    if (npcId === 'ch0_frenchie' && !this.ivyFollowing) {
+      // After talking to Ivy, she starts following
+      this.dialogue.show(dialogue, () => {
+        this.ivyFollowing = true;
+        // Little bark/wiggle
+        const ivy = this.findNPC('ch0_frenchie');
+        if (ivy) {
+          this.tweens.add({
+            targets: ivy.sprite,
+            angle: 10,
+            duration: 100,
+            yoyo: true,
+            repeat: 3,
+          });
+        }
+      });
+      return;
+    }
+
+    // Default behavior
+    this.dialogue.show(dialogue);
   }
 
   private trackForPhoneCall(id: string) {
@@ -86,7 +786,7 @@ export class HomeScene extends BaseChapterScene {
     this.interactionCount++;
 
     // After 4 unique interactions, queue surprise phone call
-    if (this.interactionCount >= 4) {
+    if (this.interactionCount >= 7) {
       this.phoneTriggered = true;
       // Wait until player is unfrozen (dialogue finished) before ringing
       const checkReady = () => {
@@ -1030,14 +1730,23 @@ export class HomeScene extends BaseChapterScene {
         this.runGoodbyeSequence();
       });
 
-      // Space = yes by default
+      // Space = yes, N = not yet
       const spaceKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+      const nKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.N);
       const spaceHandler = () => {
         spaceKey.off('down', spaceHandler);
+        nKey.off('down', nHandler);
         cleanup();
         this.runGoodbyeSequence();
       };
+      const nHandler = () => {
+        spaceKey.off('down', spaceHandler);
+        nKey.off('down', nHandler);
+        cleanup();
+        this.frozen = false;
+      };
       spaceKey.on('down', spaceHandler);
+      nKey.on('down', nHandler);
     });
   }
 

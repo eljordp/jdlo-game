@@ -734,7 +734,7 @@ export abstract class BaseChapterScene extends Phaser.Scene {
 
       if (npcTileX === facingX && npcTileY === facingY) {
         SoundEffects.playBlip();
-        this.dialogue.show(npc.dialogue);
+        this.handleNPCDialogue(npc.id, npc.dialogue);
         return;
       }
     }
@@ -943,6 +943,11 @@ export abstract class BaseChapterScene extends Phaser.Scene {
 
   /** Override in subclasses to react to player movement (e.g. hot tub clothes change) */
   protected onPlayerMove(_tileX: number, _tileY: number): void {}
+
+  /** Override in subclasses to add reactive NPC dialogue behaviors */
+  protected handleNPCDialogue(_npcId: string, dialogue: DialogueLine[]): void {
+    this.dialogue.show(dialogue);
+  }
 
   private checkTriggers(tileX: number, tileY: number) {
     for (const trigger of this.triggers) {

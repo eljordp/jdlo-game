@@ -159,8 +159,8 @@ export const homeMap: MapData = {
     { id: 'ch0_nightstand',    x: 7,  y: 4,  type: 'examine', glow: true, sprite: 'item-nightstand' },  // nightstand next to bed
     { id: 'ch0_computer',      x: 9,  y: 5,  type: 'examine', glow: true, sprite: 'item-desk' },        // desk w/ computer, right wall
     { id: 'ch0_college',       x: 9,  y: 6,  type: 'examine', glow: true, sprite: 'item-letter' },      // college letters on desk area
-    { id: 'ch0_poster',        x: 7,  y: 4,  type: 'examine', glow: true, sprite: 'item-poster' },      // poster on back wall (visible)
-    { id: 'ch0_hidden_stash',  x: 9,  y: 7,  type: 'examine', glow: true },                             // behind desk — bag of weed
+    { id: 'ch0_poster',        x: 6,  y: 4,  type: 'examine', glow: true, sprite: 'item-poster' },      // poster on back wall (visible)
+    { id: 'ch0_hidden_stash',  x: 9,  y: 7,  type: 'examine', glow: true, sprite: 'item-weed-bag' },     // behind desk — bag of weed
     { id: 'ch0_journal',       x: 7,  y: 8,  type: 'examine', glow: true, sprite: 'item-book' },        // journal near door
     { id: 'ch0_crypto',        x: 4,  y: 8,  type: 'examine', glow: true, sprite: 'item-phone' },       // phone on floor by bed
     // Sister's Room (cols 11-15, rows 4-8) — pink girly room
@@ -177,26 +177,39 @@ export const homeMap: MapData = {
     // Bathroom (cols 32-35, rows 4-8)
     { id: 'ch0_mirror',        x: 34, y: 4,  type: 'examine', glow: true, sprite: 'item-mirror' },
     { id: 'ch0_toilet',        x: 32, y: 7,  type: 'examine', glow: true, sprite: 'item-toilet' },
-    { id: 'ch0_shower',        x: 35, y: 7,  type: 'examine', glow: true },
+    { id: 'ch0_shower',        x: 35, y: 7,  type: 'examine', glow: true, sprite: 'item-shower' },
     // Hallway (row 10)
     { id: 'ch0_hallway_photo', x: 20, y: 10, type: 'examine', glow: true, sprite: 'item-photo' },
     // Living Room (left side, row 12-14)
     { id: 'ch0_tv',            x: 4,  y: 13, type: 'examine', glow: true, sprite: 'item-tv' },
-    { id: 'ch0_couch',         x: 8,  y: 13, type: 'examine', glow: true, sprite: 'item-couch' },
+    { id: 'ch0_couch',         x: 6,  y: 13, type: 'examine', glow: true, sprite: 'item-couch' },
     { id: 'ch0_window_view',   x: 4,  y: 12, type: 'examine', glow: true, sprite: 'item-window' },
     // Kitchen (right side, row 12-14)
     { id: 'ch0_fridge',        x: 35, y: 12, type: 'examine', glow: true, sprite: 'item-fridge' },
     { id: 'ch0_food',          x: 33, y: 12, type: 'examine', glow: true, sprite: 'item-food' },
     { id: 'ch0_mail',          x: 28, y: 14, type: 'examine', glow: true, sprite: 'item-letter' },
     // Garage (cols 32-36, rows 17-19)
-    { id: 'ch0_garage_car',    x: 34, y: 18, type: 'examine', glow: true },
+    { id: 'ch0_garage_car',    x: 34, y: 18, type: 'examine', glow: true, sprite: 'item-car' },
     { id: 'ch0_garage_tools',  x: 32, y: 17, type: 'examine', glow: true },
     // Yard
     { id: 'ch0_bbq',           x: 8,  y: 20, type: 'examine', glow: true, sprite: 'item-bbq' },
     // ch0_nolan_call removed — now triggers automatically as a surprise phone ring
-    { id: 'ch0_frenchie_ball', x: 16, y: 21, type: 'examine', glow: true },
+    { id: 'ch0_frenchie_ball', x: 16, y: 21, type: 'examine', glow: true, sprite: 'item-ball' },
     { id: 'ch0_fishing',       x: 24, y: 20, type: 'examine', glow: true },
     { id: 'ch0_goodbye',       x: 13, y: 29, type: 'examine', glow: true },
+
+    // Dynamic interactables (added by scene events)
+    { id: 'ch0_rooftop',       x: 3,  y: 15, type: 'examine', glow: true },
+    { id: 'ch0_record_player', x: 33, y: 17, type: 'examine', glow: true },
+    { id: 'ch0_shoebox',       x: 5,  y: 8,  type: 'examine', glow: true },
+    { id: 'ch0_tv_sitdown',    x: 5,  y: 13, type: 'examine', glow: true, sprite: 'item-couch' },
+
+    // Windows (exterior facing)
+    { id: 'ch0_window_jp',     x: 6,  y: 3,  type: 'examine', glow: false, sprite: 'item-window' },
+    { id: 'ch0_window_sister', x: 13, y: 3,  type: 'examine', glow: false, sprite: 'item-window' },
+    { id: 'ch0_window_parents',x: 22, y: 3,  type: 'examine', glow: false, sprite: 'item-window' },
+    { id: 'ch0_window_bath',   x: 34, y: 3,  type: 'examine', glow: false, sprite: 'item-window' },
+    { id: 'ch0_window_kitchen',x: 30, y: 15, type: 'examine', glow: false, sprite: 'item-window' },
   ],
 };
 

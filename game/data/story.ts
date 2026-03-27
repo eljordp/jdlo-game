@@ -138,7 +138,7 @@ export const chapter0NPCs: NPCData[] = [
 ];
 
 export const chapter0OutroText: string[] = [
-  'Jordi packed a bag. Left the acceptance letters on the counter. Kissed his sister. Dapped up Pops.',
+  'Jordi packed a bag. Left the acceptance letters on the counter. Hugged his sister. Dapped up Pops.',
   'Santa Barbara was calling.',
 ];
 
@@ -1180,6 +1180,69 @@ const ch0Extras: Record<string, DialogueLine[]> = {
   ch0_bbq: [
     { speaker: 'Narrator', text: 'Pops\' BBQ grill.' },
     { speaker: 'Narrator', text: 'Summer Sundays used to be the best day of the week.' },
+  ],
+  // --- Surprise Elements ---
+  ch0_rooftop: [
+    { speaker: 'Narrator', text: 'JP climbs up the trellis. Sits on the roof edge.' },
+    { speaker: 'Narrator', text: 'From up here, the whole neighborhood fits in one frame.' },
+    { speaker: 'Narrator', text: 'Everything looks small from up here. That\'s the problem.' },
+    { speaker: 'JP', text: '...' },
+    { speaker: 'JP\'s Mind', text: 'One day I\'ll look at something and it\'ll feel big enough.' },
+  ],
+  ch0_record_player: [
+    { speaker: 'Narrator', text: 'Dusty record player in the corner of the garage. A crate of vinyl next to it.' },
+    { speaker: 'JP', text: 'Grandpa\'s?' },
+    { speaker: 'Pops', text: 'Your grandpa\'s. He had taste. Marvin Gaye, Stevie Wonder, Curtis Mayfield.' },
+    { speaker: 'Pops', text: 'Put one on.' },
+    { speaker: 'Narrator', text: 'A warm crackle fills the garage. For a second, it\'s not 2023.' },
+  ],
+  ch0_shoebox: [
+    { speaker: 'Narrator', text: 'Old shoebox under the bed. Nike. Size 10.' },
+    { speaker: 'Narrator', text: 'Inside: a stack of photos, a lighter, a fake ID that says "Jordan Perez, age 22."' },
+    { speaker: 'JP\'s Mind', text: 'Everyone\'s got a box they don\'t show people.' },
+    { speaker: 'Narrator', text: 'He puts it back. Some things stay under the bed.' },
+  ],
+  ch0_tv_sitdown: [
+    { speaker: 'Pops', text: 'Sit down. Watch this play.' },
+    { speaker: 'Narrator', text: 'They sit. No phones. No talking. Just the game.' },
+    { speaker: 'Narrator', text: 'Pops leans forward on a big play. JP does the same without realizing.' },
+    { speaker: 'Narrator', text: 'Some moments don\'t need words.' },
+  ],
+  ch0_mirror_deep: [
+    { speaker: 'Narrator', text: 'Jordi stares at himself. Really stares.' },
+    { speaker: 'Narrator', text: 'Tries to see what everyone else sees.' },
+    { speaker: 'JP\'s Mind', text: 'I don\'t know who this person is yet. But I think I\'m about to find out.' },
+  ],
+  ch0_sister_drawing: [
+    { speaker: 'Narrator', text: 'A crayon drawing taped to the fridge.' },
+    { speaker: 'Narrator', text: 'Two stick figures holding hands. One big, one small. "ME AND JP" in wobbly letters.' },
+    { speaker: 'JP\'s Mind', text: '...' },
+    { speaker: 'Narrator', text: 'He doesn\'t take it off the fridge. But he stares at it longer than he should.' },
+  ],
+  ch0_mom_food: [
+    { speaker: 'Narrator', text: 'A plate of food on the counter. Still warm. No note.' },
+    { speaker: 'JP\'s Mind', text: 'She\'s mad. But she still made me a plate.' },
+    { speaker: 'Narrator', text: 'That\'s a mom.' },
+  ],
+  ch0_window_jp: [
+    { speaker: 'Narrator', text: 'JP\'s window. Faces the backyard. Good for sneaking out.' },
+  ],
+  ch0_window_sister: [
+    { speaker: 'Narrator', text: 'Sister\'s window. Stickers on the glass. A handprint from when she was little.' },
+  ],
+  ch0_window_parents: [
+    { speaker: 'Narrator', text: 'Parents\' bedroom window. Blinds always halfway closed.' },
+  ],
+  ch0_window_bath: [
+    { speaker: 'Narrator', text: 'Bathroom window. Frosted glass. You can barely see the tree outside.' },
+  ],
+  ch0_window_kitchen: [
+    { speaker: 'Narrator', text: 'Kitchen window. Mom watches the yard from here when she does dishes.' },
+  ],
+  ch0_ivy_gift: [
+    { speaker: 'Narrator', text: 'Ivy drops something at JP\'s feet. It\'s... a sock.' },
+    { speaker: 'Narrator', text: 'She wags her tail. This is her best sock.' },
+    { speaker: 'JP', text: 'Thanks Ivy.' },
   ],
   ch0_goodbye: [
     { speaker: 'Pops', text: 'You sure about this?' },

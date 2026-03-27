@@ -4720,6 +4720,150 @@ function generateMoreItems(scene: Phaser.Scene) {
     // Shadow
     px(g, 4, 14, 0x808080, 9, 1);
   });
+
+  // Shower head + water
+  makeTexture(scene, 'item-shower', TILE_SIZE, TILE_SIZE, (g) => {
+    // Shower arm (horizontal pipe)
+    px(g, 6, 2, 0xc0c0c0, 8, 2);
+    // Shower head (wider, angled down)
+    px(g, 8, 4, 0xa8a8a8, 6, 3);
+    px(g, 9, 4, 0xb8b8b8, 4, 1);
+    // Water droplets
+    px(g, 9, 8, 0x60a0e0, 1, 2);
+    px(g, 11, 9, 0x60a0e0, 1, 3);
+    px(g, 13, 8, 0x60a0e0, 1, 2);
+    px(g, 10, 12, 0x4888c8, 1, 2);
+    px(g, 12, 11, 0x4888c8, 1, 3);
+    px(g, 8, 13, 0x4888c8, 1, 2);
+    // Pipe mount
+    px(g, 6, 1, 0x909090, 2, 2);
+  });
+
+  // Car (top-down, small sedan)
+  makeTexture(scene, 'item-car', TILE_SIZE, TILE_SIZE, (g) => {
+    // Body (dark blue)
+    px(g, 4, 3, 0x2a3a6a, 8, 10);
+    // Roof
+    px(g, 5, 5, 0x3a4a7a, 6, 5);
+    // Windshield (front)
+    px(g, 5, 4, 0x80b0d0, 6, 2);
+    // Rear window
+    px(g, 5, 10, 0x6090b0, 6, 2);
+    // Wheels (dark)
+    px(g, 3, 4, 0x202020, 1, 3);
+    px(g, 12, 4, 0x202020, 1, 3);
+    px(g, 3, 9, 0x202020, 1, 3);
+    px(g, 12, 9, 0x202020, 1, 3);
+    // Headlights
+    px(g, 5, 3, 0xf0e060, 2, 1);
+    px(g, 9, 3, 0xf0e060, 2, 1);
+    // Taillights
+    px(g, 5, 13, 0xe03030, 2, 1);
+    px(g, 9, 13, 0xe03030, 2, 1);
+  });
+
+  // Tennis ball (for fetch)
+  makeTexture(scene, 'item-ball', TILE_SIZE, TILE_SIZE, (g) => {
+    // Ball body (tennis ball green-yellow)
+    px(g, 5, 5, 0xc8e020, 6, 6);
+    px(g, 6, 4, 0xc8e020, 4, 1);
+    px(g, 6, 11, 0xc8e020, 4, 1);
+    px(g, 4, 6, 0xc8e020, 1, 4);
+    px(g, 11, 6, 0xc8e020, 1, 4);
+    // Seam line (white curve)
+    px(g, 6, 5, 0xf0f0e0, 1, 1);
+    px(g, 7, 6, 0xf0f0e0, 1, 1);
+    px(g, 8, 7, 0xf0f0e0, 1, 1);
+    px(g, 9, 8, 0xf0f0e0, 1, 1);
+    px(g, 10, 9, 0xf0f0e0, 1, 1);
+    // Highlight
+    px(g, 6, 6, 0xd8f040, 2, 2);
+    // Shadow
+    px(g, 6, 12, 0x808020, 4, 1);
+  });
+
+  // Sister's crayon drawing
+  makeTexture(scene, 'item-drawing', TILE_SIZE, TILE_SIZE, (g) => {
+    // Paper background (white, slightly off-white)
+    px(g, 3, 2, 0xf8f4e8, 10, 12);
+    // Tape at top
+    px(g, 6, 1, 0xd0c880, 4, 2);
+    // Stick figure 1 (big - JP)
+    px(g, 5, 5, 0x4060c0, 1, 1); // head
+    px(g, 5, 6, 0x4060c0, 1, 3); // body
+    px(g, 4, 7, 0x4060c0, 1, 1); // left arm
+    px(g, 6, 7, 0x4060c0, 1, 1); // right arm
+    px(g, 4, 9, 0x4060c0, 1, 2); // left leg
+    px(g, 6, 9, 0x4060c0, 1, 2); // right leg
+    // Stick figure 2 (small - sister)
+    px(g, 9, 6, 0xff69b4, 1, 1); // head
+    px(g, 9, 7, 0xff69b4, 1, 2); // body
+    px(g, 8, 8, 0xff69b4, 1, 1); // left arm
+    px(g, 10, 8, 0xff69b4, 1, 1); // right arm
+    px(g, 8, 9, 0xff69b4, 1, 2); // left leg
+    px(g, 10, 9, 0xff69b4, 1, 2); // right leg
+    // Holding hands (connect)
+    px(g, 7, 7, 0xc040a0, 2, 1);
+    // Text "ME AND JP" (just colored dots as pixel text)
+    px(g, 4, 12, 0xe04040, 8, 1);
+  });
+
+  // Record player / turntable
+  makeTexture(scene, 'item-record', TILE_SIZE, TILE_SIZE, (g) => {
+    // Turntable body (dark wood)
+    px(g, 2, 4, 0x5a3a20, 12, 8);
+    // Platter (black circle)
+    px(g, 4, 5, 0x1a1a1a, 8, 6);
+    px(g, 5, 4, 0x1a1a1a, 6, 1);
+    px(g, 5, 11, 0x1a1a1a, 6, 1);
+    // Record grooves (subtle)
+    px(g, 5, 6, 0x252525, 6, 4);
+    // Center label (red)
+    px(g, 7, 7, 0xc03030, 2, 2);
+    // Tonearm
+    px(g, 12, 4, 0xb0b0b0, 1, 1);
+    px(g, 11, 5, 0xa0a0a0, 1, 1);
+    px(g, 10, 6, 0xa0a0a0, 1, 1);
+    px(g, 9, 7, 0x808080, 1, 1);
+    // Needle
+    px(g, 9, 8, 0xc0c0c0, 1, 1);
+  });
+
+  // Sock (Ivy's gift)
+  makeTexture(scene, 'item-sock', TILE_SIZE, TILE_SIZE, (g) => {
+    // Sock body (white with stripe)
+    px(g, 6, 3, 0xf0f0f0, 4, 6);
+    px(g, 6, 5, 0xe0e0e0, 4, 1); // shadow fold
+    // Toe curve
+    px(g, 5, 9, 0xf0f0f0, 5, 2);
+    px(g, 5, 8, 0xf0f0f0, 1, 1);
+    // Red stripe at top
+    px(g, 6, 3, 0xd04040, 4, 1);
+    // Slight crumple (it's a used sock)
+    px(g, 7, 6, 0xe8e8e8, 2, 1);
+  });
+
+  // Food plate (mom's plate)
+  makeTexture(scene, 'item-plate', TILE_SIZE, TILE_SIZE, (g) => {
+    // Plate (white circle)
+    px(g, 3, 5, 0xf0f0f0, 10, 6);
+    px(g, 4, 4, 0xf0f0f0, 8, 1);
+    px(g, 4, 11, 0xe0e0e0, 8, 1);
+    // Plate rim
+    px(g, 3, 5, 0xe8e8e8, 1, 6);
+    px(g, 12, 5, 0xe8e8e8, 1, 6);
+    // Food - rice
+    px(g, 5, 6, 0xf0e8c8, 3, 3);
+    // Food - meat
+    px(g, 8, 6, 0x8a5020, 3, 2);
+    px(g, 8, 6, 0xa06830, 3, 1);
+    // Food - veggies
+    px(g, 6, 9, 0x40a040, 3, 1);
+    // Steam
+    px(g, 6, 3, 0xc0c0c0, 1, 1);
+    px(g, 8, 2, 0xb0b0b0, 1, 1);
+    px(g, 10, 3, 0xc0c0c0, 1, 1);
+  });
 }
 
 export function generateAllSprites(scene: Phaser.Scene): void {

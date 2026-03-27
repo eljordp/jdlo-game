@@ -12,6 +12,8 @@ export class CourtScene extends Phaser.Scene {
   private textObjects: Phaser.GameObjects.Text[] = [];
   private sceneObjects: Phaser.GameObjects.GameObject[] = [];
   private activeTweens: Phaser.Tweens.Tween[] = [];
+  private letterboxTop!: Phaser.GameObjects.Rectangle;
+  private letterboxBottom!: Phaser.GameObjects.Rectangle;
 
   constructor() {
     super({ key: 'CourtScene' });
@@ -28,8 +30,8 @@ export class CourtScene extends Phaser.Scene {
     this.cameras.main.fadeIn(500, 0, 0, 0);
 
     // Cinema letterbox bars
-    this.add.rectangle(GAME_WIDTH / 2, 35, GAME_WIDTH, 70, 0x000000).setScrollFactor(0).setDepth(200);
-    this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT - 35, GAME_WIDTH, 70, 0x000000).setScrollFactor(0).setDepth(200);
+    this.letterboxTop = this.add.rectangle(GAME_WIDTH / 2, 35, GAME_WIDTH, 70, 0x000000).setScrollFactor(0).setDepth(200);
+    this.letterboxBottom = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT - 35, GAME_WIDTH, 70, 0x000000).setScrollFactor(0).setDepth(200);
 
     this.input.keyboard!.on('keydown-SPACE', () => this.advance());
     this.input.keyboard!.on('keydown-ENTER', () => this.advance());
@@ -193,6 +195,52 @@ export class CourtScene extends Phaser.Scene {
     return benchY;
   }
 
+  /** Spawn courtroom murmur text snippets that appear and fade at random edge positions */
+  private spawnCourtMurmurs() {
+    const murmurs = [
+      'guilty...', 'no way...', '13 years...', 'oh my god...',
+      'so young...', 'attempted...', 'did you hear...', 'his life...',
+    ];
+    const spawnOne = () => {
+      if (!this.scene.isActive()) return;
+      const phrase = murmurs[Math.floor(Math.random() * murmurs.length)];
+      // Position along edges — left, right, or bottom area
+      const side = Math.floor(Math.random() * 3);
+      let mx: number;
+      let my: number;
+      if (side === 0) { // left edge
+        mx = 40 + Math.random() * 80;
+        my = 120 + Math.random() * (GAME_HEIGHT - 240);
+      } else if (side === 1) { // right edge
+        mx = GAME_WIDTH - 40 - Math.random() * 80;
+        my = 120 + Math.random() * (GAME_HEIGHT - 240);
+      } else { // bottom area
+        mx = 100 + Math.random() * (GAME_WIDTH - 200);
+        my = GAME_HEIGHT - 100 - Math.random() * 60;
+      }
+      const murmur = this.add.text(mx, my, phrase, {
+        fontFamily: '"Press Start 2P", monospace',
+        fontSize: '8px',
+        color: '#555566',
+      }).setOrigin(0.5).setAlpha(0).setDepth(50);
+      this.sceneObjects.push(murmur);
+      this.addTween({
+        targets: murmur,
+        alpha: { from: 0, to: 0.6 },
+        y: my - 10,
+        duration: 600,
+        yoyo: true,
+        hold: 300,
+        onComplete: () => murmur.destroy(),
+      });
+    };
+
+    // Spawn 2-3 murmurs staggered
+    this.time.delayedCall(800, spawnOne);
+    this.time.delayedCall(1400, spawnOne);
+    this.time.delayedCall(2200, spawnOne);
+  }
+
   private playStep() {
     const cx = GAME_WIDTH / 2;
     const cy = GAME_HEIGHT / 2;
@@ -231,13 +279,20 @@ export class CourtScene extends Phaser.Scene {
             duration: 150,
             ease: 'Power4',
             onComplete: () => {
-              // Screen shake on impact
-              this.cameras.main.shake(800, 0.02);
+              // Screen shake on impact — starts mild
+              this.cameras.main.shake(400, 0.014);
               // Flash fades out
               this.addTween({
                 targets: door,
                 alpha: 0,
                 duration: 500,
+              });
+
+              // Escalate shake after a beat — more intense as cops flood in
+              this.time.delayedCall(600, () => {
+                if (this.scene.isActive() && this.currentStep === 0) {
+                  this.cameras.main.shake(600, 0.022);
+                }
               });
             },
           });
@@ -394,37 +449,77 @@ export class CourtScene extends Phaser.Scene {
 
           this.cameras.main.fadeIn(800, 0, 0, 0);
 
-          this.showText('SUPERIOR COURT OF CALIFORNIA', 60, { size: '11px', color: '#666688', delay: 400 });
-          this.showText('FACING', cy + 220, { size: '14px', color: '#888899', delay: 1000 });
+          // Courtroom murmurs — whisper snippets around the edges
+          this.spawnCourtMurmurs();
 
-          // "13 YEARS" scales up with impact + pulsing red + heartbeat camera
+          this.showText('SUPERIOR COURT OF CALIFORNIA', 60, { size: '11px', color: '#666688', delay: 400 });
+
+          // Gavel slam when judge "speaks" — brief intense shake + dark flash
+          this.time.delayedCall(800, () => {
+            if (!this.scene.isActive()) return;
+            this.cameras.main.shake(80, 0.015);
+            const darkFlash = this.addObj(
+              this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x000000).setAlpha(0.5).setDepth(90)
+            );
+            this.addTween({ targets: darkFlash, alpha: 0, duration: 300 });
+          });
+
+          this.showText('FACING', cy + 200, { size: '14px', color: '#888899', delay: 1000 });
+
+          // "13 YEARS" — THE GUT PUNCH
           this.time.delayedCall(1400, () => {
-            const bigText = this.add.text(cx, cy + 270, '13 YEARS', {
+            if (!this.scene.isActive()) return;
+
+            // Full-screen red flash
+            const redFlash = this.addObj(
+              this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0xcc2222).setAlpha(0).setDepth(95)
+            );
+            this.addTween({
+              targets: redFlash,
+              alpha: { from: 0.3, to: 0 },
+              duration: 300,
+            });
+
+            // Main text — SLAMS in from 3x scale to 1x in 200ms
+            const bigText = this.add.text(cx, cy + 260, '13 YEARS', {
               fontFamily: '"Press Start 2P", monospace',
               fontSize: '40px',
-              color: '#ff3333',
+              color: '#cc2222',
               align: 'center',
-            }).setOrigin(0.5).setScale(2.5).setAlpha(0);
+            }).setOrigin(0.5).setScale(3).setAlpha(0).setDepth(100);
             this.textObjects.push(bigText);
 
             // Overlapping darker red text for pulse effect
-            const pulseText = this.add.text(cx, cy + 270, '13 YEARS', {
+            const pulseText = this.add.text(cx, cy + 260, '13 YEARS', {
               fontFamily: '"Press Start 2P", monospace',
               fontSize: '40px',
               color: '#880000',
               align: 'center',
-            }).setOrigin(0.5).setScale(2.5).setAlpha(0).setDepth(1);
+            }).setOrigin(0.5).setScale(3).setAlpha(0).setDepth(101);
             this.textObjects.push(pulseText);
 
+            // SLAM animation — 200ms with Back.easeOut
             this.addTween({
               targets: bigText,
               scaleX: 1,
               scaleY: 1,
               alpha: 1,
-              duration: 600,
+              duration: 200,
               ease: 'Back.easeOut',
               onComplete: () => {
-                this.cameras.main.shake(400, 0.008);
+                // Intense camera shake on impact
+                this.cameras.main.shake(400, 0.025);
+
+                // Slight pulsing on the text
+                this.addTween({
+                  targets: bigText,
+                  scaleX: 1.05,
+                  scaleY: 1.05,
+                  duration: 800,
+                  yoyo: true,
+                  repeat: -1,
+                  ease: 'Sine.easeInOut',
+                });
 
                 // Pulse between red and dark red via overlapping text alpha
                 this.addTween({
@@ -453,12 +548,12 @@ export class CourtScene extends Phaser.Scene {
               targets: pulseText,
               scaleX: 1,
               scaleY: 1,
-              duration: 600,
+              duration: 200,
               ease: 'Back.easeOut',
             });
           });
 
-          this.showContinue(3500);
+          this.showContinue(4000);
         });
         break;
       }
@@ -507,7 +602,7 @@ export class CourtScene extends Phaser.Scene {
       }
 
       // ═══════════════════════════════════════════════════════════════
-      // STEP 5 — Sentencing
+      // STEP 5 — Sentencing: 13 YEARS -> 1 YEAR
       // ═══════════════════════════════════════════════════════════════
       case 5: {
         const benchY = this.makeCourtroom();
@@ -532,10 +627,27 @@ export class CourtScene extends Phaser.Scene {
           this.add.sprite(cx + 70, cy + 120, 'npc-narrator', 0).setScale(SCALE * 1.3)
         );
 
-        this.showText('SENTENCED', cy + 200, { size: '16px', color: '#888899' });
+        this.showText('SENTENCED', cy + 180, { size: '16px', color: '#888899' });
 
-        // Gavel strike animation — brown rectangle swings down from above
+        // "13 YEARS" text — starts visible, will get struck through
+        const thirteenText = this.add.text(cx, cy + 230, '13 YEARS', {
+          fontFamily: '"Press Start 2P", monospace',
+          fontSize: '28px',
+          color: '#cc2222',
+          align: 'center',
+        }).setOrigin(0.5).setAlpha(0).setDepth(14);
+        this.textObjects.push(thirteenText);
+
+        this.addTween({
+          targets: thirteenText,
+          alpha: 1,
+          duration: 400,
+          delay: 200,
+        });
+
+        // Gavel strike animation
         this.time.delayedCall(600, () => {
+          if (!this.scene.isActive()) return;
           // Gavel head
           const gavelHead = this.addObj(
             this.add.rectangle(cx + 160, benchY - 100, 24, 12, 0x5c3a1a).setDepth(12)
@@ -552,12 +664,12 @@ export class CourtScene extends Phaser.Scene {
             duration: 200,
             ease: 'Quad.easeIn',
             onComplete: () => {
-              // White flash on impact
+              // Dark flash on impact (not white — heavier feel)
               const flash = this.addObj(
-                this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0xffffff).setAlpha(0.7).setDepth(15)
+                this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x000000).setAlpha(0.6).setDepth(15)
               );
-              this.addTween({ targets: flash, alpha: 0, duration: 250 });
-              this.cameras.main.shake(300, 0.01);
+              this.addTween({ targets: flash, alpha: 0, duration: 300 });
+              this.cameras.main.shake(100, 0.015);
 
               // Fade out gavel
               this.addTween({
@@ -570,43 +682,96 @@ export class CourtScene extends Phaser.Scene {
           });
         });
 
-        // "1 YEAR" slams in from above with Bounce ease
-        this.time.delayedCall(900, () => {
-          const yearText = this.add.text(cx, -100, '1 YEAR', {
+        // Strikethrough animation on "13 YEARS" — red line animates across
+        this.time.delayedCall(1200, () => {
+          if (!this.scene.isActive()) return;
+          const textBounds = thirteenText.getBounds();
+          const strikeY = textBounds.centerY;
+          const strikeStartX = textBounds.left - 10;
+          const strikeEndX = textBounds.right + 10;
+
+          const strikeLine = this.addObj(
+            this.add.rectangle(strikeStartX, strikeY, 0, 4, 0xff3333).setOrigin(0, 0.5).setDepth(15)
+          );
+
+          this.addTween({
+            targets: strikeLine,
+            width: strikeEndX - strikeStartX,
+            duration: 400,
+            ease: 'Power2',
+            onComplete: () => {
+              // Dim the 13 YEARS text
+              this.addTween({
+                targets: thirteenText,
+                alpha: 0.3,
+                duration: 400,
+              });
+            },
+          });
+        });
+
+        // "1 YEAR" appears below — the relief
+        this.time.delayedCall(2000, () => {
+          if (!this.scene.isActive()) return;
+
+          // Camera shake stops — reset zoom to 1 for sudden stillness
+          this.cameras.main.shake(0, 0);
+          this.tweens.killTweensOf(this.cameras.main);
+          this.cameras.main.zoom = 1;
+
+          // White flash — brief relief
+          const whiteFlash = this.addObj(
+            this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0xffffff).setAlpha(0).setDepth(16)
+          );
+          this.addTween({
+            targets: whiteFlash,
+            alpha: { from: 0.4, to: 0 },
+            duration: 400,
+          });
+
+          // "1 YEAR" scales up gently from 0.5x
+          const yearText = this.add.text(cx, cy + 290, '1 YEAR', {
             fontFamily: '"Press Start 2P", monospace',
             fontSize: '36px',
-            color: '#f0c040',
+            color: '#ffffff',
             align: 'center',
-          }).setOrigin(0.5).setAlpha(1).setDepth(14);
+          }).setOrigin(0.5).setScale(0.5).setAlpha(0).setDepth(17);
           this.textObjects.push(yearText);
 
           this.addTween({
             targets: yearText,
-            y: cy + 250,
-            duration: 800,
-            ease: 'Bounce.easeOut',
+            scaleX: 1,
+            scaleY: 1,
+            alpha: 1,
+            duration: 600,
+            ease: 'Cubic.easeOut',
           });
 
-          this.showText('California State', cy + 310, { size: '12px', color: '#666688', delay: 900 });
+          this.showText('California State', cy + 340, { size: '12px', color: '#666688', delay: 600 });
         });
 
-        this.showContinue(3000);
+        this.showContinue(4000);
         break;
       }
 
       // ═══════════════════════════════════════════════════════════════
-      // STEP 6 — JP's Mind
+      // STEP 6 — JP's Mind (Spotlight)
       // ═══════════════════════════════════════════════════════════════
       case 6: {
-        // Fade to black
+        // Full black background
         this.addObj(
-          this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x060610)
+          this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x000000)
+        );
+
+        // Dim overlay covering everything — the darkness
+        const dimOverlay = this.addObj(
+          this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x060610).setDepth(1)
         );
 
         // Spotlight — layered circles getting brighter toward center, breathing
-        const spotOuter = this.addObj(this.add.circle(cx, cy + 20, 160, 0x101020, 0.3));
-        const spotMid = this.addObj(this.add.circle(cx, cy + 20, 100, 0x181830, 0.3));
-        const spotInner = this.addObj(this.add.circle(cx, cy + 20, 50, 0x202040, 0.3));
+        const spotOuter = this.addObj(this.add.circle(cx, cy + 20, 160, 0x101020, 0.3).setDepth(2));
+        const spotMid = this.addObj(this.add.circle(cx, cy + 20, 100, 0x181830, 0.3).setDepth(3));
+        const spotInner = this.addObj(this.add.circle(cx, cy + 20, 50, 0x202040, 0.3).setDepth(4));
 
         // Breathing spotlight — expand and contract slowly
         const spotlights = [spotOuter, spotMid, spotInner];
@@ -644,29 +809,33 @@ export class CourtScene extends Phaser.Scene {
           },
         });
 
-        // JP sprite centered, alone
+        // JP sprite centered, alone — at higher depth so he's above the dim
         const jp = this.addObj(
-          this.add.sprite(cx, cy + 20, 'player-ch2', 0).setScale(CHAR_SCALE * 1.3)
+          this.add.sprite(cx, cy + 20, 'player-ch2', 0).setScale(CHAR_SCALE * 1.3).setDepth(10)
         );
-        // Slow breathing pulse
+        // Breathing pulse — subtle scale
         this.addTween({
           targets: jp,
-          scaleX: SCALE * 1.02,
-          scaleY: SCALE * 1.02,
+          scaleX: CHAR_SCALE * 1.3 * 1.02,
+          scaleY: CHAR_SCALE * 1.3 * 1.02,
           duration: 2000,
           yoyo: true,
           repeat: -1,
           ease: 'Sine.easeInOut',
         });
 
-        this.showText("JP's Mind", cy - 160, { size: '12px', color: '#f0c040' });
-        this.showText(
-          '"One year. I can do one year.\nBut I\'m not coming out the same\nperson who went in."',
-          cy - 100,
-          { delay: 600 }
-        );
+        // 3 seconds of silence, then text appears
+        this.time.delayedCall(3000, () => {
+          if (!this.scene.isActive()) return;
+          this.showText("JP's Mind", cy - 160, { size: '12px', color: '#f0c040' });
+          this.showText(
+            '"One year. I can do one year.\nBut I\'m not coming out the same\nperson who went in."',
+            cy - 100,
+            { delay: 600 }
+          );
+        });
 
-        this.showContinue(2500);
+        this.showContinue(5000);
         break;
       }
 
@@ -674,9 +843,28 @@ export class CourtScene extends Phaser.Scene {
       // STEP 7 — Transition to Jail
       // ═══════════════════════════════════════════════════════════════
       case 7: {
-        this.cameras.main.fadeOut(1500, 0, 0, 0);
-        this.cameras.main.once('camerafadeoutcomplete', () => {
-          this.scene.start('JailScene');
+        // Letterbox bars close in slightly before fade (grow taller by 20px)
+        this.tweens.add({
+          targets: this.letterboxTop,
+          scaleY: 1.57, // 70 * 1.57 ≈ 110 — grows by ~40px total, 20px visible
+          y: 35 + 10, // shift down slightly to close in from top
+          duration: 1000,
+          ease: 'Sine.easeInOut',
+        });
+        this.tweens.add({
+          targets: this.letterboxBottom,
+          scaleY: 1.57,
+          y: GAME_HEIGHT - 35 - 10, // shift up slightly to close in from bottom
+          duration: 1000,
+          ease: 'Sine.easeInOut',
+        });
+
+        // Fade out after letterbox starts closing
+        this.time.delayedCall(400, () => {
+          this.cameras.main.fadeOut(1500, 0, 0, 0);
+          this.cameras.main.once('camerafadeoutcomplete', () => {
+            this.scene.start('JailScene');
+          });
         });
         break;
       }

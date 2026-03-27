@@ -193,26 +193,80 @@ export class VegasScene extends Phaser.Scene {
         }
       }
     }
+
+    // === NEON STRIP RECTANGLES — 5 colored bars pulsing independently ===
+    const stripNeons = [
+      { x: 150, w: 70, h: 16, color: 0xff2244 },   // red
+      { x: 380, w: 60, h: 12, color: 0x3388ff },   // blue
+      { x: 560, w: 80, h: 14, color: 0xf0c040 },   // gold
+      { x: 780, w: 55, h: 12, color: 0x33dd66 },   // green
+      { x: 1000, w: 65, h: 14, color: 0xff44aa },  // pink
+    ];
+    for (const sn of stripNeons) {
+      const neonY = GAME_HEIGHT - 150;
+      // Main neon bar
+      const bar = this.addObj(
+        this.add.rectangle(sn.x, neonY, sn.w, sn.h, sn.color).setAlpha(0.5)
+      );
+      this.addTween({
+        targets: bar,
+        alpha: { from: 0.3, to: 0.7 },
+        duration: 800 + Math.random() * 1200,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+        delay: Math.random() * 600,
+      });
+      // Reflection below (lower alpha duplicate)
+      const reflection = this.addObj(
+        this.add.rectangle(sn.x, neonY + 30, sn.w, sn.h * 0.6, sn.color).setAlpha(0.1)
+      );
+      this.addTween({
+        targets: reflection,
+        alpha: { from: 0.05, to: 0.15 },
+        duration: 800 + Math.random() * 1200,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+        delay: Math.random() * 600,
+      });
+    }
+
+    // === PASSING CARS — small white circles drifting across ===
+    for (let c = 0; c < 3; c++) {
+      const carY = GAME_HEIGHT - 75 + Math.random() * 20;
+      const car = this.addObj(
+        this.add.circle(-20 - c * 200, carY, 4, 0xffffff, 0.5)
+      );
+      this.addTween({
+        targets: car,
+        x: GAME_WIDTH + 40,
+        duration: 6000 + Math.random() * 4000,
+        delay: c * 2000,
+        ease: 'Linear',
+        repeat: -1,
+      });
+    }
   }
 
   /** Casino floor with slot machines and card tables */
   private makeCasinoFloor() {
-    // Dark ornate floor
+    // Dark ornate floor — gold/burgundy scheme
     this.addObj(
-      this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x1a1420)
+      this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x1a0e14)
     );
-    // Carpet pattern lines
+    // Carpet pattern lines — burgundy tint
     for (let x = 0; x < GAME_WIDTH; x += 80) {
-      this.addObj(this.add.rectangle(x, GAME_HEIGHT / 2, 1, GAME_HEIGHT, 0x241a2e).setAlpha(0.4));
+      this.addObj(this.add.rectangle(x, GAME_HEIGHT / 2, 1, GAME_HEIGHT, 0x2e1420).setAlpha(0.4));
     }
     for (let y = 0; y < GAME_HEIGHT; y += 80) {
-      this.addObj(this.add.rectangle(GAME_WIDTH / 2, y, GAME_WIDTH, 1, 0x241a2e).setAlpha(0.4));
+      this.addObj(this.add.rectangle(GAME_WIDTH / 2, y, GAME_WIDTH, 1, 0x2e1420).setAlpha(0.4));
     }
 
-    // Ceiling lights — warm spots
+    // Ceiling lights — warm gold spots
     for (let lx = 160; lx < GAME_WIDTH; lx += 280) {
       const glow = this.addObj(
-        this.add.circle(lx, 40, 80, 0xffdd88, 0.08)
+        this.add.circle(lx, 40, 80, 0xf0c040, 0.08)
       );
       this.addTween({
         targets: glow,
@@ -224,17 +278,17 @@ export class VegasScene extends Phaser.Scene {
       });
     }
 
-    // Slot machines — rows on left and right sides
-    const slotColors = [0xff3366, 0x33ccff, 0xffcc00, 0x66ff66, 0xff6600];
+    // === SLOT MACHINE LIGHT ROWS — tiny colored dots flickering ===
+    const slotDotColors = [0xff3366, 0xf0c040, 0x33ccff, 0x66ff66, 0xff6600];
     for (const side of [-1, 1]) {
       const baseX = GAME_WIDTH / 2 + side * 380;
       for (let row = 0; row < 4; row++) {
         const sx = baseX + (row % 2) * side * 40;
         const sy = 200 + row * 100;
-        // Machine body
-        this.addObj(this.add.rectangle(sx, sy, 36, 50, 0x333340));
-        // Screen
-        const screenColor = slotColors[Math.floor(Math.random() * slotColors.length)];
+        // Machine body — burgundy tint
+        this.addObj(this.add.rectangle(sx, sy, 36, 50, 0x3a2030));
+        // Screen — gold accent
+        const screenColor = slotDotColors[Math.floor(Math.random() * slotDotColors.length)];
         const screen = this.addObj(
           this.add.rectangle(sx, sy - 8, 24, 20, screenColor).setAlpha(0.7)
         );
@@ -258,23 +312,65 @@ export class VegasScene extends Phaser.Scene {
           yoyo: true,
           repeat: -1,
         });
+
+        // Tiny dot rows beneath each machine (slot lights)
+        for (let d = 0; d < 5; d++) {
+          const dotX = sx - 12 + d * 6;
+          const dotY = sy + 20;
+          const dotColor = slotDotColors[Math.floor(Math.random() * slotDotColors.length)];
+          const dot = this.addObj(
+            this.add.circle(dotX, dotY, 2, dotColor, 0.6)
+          );
+          this.addTween({
+            targets: dot,
+            alpha: { from: 0, to: 0.8 },
+            duration: 200 + Math.random() * 600,
+            yoyo: true,
+            repeat: -1,
+            delay: Math.random() * 1000,
+          });
+        }
       }
     }
 
-    // Card table — center
+    // Card table — center, gold/burgundy theme
     const tableX = GAME_WIDTH / 2;
     const tableY = GAME_HEIGHT / 2 + 20;
-    // Table base (brown edge)
-    this.addObj(this.add.rectangle(tableX, tableY, 240, 140, 0x5c3a20));
+    // Table base (burgundy edge)
+    this.addObj(this.add.rectangle(tableX, tableY, 240, 140, 0x5c2030));
     // Green felt
     this.addObj(this.add.rectangle(tableX, tableY, 220, 120, 0x1a6030));
-    // Dealer position indicator
-    this.addObj(this.add.rectangle(tableX, tableY - 50, 30, 6, 0x44aa66));
+    // Dealer position indicator — gold
+    this.addObj(this.add.rectangle(tableX, tableY - 50, 30, 6, 0xf0c040));
+
+    // === CASINO AMBIANCE TEXT — *ding* and *cheer* appearing randomly ===
+    const ambTexts = ['*ding*', '*cheer*', '*ding*', '*ding*', '*cheer*'];
+    for (let i = 0; i < ambTexts.length; i++) {
+      const ax = Math.random() > 0.5 ? 30 + Math.random() * 80 : GAME_WIDTH - 30 - Math.random() * 80;
+      const ay = 150 + Math.random() * 300;
+      const ambText = this.add.text(ax, ay, ambTexts[i], {
+        fontFamily: '"Press Start 2P", monospace',
+        fontSize: '8px',
+        color: '#888888',
+      }).setOrigin(0.5).setAlpha(0).setDepth(90);
+      this.textObjects.push(ambText);
+      // Fade in then out at staggered times
+      this.addTween({
+        targets: ambText,
+        alpha: { from: 0, to: 0.5 },
+        y: ay - 15,
+        duration: 1200,
+        delay: 1000 + i * 1800,
+        yoyo: true,
+        hold: 600,
+        ease: 'Sine.easeInOut',
+      });
+    }
 
     return { tableX, tableY };
   }
 
-  /** Conference room */
+  /** Conference room — dark wood, chairs, overhead light */
   private makeConferenceRoom() {
     // Dark walls
     this.addObj(
@@ -286,9 +382,9 @@ export class VegasScene extends Phaser.Scene {
       this.add.rectangle(GAME_WIDTH / 2, 200, GAME_WIDTH, 300, 0x1e1e2c)
     );
 
-    // Floor
+    // Floor — dark wood tone
     this.addObj(
-      this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT - 180, GAME_WIDTH, 360, 0x222230)
+      this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT - 180, GAME_WIDTH, 360, 0x22201a)
     );
 
     // Long conference table — pushed down to clear dialogue text
@@ -299,6 +395,17 @@ export class VegasScene extends Phaser.Scene {
     this.addObj(this.add.rectangle(GAME_WIDTH / 2, tableY, 500, 50, 0x4a3020));
     // Table top highlight
     this.addObj(this.add.rectangle(GAME_WIDTH / 2, tableY - 12, 480, 4, 0x5c3c28).setAlpha(0.6));
+
+    // Chairs around table — small dark rectangles
+    const chairPositions = [
+      { x: -180, y: -30 }, { x: -80, y: -30 }, { x: 80, y: -30 }, { x: 180, y: -30 }, // far side
+      { x: -120, y: 40 }, { x: 0, y: 40 }, { x: 120, y: 40 }, // near side
+    ];
+    for (const cp of chairPositions) {
+      this.addObj(
+        this.add.rectangle(GAME_WIDTH / 2 + cp.x, tableY + cp.y, 18, 18, 0x2a2018).setAlpha(0.7)
+      );
+    }
 
     // Overhead light (strip)
     const strip = this.addObj(
@@ -438,7 +545,7 @@ export class VegasScene extends Phaser.Scene {
 
           const tableY = this.makeConferenceRoom();
 
-          // Suited NPCs on far side of table
+          // Suited NPCs on far side of table (in chairs)
           this.addObj(
             this.add.sprite(cx - 100, tableY - 60, 'npc_suit', 0).setScale(SCALE * 1.3)
           );
@@ -483,15 +590,14 @@ export class VegasScene extends Phaser.Scene {
       }
 
       // ================================================================
-      // STEP 3 — The Handshake
+      // STEP 3 — The Handshake / "Six months ago I was on a tractor"
       // ================================================================
       case 3: {
         this.cameras.main.fadeOut(400, 0, 0, 0);
         this.cameras.main.once('camerafadeoutcomplete', () => {
           this.clearAll();
 
-          // Tighter framing — same conference room but zoomed feel
-          // Dark background
+          // Same conference room — tighter framing
           this.addObj(
             this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x141420)
           );
@@ -502,37 +608,95 @@ export class VegasScene extends Phaser.Scene {
           );
 
           // Table closer — wider, fills more of the screen
-          this.addObj(this.add.rectangle(cx, cy + 20, 600, 60, 0x4a3020));
+          const tableRect = this.addObj(this.add.rectangle(cx, cy + 20, 600, 60, 0x4a3020));
           this.addObj(this.add.rectangle(cx, cy + 8, 580, 4, 0x5c3c28).setAlpha(0.5));
 
           this.cameras.main.fadeIn(400, 0, 0, 0);
 
-          this.showText('They sign.', cy - 120, { size: '16px', delay: 400 });
+          this.showText('They sign.', cy - 140, { size: '16px', delay: 400 });
 
-          // Big yellow realization text — slow fade in
-          this.time.delayedCall(1800, () => {
-            const bigLine = this.add.text(cx, cy - 40, 'Six months ago I was\non a tractor.', {
+          // === DEAL MOMENT: Table golden glow pulse + brief white flash ===
+          this.time.delayedCall(1200, () => {
+            // Golden glow pulse on table
+            const tableGlow = this.addObj(
+              this.add.rectangle(cx, cy + 20, 620, 70, 0xf0c040).setAlpha(0)
+            );
+            this.addTween({
+              targets: tableGlow,
+              alpha: { from: 0, to: 0.25 },
+              duration: 600,
+              yoyo: true,
+              ease: 'Sine.easeInOut',
+            });
+
+            // Brief white flash across whole screen
+            const flash = this.addObj(
+              this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0xffffff).setAlpha(0).setDepth(150)
+            );
+            this.addTween({
+              targets: flash,
+              alpha: { from: 0, to: 0.15 },
+              duration: 200,
+              yoyo: true,
+              ease: 'Quad.easeOut',
+            });
+          });
+
+          // === THE CALLBACK — "Six months ago I was on a tractor." ===
+          // Earth/vineyard color, shown alone, centered. THE moment.
+          this.time.delayedCall(2000, () => {
+            const tractorLine = this.add.text(cx, cy - 40, 'Six months ago I was\non a tractor.', {
               fontFamily: '"Press Start 2P", monospace',
               fontSize: '18px',
-              color: '#f0c040',
+              color: '#8b6914',
               align: 'center',
               lineSpacing: 14,
             }).setOrigin(0.5).setAlpha(0).setDepth(100);
-            this.textObjects.push(bigLine);
+            this.textObjects.push(tractorLine);
 
             this.addTween({
-              targets: bigLine,
+              targets: tractorLine,
               alpha: 1,
               duration: 1500,
               ease: 'Sine.easeIn',
             });
           });
 
-          this.time.delayedCall(4000, () => {
-            this.showText("Now I'm closing deals in Vegas.", cy + 60, {
-              size: '14px',
-              color: '#ccccdd',
-              delay: 0,
+          // 2s pause, then the follow-up in gold
+          this.time.delayedCall(5500, () => {
+            const nowLine = this.add.text(cx, cy + 50, "Now he's in a conference room\non the strip.", {
+              fontFamily: '"Press Start 2P", monospace',
+              fontSize: '14px',
+              color: '#f0c040',
+              align: 'center',
+              lineSpacing: 10,
+            }).setOrigin(0.5).setAlpha(0).setDepth(100);
+            this.textObjects.push(nowLine);
+
+            this.addTween({
+              targets: nowLine,
+              alpha: 1,
+              duration: 1000,
+              ease: 'Sine.easeIn',
+            });
+          });
+
+          // Another pause, then final line
+          this.time.delayedCall(8000, () => {
+            const closingLine = this.add.text(cx, cy + 120, 'Closing deals with people\nwho do this every day.', {
+              fontFamily: '"Press Start 2P", monospace',
+              fontSize: '13px',
+              color: '#f0c040',
+              align: 'center',
+              lineSpacing: 10,
+            }).setOrigin(0.5).setAlpha(0).setDepth(100);
+            this.textObjects.push(closingLine);
+
+            this.addTween({
+              targets: closingLine,
+              alpha: 1,
+              duration: 1000,
+              ease: 'Sine.easeIn',
             });
           });
 
@@ -540,11 +704,12 @@ export class VegasScene extends Phaser.Scene {
           this.addTween({
             targets: this.cameras.main,
             zoom: 1.02,
-            duration: 6000,
+            duration: 12000,
             ease: 'Sine.easeInOut',
           });
 
-          this.showContinue(6000);
+          // Hold 3 seconds after last line before allowing advance
+          this.showContinue(12000);
         });
         break;
       }
@@ -564,8 +729,8 @@ export class VegasScene extends Phaser.Scene {
             this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x0c0c18)
           );
 
-          // Neon glow from buildings — colored rectangles along the top
-          const glowColors = [0xff0066, 0x00ffcc, 0xffcc00, 0x9900ff];
+          // Neon glow from buildings — colored rectangles along the top (neon returns)
+          const glowColors = [0xff2244, 0x3388ff, 0xf0c040, 0x33dd66, 0xff44aa];
           for (let i = 0; i < 8; i++) {
             const gx = 100 + i * 160;
             const color = glowColors[i % glowColors.length];
@@ -586,6 +751,18 @@ export class VegasScene extends Phaser.Scene {
               repeat: -1,
               ease: 'Sine.easeInOut',
             });
+            // Neon reflection on ground
+            const ref = this.addObj(
+              this.add.rectangle(gx, GAME_HEIGHT - 40, 30, 6, color).setAlpha(0.08)
+            );
+            this.addTween({
+              targets: ref,
+              alpha: { from: 0.04, to: 0.12 },
+              duration: 1500 + Math.random() * 1000,
+              yoyo: true,
+              repeat: -1,
+              ease: 'Sine.easeInOut',
+            });
           }
 
           // Ground
@@ -597,21 +774,40 @@ export class VegasScene extends Phaser.Scene {
           const walkY = GAME_HEIGHT - 120;
           const jp = this.addObj(
             this.add.sprite(300, walkY, 'player-ch6', 6).setScale(CHAR_SCALE * 1.3)
-          );
+          ) as Phaser.GameObjects.Sprite;
           const malachi = this.addObj(
             this.add.sprite(220, walkY, 'npc_malachi', 6).setScale(SCALE * 1.3)
           );
 
-          // Walk slowly
+          // Walk slowly — then JP pauses and looks back
           this.addTween({
             targets: jp,
-            x: 500,
-            duration: 8000,
+            x: 480,
+            duration: 5000,
             ease: 'Linear',
+            onComplete: () => {
+              // JP pauses — Malachi keeps walking
+              // Turn JP to face left (look back)
+              if (jp && jp.active) {
+                (jp as Phaser.GameObjects.Sprite).setFrame(4);
+                // Hold the look-back for 1.5s, then turn and keep walking
+                this.time.delayedCall(1500, () => {
+                  if (jp && jp.active) {
+                    (jp as Phaser.GameObjects.Sprite).setFrame(6);
+                    this.addTween({
+                      targets: jp,
+                      x: 600,
+                      duration: 3000,
+                      ease: 'Linear',
+                    });
+                  }
+                });
+              }
+            },
           });
           this.addTween({
             targets: malachi,
-            x: 420,
+            x: 520,
             duration: 8000,
             ease: 'Linear',
           });
@@ -650,12 +846,52 @@ export class VegasScene extends Phaser.Scene {
             });
           });
 
-          // After dialogue, fade to black and transition
+          // === TRANSITION: Neon fades, stars appear, fade to warm golden ===
           this.time.delayedCall(8500, () => {
             if (this.scene.isActive()) {
-              this.cameras.main.fadeOut(1500, 0, 0, 0);
-              this.cameras.main.once('camerafadeoutcomplete', () => {
-                this.scene.start('HomeReturnScene');
+              // Fade neon elements down
+              for (const obj of this.sceneObjects) {
+                if (obj && obj.active) {
+                  this.tweens.add({
+                    targets: obj,
+                    alpha: 0,
+                    duration: 2000,
+                    ease: 'Sine.easeOut',
+                  });
+                }
+              }
+
+              // Stars appearing
+              for (let s = 0; s < 20; s++) {
+                const star = this.add.circle(
+                  Math.random() * GAME_WIDTH,
+                  Math.random() * (GAME_HEIGHT * 0.5),
+                  1 + Math.random(),
+                  0xffffff,
+                  0
+                ).setDepth(90);
+                this.tweens.add({
+                  targets: star,
+                  alpha: { from: 0, to: 0.4 + Math.random() * 0.4 },
+                  duration: 1500,
+                  delay: Math.random() * 1000,
+                  ease: 'Sine.easeIn',
+                });
+              }
+
+              // Warm golden overlay fading in
+              const goldenOverlay = this.add.rectangle(
+                cx, cy, GAME_WIDTH, GAME_HEIGHT, 0xc89830
+              ).setAlpha(0).setDepth(180);
+              this.tweens.add({
+                targets: goldenOverlay,
+                alpha: 0.6,
+                duration: 2500,
+                delay: 1500,
+                ease: 'Sine.easeIn',
+                onComplete: () => {
+                  this.scene.start('HomeReturnScene');
+                },
               });
             }
           });
