@@ -3495,10 +3495,10 @@ function generateCorvetteC8(scene: Phaser.Scene) {
   const g = canvas.getContext('2d')!;
   g.clearRect(0, 0, w, h);
 
-  const bodyMain = '#2a6b3a';      // Racing green
-  const bodyShadow = '#1e5530';
-  const bodyHighlight = '#3a8b4a';
-  const bodyPearl = '#308040';
+  const bodyMain = '#1a3a28';      // Dark metallic green — almost black
+  const bodyShadow = '#0e2518';
+  const bodyHighlight = '#2a5038';
+  const bodyPearl = '#1e4030';
   const black = '#1a1a1e';
   const windowTint = '#101828';
   const windowShine = '#1a2848';
