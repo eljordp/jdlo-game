@@ -653,6 +653,17 @@ export class HomeScene extends BaseChapterScene {
     }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
     objects.push(title);
 
+    // Exit button
+    const exitBtn = this.add.text(80, 50, '< EXIT', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '10px',
+      color: '#ff6666',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301).setInteractive({ useHandCursor: true });
+    objects.push(exitBtn);
+    exitBtn.on('pointerdown', () => finishFishing());
+    const escExit = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+    escExit.on('down', () => finishFishing());
+
     // Score
     const scoreText = this.add.text(GAME_WIDTH - 120, 50, 'Caught: 0', {
       fontFamily: '"Press Start 2P", monospace',
@@ -979,6 +990,17 @@ export class HomeScene extends BaseChapterScene {
       color: '#f0c040',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
     objects.push(title);
+
+    // Exit button
+    const exitBtn = this.add.text(80, 70, '< EXIT', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '10px',
+      color: '#ff6666',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301).setInteractive({ useHandCursor: true });
+    objects.push(exitBtn);
+    exitBtn.on('pointerdown', () => finishGame());
+    const escExit = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+    escExit.on('down', () => finishGame());
 
     // Score display
     const scoreText = this.add.text(GAME_WIDTH - 100, 70, 'Score: 0/3', {

@@ -234,21 +234,27 @@ function drawPlayerFrame32(
   const belt = 0x403830;
   const beltBuckle = 0x908070;
 
-  // ── HAIR (rows 0-6) — full coverage, no bald spots ──
+  // ── HAIR (rows 0-7) — longer shaggy style, more volume ──
   px(g, ox + 9, 0, hair, 14, 1);
   px(g, ox + 7, 1, hair, 18, 1);
-  px(g, ox + 6, 2, hair, 20, 1);
-  px(g, ox + 6, 3, hair, 20, 1);
-  px(g, ox + 6, 4, hair, 20, 1);
-  px(g, ox + 6, 5, hair, 20, 1);
-  px(g, ox + 7, 6, hair, 2, 1);  // hair comes down on sides
-  px(g, ox + 23, 6, hair, 2, 1);
+  px(g, ox + 5, 2, hair, 22, 1);  // wider coverage
+  px(g, ox + 5, 3, hair, 22, 1);
+  px(g, ox + 5, 4, hair, 22, 1);
+  px(g, ox + 5, 5, hair, 22, 1);
+  px(g, ox + 6, 6, hair, 3, 1);   // shaggy sides hang lower
+  px(g, ox + 23, 6, hair, 3, 1);
+  px(g, ox + 5, 7, hair, 2, 1);   // longer on sides
+  px(g, ox + 25, 7, hair, 2, 1);
+  // Messy bangs over forehead
+  px(g, ox + 8, 5, hair, 6, 1);
+  px(g, ox + 10, 6, hair, 4, 1);  // bangs hanging down
   // Hair highlights — subtle shine
   px(g, ox + 11, 1, hairH, 4, 1);
-  px(g, ox + 10, 2, hairH, 3, 1);
-  px(g, ox + 14, 3, hairH, 3, 1);
-  px(g, ox + 17, 2, hairH, 3, 1);
-  px(g, ox + 12, 4, hairH, 2, 1);
+  px(g, ox + 9, 2, hairH, 3, 1);
+  px(g, ox + 14, 3, hairH, 4, 1);
+  px(g, ox + 18, 2, hairH, 3, 1);
+  px(g, ox + 12, 4, hairH, 3, 1);
+  px(g, ox + 7, 5, hairH, 2, 1);
 
   // ── FACE (rows 5-12) ──
   px(g, ox + 6, 6, hair, 3, 3);  // side hair left
@@ -1729,77 +1735,81 @@ function generateAllNPCs(scene: Phaser.Scene) {
     const nose = 0x202020;
     const eye = 0x181818;
     const earPink = 0xd8a0a0;
+    const white = 0xf0e8d8;
 
-    // ── Compact stocky body (rows 14-28) — Frenchies are chunky ──
-    px(g, 8, 14, body, 16, 2);
-    px(g, 7, 16, body, 18, 2);
-    px(g, 6, 18, body, 20, 4);
-    px(g, 7, 22, body, 18, 2);
-    px(g, 8, 24, bodyDk, 16, 2);
-    // Body highlight — barrel chest
-    px(g, 12, 18, bodyLt, 8, 3);
-    // Belly
-    px(g, 10, 22, bodyLt, 12, 2);
+    // ── Compact stocky body (rows 16-26) ──
+    px(g, 9, 16, body, 14, 2);
+    px(g, 8, 18, body, 16, 3);
+    px(g, 8, 21, bodyLt, 16, 2);  // white chest
+    px(g, 9, 23, body, 14, 2);
+    px(g, 10, 25, bodyDk, 12, 1);
 
     // ── Stubby legs (rows 26-30) ──
-    px(g, 8, 26, bodyDk, 5, 3);   // front left
-    px(g, 19, 26, bodyDk, 5, 3);  // front right
-    px(g, 8, 29, 0x202020, 5, 2); // paws left
-    px(g, 19, 29, 0x202020, 5, 2); // paws right
+    px(g, 9, 26, bodyDk, 4, 3);
+    px(g, 19, 26, bodyDk, 4, 3);
+    px(g, 9, 29, 0x303030, 4, 2);  // paws
+    px(g, 19, 29, 0x303030, 4, 2);
 
-    // ── Wide flat head (rows 4-14) — characteristic Frenchie shape ──
-    px(g, 8, 4, body, 16, 2);
-    px(g, 7, 6, body, 18, 2);
-    px(g, 6, 8, body, 20, 2);
-    px(g, 6, 10, bodyLt, 20, 2);
-    px(g, 7, 12, bodyLt, 18, 2);
-    // Forehead wrinkles
-    px(g, 10, 6, bodyDk, 12, 1);
-    px(g, 11, 8, bodyDk, 10, 1);
+    // ── Head (rows 6-16) — wide, flat, square-ish ──
+    px(g, 8, 6, body, 16, 2);
+    px(g, 7, 8, body, 18, 2);
+    px(g, 7, 10, body, 18, 2);
+    px(g, 8, 12, bodyLt, 16, 2);
+    px(g, 9, 14, bodyLt, 14, 2);
+    // White muzzle area
+    px(g, 11, 12, white, 10, 4);
 
-    // ── Bat ears (rows 0-8) — wide, rounded, NOT pointy ──
+    // ── Bat ears — TALL, NARROW, pointed tips ──
     // Left ear
-    px(g, 4, 1, body, 4, 2);
-    px(g, 3, 3, body, 5, 2);
-    px(g, 3, 5, body, 5, 2);
-    px(g, 4, 7, body, 4, 1);
-    // Left ear pink
-    px(g, 4, 2, earPink, 3, 2);
-    px(g, 4, 4, earPink, 3, 2);
+    px(g, 6, 0, body, 2, 1);     // tip
+    px(g, 5, 1, body, 3, 1);
+    px(g, 4, 2, body, 4, 1);
+    px(g, 4, 3, body, 4, 1);
+    px(g, 5, 4, body, 4, 1);
+    px(g, 6, 5, body, 3, 2);
+    // Left ear pink inside
+    px(g, 6, 1, earPink, 1, 1);
+    px(g, 5, 2, earPink, 3, 1);
+    px(g, 5, 3, earPink, 3, 1);
+    px(g, 6, 4, earPink, 2, 1);
+
     // Right ear
-    px(g, 24, 1, body, 4, 2);
-    px(g, 24, 3, body, 5, 2);
-    px(g, 24, 5, body, 5, 2);
-    px(g, 24, 7, body, 4, 1);
-    // Right ear pink
-    px(g, 25, 2, earPink, 3, 2);
-    px(g, 25, 4, earPink, 3, 2);
+    px(g, 24, 0, body, 2, 1);    // tip
+    px(g, 24, 1, body, 3, 1);
+    px(g, 24, 2, body, 4, 1);
+    px(g, 24, 3, body, 4, 1);
+    px(g, 23, 4, body, 4, 1);
+    px(g, 23, 5, body, 3, 2);
+    // Right ear pink inside
+    px(g, 25, 1, earPink, 1, 1);
+    px(g, 24, 2, earPink, 3, 1);
+    px(g, 24, 3, earPink, 3, 1);
+    px(g, 24, 4, earPink, 2, 1);
 
-    // ── Face features ──
-    // Big round eyes (wide set)
-    px(g, 9, 8, eye, 3, 3);
-    px(g, 20, 8, eye, 3, 3);
-    // Eye shine
-    px(g, 9, 8, 0x505070, 2, 2);
-    px(g, 20, 8, 0x505070, 2, 2);
+    // ── Face ──
+    // Big round dark eyes
+    px(g, 9, 9, eye, 3, 2);
+    px(g, 20, 9, eye, 3, 2);
+    px(g, 9, 9, 0x404060, 1, 1);  // shine
+    px(g, 20, 9, 0x404060, 1, 1);
 
-    // Flat smushed nose — THE Frenchie feature
-    px(g, 14, 10, nose, 4, 3);
-    px(g, 13, 11, nose, 6, 1);
+    // Flat wide nose
+    px(g, 14, 12, nose, 4, 2);
+    px(g, 13, 13, nose, 6, 1);
     // Nostrils
-    px(g, 14, 10, 0x404040, 1, 1);
-    px(g, 17, 10, 0x404040, 1, 1);
+    px(g, 14, 12, 0x404040, 1, 1);
+    px(g, 17, 12, 0x404040, 1, 1);
 
-    // Jowls / mouth
-    px(g, 12, 13, bodyDk, 3, 1);
-    px(g, 17, 13, bodyDk, 3, 1);
-    // Tongue sticking out slightly
-    px(g, 15, 13, 0xd08080, 2, 1);
+    // Mouth/jowls
+    px(g, 13, 15, bodyDk, 2, 1);
+    px(g, 17, 15, bodyDk, 2, 1);
+    // Tongue
+    px(g, 15, 15, 0xd08080, 2, 1);
+    px(g, 15, 16, 0xc07070, 2, 1);
 
-    // ── Short curly tail (rows 14-16) ──
-    px(g, 26, 16, bodyDk, 2, 1);
-    px(g, 27, 15, bodyDk, 2, 1);
-    px(g, 28, 16, bodyDk, 1, 1);
+    // ── Stubby tail ──
+    px(g, 25, 18, bodyDk, 2, 1);
+    px(g, 26, 17, bodyDk, 1, 1);
   });
 
   // Bikini Girl 1 — light blue bikini, long brown hair, sleeping — 32x32
