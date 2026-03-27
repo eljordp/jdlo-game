@@ -1518,6 +1518,42 @@ const ch2Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'That car wasn\'t here last time.' },
     { speaker: 'JP\'s Mind', text: '...probably nothing.' },
   ],
+  ch2_flashback_spot: [
+    { speaker: 'Narrator', text: 'This is where they used to sit. JP and Jose. After school.' },
+    { speaker: 'Narrator', text: 'Back when the biggest problem was who was buying the blunts.' },
+    { speaker: 'JP\'s Mind', text: 'That was two years ago. Feels like twenty.' },
+    { speaker: 'JP\'s Mind', text: 'Jose\'s still here. I\'m the one who changed.' },
+  ],
+  ch2_alley_2: [
+    { speaker: 'JP\'s Mind', text: 'Dark alley. Don\'t look.' },
+    { speaker: 'JP\'s Mind', text: 'You hear something. Footsteps? Or just your own heartbeat.' },
+    { speaker: 'JP\'s Mind', text: 'Keep walking.' },
+  ],
+  ch2_residential: [
+    { speaker: 'Narrator', text: 'Normal houses. Porch lights on. Cars in driveways.' },
+    { speaker: 'Narrator', text: 'People sleeping. Kids in beds. Tomorrow is a school day.' },
+    { speaker: 'JP\'s Mind', text: 'They don\'t know I exist. I\'m a ghost in their neighborhood at 3 AM.' },
+    { speaker: 'JP\'s Mind', text: 'One day I\'ll be the one sleeping at a normal hour.' },
+  ],
+  ch2_drunk_guy: [
+    { speaker: 'Drunk', text: '*mumbles* ...you got a light?' },
+    { speaker: 'JP', text: 'Nah bro.' },
+    { speaker: 'Narrator', text: 'He doesn\'t even look up.' },
+  ],
+  ch2_girl_walking: [
+    { speaker: 'Narrator', text: 'She crosses the street when she sees JP coming.' },
+    { speaker: 'JP\'s Mind', text: 'Can\'t blame her. 3 AM. Hooded up. I\'d cross too.' },
+  ],
+  ch2_shadow_figure: [
+    { speaker: 'Narrator', text: 'Someone in the alley. Just standing there.' },
+    { speaker: 'JP\'s Mind', text: 'Don\'t make eye contact.' },
+    { speaker: 'JP\'s Mind', text: '...is that an earpiece?' },
+  ],
+  ch2_weigh_result: [
+    { speaker: 'JP\'s Mind', text: 'Perfect weight. Not a gram over.' },
+    { speaker: 'JP\'s Mind', text: 'That\'s the part nobody sees. The precision. The discipline.' },
+    { speaker: 'JP\'s Mind', text: 'If I put this energy into something legal...' },
+  ],
 };
 
 // ─── Chapter 3: Day-based NPC dialogue ──────────────────────────────

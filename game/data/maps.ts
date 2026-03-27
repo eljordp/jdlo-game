@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // Tile Map Data — Pokemon Platinum-style maps for each chapter
-// Each tile is 16x16 px. Maps range from 15x12 (jail cell) to 40x30 (home).
+// Each tile is 16x16 px. Maps range from 15x12 (jail cell) to 40x40 (wrong crowd).
 // ---------------------------------------------------------------------------
 
 export const TILES = {
@@ -338,20 +338,30 @@ export const wrongCrowdMap: MapData = {
     [ G, G, G, G, G, B, F, F, F, F, F, N, F, B, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 19 store interior
     [ G, G, G, G, G, B, F, F, F, F, F, F, O, B, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 20 store door
 
-    // === ROWS 21-23: SECOND STREET ===
-    [ G, G, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 21 sidewalk
-    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 22 road
-    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 23 road
+    // === ROWS 21-28: EXPANSION — longer walk with residential street, alley/park ===
+    [ C, C, C, C, C, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, C ], // 21 sidewalk with grass patches
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 22 residential road
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 23 residential road
+    [ C, C, C, T, C, C, C, C, C, C, C, C, C, C, C, C, C, C, T, C, C, C, C, C, C, C, T, C, C, C, C, C, C, C, T, C, C, C, C, C ], // 24 sidewalk with trees
+    [ E, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, E, E, G, G, G, G, E ], // 25 alley/park — fence sides, grass
+    [ E, G, G, G, G, G, G, G, G, G, I, I, I, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, E, E, I, I, G, G, E ], // 26 dirt path, bench area (F)
+    [ E, G, G, G, G, G, F, F, G, G, I, G, I, G, G, G, G, T, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, E, E, I, G, G, G, E ], // 27 bench, tree, dirt path
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 28 back to concrete sidewalk
 
-    // === ROWS 24-31: BUYER'S HOUSE ===
-    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 24 sidewalk
-    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, B, B, B, B, B, B, B, B, B, B, G, G, G, G, G, G, G ], // 25 buyer house top wall
-    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, C, C, B, D, D, D, B, D, D, D, D, B, G, G, G, G, G, G, G ], // 26 driveway
-    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, G, G, B, D, D, D, O, D, D, D, D, B, G, G, G, G, G, G, G ], // 27 door between rooms
-    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, G, G, B, D, D, D, B, D, D, D, D, B, G, G, G, G, G, G, G ], // 28 back room
-    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, C, C, O, D, D, D, B, D, D, D, D, B, G, G, G, G, G, G, G ], // 29 front door
-    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, B, B, B, B, B, B, B, B, B, B, G, G, G, G, G, G, G ], // 30 buyer house bottom wall
-    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 31 bottom
+    // === ROWS 29-31: SECOND STREET ===
+    [ G, G, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 29 sidewalk
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 30 road
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 31 road
+
+    // === ROWS 32-39: BUYER'S HOUSE ===
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 32 sidewalk
+    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, B, B, B, B, B, B, B, B, B, B, G, G, G, G, G, G, G ], // 33 buyer house top wall
+    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, C, C, B, D, D, D, B, D, D, D, D, B, G, G, G, G, G, G, G ], // 34 driveway
+    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, G, G, B, D, D, D, O, D, D, D, D, B, G, G, G, G, G, G, G ], // 35 door between rooms
+    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, G, G, B, D, D, D, B, D, D, D, D, B, G, G, G, G, G, G, G ], // 36 back room
+    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, C, C, O, D, D, D, B, D, D, D, D, B, G, G, G, G, G, G, G ], // 37 front door
+    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, B, B, B, B, B, B, B, B, B, B, G, G, G, G, G, G, G ], // 38 buyer house bottom wall
+    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 39 bottom
   ],
   collisions: STANDARD_COLLISIONS,
   spawns: {
@@ -359,9 +369,12 @@ export const wrongCrowdMap: MapData = {
     npcs: [
       { id: 'ch2_homie_door', x: 19, y: 10, sprite: 'npc_jose' },    // Jose waiting in front yard
       { id: 'ch2_corner_guy', x: 8,  y: 18, sprite: 'npc_generic' }, // guy inside convenience store
-      { id: 'ch2_street_kid', x: 15, y: 22, sprite: 'npc_shady' },   // kid on the second street
-      { id: 'ch2_lookout',    x: 21, y: 26, sprite: 'npc_shady' },   // outside buyer's house driveway
-      { id: 'ch2_buyer',      x: 29, y: 28, sprite: 'npc_dealer' },  // inside buyer's house back room
+      { id: 'ch2_street_kid', x: 15, y: 30, sprite: 'npc_shady' },   // kid on the second street
+      { id: 'ch2_lookout',    x: 21, y: 34, sprite: 'npc_shady' },   // outside buyer's house driveway
+      { id: 'ch2_buyer',      x: 29, y: 36, sprite: 'npc_dealer' },  // inside buyer's house back room
+      { id: 'ch2_drunk_guy',  x: 5,  y: 23, sprite: 'npc_generic' }, // drunk on the residential street
+      { id: 'ch2_girl_walking', x: 30, y: 22, sprite: 'npc_female' }, // girl walking alone at 3am
+      { id: 'ch2_shadow_figure', x: 35, y: 25, sprite: 'npc_shady' }, // someone watching from the alley
     ],
   },
   triggers: [],  // No scene triggers — only way out is through ch2_sale raid
@@ -386,15 +399,21 @@ export const wrongCrowdMap: MapData = {
     { id: 'ch2_car',       x: 18, y: 13, type: 'examine', glow: true, sprite: 'item-keys' },     // BMW parked on street
     { id: 'ch2_streetlight', x: 25, y: 16, type: 'examine', glow: true },                         // streetlight on sidewalk
     { id: 'ch2_street_walk', x: 14, y: 14, type: 'examine', glow: true },                         // walking the dark street
-    { id: 'ch2_nervous',   x: 12, y: 22, type: 'examine', glow: true },                           // nervous on second street
+    { id: 'ch2_nervous',   x: 12, y: 30, type: 'examine', glow: true },                           // nervous on second street
 
     // --- Convenience store area ---
     { id: 'ch2_graffiti',  x: 4,  y: 17, type: 'examine', glow: true },                           // graffiti visible on store wall
     { id: 'ch2_store',     x: 7,  y: 18, type: 'examine', glow: true },                           // inside the store
 
     // --- Buyer's house area ---
-    { id: 'ch2_parking_lot', x: 20, y: 27, type: 'examine', glow: true },                         // driveway near buyer's house
-    { id: 'ch2_sale',      x: 25, y: 29, type: 'examine', glow: true, sprite: 'item-weed-bag' }, // THE TRIGGER — sale spot inside buyer's house
+    // --- Expansion area ---
+    { id: 'ch2_residential', x: 15, y: 24, type: 'examine', glow: true },                         // looking at houses where normal people sleep
+    { id: 'ch2_flashback_spot', x: 10, y: 26, type: 'examine', glow: true },                      // where Jose and JP used to hang
+    { id: 'ch2_alley',      x: 35, y: 26, type: 'examine', glow: true },                          // dark alley
+
+    // --- Buyer's house area ---
+    { id: 'ch2_parking_lot', x: 20, y: 35, type: 'examine', glow: true },                         // driveway near buyer's house
+    { id: 'ch2_sale',      x: 25, y: 37, type: 'examine', glow: true, sprite: 'item-weed-bag' }, // THE TRIGGER — sale spot inside buyer's house
   ],
 };
 

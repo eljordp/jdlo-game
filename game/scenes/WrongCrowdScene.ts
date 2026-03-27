@@ -58,7 +58,7 @@ export class WrongCrowdScene extends BaseChapterScene {
     // Navigation hints
     this.addHint(11, 8, 'Exit house');
     this.addHint(11, 11, 'Your 335i');
-    this.addHint(18, 18, 'Buyer\'s block');
+    this.addHint(18, 26, 'Buyer\'s block');
 
     // --- Night atmosphere: flickering window lights ---
     this.createWindowLights();
@@ -432,6 +432,31 @@ export class WrongCrowdScene extends BaseChapterScene {
       return;
     }
 
+    // Girl crosses the street when she sees JP
+    if (npcId === 'ch2_girl_walking') {
+      const girl = this.npcs.find(n => n.id === 'ch2_girl_walking');
+      if (girl) {
+        // She moves away
+        this.tweens.add({
+          targets: girl.sprite,
+          x: girl.sprite.x + SCALED_TILE * 3,
+          duration: 1000,
+          ease: 'Linear',
+        });
+      }
+      this.dialogue.show(dialogue);
+      return;
+    }
+
+    // Shadow figure — just stares
+    if (npcId === 'ch2_shadow_figure') {
+      this.dialogue.show(dialogue, () => {
+        this.increaseTension(); // extra tension for this one
+        this.increaseTension();
+      });
+      return;
+    }
+
     // Default
     this.dialogue.show(dialogue);
   }
@@ -454,6 +479,14 @@ export class WrongCrowdScene extends BaseChapterScene {
         this.tweens.add({ targets: overlay, alpha: targetAlpha, duration: 2000 });
       }
       this.playDrivingCutscene();
+      return;
+    }
+
+    // Weighing minigame — triggered by grabbing the weed
+    if (interactable.id === 'ch2_grab_weed') {
+      Analytics.trackInteraction(interactable.id);
+      this.playWeighingMinigame();
+      this.interactions.consume(interactable.id);
       return;
     }
 
@@ -538,43 +571,75 @@ export class WrongCrowdScene extends BaseChapterScene {
       });
       cutsceneTimers.push(streetlightTimer);
 
-      // Driving text with tension beats
+      // Driving text — extended monologue with tension beats
       const driveLines = [
-        { text: 'Driving down the block...', delay: 500 },
-        { text: 'Two zips in the jacket. Same routine.', delay: 1800 },
+        { text: 'Driving down the block...', delay: 500, size: '14px', color: '#ffffff' },
+        { text: 'Two zips in the jacket. Same routine.', delay: 2000, size: '11px', color: '#aaaacc' },
+        { text: 'Pass the park. Pass the school. Everything closed.', delay: 4000, size: '10px', color: '#808090' },
+        { text: 'Red light. Nobody else on the road.', delay: 5800, size: '10px', color: '#808090' },
+        { text: 'Rearview mirror — that black sedan again.', delay: 7200, size: '11px', color: '#aa6666' },
+        { text: '...probably nothing.', delay: 8800, size: '10px', color: '#666677' },
       ];
 
       for (let i = 0; i < driveLines.length; i++) {
         const line = driveLines[i];
-        const lineText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 160 + i * 40, line.text, {
+        const lineText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 180 + (i % 3) * 40, line.text, {
           fontFamily: '"Press Start 2P", monospace',
-          fontSize: i === 0 ? '14px' : '11px',
-          color: i === 0 ? '#ffffff' : '#aaaacc',
+          fontSize: line.size,
+          color: line.color,
         }).setOrigin(0.5).setScrollFactor(0).setDepth(503).setAlpha(0);
         cutsceneObjects.push(lineText);
 
-        // Tension beat: brief screen darken before each line after the first
-        if (i > 0) {
+        // Tension beat: brief screen darken before key lines
+        if (i === 4) {
+          // Rearview mirror moment — extra tension
           const darken = this.add.rectangle(
             GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000
           ).setScrollFactor(0).setDepth(505).setAlpha(0);
           cutsceneObjects.push(darken);
-
           this.tweens.add({
             targets: darken,
-            alpha: 0.3,
-            duration: 150,
-            delay: line.delay - 500,
+            alpha: 0.4,
+            duration: 200,
+            delay: line.delay - 600,
             yoyo: true,
-            hold: 200,
+            hold: 300,
+          });
+          // Camera shake when noticing the sedan
+          this.time.delayedCall(line.delay, () => {
+            this.cameras.main.shake(200, 0.003);
           });
         }
 
-        this.tweens.add({ targets: lineText, alpha: 1, duration: 600, delay: line.delay });
+        // Fade in, hold, fade out each line
+        this.tweens.add({
+          targets: lineText,
+          alpha: 1,
+          duration: 600,
+          delay: line.delay,
+          hold: 1400,
+          yoyo: true,
+        });
       }
 
-      // After 3.5 seconds, clean up EVERYTHING and teleport
-      this.time.delayedCall(3500, () => {
+      // Unmarked sedan appears in rearview (visual — small dark shape behind BMW)
+      this.time.delayedCall(7000, () => {
+        const sedan = this.add.rectangle(
+          GAME_WIDTH / 2, GAME_HEIGHT / 2 + 100, 40, 20, 0x0a0a12
+        ).setScrollFactor(0).setDepth(501).setAlpha(0);
+        cutsceneObjects.push(sedan);
+        // Sedan headlights
+        const headlightL = this.add.circle(GAME_WIDTH / 2 - 14, GAME_HEIGHT / 2 + 95, 3, 0xf0f0f0, 0)
+          .setScrollFactor(0).setDepth(502);
+        const headlightR = this.add.circle(GAME_WIDTH / 2 + 14, GAME_HEIGHT / 2 + 95, 3, 0xf0f0f0, 0)
+          .setScrollFactor(0).setDepth(502);
+        cutsceneObjects.push(headlightL, headlightR);
+
+        this.tweens.add({ targets: [sedan, headlightL, headlightR], alpha: 0.5, duration: 1500 });
+      });
+
+      // After 10.5 seconds, clean up EVERYTHING and teleport
+      this.time.delayedCall(10500, () => {
         // Kill timers
         for (const timer of cutsceneTimers) {
           timer.remove();
@@ -585,10 +650,10 @@ export class WrongCrowdScene extends BaseChapterScene {
           if (obj.active) obj.destroy();
         }
 
-        // Move player to the buyer's neighborhood
+        // Move player to the buyer's neighborhood (shifted for expanded map)
         this.player.setPosition(
           18 * SCALED_TILE + SCALED_TILE / 2,
-          19 * SCALED_TILE + SCALED_TILE / 2
+          27 * SCALED_TILE + SCALED_TILE / 2
         );
         this.cameras.main.fadeIn(800, 0, 0, 0);
         this.frozen = false;
@@ -631,11 +696,11 @@ export class WrongCrowdScene extends BaseChapterScene {
       }
     }
 
-    // Check if player is inside the buyer's house (row 23-25, col 21-25)
+    // Check if player is inside the buyer's house (shifted: row 31-33, col 21-25)
     const px2 = Math.round((this.player.x - SCALED_TILE / 2) / SCALED_TILE);
     const py2 = Math.round((this.player.y - SCALED_TILE / 2) / SCALED_TILE);
 
-    if (py2 >= 23 && py2 <= 25 && px2 >= 21 && px2 <= 25) {
+    if (py2 >= 31 && py2 <= 37 && px2 >= 21 && px2 <= 32) {
       this.raidTriggered = true;
       const lines = this.getChapterDialogue().npcs['ch2_sale'];
       this.dialogue.show(lines, () => {
@@ -669,7 +734,10 @@ export class WrongCrowdScene extends BaseChapterScene {
       yoyo: true,
       onComplete: () => {
         awarenessText.destroy();
-        this.executeRaid();
+        // Escape attempt — JP tries to leave but can't
+        this.playEscapeAttempt(() => {
+          this.executeRaid();
+        });
       },
     });
   }
@@ -756,6 +824,229 @@ export class WrongCrowdScene extends BaseChapterScene {
                 this.scene.start('CourtScene');
               });
             },
+          });
+        },
+      });
+    });
+  }
+
+  // ─── WEIGHING MINIGAME ──────────────────────────────────────────
+  private playWeighingMinigame() {
+    this.frozen = true;
+    this.increaseTension();
+    const objects: Phaser.GameObjects.GameObject[] = [];
+
+    // Dark overlay
+    objects.push(this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.85)
+      .setScrollFactor(0).setDepth(300));
+
+    // Scale/table surface
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+    objects.push(this.add.rectangle(cx, cy + 40, 500, 300, 0x1a1a20)
+      .setScrollFactor(0).setDepth(301));
+
+    // Digital scale
+    objects.push(this.add.rectangle(cx, cy - 20, 200, 120, 0x202028)
+      .setScrollFactor(0).setDepth(302));
+    objects.push(this.add.rectangle(cx, cy - 20, 190, 110, 0x0a0a12)
+      .setScrollFactor(0).setDepth(302).setStrokeStyle(1, 0x404050));
+
+    // Scale display
+    const scaleDisplay = this.add.text(cx, cy - 40, '0.0g', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '24px', color: '#30ff30',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303);
+    objects.push(scaleDisplay);
+
+    // Target weight
+    const targetWeight = 28.0; // 1 oz
+    const targetText = this.add.text(cx, cy - 70, 'TARGET: 28.0g', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#808090',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303);
+    objects.push(targetText);
+
+    // Title
+    objects.push(this.add.text(cx, 80, 'WEIGH IT OUT', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '18px', color: '#f0c040',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303));
+
+    // Instructions
+    const instr = this.add.text(cx, GAME_HEIGHT - 60, 'Hold SPACE to pour. Release at 28.0g.', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#aaaacc',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303);
+    objects.push(instr);
+
+    // Weed pile visual (grows as weight increases)
+    const pile = this.add.ellipse(cx, cy - 10, 10, 6, 0x2a6a20, 0.8)
+      .setScrollFactor(0).setDepth(303);
+    objects.push(pile);
+
+    // State
+    let currentWeight = 0;
+    let pouring = false;
+    let done = false;
+    let pourSpeed = 0.15; // grams per frame — starts slow
+
+    // Accuracy meter (bar under scale)
+    const barW = 300;
+    const barY = cy + 60;
+    objects.push(this.add.rectangle(cx, barY, barW, 16, 0x1a1a2a)
+      .setScrollFactor(0).setDepth(303));
+    // Green zone marker at 28g position
+    const targetPos = cx - barW / 2 + (28 / 35) * barW;
+    objects.push(this.add.rectangle(targetPos, barY, 4, 20, 0x30ff30, 0.6)
+      .setScrollFactor(0).setDepth(304));
+    // Fill bar
+    const barFill = this.add.rectangle(cx - barW / 2, barY, 0, 12, 0x40c060)
+      .setOrigin(0, 0.5).setScrollFactor(0).setDepth(304);
+    objects.push(barFill);
+
+    // Pour particle effect
+    const spawnPourParticle = () => {
+      const p = this.add.circle(
+        cx + Phaser.Math.Between(-20, 20), cy - 80,
+        2, 0x3a8a30, 0.7
+      ).setScrollFactor(0).setDepth(303);
+      objects.push(p);
+      this.tweens.add({
+        targets: p,
+        y: cy - 15,
+        x: p.x + Phaser.Math.Between(-10, 10),
+        alpha: 0,
+        duration: 300,
+        onComplete: () => p.destroy(),
+      });
+    };
+
+    const update = () => {
+      if (done) return;
+
+      if (pouring) {
+        currentWeight += pourSpeed;
+        // Speed increases slightly — harder to be precise
+        pourSpeed = Math.min(0.4, pourSpeed + 0.0005);
+
+        // Visual updates
+        scaleDisplay.setText(`${currentWeight.toFixed(1)}g`);
+        barFill.displayWidth = Math.min(barW, (currentWeight / 35) * barW);
+        pile.setScale(1 + currentWeight / 28, 0.6 + currentWeight / 40);
+
+        // Color feedback
+        if (currentWeight >= 27.5 && currentWeight <= 28.5) {
+          scaleDisplay.setColor('#30ff30'); // green = perfect zone
+        } else if (currentWeight > 28.5) {
+          scaleDisplay.setColor('#ff4040'); // red = over
+          barFill.setFillStyle(0xc04040);
+        } else if (currentWeight > 25) {
+          scaleDisplay.setColor('#f0f060'); // yellow = close
+        }
+
+        // Pour particles
+        if (Math.random() > 0.5) spawnPourParticle();
+
+        // Auto-fail at 35g (way over)
+        if (currentWeight >= 35) {
+          finishWeighing();
+        }
+      }
+    };
+    this.events.on('update', update);
+
+    const finishWeighing = () => {
+      if (done) return;
+      done = true;
+      pouring = false;
+      this.events.off('update', update);
+      spaceKey.off('down', startPour);
+      spaceKey.off('up', stopPour);
+      this.input.off('pointerdown', startPour);
+      this.input.off('pointerup', stopPour);
+
+      const diff = Math.abs(currentWeight - targetWeight);
+      let resultMsg: string;
+      let resultColor: string;
+
+      if (diff <= 0.3) {
+        resultMsg = 'Perfect. Not a gram over.';
+        resultColor = '#30ff30';
+        this.cameras.main.flash(200, 50, 255, 50);
+      } else if (diff <= 1.0) {
+        resultMsg = 'Close enough. Nobody\'s counting.';
+        resultColor = '#f0f060';
+      } else if (currentWeight > targetWeight) {
+        resultMsg = 'Over. That\'s money you\'re giving away.';
+        resultColor = '#ff6644';
+      } else {
+        resultMsg = 'Light. Buyer\'s gonna notice.';
+        resultColor = '#ff4444';
+      }
+
+      const result = this.add.text(cx, cy + 120, resultMsg, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '11px', color: resultColor,
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(305);
+      objects.push(result);
+
+      const weight = this.add.text(cx, cy + 145, `${currentWeight.toFixed(1)}g / ${targetWeight.toFixed(1)}g`, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#666677',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(305);
+      objects.push(weight);
+
+      // Clean up after 3 seconds, show internal monologue
+      this.time.delayedCall(3000, () => {
+        for (const obj of objects) {
+          if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
+        }
+        const chapterDialogue = this.getChapterDialogue();
+        const lines = chapterDialogue.npcs['ch2_weigh_result'] || [
+          { speaker: 'JP\'s Mind', text: 'If I put this energy into something legal...' },
+        ];
+        this.dialogue.show(lines, () => {
+          this.frozen = false;
+        });
+      });
+    };
+
+    const startPour = () => { if (!done) pouring = true; };
+    const stopPour = () => { if (!done) { pouring = false; finishWeighing(); } };
+
+    const spaceKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    spaceKey.on('down', startPour);
+    spaceKey.on('up', stopPour);
+    this.input.on('pointerdown', startPour);
+    this.input.on('pointerup', stopPour);
+  }
+
+  // ─── ESCAPE ATTEMPT (post-sale, before raid) ──────────────────
+  private playEscapeAttempt(onFail: () => void) {
+    this.frozen = true;
+
+    // JP tries to leave — walks toward door
+    this.dialogue.show([
+      { speaker: 'JP\'s Mind', text: 'Something\'s wrong. Get out. Now.' },
+    ], () => {
+      // Player moves toward door
+      const doorX = 23 * SCALED_TILE + SCALED_TILE / 2;
+      const doorY = 37 * SCALED_TILE + SCALED_TILE / 2;
+
+      this.tweens.add({
+        targets: this.player,
+        x: doorX,
+        y: doorY,
+        duration: 800,
+        ease: 'Linear',
+        onComplete: () => {
+          // Door is blocked — lookout is there
+          this.cameras.main.shake(200, 0.005);
+
+          this.dialogue.show([
+            { speaker: 'Lookout', text: 'Where you going?' },
+            { speaker: 'JP', text: 'I\'m done. I\'m out.' },
+            { speaker: 'Lookout', text: 'Nah. You wait.' },
+            { speaker: 'Narrator', text: 'He doesn\'t move. JP can\'t get past.' },
+            { speaker: 'JP\'s Mind', text: 'Fuck.' },
+          ], () => {
+            // Then the raid hits
+            onFail();
           });
         },
       });
