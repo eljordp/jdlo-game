@@ -153,6 +153,19 @@ export class OperatorScene extends BaseChapterScene {
     this.npcsTalkedTo.add(npcId);
     this.advanceClock();
 
+    // Barista — purchase menu
+    if (npcId === 'ch6_barista') {
+      this.playPurchaseMenu('ORDER UP', [
+        { name: 'Matcha Latte', price: '$7', color: '#80c060' },
+        { name: 'Espresso', price: '$4', color: '#3a2010' },
+        { name: 'Breakfast Sandwich', price: '$9', color: '#c8a050' },
+      ], [
+        '"The usual?" JP nods.',
+        'Barista already had it started.',
+      ]);
+      return;
+    }
+
     // Malachi impressed if you've talked to 5+ people
     if (npcId === 'ch6_malachi' && this.npcsTalkedTo.size >= 5) {
       const chapterDialogue = this.getChapterDialogue();
@@ -241,8 +254,217 @@ export class OperatorScene extends BaseChapterScene {
       return;
     }
 
+    // Food truck purchase
+    if (interactable.id === 'ch6_food_truck_menu') {
+      Analytics.trackInteraction(interactable.id);
+      this.playPurchaseMenu('STREET TACOS', [
+        { name: 'Asada Tacos (2)', price: '$8', color: '#c8a040' },
+        { name: 'Al Pastor (2)', price: '$8', color: '#d06030' },
+        { name: 'Birria Quesadilla', price: '$12', color: '#b84020' },
+        { name: 'Horchata', price: '$4', color: '#f0e8d0' },
+      ], [
+        'Best tacos in LA. Twice a week minimum.',
+        'The vendor knows JP by name now.',
+      ]);
+      return;
+    }
+
+    // C8 Corvette — big purchase moment
+    if (interactable.id === 'ch6_corvette') {
+      Analytics.trackInteraction(interactable.id);
+      this.playCorvetteScene();
+      this.interactions.consume(interactable.id);
+      return;
+    }
+
     // Everything else goes to base handler
     super.handleInteractable(interactable);
+  }
+
+  // ─── PURCHASE MENU ─────────────────────────────────────────────────
+  private playPurchaseMenu(
+    title: string,
+    items: { name: string; price: string; color: string }[],
+    afterLines: string[]
+  ) {
+    this.frozen = true;
+    const objects: Phaser.GameObjects.GameObject[] = [];
+    let selectedIndex = 0;
+
+    // Dark overlay
+    const bg = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.75)
+      .setScrollFactor(0).setDepth(300);
+    objects.push(bg);
+
+    // Menu board
+    const menuW = 400;
+    const menuH = 100 + items.length * 50;
+    const menuBg = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, menuW, menuH, 0x1a1a2a)
+      .setScrollFactor(0).setDepth(301).setStrokeStyle(2, 0xf0c040);
+    objects.push(menuBg);
+
+    // Title
+    const titleText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - menuH / 2 + 25, title, {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '14px', color: '#f0c040',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(302);
+    objects.push(titleText);
+
+    // Menu items
+    const itemTexts: Phaser.GameObjects.Text[] = [];
+    const priceTexts: Phaser.GameObjects.Text[] = [];
+    const dots: Phaser.GameObjects.Arc[] = [];
+    const startY = GAME_HEIGHT / 2 - menuH / 2 + 65;
+
+    for (let i = 0; i < items.length; i++) {
+      const y = startY + i * 44;
+      const dot = this.add.circle(GAME_WIDTH / 2 - menuW / 2 + 30, y + 6, 5, parseInt(items[i].color.replace('#', '0x')))
+        .setScrollFactor(0).setDepth(302);
+      objects.push(dot); dots.push(dot);
+
+      const name = this.add.text(GAME_WIDTH / 2 - menuW / 2 + 50, y, items[i].name, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#ffffff',
+      }).setScrollFactor(0).setDepth(302);
+      objects.push(name); itemTexts.push(name);
+
+      const price = this.add.text(GAME_WIDTH / 2 + menuW / 2 - 30, y, items[i].price, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#aaaaaa',
+      }).setOrigin(1, 0).setScrollFactor(0).setDepth(302);
+      objects.push(price); priceTexts.push(price);
+    }
+
+    // Selection arrow
+    const arrow = this.add.text(GAME_WIDTH / 2 - menuW / 2 + 15, startY, '>', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '12px', color: '#f0c040',
+    }).setScrollFactor(0).setDepth(302);
+    objects.push(arrow);
+
+    // Instructions
+    const instr = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + menuH / 2 - 20, 'UP/DOWN to browse  SPACE to buy  ESC to close', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#666688',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(302);
+    objects.push(instr);
+
+    const updateSelection = () => {
+      arrow.setY(startY + selectedIndex * 44);
+      for (let i = 0; i < itemTexts.length; i++) {
+        itemTexts[i].setColor(i === selectedIndex ? '#f0c040' : '#ffffff');
+        priceTexts[i].setColor(i === selectedIndex ? '#f0c040' : '#aaaaaa');
+      }
+    };
+    updateSelection();
+
+    // Input
+    const upKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
+    const downKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
+    const spaceKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    const escKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+
+    const onUp = () => { selectedIndex = Math.max(0, selectedIndex - 1); updateSelection(); };
+    const onDown = () => { selectedIndex = Math.min(items.length - 1, selectedIndex + 1); updateSelection(); };
+    const onEsc = () => cleanup();
+    const onBuy = () => {
+      // Purchase animation
+      const item = items[selectedIndex];
+      const purchaseText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2, `${item.name}  ✓`, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '14px', color: '#40c060',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(310).setAlpha(0);
+      objects.push(purchaseText);
+
+      // Hide menu items
+      menuBg.setAlpha(0.3);
+      titleText.setAlpha(0.3);
+      for (const t of itemTexts) t.setAlpha(0.2);
+      for (const t of priceTexts) t.setAlpha(0.2);
+      arrow.setAlpha(0);
+      instr.setAlpha(0);
+
+      // Show purchase confirmation
+      this.tweens.add({
+        targets: purchaseText,
+        alpha: 1, scale: 1.1,
+        duration: 300,
+        yoyo: true, hold: 800,
+        onComplete: () => {
+          cleanup();
+          // Post-purchase dialogue
+          this.dialogue.show(
+            afterLines.map(text => ({ speaker: 'Narrator', text })),
+            () => { this.frozen = false; }
+          );
+        },
+      });
+
+      // Remove input after buy
+      upKey.off('down', onUp); downKey.off('down', onDown);
+      spaceKey.off('down', onBuy); escKey.off('down', onEsc);
+    };
+
+    const cleanup = () => {
+      upKey.off('down', onUp); downKey.off('down', onDown);
+      spaceKey.off('down', onBuy); escKey.off('down', onEsc);
+      for (const obj of objects) { if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy(); }
+      if (!this.frozen) return; // already handled by buy flow
+      this.frozen = false;
+    };
+
+    upKey.on('down', onUp);
+    downKey.on('down', onDown);
+    spaceKey.on('down', onBuy);
+    escKey.on('down', onEsc);
+
+    // Touch: tap items to select + buy
+    for (let i = 0; i < itemTexts.length; i++) {
+      itemTexts[i].setInteractive({ useHandCursor: true });
+      itemTexts[i].on('pointerdown', () => { selectedIndex = i; updateSelection(); onBuy(); });
+    }
+  }
+
+  // ─── C8 CORVETTE PURCHASE SCENE ──────────────────────────────────────
+  private playCorvetteScene() {
+    this.frozen = true;
+    const objects: Phaser.GameObjects.GameObject[] = [];
+
+    // Dark overlay
+    const bg = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.85)
+      .setScrollFactor(0).setDepth(300);
+    objects.push(bg);
+
+    // C8 sprite centered, big
+    const carSprite = this.add.sprite(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 40, 'car-corvette-c8')
+      .setScale(SCALE * 3).setScrollFactor(0).setDepth(301).setAlpha(0);
+    objects.push(carSprite);
+
+    // Fade in car
+    this.tweens.add({
+      targets: carSprite,
+      alpha: 1,
+      duration: 1000,
+      onComplete: () => {
+        // Car name
+        const nameText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 80, 'CORVETTE C8 STINGRAY', {
+          fontFamily: '"Press Start 2P", monospace', fontSize: '14px', color: '#ffffff',
+        }).setOrigin(0.5).setScrollFactor(0).setDepth(302).setAlpha(0);
+        objects.push(nameText);
+
+        const specText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 110, 'Dark Metallic Green  |  495 HP  |  Mid-Engine', {
+          fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#888899',
+        }).setOrigin(0.5).setScrollFactor(0).setDepth(302).setAlpha(0);
+        objects.push(specText);
+
+        this.tweens.add({ targets: [nameText, specText], alpha: 1, duration: 500 });
+
+        // Dialogue sequence
+        this.time.delayedCall(2000, () => {
+          for (const obj of objects) { if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy(); }
+          this.dialogue.show([
+            { speaker: 'Narrator', text: 'Dark metallic green. Almost black in the shade. Emerald in the sun.' },
+            { speaker: 'Narrator', text: 'The car JP dreamed about while driving a tractor through grape vines.' },
+            { speaker: 'JP\'s Mind', text: 'Not a reward. A reminder.' },
+            { speaker: 'JP\'s Mind', text: 'Of what happens when you don\'t stop.' },
+          ], () => { this.frozen = false; });
+        });
+      },
+    });
   }
 
   // ─── CLIENT PITCH PRESENTATION ──────────────────────────────────────
