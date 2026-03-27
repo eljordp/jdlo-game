@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, CHAR_SCALE } from '../config';
 import { SoundEffects } from './SoundEffects';
 import { InventorySystem } from './InventorySystem';
+import { MoodSystem } from './MoodSystem';
 import { virtualInput } from '../../components/GameCanvas';
 
 // ── Emote Definition ──────────────────────────────────────────────
@@ -434,7 +435,50 @@ export class EmoteSystem {
     scene.time.delayedCall(duration, () => {
       this.playing = false;
       baseScene.frozen = false;
+
+      // Emote wheel = just animations, no mood changes
+      // Mood changes come from contextual world interactions only
     });
+  }
+
+  /** Apply mood change based on the emote that was just played */
+  private static applyMoodFromEmote(emoteId: string): void {
+    switch (emoteId) {
+      case 'hit_cart':
+        if (MoodSystem.isFaded()) {
+          MoodSystem.extendMood(60);
+        } else {
+          MoodSystem.setMood('faded', 60);
+        }
+        break;
+      case 'smoke_za':
+        if (MoodSystem.isFaded()) {
+          MoodSystem.extendMood(90);
+        } else {
+          MoodSystem.setMood('faded', 90);
+        }
+        break;
+      case 'rip_bong':
+        if (MoodSystem.isFaded()) {
+          MoodSystem.extendMood(120);
+        } else {
+          MoodSystem.setMood('faded', 120);
+        }
+        break;
+      case 'shoulder_dance':
+      case 'gooning':
+      case 'sixty_seven':
+        MoodSystem.setMood('vibing', 30);
+        break;
+      case 'flex':
+        if (MoodSystem.isLockedIn()) {
+          MoodSystem.setMood('hyped', 20);
+        } else {
+          MoodSystem.setMood('locked_in', 45);
+        }
+        break;
+      // 'nod' — no mood change
+    }
   }
 
   /** Get all emote definitions */

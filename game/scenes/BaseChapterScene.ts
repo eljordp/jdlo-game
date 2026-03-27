@@ -11,6 +11,7 @@ import { SaveSystem } from '../systems/SaveSystem';
 import { SoundEffects } from '../systems/SoundEffects';
 import { Analytics } from '../systems/Analytics';
 import { EmoteSystem } from '../systems/EmoteSystem';
+import { MoodSystem } from '../systems/MoodSystem';
 import { PhoneSystem } from '../systems/PhoneSystem';
 import type { MapData } from '../data/maps';
 
@@ -848,6 +849,9 @@ export abstract class BaseChapterScene extends Phaser.Scene {
   }
 
   update(_time: number, _delta: number) {
+    // Update mood system every frame (particles, effects, timer)
+    MoodSystem.update(this, this.player);
+
     // Check mobile action button
     if (virtualInput.actionJustPressed) {
       virtualInput.actionJustPressed = false;
@@ -888,7 +892,9 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     // Sprint — SHIFT key makes movement faster
     const shiftKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
     const isSprinting = shiftKey.isDown;
-    const moveDuration = isSprinting ? 110 : 200;
+    const baseMoveDuration = isSprinting ? 110 : 200;
+    // Mood affects walk speed: multiplier > 1 = slower (higher duration), < 1 = faster
+    const moveDuration = Math.round(baseMoveDuration * MoodSystem.getSpeedMultiplier());
 
     this.tweens.add({
       targets: this.player,
@@ -954,6 +960,21 @@ export abstract class BaseChapterScene extends Phaser.Scene {
 
   /** Override in subclasses to add reactive NPC dialogue behaviors */
   protected handleNPCDialogue(_npcId: string, dialogue: DialogueLine[]): void {
+    // Mood-reactive NPC dialogue: if faded, 30% chance NPCs comment on it
+    if (MoodSystem.isFaded() && Math.random() < 0.3) {
+      const fadedLines: string[] = [
+        'You good bro? Smells loud.',
+        'Damn, you faded huh.',
+        'Eyes lookin low my boy.',
+        'Smells crazy over here...',
+      ];
+      const line = fadedLines[Math.floor(Math.random() * fadedLines.length)];
+      const speakerName = _npcId.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+      const prependLine: DialogueLine = { speaker: speakerName, text: line };
+      this.dialogue.show([prependLine, ...dialogue]);
+      return;
+    }
+
     this.dialogue.show(dialogue);
   }
 
