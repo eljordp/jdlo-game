@@ -4264,23 +4264,26 @@ function generateMoreItems(scene: Phaser.Scene) {
 
   // --- item-bed ---
   makeTexture(scene, 'item-bed', TILE_SIZE, TILE_SIZE, (g) => {
-    // Bed frame (brown)
-    px(g, 2, 8, 0x6a4020, 12, 6);
-    px(g, 2, 8, 0x7a5030, 12, 1);
-    // Mattress (white)
-    px(g, 3, 6, 0xe8e0d8, 10, 4);
-    // Pillow
-    px(g, 3, 5, 0xf0ece8, 4, 3);
-    px(g, 4, 4, 0xf8f4f0, 2, 1);
-    // Blanket (blue)
-    px(g, 7, 7, 0x4060a0, 6, 3);
-    px(g, 7, 7, 0x5070b0, 6, 1);
-    // Headboard
-    px(g, 2, 4, 0x503010, 1, 5);
-    px(g, 2, 4, 0x604020, 1, 1);
-    // Legs
-    px(g, 3, 13, 0x503010, 1, 2);
-    px(g, 12, 13, 0x503010, 1, 2);
+    // ~24x16 top-down bed, centered in 32x32 canvas
+    // Headboard (dark wood, top edge)
+    px(g, 4, 7, 0x503010, 24, 2);
+    px(g, 4, 7, 0x604020, 24, 1); // highlight
+    // Bed frame (brown wood)
+    px(g, 4, 9, 0x6a4020, 24, 16);
+    px(g, 4, 9, 0x7a5030, 24, 1); // top edge highlight
+    px(g, 4, 24, 0x5a3018, 24, 1); // bottom edge shadow
+    // Mattress (white/cream)
+    px(g, 5, 10, 0xe8e0d8, 22, 14);
+    // Pillow (at top, near headboard)
+    px(g, 6, 10, 0xf0ece8, 8, 4);
+    px(g, 7, 11, 0xf8f4f0, 6, 2); // pillow highlight
+    // Blanket (blue, covering lower 2/3)
+    px(g, 5, 15, 0x4060a0, 22, 9);
+    px(g, 5, 15, 0x5070b0, 22, 1); // blanket fold highlight
+    px(g, 5, 18, 0x3a5090, 22, 1); // blanket shadow fold
+    // Frame side edges
+    px(g, 4, 9, 0x5a3018, 1, 16); // left frame
+    px(g, 27, 9, 0x5a3018, 1, 16); // right frame
   });
 
   // --- item-mirror ---
@@ -4302,43 +4305,51 @@ function generateMoreItems(scene: Phaser.Scene) {
 
   // --- item-tv ---
   makeTexture(scene, 'item-tv', TILE_SIZE, TILE_SIZE, (g) => {
-    // TV body (dark grey)
-    px(g, 2, 3, 0x1a1a1a, 12, 9);
-    // Bezel
-    px(g, 2, 3, 0x2a2a2a, 12, 1);
-    px(g, 2, 11, 0x2a2a2a, 12, 1);
-    px(g, 2, 3, 0x2a2a2a, 1, 9);
-    px(g, 13, 3, 0x2a2a2a, 1, 9);
+    // ~20x16 flat screen TV, centered in 32x32 canvas
+    // TV body/bezel (dark grey)
+    px(g, 6, 7, 0x1a1a1a, 20, 16);
+    // Bezel edges
+    px(g, 6, 7, 0x2a2a2a, 20, 1);   // top bezel
+    px(g, 6, 22, 0x2a2a2a, 20, 1);  // bottom bezel
+    px(g, 6, 7, 0x2a2a2a, 1, 16);   // left bezel
+    px(g, 25, 7, 0x2a2a2a, 1, 16);  // right bezel
     // Screen (blue glow)
-    px(g, 3, 4, 0x3070b0, 10, 7);
-    px(g, 4, 5, 0x4090d0, 6, 4);
-    px(g, 5, 6, 0x60b0f0, 3, 2);
-    // Stand
-    px(g, 6, 12, 0x303030, 4, 1);
-    px(g, 5, 13, 0x404040, 6, 1);
+    px(g, 7, 8, 0x3070b0, 18, 14);
+    px(g, 9, 10, 0x4090d0, 12, 8);  // inner glow
+    px(g, 11, 12, 0x60b0f0, 6, 4);  // bright center
+    // Stand (thin base)
+    px(g, 12, 23, 0x303030, 8, 2);
+    px(g, 10, 25, 0x404040, 12, 2);
     // Power LED
-    px(g, 7, 11, 0x40ff40, 1, 1);
+    px(g, 15, 22, 0x40ff40, 2, 1);
   });
 
   // --- item-couch ---
   makeTexture(scene, 'item-couch', TILE_SIZE, TILE_SIZE, (g) => {
-    // Couch body (dark brown/maroon)
-    px(g, 1, 7, 0x6a3030, 14, 5);
-    // Back cushions
-    px(g, 1, 5, 0x7a3838, 14, 3);
-    px(g, 1, 5, 0x8a4040, 14, 1);
-    // Seat cushion lines
-    px(g, 5, 9, 0x582828, 1, 2);
-    px(g, 10, 9, 0x582828, 1, 2);
-    // Arms
-    px(g, 1, 6, 0x5a2828, 2, 6);
-    px(g, 13, 6, 0x5a2828, 2, 6);
-    // Highlight
-    px(g, 3, 8, 0x8a4848, 4, 1);
-    px(g, 9, 8, 0x8a4848, 4, 1);
-    // Legs
-    px(g, 2, 12, 0x402020, 1, 2);
-    px(g, 13, 12, 0x402020, 1, 2);
+    // ~28x14 wide couch, top-down/front view, centered in 32x32 canvas
+    // Back cushions (top part)
+    px(g, 2, 9, 0x7a3838, 28, 4);
+    px(g, 2, 9, 0x8a4040, 28, 1); // highlight on back
+    // Seat area (bottom part)
+    px(g, 2, 13, 0x6a3030, 28, 8);
+    // Cushion divider lines
+    px(g, 11, 13, 0x582828, 1, 8);
+    px(g, 20, 13, 0x582828, 1, 8);
+    // Seat cushion highlights
+    px(g, 4, 14, 0x8a4848, 6, 1);
+    px(g, 13, 14, 0x8a4848, 6, 1);
+    px(g, 22, 14, 0x8a4848, 6, 1);
+    // Armrests (both sides)
+    px(g, 2, 10, 0x5a2828, 3, 12);  // left arm
+    px(g, 27, 10, 0x5a2828, 3, 12); // right arm
+    // Armrest top highlights
+    px(g, 2, 10, 0x6a3434, 3, 1);
+    px(g, 27, 10, 0x6a3434, 3, 1);
+    // Shadow under couch
+    px(g, 3, 21, 0x402020, 26, 1);
+    // Legs (visible at bottom)
+    px(g, 4, 21, 0x402020, 2, 2);
+    px(g, 26, 21, 0x402020, 2, 2);
   });
 
   // --- item-bong ---
@@ -4479,25 +4490,26 @@ function generateMoreItems(scene: Phaser.Scene) {
 
   // --- item-fridge ---
   makeTexture(scene, 'item-fridge', TILE_SIZE, TILE_SIZE, (g) => {
+    // ~16x24 tall fridge, centered in 32x32 canvas
     // Body (white/silver)
-    px(g, 3, 1, 0xe0e0e0, 10, 14);
-    // Top door (freezer)
-    px(g, 3, 1, 0xd8d8d8, 10, 5);
-    px(g, 3, 1, 0xf0f0f0, 10, 1);
+    px(g, 8, 3, 0xe0e0e0, 16, 26);
+    // Top door (freezer, shorter)
+    px(g, 8, 3, 0xd8d8d8, 16, 8);
+    px(g, 8, 3, 0xf0f0f0, 16, 1); // top edge highlight
     // Gap between doors
-    px(g, 3, 6, 0xa0a0a0, 10, 1);
-    // Bottom door (fridge)
-    px(g, 3, 7, 0xe0e0e0, 10, 8);
-    // Handles
-    px(g, 12, 3, 0xb0b0b0, 1, 2);
-    px(g, 12, 9, 0xb0b0b0, 1, 3);
-    // Shadow on right
-    px(g, 12, 2, 0xc0c0c0, 1, 13);
+    px(g, 8, 11, 0xa0a0a0, 16, 1);
+    // Bottom door (fridge, taller)
+    px(g, 8, 12, 0xe0e0e0, 16, 17);
+    // Handles (right side)
+    px(g, 23, 6, 0xb0b0b0, 1, 3);   // freezer handle
+    px(g, 23, 16, 0xb0b0b0, 1, 5);  // fridge handle
+    // Shadow on right edge
+    px(g, 23, 4, 0xc0c0c0, 1, 25);
     // Shadow on bottom
-    px(g, 3, 14, 0xa0a0a0, 10, 1);
-    // Door edge highlight
-    px(g, 3, 1, 0xf0f0f0, 1, 5);
-    px(g, 3, 7, 0xf0f0f0, 1, 7);
+    px(g, 8, 28, 0xa0a0a0, 16, 1);
+    // Door edge highlight (left side)
+    px(g, 8, 3, 0xf0f0f0, 1, 8);    // freezer left
+    px(g, 8, 12, 0xf0f0f0, 1, 16);  // fridge left
   });
 
   // --- item-food ---

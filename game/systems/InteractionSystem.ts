@@ -48,7 +48,9 @@ export class InteractionSystem {
 
         this.sprites.set(obj.id, sprite);
 
-        if (obj.glow) {
+        // Only pulse/glow for non-furniture sprites
+        const skipGlow = obj.sprite && InteractionSystem.NO_GLOW_SPRITES.has(obj.sprite);
+        if (obj.glow && !skipGlow) {
           const tween = this.scene.tweens.add({
             targets: sprite,
             alpha: { from: 0.7, to: 1.0 },
@@ -103,6 +105,12 @@ export class InteractionSystem {
     'item-gun', 'item-bottle', 'item-food',
   ]);
 
+  // Furniture sprites that should NOT glow/pulse — they're scenery, not pickups
+  private static readonly NO_GLOW_SPRITES = new Set([
+    'item-bed', 'item-fridge', 'item-couch', 'item-tv', 'item-bbq',
+    'item-mirror', 'item-computer', 'item-food',
+  ]);
+
   consume(id: string): void {
     const obj = this.interactables.find((i) => i.id === id);
     if (obj) {
@@ -153,8 +161,9 @@ export class InteractionSystem {
         sprite.setVisible(true);
       }
 
-      // Re-create glow tween if needed
-      if (obj.glow && sprite && !this.glowTweens.has(obj.id)) {
+      // Re-create glow tween if needed (skip furniture)
+      const skipGlow = obj.sprite && InteractionSystem.NO_GLOW_SPRITES.has(obj.sprite);
+      if (obj.glow && !skipGlow && sprite && !this.glowTweens.has(obj.id)) {
         const tween = this.scene.tweens.add({
           targets: sprite,
           alpha: { from: 0.7, to: 1.0 },

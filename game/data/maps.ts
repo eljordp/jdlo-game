@@ -129,7 +129,7 @@ export const homeMap: MapData = {
   spawns: {
     player: { x: 7, y: 6 },
     npcs: [
-      { id: 'ch0_pops',    x: 10, y: 13, sprite: 'npc_pops' },
+      { id: 'ch0_pops',    x: 8,  y: 13, sprite: 'npc_pops' },
       { id: 'ch0_mom',     x: 28, y: 13, sprite: 'npc_female' },
       { id: 'ch0_sister',  x: 13, y: 6,  sprite: 'npc_sister' },
       { id: 'ch0_frenchie', x: 18, y: 21, sprite: 'npc_frenchie' },
@@ -150,7 +150,7 @@ export const homeMap: MapData = {
     { id: 'ch0_computer',      x: 5,  y: 4,  type: 'examine', glow: true, sprite: 'item-tablet' },
     { id: 'ch0_crypto',        x: 8,  y: 4,  type: 'examine', glow: true, sprite: 'item-phone' },
     { id: 'ch0_college',       x: 9,  y: 5,  type: 'examine', glow: true, sprite: 'item-letter' },
-    { id: 'ch0_bed',           x: 4,  y: 7,  type: 'examine', glow: true, sprite: 'item-bed' },
+    { id: 'ch0_bed',           x: 6,  y: 4,  type: 'examine', glow: true, sprite: 'item-bed' },
     { id: 'ch0_poster',        x: 9,  y: 7,  type: 'examine', glow: true },
     { id: 'ch0_hidden_stash',  x: 4,  y: 4,  type: 'examine', glow: true, sprite: 'item-weed-bag' },
     { id: 'ch0_journal',       x: 7,  y: 8,  type: 'examine', glow: true, sprite: 'item-book' },
@@ -161,8 +161,8 @@ export const homeMap: MapData = {
     // Bathroom (cols 32-35, rows 4-8)
     { id: 'ch0_mirror',        x: 34, y: 4,  type: 'examine', glow: true, sprite: 'item-mirror' },
     // Living Room (left side of open concept, row 12-14)
-    { id: 'ch0_tv',            x: 6,  y: 12, type: 'examine', glow: true, sprite: 'item-tv' },
-    { id: 'ch0_couch',         x: 12, y: 13, type: 'examine', glow: true, sprite: 'item-couch' },
+    { id: 'ch0_tv',            x: 4,  y: 13, type: 'examine', glow: true, sprite: 'item-tv' },
+    { id: 'ch0_couch',         x: 7,  y: 13, type: 'examine', glow: true, sprite: 'item-couch' },
     // Kitchen (right side of open concept, row 12-14)
     { id: 'ch0_fridge',        x: 35, y: 12, type: 'examine', glow: true, sprite: 'item-fridge' },
     { id: 'ch0_mail',          x: 28, y: 14, type: 'examine', glow: true, sprite: 'item-letter' },
@@ -253,7 +253,7 @@ export const beachMap: MapData = {
     { id: 'ch1_blunt',   x: 35, y: 6,  type: 'examine', glow: true, sprite: 'item-joint' },
     { id: 'ch1_bong',    x: 20, y: 1,  type: 'examine', glow: true, sprite: 'item-bong' },
     { id: 'ch1_setup',   x: 11, y: 2,  type: 'examine', glow: true, sprite: 'item-tablet' },
-    { id: 'ch1_bed',     x: 10, y: 6,  type: 'examine', glow: true, sprite: 'item-bed' },
+    { id: 'ch1_bed',     x: 10, y: 1,  type: 'examine', glow: true, sprite: 'item-bed' },
     { id: 'ch1_closet',  x: 15, y: 2,  type: 'examine', glow: true },
     { id: 'ch1_speaker', x: 10, y: 1,  type: 'examine', glow: true },
     { id: 'ch1_volleyball1', x: 15, y: 20, type: 'examine', glow: true },
@@ -332,7 +332,7 @@ export const wrongCrowdMap: MapData = {
     { id: 'ch2_grab_weed', x: 19, y: 3, type: 'examine', glow: true, sprite: 'item-weed-bag' },  // weed on desk in JP's room
     { id: 'ch2_gun',       x: 16, y: 1, type: 'examine', glow: true, sprite: 'item-gun' },       // gun in JP's room
     { id: 'ch2_computer',  x: 19, y: 1, type: 'examine', glow: true },                            // computer/desk
-    { id: 'ch2_bed',       x: 15, y: 5, type: 'examine', glow: true, sprite: 'item-bed' },       // bed in JP's room
+    { id: 'ch2_bed',       x: 15, y: 1, type: 'examine', glow: true, sprite: 'item-bed' },       // bed against north wall in JP's room
     { id: 'ch2_phone',     x: 16, y: 3, type: 'examine', glow: true, sprite: 'item-phone' },     // phone in JP's room
     { id: 'ch2_money_stack', x: 20, y: 3, type: 'examine', glow: true, sprite: 'item-money' },   // money in JP's room
     { id: 'ch2_pops_missed', x: 17, y: 5, type: 'examine', glow: true, sprite: 'item-phone' },   // missed call from pops
@@ -340,7 +340,7 @@ export const wrongCrowdMap: MapData = {
     // --- House common areas ---
     { id: 'ch2_light1',    x: 10, y: 3, type: 'examine', glow: true },                            // light switch in living room
     { id: 'ch2_light2',    x: 24, y: 3, type: 'examine', glow: true },                            // light switch in kitchen
-    { id: 'ch2_fridge',    x: 24, y: 2, type: 'examine', glow: true, sprite: 'item-fridge' },     // kitchen fridge
+    { id: 'ch2_fridge',    x: 26, y: 1, type: 'examine', glow: true, sprite: 'item-fridge' },     // kitchen fridge against north + east wall
     { id: 'ch2_hottub_night', x: 31, y: 4, type: 'examine', glow: true },                         // hot tub area (empty at night)
     { id: 'ch2_front_door', x: 18, y: 8, type: 'examine', glow: true },                           // path from JP room door
 
