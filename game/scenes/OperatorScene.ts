@@ -2,10 +2,15 @@ import { BaseChapterScene } from './BaseChapterScene';
 import { operatorMap, MapData } from '../data/maps';
 import { operatorDialogue } from '../data/story';
 import type { DialogueLine } from '../systems/DialogueSystem';
-import { GAME_WIDTH, GAME_HEIGHT } from '../config';
+import { GAME_WIDTH, GAME_HEIGHT, SCALE, TILE_SIZE } from '../config';
 import { Analytics } from '../systems/Analytics';
 
 export class OperatorScene extends BaseChapterScene {
+  private npcsTalkedTo = new Set<string>();
+  private dashboardDone = false;
+  private pitchDone = false;
+  private clockText?: Phaser.GameObjects.Text;
+
   constructor() {
     super({ key: 'OperatorScene' });
     this.chapterTitle = 'Chapter 7: Operator Mode';
@@ -24,8 +29,17 @@ export class OperatorScene extends BaseChapterScene {
   create() {
     super.create();
 
-    // Exit south -- head to Vegas
-    this.addNavArrow(19, 36, 'Vegas');
+    // Exit south -- head to Vegas (row 57 visible, triggers at 58)
+    this.addNavArrow(19, 57, 'Vegas');
+
+    // --- C8 Corvette sprite at parking spot (x:20, y:51) ---
+    const carX = 20 * TILE_SIZE * SCALE + (TILE_SIZE * SCALE) / 2;
+    const carY = 51 * TILE_SIZE * SCALE + (TILE_SIZE * SCALE) / 2;
+    const car = this.add.rectangle(carX, carY, TILE_SIZE * SCALE * 2, TILE_SIZE * SCALE, 0x2a5a3a);
+    car.setDepth(5);
+    // Metallic sheen highlight
+    const carHighlight = this.add.rectangle(carX, carY - 6, TILE_SIZE * SCALE * 1.6, TILE_SIZE * SCALE * 0.3, 0x4a8a5a, 0.5);
+    carHighlight.setDepth(6);
 
     // --- Ambient office atmosphere ---
 
@@ -60,20 +74,67 @@ export class OperatorScene extends BaseChapterScene {
       ease: 'Quad.easeOut',
     });
 
-    // Small clock display
-    const clockText = this.add.text(GAME_WIDTH - 16, GAME_HEIGHT - 34, '2:00 PM', {
+    // Small clock display (advances as you explore)
+    this.clockText = this.add.text(GAME_WIDTH - 16, GAME_HEIGHT - 34, '2:00 PM', {
       fontFamily: '"Press Start 2P", monospace',
       fontSize: '7px',
       color: '#f0c040',
     }).setOrigin(1, 1).setScrollFactor(0).setDepth(300).setAlpha(0);
 
     this.tweens.add({
-      targets: clockText,
+      targets: this.clockText,
       alpha: 0.3,
       duration: 1500,
       delay: 4200,
       ease: 'Quad.easeOut',
     });
+  }
+
+  // Clock advances based on NPC count
+  private advanceClock() {
+    if (!this.clockText) return;
+    const count = this.npcsTalkedTo.size;
+    const times = ['2:00 PM', '2:15 PM', '2:30 PM', '2:45 PM', '3:00 PM', '3:30 PM', '4:00 PM', '4:30 PM', '5:00 PM'];
+    const timeIndex = Math.min(count, times.length - 1);
+    this.clockText.setText(times[timeIndex]);
+  }
+
+  // Malachi reacts based on client count + dashboard/pitch
+  protected handleNPCDialogue(npcId: string, dialogue: DialogueLine[]): void {
+    this.npcsTalkedTo.add(npcId);
+    this.advanceClock();
+
+    // Malachi impressed if you've talked to 5+ people
+    if (npcId === 'ch6_malachi' && this.npcsTalkedTo.size >= 5) {
+      const chapterDialogue = this.getChapterDialogue();
+      const impressedLines = chapterDialogue.npcs['ch6_malachi_impressed'];
+      if (impressedLines) {
+        this.dialogue.show(impressedLines);
+        return;
+      }
+    }
+
+    // Team member thanks you after dashboard
+    if (npcId === 'ch6_team' && this.dashboardDone) {
+      const chapterDialogue = this.getChapterDialogue();
+      const thanksLines = chapterDialogue.npcs['ch6_team_thanks'];
+      if (thanksLines) {
+        this.dialogue.show(thanksLines);
+        return;
+      }
+    }
+
+    // DHL manager reacts after pitch
+    if (npcId === 'ch6_dhl' && this.pitchDone) {
+      const chapterDialogue = this.getChapterDialogue();
+      const solvedLines = chapterDialogue.npcs['ch6_dhl_solved'];
+      if (solvedLines) {
+        this.dialogue.show(solvedLines);
+        return;
+      }
+    }
+
+    this.dialogue.show(dialogue);
   }
 
   protected getObjectiveHint(): string {
@@ -116,6 +177,7 @@ export class OperatorScene extends BaseChapterScene {
     // Dashboard showcase
     if (interactable.id === 'ch6_dashboard') {
       Analytics.trackInteraction(interactable.id);
+      this.dashboardDone = true;
       this.playDashboardShowcase();
       this.interactions.consume(interactable.id);
       return;

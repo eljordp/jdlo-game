@@ -53,7 +53,7 @@ export const introDialogue: DialogueLine[] = [
 export const chapter0IntroText: string[] = [
   'Home',
   'Good neighborhood. Good family. Good life.',
-  'But Jordi wanted more.',
+  'But Jordan wanted more.',
 ];
 
 export const chapter0NPCs: NPCData[] = [
@@ -114,7 +114,7 @@ export const chapter0NPCs: NPCData[] = [
         { text: '"Of course. I promise."', next: [
           { speaker: 'Sister', text: 'Pinky promise?' },
           { speaker: 'JP', text: 'Pinky promise.' },
-          { speaker: 'JP\'s Mind', text: 'Jordi meant it. But life doesn\'t always let you keep promises.' },
+          { speaker: 'JP\'s Mind', text: 'Jordan meant it. But life doesn\'t always let you keep promises.' },
         ]},
         { text: '"I\'ll try my best."', next: [
           { speaker: 'Sister', text: '...okay.' },
@@ -129,7 +129,7 @@ export const chapter0NPCs: NPCData[] = [
     y: 18,
     sprite: 'npc_frenchie',
     dialogue: [
-      { speaker: 'Narrator', text: 'Ivy wags her whole body when she sees Jordi. Tan Frenchie energy.' },
+      { speaker: 'Narrator', text: 'Ivy wags her whole body when she sees Jordan. Tan Frenchie energy.' },
       { speaker: 'Narrator', text: 'She doesn\'t care about your problems. She just wants belly rubs.' },
       { speaker: 'JP', text: 'Hey Ivy. At least you\'re happy to see me.' },
       { speaker: 'Narrator', text: 'Sometimes the dog is the only one who gets it.' },
@@ -138,7 +138,7 @@ export const chapter0NPCs: NPCData[] = [
 ];
 
 export const chapter0OutroText: string[] = [
-  'Jordi packed a bag. Left the acceptance letters on the counter. Hugged his sister. Dapped up Pops.',
+  'Jordan packed a bag. Left the acceptance letters on the counter. Hugged his sister. Dapped up Pops.',
   'Santa Barbara was calling.',
 ];
 
@@ -301,14 +301,14 @@ export const chapter1NPCs: NPCData[] = [
 
 export const chapter1OutroText: string[] = [
   'Same house. Same people. Same bags. Same nothing.',
-  'But Jordi didn\'t see it yet.',
+  'But Jordan didn\'t see it yet.',
 ];
 
 // ─── Chapter 2: Wrong Crowd ────────────────────────────────────────────
 
 export const chapter2IntroText: string[] = [
   'Wrong Crowd',
-  '3:33 AM. The house is quiet. Jordi is not.',
+  '3:33 AM. The house is quiet. Jordan is not.',
   'Something feels off. But the money doesn\'t wait.',
 ];
 
@@ -492,7 +492,7 @@ export const chapter3OutroText: string[] = [
 export const chapter4IntroText: string[] = [
   'Caymus Vineyards',
   'Most people don\'t make it out of that situation.',
-  'Jordi did. Now he\'s got dirt under his nails and $12 an hour.',
+  'Jordan did. Now he\'s got dirt under his nails and $12 an hour.',
   'But he\'s free. And that\'s enough to start.',
 ];
 
@@ -747,7 +747,7 @@ export const chapter5NPCs: NPCData[] = [
 export const chapter5OutroText: string[] = [
   '$300. Then $500. Then $900. Then $1,000.',
   'The prices went up because the work got better.',
-  'Jordi was building something. And people were starting to notice.',
+  'Jordan was building something. And people were starting to notice.',
 ];
 
 // ─── Chapter 6: Operator Mode ──────────────────────────────────────────
@@ -1209,7 +1209,7 @@ const ch0Extras: Record<string, DialogueLine[]> = {
     { speaker: 'Narrator', text: 'Some moments don\'t need words.' },
   ],
   ch0_mirror_deep: [
-    { speaker: 'Narrator', text: 'Jordi stares at himself. Really stares.' },
+    { speaker: 'Narrator', text: 'Jordan stares at himself. Really stares.' },
     { speaker: 'Narrator', text: 'Tries to see what everyone else sees.' },
     { speaker: 'JP\'s Mind', text: 'I don\'t know who this person is yet. But I think I\'m about to find out.' },
   ],
@@ -1921,6 +1921,22 @@ const ch3Day2Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'The instructor says anger isn\'t the problem. It\'s a signal.' },
     { speaker: 'JP\'s Mind', text: 'JP thinks about every time he got angry. She might be right.' },
   ],
+  ch3_battle_won: [
+    { speaker: 'Fighter', text: 'You got hands, huh? Respect.' },
+    { speaker: 'Narrator', text: 'He nods. No more problems after that.' },
+  ],
+  ch3_battle_lost: [
+    { speaker: 'Fighter', text: 'Told you not to step up.' },
+    { speaker: 'JP\'s Mind', text: 'Last time I fight in here. For real.' },
+  ],
+  ch3_pushup_beast: [
+    { speaker: 'Pullups Guy', text: 'Bro you went CRAZY out there. You need to help me train the new guys.' },
+    { speaker: 'JP', text: 'Say less.' },
+  ],
+  ch3_dice_broke: [
+    { speaker: 'Bird', text: 'Told you not to gamble in here, bro. That\'s soup money.' },
+    { speaker: 'JP\'s Mind', text: 'He\'s right. Stupid move.' },
+  ],
 };
 
 const ch3Day3Extras: Record<string, DialogueLine[]> = {
@@ -2103,6 +2119,14 @@ const ch4Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'JP doesn\'t drink wine but he respects the craft.' },
     { speaker: 'JP\'s Mind', text: 'Rows and rows of vines, perfectly spaced. There\'s something about this kind of discipline.' },
   ],
+  ch4_juan_watches: [
+    { speaker: 'Juan', text: '¡Órale, pinche JP! ¡Dale!' },
+    { speaker: 'Narrator', text: 'Juan watches from the path, shaking his head and grinning.' },
+  ],
+  ch4_phone_first: [
+    { speaker: 'Juan', text: 'Otra vez con el teléfono, güey.' },
+    { speaker: 'JP\'s Mind', text: 'He\'s not wrong.' },
+  ],
 };
 
 // ─── Chapter 5 extras ──────────────────────────────────────────────────
@@ -2177,6 +2201,16 @@ const ch5Extras: Record<string, DialogueLine[]> = {
     { text: '...' },
     { speaker: 'JP\'s Mind', text: 'But I have something they don\'t.' },
     { speaker: 'JP\'s Mind', text: 'I have nothing to lose.' },
+  ],
+  ch5_client_returns: [
+    { speaker: 'First Client', text: 'Hey! The site is already getting traffic!' },
+    { speaker: 'First Client', text: 'My buddy wants one too. Can I give him your number?' },
+    { speaker: 'JP', text: 'Yeah. Send him over.' },
+    { speaker: 'JP\'s Mind', text: 'Word of mouth. The best kind of marketing.' },
+  ],
+  ch5_ghost_leaves: [
+    { speaker: 'Narrator', text: 'He sees you coming and suddenly has somewhere to be.' },
+    { speaker: 'JP\'s Mind', text: 'Some people just waste your time. Learn to spot them.' },
   ],
 };
 
@@ -2271,6 +2305,86 @@ const ch6Extras: Record<string, DialogueLine[]> = {
   ch6_park_bench: [
     { speaker: 'Narrator', text: 'JP sits for a minute. Watches the city move.' },
     { speaker: 'JP\'s Mind', text: 'Sometimes you gotta stop and look at what you built.' },
+  ],
+  ch6_malachi_impressed: [
+    { speaker: 'Malachi', text: 'You talked to everyone already? That\'s why I brought you on.' },
+    { speaker: 'Malachi', text: 'Most people wait to be told. You just move.' },
+  ],
+  ch6_team_thanks: [
+    { speaker: 'Team Member', text: 'That dashboard update you did? Game changer.' },
+    { speaker: 'Team Member', text: 'The whole team can see metrics now. No more guessing.' },
+    { speaker: 'JP', text: 'That\'s the point.' },
+  ],
+  ch6_dhl_solved: [
+    { speaker: 'DHL Manager', text: 'The translator app is live. Zero incidents this week.' },
+    { speaker: 'DHL Manager', text: 'You might have saved someone\'s life with that thing.' },
+    { speaker: 'JP\'s Mind', text: 'That one hit different.' },
+  ],
+  // Block 3 — Gym, Coffee Shop, Highrise Lobby
+  ch6_gym_weights: [
+    { speaker: 'Narrator', text: 'JP works out. Keeps sharp.' },
+    { speaker: 'JP\'s Mind', text: 'Can\'t run a business if your body\'s broken.' },
+  ],
+  ch6_coffee: [
+    { speaker: 'Narrator', text: 'JP\'s daily order.' },
+    { speaker: 'JP\'s Mind', text: 'Iced americano. Every morning. Non-negotiable.' },
+  ],
+  ch6_lobby_desk: [
+    { speaker: 'Doorman', text: 'Mr. Lopez. Package at the front desk.' },
+    { speaker: 'JP', text: 'Thanks Marcus. I\'ll grab it on the way up.' },
+  ],
+  ch6_gym_bro: [
+    { speaker: 'Gym Bro', text: 'Bro you\'re getting strong. What\'s your split?' },
+    { speaker: 'JP', text: 'Push pull legs. No days off.' },
+  ],
+  ch6_barista: [
+    { speaker: 'Barista', text: 'The usual?' },
+    { speaker: 'JP', text: 'You already know.' },
+  ],
+  ch6_doorman: [
+    { speaker: 'Doorman', text: 'Evening Mr. Lopez.' },
+    { speaker: 'JP', text: 'Marcus. How\'s the family?' },
+    { speaker: 'Doorman', text: 'Good, good. Little one started walking.' },
+    { speaker: 'JP', text: 'No way. Tell her I said congrats.' },
+  ],
+  // Block 4 — JP's World
+  ch6_corvette: [
+    { speaker: 'Narrator', text: 'Dark metallic green C8. The car JP dreamed about on the tractor.' },
+    { speaker: 'JP\'s Mind', text: 'Not a reward. A reminder of what happens when you don\'t stop.' },
+    { speaker: 'Narrator', text: 'He runs his hand along the hood. Still can\'t believe it\'s real.' },
+    { speaker: 'JP\'s Mind', text: 'Every mile on this thing is a mile away from who I used to be.' },
+  ],
+  ch6_food_truck_menu: [
+    { speaker: 'Narrator', text: 'Street tacos.' },
+    { speaker: 'JP\'s Mind', text: 'Best tacos in LA. JP eats here twice a week.' },
+  ],
+  ch6_food_truck: [
+    { speaker: 'JP', text: 'Dos tacos de asada por favor.' },
+    { speaker: 'Vendor', text: 'You got it boss.' },
+    { speaker: 'Narrator', text: 'The vendor knows the order before JP finishes saying it.' },
+  ],
+  ch6_mural: [
+    { speaker: 'Narrator', text: 'Someone painted the whole wall. Abstract. Colors JP can\'t name.' },
+    { speaker: 'JP\'s Mind', text: 'He stands here sometimes. Just looking.' },
+    { speaker: 'JP\'s Mind', text: 'Not everything has to mean something. Some things just are.' },
+  ],
+  ch6_valet: [
+    { speaker: 'Valet', text: 'Keys are with me whenever you\'re ready, Mr. Lopez.' },
+    { speaker: 'JP', text: 'Appreciate you.' },
+  ],
+  ch6_pedestrian1: [
+    { speaker: 'Stranger', text: 'Sup.' },
+    { speaker: 'JP', text: 'Sup.' },
+  ],
+  ch6_pedestrian2: [
+    { speaker: 'Stranger', text: 'Hey aren\'t you the guy who built that app?' },
+    { speaker: 'JP', text: 'Which one?' },
+    { speaker: 'Narrator', text: 'The stranger laughs. JP doesn\'t. He\'s serious.' },
+  ],
+  ch6_rooftop: [
+    { speaker: 'Narrator', text: 'The balcony overlooks the whole block. Sunset hitting the buildings.' },
+    { speaker: 'JP\'s Mind', text: 'This view. This is what they don\'t show you about the grind.' },
+    { speaker: 'JP\'s Mind', text: 'The quiet moments where you just... breathe.' },
   ],
 };
 

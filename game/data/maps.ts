@@ -689,10 +689,12 @@ export const comeUpMap: MapData = {
 };
 
 // ---------------------------------------------------------------------------
-// 6. OPERATOR MAP — LA Offices + Downtown  (40 wide x 25 tall)
+// 6. OPERATOR MAP — LA Offices + Downtown  (40 wide x 55 tall)
 // ---------------------------------------------------------------------------
 // Pomaikai office (bigger, hardwood, conference room), other office buildings,
-// concrete streets, downtown shops/plaza, exit to VegasScene at bottom.
+// concrete streets, downtown shops/plaza, gym, coffee shop, highrise lobby,
+// JP's apartment block, C8 Corvette, food truck, mural wall.
+// Exit to VegasScene at bottom.
 // ---------------------------------------------------------------------------
 export const operatorMap: MapData = {
   tiles: [
@@ -729,7 +731,7 @@ export const operatorMap: MapData = {
     [ G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G ], // 19 street
     [ T, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, T ], // 20 main street 2
 
-    // --- BLOCK 2 (rows 21-28): restaurant + coworking space + luxury building ---
+    // --- BLOCK 2 (rows 21-27): restaurant + coworking space + luxury building ---
     [ G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G ], // 21 sidewalk
     [ G, C, B, B, B, B, B, B, B, B, C, C, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, C, C, B, B, B, B, B, B, B, B, C, G ], // 22 restaurant + coworking + luxury bldg
     [ G, C, B, J, J, J, J, J, J, B, C, C, B, J, J, J, J, J, J, J, J, J, J, J, J, J, J, B, C, C, B, J, J, J, J, J, J, B, C, G ], // 23 restaurant interior (hardwood) | coworking (14 wide) | luxury (6 wide)
@@ -748,11 +750,40 @@ export const operatorMap: MapData = {
     [ G, C, C, C, B, C, C, B, C, C, C, C, C, C, C, C, G, G, G, W, W, G, G, G, C, C, C, C, C, C, C, C, B, C, C, B, C, C, C, G ], // 32 parking + park pond
     [ G, G, C, C, B, B, B, B, C, C, C, C, C, C, C, C, G, G, G, G, G, G, G, G, C, C, C, C, C, C, C, C, B, B, B, B, C, C, G, G ], // 33 lot ends + park bottom
 
-    // --- EXIT TO VEGAS (rows 34-37): road south ---
-    [ G, G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G, G ], // 34 sidewalk
-    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, C, C, C, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 35 road narrows (5 wide)
-    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, C, C, C, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 36 exit road
-    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, C, C, C, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 37 exit
+    // --- FOURTH STREET (rows 34-35) ---
+    [ G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G ], // 34 street
+    [ T, C, C, C, C, C, C, T, C, C, C, C, C, C, T, C, C, C, C, C, C, C, C, T, C, C, C, C, C, C, T, C, C, C, C, C, C, C, C, T ], // 35 tree-lined boulevard
+
+    // --- BLOCK 3 (rows 36-42): Gym + Coffee Shop + Highrise Lobby ---
+    [ G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G ], // 36 sidewalk
+    [ G, C, B, B, B, B, B, B, B, B, B, B, C, C, B, B, B, B, B, B, B, C, C, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, C, G ], // 37 rooflines: gym (10) + coffee (6) + highrise (14)
+    [ G, C, B, F, F, F, F, F, F, F, F, B, C, C, B, J, J, J, J, J, B, C, C, B, J, J, J, J, J, J, J, J, J, J, J, J, J, B, C, G ], // 38 gym floor | coffee hardwood | highrise lobby
+    [ G, C, B, F, N, F, N, F, N, F, F, B, C, C, B, J, J, N, J, J, B, C, C, B, J, J, J, J, J, J, J, J, J, J, J, J, J, B, C, G ], // 39 gym equipment (N=racks) | coffee counter | lobby interior
+    [ G, C, B, F, F, F, F, F, F, F, F, B, C, C, B, J, J, J, J, J, B, C, C, B, J, J, J, J, N, N, N, J, J, J, J, J, J, B, C, G ], // 40 gym | coffee | lobby reception desk (N)
+    [ G, C, B, F, N, F, N, F, F, F, F, B, C, C, B, J, J, J, J, J, B, C, C, B, J, J, J, J, J, J, J, J, J, J, J, J, J, B, C, G ], // 41 gym benches | coffee | lobby open floor
+    [ G, C, B, B, B, B, B, O, B, B, B, B, C, C, B, B, B, O, B, B, B, C, C, B, B, B, B, B, B, O, B, B, B, B, B, B, B, B, C, G ], // 42 gym door | coffee door | highrise entrance
+    [ G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G ], // 43 sidewalk
+
+    // --- FIFTH STREET (rows 44-45) ---
+    [ G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G ], // 44 street
+    [ T, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, T ], // 45 fifth street
+
+    // --- BLOCK 4 (rows 46-52): JP's World — apartment exterior, C8, food truck, mural ---
+    [ G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G ], // 46 sidewalk
+    [ G, C, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, C, C, C, C, C, C, B, B, B, C, C, C, B, B, B, B, B, B, B, B, B, C, G ], // 47 JP's building facade (14 wide) | gap | food truck (3x2) | mural wall (8 wide)
+    [ G, C, B, J, J, J, J, J, J, J, J, J, J, J, J, J, B, C, C, C, C, C, C, B, F, B, C, C, C, B, B, B, B, B, B, B, B, B, C, G ], // 48 building lobby interior | food truck interior | mural (solid wall = art)
+    [ G, C, B, J, J, J, J, J, J, J, J, J, J, J, J, J, B, C, C, C, C, C, C, B, B, B, C, C, C, C, C, C, C, C, C, C, C, C, C, G ], // 49 building interior
+    [ G, C, B, J, J, J, J, N, J, J, J, N, J, J, J, J, B, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G ], // 50 lobby columns (N) | open area
+    [ G, C, B, B, B, B, B, B, O, B, B, B, B, B, B, B, B, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G ], // 51 building entrance (grand door) | C8 parking area
+    [ G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G ], // 52 sidewalk — C8 is at (20,51) on concrete
+
+    // --- EXIT PARK + ROAD (rows 53-58): wider road to Vegas ---
+    [ G, G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G, G ], // 53 sidewalk
+    [ G, G, G, G, T, G, G, G, G, G, G, G, G, G, G, G, C, C, C, C, C, C, C, C, G, G, G, G, G, G, G, G, G, G, G, T, G, G, G, G ], // 54 road with park edges + trees
+    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, C, C, C, C, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 55 road narrows (6 wide)
+    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, C, C, C, C, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 56 exit road
+    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, C, C, C, C, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 57 exit road
+    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, C, C, C, C, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 58 exit
   ],
   collisions: STANDARD_COLLISIONS,
   spawns: {
@@ -778,15 +809,26 @@ export const operatorMap: MapData = {
       { id: 'ch6_coworker1',    x: 16, y: 24, sprite: 'npc_tech' },
       { id: 'ch6_coworker2',    x: 22, y: 24, sprite: 'npc_tech' },
       { id: 'ch6_luxury_npc',   x: 34, y: 24, sprite: 'npc_suit' },
+      // Block 3 — gym, coffee, highrise
+      { id: 'ch6_gym_bro',      x: 5,  y: 40, sprite: 'npc_generic' },
+      { id: 'ch6_barista',      x: 17, y: 39, sprite: 'npc_generic' },
+      { id: 'ch6_doorman',      x: 29, y: 42, sprite: 'npc_security' },
+      // Block 4 — JP's world
+      { id: 'ch6_food_truck',   x: 24, y: 47, sprite: 'npc_generic' },
+      { id: 'ch6_valet',        x: 21, y: 51, sprite: 'npc_suit' },
+      // Streets — pedestrians
+      { id: 'ch6_pedestrian1',  x: 12, y: 35, sprite: 'npc_generic' },
+      { id: 'ch6_pedestrian2',  x: 30, y: 44, sprite: 'npc_generic' },
     ],
   },
   triggers: [
-    // Exit south — JP heads to Vegas (5-wide road at row 37)
-    { x: 17, y: 37, action: 'scene', target: 'VegasScene' },
-    { x: 18, y: 37, action: 'scene', target: 'VegasScene' },
-    { x: 19, y: 37, action: 'scene', target: 'VegasScene' },
-    { x: 20, y: 37, action: 'scene', target: 'VegasScene' },
-    { x: 21, y: 37, action: 'scene', target: 'VegasScene' },
+    // Exit south — JP heads to Vegas (6-wide road at row 58)
+    { x: 17, y: 58, action: 'scene', target: 'VegasScene' },
+    { x: 18, y: 58, action: 'scene', target: 'VegasScene' },
+    { x: 19, y: 58, action: 'scene', target: 'VegasScene' },
+    { x: 20, y: 58, action: 'scene', target: 'VegasScene' },
+    { x: 21, y: 58, action: 'scene', target: 'VegasScene' },
+    { x: 22, y: 58, action: 'scene', target: 'VegasScene' },
   ],
   interactables: [
     // Pomaikai HQ — one tablet (dashboard), rest are invisible "!" markers
@@ -810,6 +852,15 @@ export const operatorMap: MapData = {
     { id: 'ch6_luxury_view', x: 35, y: 23, type: 'examine', glow: true },
     // Park
     { id: 'ch6_park_bench', x: 20, y: 31, type: 'examine', glow: true },
+    // Block 3 — Gym, Coffee, Highrise
+    { id: 'ch6_gym_weights', x: 6, y: 39, type: 'examine', glow: true },
+    { id: 'ch6_coffee', x: 16, y: 38, type: 'examine', glow: true },
+    { id: 'ch6_lobby_desk', x: 29, y: 40, type: 'examine', glow: true },
+    // Block 4 — JP's World
+    { id: 'ch6_corvette', x: 20, y: 51, type: 'examine', glow: true },
+    { id: 'ch6_food_truck_menu', x: 24, y: 48, type: 'examine', glow: true },
+    { id: 'ch6_mural', x: 33, y: 48, type: 'examine', glow: true },
+    { id: 'ch6_rooftop', x: 9, y: 48, type: 'examine', glow: true },
   ],
 };
 
