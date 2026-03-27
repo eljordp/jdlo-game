@@ -98,8 +98,8 @@ export const homeMap: MapData = {
     //0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39
     // === ROWS 0-2: SECOND FLOOR (upstairs — JP's room, sister's room, bathroom) ===
     [ K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K ], // 0  upstairs walls
-    [ K, A, A, A, A, A, A, K, A, A, A, A, A, A, K, J, J, J, O, J, J, K, A, A, A, A, A, A, K, F, F, F, F, K, G, G, G, G, G, G ], // 1  JP room | stairs landing | sister room | bath | outside
-    [ K, A, A, A, A, A, A, K, A, A, A, A, A, A, K, J, J, J, J, J, J, K, A, A, A, A, A, A, K, F, F, F, F, K, G, G, G, G, G, G ], // 2  rooms + landing
+    [ K, A, A, A, A, A, A, O, A, A, A, A, A, A, O, J, J, J, O, J, J, O, A, A, A, A, A, A, O, F, F, F, F, K, G, G, G, G, G, G ], // 1  JP room → hall → stairs → sister → bath (doors between all rooms)
+    [ K, A, A, A, A, A, A, K, A, A, A, A, A, A, K, J, J, J, J, J, J, K, A, A, A, A, A, A, K, F, F, F, F, K, G, G, G, G, G, G ], // 2  rooms + walls on bottom row
     [ K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, G, G, G, G, G, G ], // 3  downstairs roof / upstairs floor boundary
     [ G, G, G, K, A, A, A, A, A, A, A, A, A, A, A, K, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, K, G, G, G ], // 4  parents master (left) | open living extension (right)
     [ G, G, G, K, A, A, A, A, A, A, A, A, A, A, A, K, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, K, G, G, G ], // 5
