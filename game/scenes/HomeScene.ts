@@ -1018,6 +1018,15 @@ export class HomeScene extends BaseChapterScene {
       return;
     }
 
+    // Weights — dumbbell curl minigame
+    if (interactable.id === 'ch0_weights') {
+      Analytics.trackInteraction(interactable.id);
+      this.frozen = true;
+      this.playLiftingMinigame();
+      this.trackForPhoneCall(interactable.id);
+      return;
+    }
+
     // Basketball — quick shoot animation
     if (interactable.id === 'ch0_basketball') {
       Analytics.trackInteraction(interactable.id);
@@ -2281,6 +2290,217 @@ export class HomeScene extends BaseChapterScene {
     ]));
 
     appButtons[4].on('pointerdown', () => closeAll());
+  }
+
+  // ─── LIFTING MINIGAME (Dumbbell Curls) ─────────────────────────
+  private playLiftingMinigame() {
+    const objects: Phaser.GameObjects.GameObject[] = [];
+    let reps = 0;
+    let timeLeft = 15;
+    let gameOver = false;
+
+    // Dark overlay
+    objects.push(this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.75)
+      .setScrollFactor(0).setDepth(300));
+
+    // Title
+    objects.push(this.add.text(GAME_WIDTH / 2, 40, 'DUMBBELL CURLS', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '16px', color: '#f0c040',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(310));
+
+    // Instructions
+    objects.push(this.add.text(GAME_WIDTH / 2, 70, 'MASH SPACE to curl!', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#aaaacc',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(310));
+
+    // Exit button
+    const exitBtn = this.add.text(80, 40, '< EXIT', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#ff6666',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(310).setInteractive({ useHandCursor: true });
+    objects.push(exitBtn);
+
+    // JP sprite (big, center)
+    const jpSprite = this.add.sprite(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 20, this.getPlayerTexture(), 0)
+      .setScale(6).setScrollFactor(0).setDepth(305);
+    objects.push(jpSprite);
+
+    // Dumbbell in JP's hand
+    const dumbbell = this.add.rectangle(GAME_WIDTH / 2 + 80, GAME_HEIGHT / 2 + 50, 50, 16, 0x404040)
+      .setScrollFactor(0).setDepth(306);
+    objects.push(dumbbell);
+    const plate1 = this.add.rectangle(GAME_WIDTH / 2 + 55, GAME_HEIGHT / 2 + 50, 14, 24, 0x303030)
+      .setScrollFactor(0).setDepth(306);
+    objects.push(plate1);
+    const plate2 = this.add.rectangle(GAME_WIDTH / 2 + 105, GAME_HEIGHT / 2 + 50, 14, 24, 0x303030)
+      .setScrollFactor(0).setDepth(306);
+    objects.push(plate2);
+
+    // Rep counter
+    const repText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 120, '0', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '48px', color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(310);
+    objects.push(repText);
+
+    const repLabel = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 80, 'REPS', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#888888',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(310);
+    objects.push(repLabel);
+
+    // Timer
+    const timerText = this.add.text(GAME_WIDTH - 100, 40, '15', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '20px', color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(310);
+    objects.push(timerText);
+
+    // Countdown timer
+    const countdown = this.time.addEvent({
+      delay: 1000,
+      repeat: 14,
+      callback: () => {
+        timeLeft--;
+        timerText.setText(String(timeLeft));
+        if (timeLeft <= 5) timerText.setColor('#ff4444');
+        if (timeLeft <= 0) {
+          gameOver = true;
+          spaceKey.off('down', curlHandler);
+          this.input.off('pointerdown', curlHandler);
+          endGame();
+        }
+      },
+    });
+
+    // Curl animation on Space
+    const doCurl = () => {
+      if (gameOver) return;
+      reps++;
+      repText.setText(String(reps));
+
+      // Curl animation — dumbbell goes up then down
+      const baseY = GAME_HEIGHT / 2 + 50;
+      this.tweens.add({
+        targets: [dumbbell, plate1, plate2],
+        y: baseY - 60,
+        duration: 80,
+        yoyo: true,
+        ease: 'Quad.easeOut',
+      });
+
+      // JP squish (effort)
+      this.tweens.add({
+        targets: jpSprite,
+        scaleX: 6.3,
+        scaleY: 5.7,
+        duration: 80,
+        yoyo: true,
+      });
+
+      // Sweat particle every 5 reps
+      if (reps % 5 === 0) {
+        const sweat = this.add.circle(
+          GAME_WIDTH / 2 - 30 + Phaser.Math.Between(-10, 10),
+          GAME_HEIGHT / 2 - 20,
+          3, 0x60a0e0, 0.8
+        ).setScrollFactor(0).setDepth(308);
+        objects.push(sweat);
+        this.tweens.add({
+          targets: sweat,
+          y: sweat.y + 60,
+          alpha: 0,
+          duration: 800,
+          onComplete: () => sweat.destroy(),
+        });
+      }
+
+      // Milestone text
+      if (reps === 10) {
+        this.showFloatingText('WARMING UP', '#f0c040');
+      } else if (reps === 20) {
+        this.showFloatingText('LOCKED IN', '#40c060');
+      } else if (reps === 30) {
+        this.showFloatingText('BEAST MODE', '#ff4040');
+        this.cameras.main.shake(200, 0.003);
+      }
+    };
+
+    const spaceKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    const curlHandler = () => doCurl();
+    spaceKey.on('down', curlHandler);
+    this.input.on('pointerdown', curlHandler);
+
+    const endGame = () => {
+      countdown.remove();
+
+      // Result
+      let msg: string;
+      let color: string;
+      if (reps >= 30) {
+        msg = 'BEAST. ' + reps + ' reps.';
+        color = '#ff4040';
+        MoodSystem.setMood('locked_in', 60);
+      } else if (reps >= 20) {
+        msg = 'Solid. ' + reps + ' reps.';
+        color = '#40c060';
+        MoodSystem.setMood('locked_in', 45);
+      } else if (reps >= 10) {
+        msg = 'Not bad. ' + reps + ' reps.';
+        color = '#f0c040';
+      } else {
+        msg = reps + ' reps. Gotta do better.';
+        color = '#888888';
+      }
+
+      const resultText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 130, msg, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '12px', color,
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(310);
+      objects.push(resultText);
+
+      this.time.delayedCall(2500, () => {
+        for (const obj of objects) {
+          if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
+        }
+        this.dialogue.show([
+          { speaker: 'JP\'s Mind', text: reps >= 20 ? 'Gotta stay disciplined.' : 'Need to hit these more.' },
+        ], () => { this.frozen = false; });
+      });
+    };
+
+    exitBtn.on('pointerdown', () => {
+      gameOver = true;
+      countdown.remove();
+      spaceKey.off('down', curlHandler);
+      this.input.off('pointerdown', curlHandler);
+      for (const obj of objects) {
+        if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
+      }
+      this.frozen = false;
+    });
+
+    const escKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+    escKey.once('down', () => {
+      gameOver = true;
+      countdown.remove();
+      spaceKey.off('down', curlHandler);
+      this.input.off('pointerdown', curlHandler);
+      for (const obj of objects) {
+        if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
+      }
+      this.frozen = false;
+    });
+  }
+
+  private showFloatingText(text: string, color: string) {
+    const t = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 150, text, {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '14px', color,
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(311).setAlpha(0);
+    this.tweens.add({
+      targets: t,
+      alpha: 1,
+      y: t.y - 30,
+      duration: 400,
+      hold: 600,
+      yoyo: true,
+      onComplete: () => t.destroy(),
+    });
   }
 
   private playFishing() {

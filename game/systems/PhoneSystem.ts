@@ -299,16 +299,15 @@ export class PhoneSystem {
     const scene = this.scene;
     this.currentScreen = 'home';
 
-    const cols = 3;
-    const rows = 2;
-    const appSize = 48;
-    const gapX = 62;
-    const gapY = 70;
-    const gridW = (cols - 1) * gapX;
-    const gridH = (rows - 1) * gapY;
-    const gridStartX = cx - gridW / 2;
-    const gridStartY = statusY + 44;
+    // === iOS-style layout ===
+    const iconSize = 38;
+    const cols = 4;
+    const gapX = (screenW - 20) / cols;
+    const gapY = 58;
+    const gridStartX = cx - screenW / 2 + 10 + gapX / 2;
+    const gridStartY = statusY + 50;
 
+    // App grid — 4 columns, main apps
     for (let i = 0; i < APPS.length; i++) {
       const app = APPS[i];
       const col = i % cols;
@@ -316,84 +315,51 @@ export class PhoneSystem {
       const ax = gridStartX + col * gapX;
       const ay = gridStartY + row * gapY;
 
-      // App icon shadow
-      const iconShadow = scene.add.rectangle(ax + 1, ay + 2, appSize, appSize, 0x000000, 0.3)
-        .setScrollFactor(0).setDepth(DEPTH_BASE + 5);
-      this.objects.push(iconShadow);
-
-      // App icon background
-      const iconBg = scene.add.rectangle(ax, ay, appSize, appSize, app.color, 0.95)
-        .setScrollFactor(0).setDepth(DEPTH_BASE + 6).setInteractive({ useHandCursor: true });
-      this.objects.push(iconBg);
-
-      // Glossy highlight on icon (top half, lighter)
-      const gloss = scene.add.rectangle(ax, ay - appSize / 4, appSize - 2, appSize / 2 - 2, 0xffffff, 0.12)
-        .setScrollFactor(0).setDepth(DEPTH_BASE + 6);
-      this.objects.push(gloss);
-
-      // Emoji icon
-      const iconText = scene.add.text(ax, ay - 2, app.icon, {
-        fontSize: '20px',
-      }).setOrigin(0.5).setScrollFactor(0).setDepth(DEPTH_BASE + 7);
-      this.objects.push(iconText);
-
-      // App label
-      const label = scene.add.text(ax, ay + appSize / 2 + 8, app.name, {
-        fontFamily: FONT, fontSize: '5px', color: '#dddddd',
-      }).setOrigin(0.5, 0).setScrollFactor(0).setDepth(DEPTH_BASE + 7);
-      this.objects.push(label);
-
-      // Hover effect
-      iconBg.on('pointerover', () => {
-        iconBg.setScale(1.08);
-        iconText.setScale(1.08);
-        gloss.setScale(1.08);
-        iconShadow.setAlpha(0.15);
-      });
-      iconBg.on('pointerout', () => {
-        iconBg.setScale(1);
-        iconText.setScale(1);
-        gloss.setScale(1);
-        iconShadow.setAlpha(0.3);
-      });
-
-      // Click — open app
-      iconBg.on('pointerdown', () => {
-        this.openApp(app, cx, cy, screenW, screenH, statusY);
-      });
+      this.buildAppIcon(scene, ax, ay, iconSize, app, cx, cy, screenW, screenH, statusY);
     }
 
-    // Balance widget — glassmorphic card
-    const balanceY = gridStartY + gridH + 56;
-    const cardW = screenW - 24;
-    const cardH = 42;
+    // === iOS Dock — frosted glass bar at bottom with 4 pinned apps ===
+    const dockY = cy + screenH / 2 - 38;
+    const dockH = 52;
 
-    // Card shadow
-    const cardShadow = scene.add.rectangle(cx + 1, balanceY + 2, cardW, cardH, 0x000000, 0.25)
+    // Dock background (frosted glass)
+    const dockBg = scene.add.rectangle(cx, dockY, screenW - 8, dockH, 0x2a2a40, 0.6)
       .setScrollFactor(0).setDepth(DEPTH_BASE + 5);
-    this.objects.push(cardShadow);
+    this.objects.push(dockBg);
+    // Dock top highlight
+    this.objects.push(scene.add.rectangle(cx, dockY - dockH / 2, screenW - 12, 1, 0xffffff, 0.06)
+      .setScrollFactor(0).setDepth(DEPTH_BASE + 5));
 
-    // Card background (frosted glass effect)
-    const balanceBg = scene.add.rectangle(cx, balanceY, cardW, cardH, 0x1a1a3e, 0.7)
-      .setScrollFactor(0).setDepth(DEPTH_BASE + 6).setStrokeStyle(1, 0x3a3a6e, 0.5);
-    this.objects.push(balanceBg);
+    // Dock apps (4 pinned)
+    const dockApps: AppDef[] = [
+      { id: 'call', name: '', icon: '\u{1F4DE}', color: 0x34c759 },
+      { id: 'messages', name: '', icon: '\u{1F4AC}', color: 0x34c759 },
+      { id: 'instagram', name: '', icon: '\u{1F4F7}', color: 0xc13584 },
+      { id: 'music', name: '', icon: '\u{1F3B5}', color: 0xff2d55 },
+    ];
+    const dockGapX = (screenW - 30) / 4;
+    const dockStartX = cx - screenW / 2 + 15 + dockGapX / 2;
+    for (let i = 0; i < dockApps.length; i++) {
+      const app = dockApps[i];
+      const dx = dockStartX + i * dockGapX;
+      this.buildAppIcon(scene, dx, dockY, iconSize - 4, app, cx, cy, screenW, screenH, statusY);
+    }
 
-    // Card highlight (top edge glow)
-    const cardHighlight = scene.add.rectangle(cx, balanceY - cardH / 2 + 1, cardW - 4, 1, 0xffffff, 0.08)
-      .setScrollFactor(0).setDepth(DEPTH_BASE + 6);
-    this.objects.push(cardHighlight);
+    // === Balance widget — iOS widget style ===
+    const widgetY = gridStartY + Math.ceil(APPS.length / cols) * gapY + 10;
+    const widgetW = screenW - 24;
+    const widgetH = 50;
 
-    const walletIcon = scene.add.text(cx - cardW / 2 + 14, balanceY - 4, '\u{1F4B0}', {
-      fontSize: '12px',
-    }).setOrigin(0, 0.5).setScrollFactor(0).setDepth(DEPTH_BASE + 7);
-    this.objects.push(walletIcon);
+    // Widget background (rounded card look)
+    const widgetBg = scene.add.rectangle(cx, widgetY, widgetW, widgetH, 0x1c1c2e, 0.8)
+      .setScrollFactor(0).setDepth(DEPTH_BASE + 5).setStrokeStyle(1, 0x3a3a5e, 0.3);
+    this.objects.push(widgetBg);
 
-    const balanceLabel = scene.add.text(cx - cardW / 2 + 30, balanceY - 8, 'Balance', {
-      fontFamily: FONT, fontSize: '5px', color: '#8888aa',
-    }).setOrigin(0, 0.5).setScrollFactor(0).setDepth(DEPTH_BASE + 7);
-    this.objects.push(balanceLabel);
+    this.objects.push(scene.add.text(cx - widgetW / 2 + 12, widgetY - 12, 'Wallet', {
+      fontFamily: FONT, fontSize: '6px', color: '#8888aa',
+    }).setScrollFactor(0).setDepth(DEPTH_BASE + 7));
 
-    const balanceValue = scene.add.text(cx - cardW / 2 + 30, balanceY + 6, BalanceSystem.formatted(), {
+    const balanceValue = scene.add.text(cx - widgetW / 2 + 12, widgetY + 4, BalanceSystem.formatted(), {
       fontFamily: FONT, fontSize: '11px', color: '#50e070',
     }).setOrigin(0, 0.5).setScrollFactor(0).setDepth(DEPTH_BASE + 7);
     this.objects.push(balanceValue);
@@ -415,6 +381,44 @@ export class PhoneSystem {
     for (const obj of contentObjects) {
       if (obj && obj.active) obj.destroy();
     }
+  }
+
+  private static buildAppIcon(scene: Phaser.Scene, ax: number, ay: number, size: number, app: AppDef, cx: number, cy: number, screenW: number, screenH: number, statusY: number) {
+    // iOS squircle-style icon (simulated with layered rectangles)
+    // Outer shadow
+    this.objects.push(scene.add.rectangle(ax + 1, ay + 1, size, size, 0x000000, 0.2)
+      .setScrollFactor(0).setDepth(DEPTH_BASE + 5));
+
+    // Icon background
+    const iconBg = scene.add.rectangle(ax, ay, size, size, app.color)
+      .setScrollFactor(0).setDepth(DEPTH_BASE + 6).setInteractive({ useHandCursor: true });
+    this.objects.push(iconBg);
+
+    // Inner rounded highlight (top half — iOS glass effect)
+    this.objects.push(scene.add.rectangle(ax, ay - size / 4, size - 4, size / 2 - 4, 0xffffff, 0.15)
+      .setScrollFactor(0).setDepth(DEPTH_BASE + 6));
+
+    // Emoji
+    const iconText = scene.add.text(ax, ay, app.icon, {
+      fontSize: String(Math.floor(size * 0.5)) + 'px',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(DEPTH_BASE + 7);
+    this.objects.push(iconText);
+
+    // Label (only if name provided)
+    if (app.name) {
+      this.objects.push(scene.add.text(ax, ay + size / 2 + 6, app.name, {
+        fontFamily: FONT, fontSize: '4px', color: '#cccccc',
+      }).setOrigin(0.5, 0).setScrollFactor(0).setDepth(DEPTH_BASE + 7));
+    }
+
+    // Hover
+    iconBg.on('pointerover', () => { iconBg.setScale(1.1); iconText.setScale(1.1); });
+    iconBg.on('pointerout', () => { iconBg.setScale(1); iconText.setScale(1); });
+
+    // Click
+    iconBg.on('pointerdown', () => {
+      this.openApp(app, cx, cy, screenW, screenH, statusY);
+    });
   }
 
   private static openApp(app: AppDef, cx: number, cy: number, screenW: number, screenH: number, statusY: number) {

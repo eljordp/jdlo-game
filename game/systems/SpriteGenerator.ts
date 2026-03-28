@@ -2563,31 +2563,29 @@ function generateTiles(scene: Phaser.Scene) {
     g.fillRect(0, 0, 1, S);
   });
 
-  // -- House Wall (32x32) — warm cream drywall --
+  // -- House Wall (32x32) — clean drywall, works in ANY orientation (no directional trim) --
   makeTexture(scene, 'tile-house-wall', S, S, (g) => {
     // Warm cream drywall base
     g.fillStyle(COLORS.houseWall);
     g.fillRect(0, 0, S, S);
 
-    // Subtle texture variation
+    // Subtle checkerboard texture (non-directional — works for N/S and W/E walls)
     px(g, 0, 0, 0xe4dcd0, 16, 16);
-    px(g, 16, 16, 0xece4d8, 16, 16);
+    px(g, 16, 0, 0xece4d8, 16, 16);
+    px(g, 0, 16, 0xece4d8, 16, 16);
+    px(g, 16, 16, 0xe4dcd0, 16, 16);
 
-    // Baseboard trim at bottom
-    g.fillStyle(COLORS.houseWallDark);
-    g.fillRect(0, 28, S, 4);
-    px(g, 0, 27, 0xd0c8bc, S, 1); // top edge of baseboard
+    // Thin border on ALL edges (reads as wall edge from any direction)
+    px(g, 0, 0, COLORS.houseWallDark, S, 1);   // top
+    px(g, 0, 31, COLORS.houseWallDark, S, 1);  // bottom
+    px(g, 0, 0, COLORS.houseWallDark, 1, S);   // left
+    px(g, 31, 0, COLORS.houseWallDark, 1, S);  // right
 
-    // Crown molding at top
-    px(g, 0, 0, COLORS.houseWallLight, S, 2);
-    px(g, 0, 2, COLORS.houseWallDark, S, 1);
-
-    // Very subtle wall texture
-    px(g, 8, 10, 0xe0d8cc, 3, 1);
-    px(g, 20, 16, 0xe0d8cc, 4, 1);
-    px(g, 4, 22, 0xe0d8cc, 5, 1);
-    px(g, 14, 8, 0xece4d8, 2, 1);
-    px(g, 24, 20, 0xece4d8, 3, 1);
+    // Very subtle drywall texture dots (non-directional)
+    px(g, 8, 8, 0xe0d8cc, 2, 2);
+    px(g, 22, 12, 0xe0d8cc, 2, 2);
+    px(g, 12, 22, 0xe0d8cc, 2, 2);
+    px(g, 26, 26, 0xe0d8cc, 2, 2);
   });
 
   // -- Hardwood (32x32) — warm oak planks --
@@ -4999,23 +4997,38 @@ function generateMoreItems(scene: Phaser.Scene) {
     px(g, 9, 11, 0x808070, 2, 1);
   });
 
-  // --- item-weights ---
+  // --- item-weights --- (pair of dumbbells)
   makeTexture(scene, 'item-weights', TILE_SIZE, TILE_SIZE, (g) => {
-    // Bar (horizontal)
-    px(g, 2, 7, 0xb0b0b0, 12, 2);
-    px(g, 2, 7, 0xc0c0c0, 12, 1);
-    // Left weight plates
-    px(g, 1, 4, 0x404040, 3, 8);
-    px(g, 1, 4, 0x505050, 3, 1);
-    px(g, 1, 4, 0x505050, 1, 8);
-    // Right weight plates
-    px(g, 12, 4, 0x404040, 3, 8);
-    px(g, 12, 4, 0x505050, 3, 1);
-    px(g, 14, 4, 0x353535, 1, 8);
-    // Grip texture on bar
-    px(g, 6, 7, 0xd0d0d0, 1, 2);
-    px(g, 8, 7, 0xd0d0d0, 1, 2);
-    px(g, 10, 7, 0xd0d0d0, 1, 2);
+    // === Dumbbell 1 (top) ===
+    // Handle
+    px(g, 4, 4, 0xc0c0c0, 8, 2);
+    px(g, 5, 4, 0xd0d0d0, 6, 1); // highlight
+    // Left plate
+    px(g, 2, 2, 0x303030, 3, 6);
+    px(g, 2, 2, 0x404040, 3, 1);
+    px(g, 2, 2, 0x404040, 1, 6);
+    // Right plate
+    px(g, 11, 2, 0x303030, 3, 6);
+    px(g, 11, 2, 0x404040, 3, 1);
+    px(g, 13, 2, 0x252525, 1, 6);
+    // Grip knurling
+    px(g, 6, 5, 0xe0e0e0, 1, 1);
+    px(g, 8, 5, 0xe0e0e0, 1, 1);
+
+    // === Dumbbell 2 (bottom, slightly offset) ===
+    // Handle
+    px(g, 5, 10, 0xc0c0c0, 8, 2);
+    px(g, 6, 10, 0xd0d0d0, 6, 1);
+    // Left plate
+    px(g, 3, 8, 0x303030, 3, 6);
+    px(g, 3, 8, 0x404040, 3, 1);
+    px(g, 3, 8, 0x404040, 1, 6);
+    // Right plate
+    px(g, 12, 8, 0x303030, 3, 6);
+    px(g, 12, 8, 0x404040, 3, 1);
+    px(g, 14, 8, 0x252525, 1, 6);
+    // "25" text on top plate
+    px(g, 3, 4, 0x808080, 2, 1);
     // Shadow
     px(g, 2, 12, 0x303030, 12, 1);
   });
@@ -5124,21 +5137,24 @@ function generateMoreItems(scene: Phaser.Scene) {
 
   // --- item-poster ---
   makeTexture(scene, 'item-poster', TILE_SIZE, TILE_SIZE, (g) => {
-    // Wall poster — rectangular, slightly tilted feel
-    // Paper background (off-white)
-    px(g, 6, 3, 0xf0e8d8, 20, 24);
-    // Border/frame
-    px(g, 6, 3, 0xc0b8a0, 20, 1);   // top
-    px(g, 6, 26, 0xc0b8a0, 20, 1);  // bottom
-    px(g, 6, 3, 0xc0b8a0, 1, 24);   // left
-    px(g, 25, 3, 0xc0b8a0, 1, 24);  // right
-    // Bold text lines (motivational quote look)
-    px(g, 9, 7, 0x202020, 14, 2);   // line 1
-    px(g, 11, 11, 0x303030, 10, 2);  // line 2
-    px(g, 9, 15, 0x202020, 14, 2);   // line 3
-    // Small accent graphic (star/mountain)
-    px(g, 14, 20, 0xd0a030, 4, 3);
-    px(g, 15, 19, 0xd0a030, 2, 1);
+    // Wall poster with drop shadow so it pops off the wall
+    // Shadow
+    px(g, 8, 5, 0x808080, 20, 24);
+    // Paper background (white)
+    px(g, 6, 3, 0xffffff, 20, 24);
+    // Dark border frame
+    px(g, 6, 3, 0x303030, 20, 1);   // top
+    px(g, 6, 26, 0x303030, 20, 1);  // bottom
+    px(g, 6, 3, 0x303030, 1, 24);   // left
+    px(g, 25, 3, 0x303030, 1, 24);  // right
+    // Image area (colorful — looks like a real poster)
+    px(g, 8, 5, 0x2060c0, 16, 10);  // blue image block
+    px(g, 12, 7, 0xf0c040, 8, 4);   // yellow accent
+    // Text lines below image
+    px(g, 9, 17, 0x202020, 14, 2);  // title
+    px(g, 11, 21, 0x606060, 10, 1); // subtitle
+    // Tack/pin at top center
+    px(g, 15, 2, 0xe03030, 2, 2);   // red pushpin
     px(g, 16, 18, 0xe0b040, 1, 1);
     // Pin at top
     px(g, 16, 2, 0xd04040, 2, 2);
