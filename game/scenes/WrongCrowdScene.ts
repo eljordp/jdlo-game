@@ -4,6 +4,8 @@ import { wrongCrowdDialogue } from '../data/story';
 import type { DialogueLine } from '../systems/DialogueSystem';
 import { GAME_WIDTH, GAME_HEIGHT, SCALED_TILE, SCALE } from '../config';
 import { Analytics } from '../systems/Analytics';
+import { MoodSystem } from '../systems/MoodSystem';
+import { InventorySystem } from '../systems/InventorySystem';
 
 export class WrongCrowdScene extends BaseChapterScene {
   private raidTriggered = false;
@@ -512,6 +514,58 @@ export class WrongCrowdScene extends BaseChapterScene {
   protected handleInteractable(interactable: { id: string; type: string; consumed?: boolean }) {
     // Increase tension on every interaction
     this.increaseTension();
+
+    // Tension affects mood — gets more anxious as chapter progresses
+    if (this.interactionCount === 4) {
+      MoodSystem.setMood('locked_in', 120);
+    } else if (this.interactionCount === 8) {
+      MoodSystem.setMood('hyped', 60); // adrenaline
+    }
+
+    // Gun — pick up (inventory)
+    if (interactable.id === 'ch2_gun') {
+      Analytics.trackInteraction(interactable.id);
+      this.frozen = true;
+      this.interactions.consume(interactable.id);
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'A piece tucked under the pillow. JP stares at it.' },
+        { speaker: 'JP\'s Mind', text: 'When did this become normal?' },
+        { speaker: 'Narrator', text: 'He leaves it. Not tonight.' },
+      ], () => { this.frozen = false; });
+      return;
+    }
+
+    // Money stack — pick up (inventory)
+    if (interactable.id === 'ch2_money_stack') {
+      Analytics.trackInteraction(interactable.id);
+      this.frozen = true;
+      this.interactions.consume(interactable.id);
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'Fat stack of hundreds. $20K easy. Rubber-banded tight.' },
+        { speaker: 'Narrator', text: 'This stack is bigger than everything else in the room combined.' },
+        { speaker: 'JP\'s Mind', text: 'This is what it\'s all for. This right here.' },
+        { speaker: 'JP\'s Mind', text: 'Twenty thousand dollars on a desk in a frat house at 3 AM.' },
+        { speaker: 'JP\'s Mind', text: 'So why does it feel like nothing?' },
+      ], () => { this.frozen = false; });
+      return;
+    }
+
+    // Pops missed call — emotional gut punch
+    if (interactable.id === 'ch2_pops_missed') {
+      Analytics.trackInteraction(interactable.id);
+      this.frozen = true;
+      this.interactions.consume(interactable.id);
+      this.dialogue.show([
+        { speaker: 'Narrator', text: '3 missed calls from Pops. 11:42 PM. 12:15 AM. 1:30 AM.' },
+        { speaker: 'Narrator', text: 'One voicemail: "Just checking on you, son. Call me back."' },
+        { speaker: 'JP\'s Mind', text: '...' },
+        { speaker: 'JP\'s Mind', text: 'He can never know about this.' },
+      ], () => {
+        MoodSystem.changeMorale(-15);
+        this.frozen = false;
+      });
+      return;
+    }
 
     // Car interaction — driving cutscene (bumps tension extra to compensate for skipped walking)
     if (interactable.id === 'ch2_car') {

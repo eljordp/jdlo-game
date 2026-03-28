@@ -5,6 +5,8 @@ import type { DialogueLine } from '../systems/DialogueSystem';
 import { GAME_WIDTH, GAME_HEIGHT, SCALE, TILE_SIZE, SCALED_TILE } from '../config';
 import { Analytics } from '../systems/Analytics';
 import { BalanceSystem } from '../systems/BalanceSystem';
+import { MoodSystem } from '../systems/MoodSystem';
+import { InventorySystem } from '../systems/InventorySystem';
 
 export class OperatorScene extends BaseChapterScene {
   private npcsTalkedTo = new Set<string>();
@@ -280,6 +282,70 @@ export class OperatorScene extends BaseChapterScene {
       Analytics.trackInteraction(interactable.id);
       this.playCorvetteScene();
       this.interactions.consume(interactable.id);
+      return;
+    }
+
+    if (interactable.id === 'ch6_steak_dinner') {
+      Analytics.trackInteraction(interactable.id);
+      this.frozen = true;
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'Steak dinner. Downtown LA. White tablecloth.' },
+        { speaker: 'Narrator', text: 'Six months ago JP was eating ramen in a cell.' },
+        { speaker: 'Malachi', text: 'Order whatever you want. It\'s on the company.' },
+        { speaker: 'JP\'s Mind', text: '"On the company." That means I built something worth paying for.' },
+        { speaker: 'JP', text: 'I\'ll take the ribeye.' },
+        { speaker: 'Malachi', text: 'Good man.' },
+      ], () => {
+        MoodSystem.setMood('vibing', 60);
+        this.frozen = false;
+      });
+      return;
+    }
+
+    if (interactable.id === 'ch6_mirror') {
+      Analytics.trackInteraction(interactable.id);
+      this.frozen = true;
+      // Dim overlay for the moment
+      const dim = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0)
+        .setScrollFactor(0).setDepth(300);
+      this.tweens.add({ targets: dim, alpha: 0.4, duration: 800 });
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'JP catches his reflection in the office window.' },
+        { speaker: 'Narrator', text: 'Button-down shirt. Clean shoes. Laptop bag.' },
+        { speaker: 'JP\'s Mind', text: 'I don\'t recognize this person.' },
+        { speaker: 'JP\'s Mind', text: 'That\'s a good thing.' },
+        { speaker: 'Narrator', text: 'He straightens his collar. Keeps walking.' },
+      ], () => {
+        MoodSystem.changeMorale(10);
+        this.tweens.add({ targets: dim, alpha: 0, duration: 600, onComplete: () => { dim.destroy(); this.frozen = false; } });
+      });
+      return;
+    }
+
+    if (interactable.id === 'ch6_slack') {
+      Analytics.trackInteraction(interactable.id);
+      this.frozen = true;
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'Slack notifications. 47 unread. 3 channels blowing up.' },
+        { speaker: 'Narrator', text: '"@JP can you review this?" "@JP client wants changes" "@JP meeting at 4"' },
+        { speaker: 'JP\'s Mind', text: 'People need me now. That used to be a burden.' },
+        { speaker: 'JP\'s Mind', text: 'Now it\'s proof.' },
+      ], () => { this.frozen = false; });
+      return;
+    }
+
+    if (interactable.id === 'ch6_gym_weights') {
+      Analytics.trackInteraction(interactable.id);
+      this.frozen = true;
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'LA Fitness. JP racks the 225.' },
+        { speaker: 'Narrator', text: 'Same routine he started in jail. Never stopped.' },
+        { speaker: 'JP\'s Mind', text: 'Body, mind, business. All three. Every day.' },
+        { speaker: 'JP\'s Mind', text: 'The guys in jail would be proud.' },
+      ], () => {
+        MoodSystem.setMood('locked_in', 45);
+        this.frozen = false;
+      });
       return;
     }
 

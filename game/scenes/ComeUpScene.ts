@@ -4,6 +4,8 @@ import { comeUpDialogue } from '../data/story';
 import type { DialogueLine } from '../systems/DialogueSystem';
 import { GAME_WIDTH, GAME_HEIGHT } from '../config';
 import { Analytics } from '../systems/Analytics';
+import { MoodSystem } from '../systems/MoodSystem';
+import { InventorySystem } from '../systems/InventorySystem';
 
 export class ComeUpScene extends BaseChapterScene {
   private typingPlayed = false;
@@ -11,6 +13,10 @@ export class ComeUpScene extends BaseChapterScene {
   private ghostMoved = false;
   private stickerTalked = false;
   private lateNightActive = false;
+  private rejectionPlayed = false;
+  private bankChecked = false;
+  private timePassagePlayed = false;
+  private popsCallDone = false;
 
   constructor() {
     super({ key: 'ComeUpScene' });
@@ -192,7 +198,358 @@ export class ComeUpScene extends BaseChapterScene {
       }
       return;
     }
+    if (interactable.id === 'ch5_doubt') {
+      Analytics.trackInteraction(interactable.id);
+      this.frozen = true;
+      this.dialogue.show([
+        { speaker: 'JP\'s Mind', text: 'What if this doesn\'t work?' },
+        { speaker: 'JP\'s Mind', text: 'What if I\'m just a kid with a laptop pretending to be something?' },
+        { speaker: 'JP\'s Mind', text: 'Everyone else went to school. Got degrees. Has experience.' },
+        { speaker: 'JP\'s Mind', text: 'I taught myself everything from YouTube and ChatGPT.' },
+        { speaker: 'Narrator', text: 'He stares at the screen. The cursor blinks.' },
+        { speaker: 'JP\'s Mind', text: '...but the site works. The client paid. That\'s real.' },
+        { speaker: 'JP\'s Mind', text: 'Keep going.' },
+      ], () => {
+        MoodSystem.changeMorale(5);
+        this.frozen = false;
+      });
+      return;
+    }
+
+    if (interactable.id === 'ch5_pricing') {
+      Analytics.trackInteraction(interactable.id);
+      this.frozen = true;
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'JP\'s pricing sheet. Scribbled on a napkin.' },
+        { speaker: 'Narrator', text: '"Website: $300. Logo: $50. Full brand: $500."' },
+        { speaker: 'JP\'s Mind', text: 'I\'m charging nothing. But it\'s more than zero.' },
+        { speaker: 'JP\'s Mind', text: 'Gotta start somewhere.' },
+      ], () => { this.frozen = false; });
+      return;
+    }
+
+    if (interactable.id === 'ch5_late_night') {
+      Analytics.trackInteraction(interactable.id);
+      this.frozen = true;
+      this.dialogue.show([
+        { speaker: 'Narrator', text: '3:47 AM. Screen glowing in the dark.' },
+        { speaker: 'Narrator', text: 'Red Bull can. Cold coffee. Stack of tutorials.' },
+        { speaker: 'JP\'s Mind', text: 'Everyone\'s asleep. This is when the real work happens.' },
+        { speaker: 'JP\'s Mind', text: 'Nobody sees this part. They only see the finished site.' },
+        { speaker: 'Narrator', text: 'He keeps typing.' },
+      ], () => {
+        MoodSystem.setMood('locked_in', 60);
+        this.frozen = false;
+      });
+      return;
+    }
+
+    // Rejection montage — wall of no's
+    if (interactable.id === 'ch5_rejection' && !this.rejectionPlayed) {
+      this.rejectionPlayed = true;
+      Analytics.trackInteraction(interactable.id);
+      this.frozen = true;
+      this.interactions.consume(interactable.id);
+      this.playRejectionMontage();
+      return;
+    }
+
+    // Bank account — fullscreen overlay
+    if (interactable.id === 'ch5_bank_app' && !this.bankChecked) {
+      this.bankChecked = true;
+      Analytics.trackInteraction(interactable.id);
+      this.frozen = true;
+      this.interactions.consume(interactable.id);
+      this.playBankScene();
+      return;
+    }
+
+    // Cold email — triggers time passing montage
+    if (interactable.id === 'ch5_cold_email' && !this.timePassagePlayed) {
+      this.timePassagePlayed = true;
+      Analytics.trackInteraction(interactable.id);
+      this.frozen = true;
+      this.interactions.consume(interactable.id);
+      this.playTimePassage();
+      return;
+    }
+
+    // Fiverr — triggers Pops call after a delay
+    if (interactable.id === 'ch5_fiverr' && !this.popsCallDone) {
+      Analytics.trackInteraction(interactable.id);
+      this.frozen = true;
+      this.interactions.consume(interactable.id);
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'Fiverr inbox. "Your gig has been removed for violating terms."' },
+        { speaker: 'JP\'s Mind', text: 'They want me to charge $5 for a logo and then they ban me?' },
+        { speaker: 'JP\'s Mind', text: 'Forget Fiverr. I\'ll find my own clients.' },
+      ], () => {
+        this.frozen = false;
+        // Pops calls after a delay
+        this.time.delayedCall(10000, () => {
+          if (this.scene.isActive() && !this.popsCallDone) {
+            this.triggerPopsCall();
+          }
+        });
+      });
+      return;
+    }
+
     super.handleInteractable(interactable);
+  }
+
+  // ─── REJECTION MONTAGE ──────────────────────────────────────────
+  private playRejectionMontage() {
+    const objects: Phaser.GameObjects.GameObject[] = [];
+
+    // Dark overlay
+    objects.push(this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.85)
+      .setScrollFactor(0).setDepth(300));
+
+    objects.push(this.add.text(GAME_WIDTH / 2, 60, 'THE GRIND', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '16px', color: '#f04040',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301));
+
+    // Wall of rejections — flash one after another
+    const rejections = [
+      '"Not interested."',
+      '"We went with someone else."',
+      '"Our budget changed."',
+      '"Can you do it for $50?"',
+      '"We\'ll get back to you." (they never did)',
+      '"My nephew can do it."',
+      '"We need someone with more experience."',
+      '"Sorry, who are you?"',
+      '"Read 3:42 PM"',
+      '"Not a good fit."',
+      '"We found someone on Fiverr."',
+    ];
+
+    let delay = 500;
+    for (let i = 0; i < rejections.length; i++) {
+      this.time.delayedCall(delay, () => {
+        const x = GAME_WIDTH / 2 + Phaser.Math.Between(-200, 200);
+        const y = 120 + Phaser.Math.Between(0, 350);
+        const size = i < 8 ? '9px' : '11px';
+        const color = i < 6 ? '#cc4444' : i < 9 ? '#ff4444' : '#ff6666';
+
+        const text = this.add.text(x, y, rejections[i], {
+          fontFamily: '"Press Start 2P", monospace', fontSize: size, color,
+        }).setOrigin(0.5).setScrollFactor(0).setDepth(301).setAlpha(0);
+        objects.push(text);
+
+        this.tweens.add({
+          targets: text,
+          alpha: 0.9,
+          duration: 200,
+        });
+
+        // Camera shake gets worse
+        this.cameras.main.shake(100, 0.002 + i * 0.001);
+      });
+      delay += 500 + i * 50; // gets faster
+    }
+
+    // After all rejections — JP's response
+    this.time.delayedCall(delay + 800, () => {
+      const response = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 180, 'Next.', {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '18px', color: '#ffffff',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(302).setAlpha(0);
+      objects.push(response);
+
+      this.tweens.add({
+        targets: response,
+        alpha: 1,
+        duration: 600,
+        hold: 1500,
+        onComplete: () => {
+          MoodSystem.changeMorale(-10);
+          for (const obj of objects) {
+            if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
+          }
+          this.frozen = false;
+        },
+      });
+    });
+  }
+
+  // ─── BANK ACCOUNT SCENE ───────────────────────────────────────────
+  private playBankScene() {
+    const objects: Phaser.GameObjects.GameObject[] = [];
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+
+    // Phone overlay
+    objects.push(this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.85)
+      .setScrollFactor(0).setDepth(300));
+
+    // Phone body
+    const phoneW = 280;
+    const phoneH = 480;
+    objects.push(this.add.rectangle(cx, cy, phoneW + 10, phoneH + 10, 0x1a1a1a)
+      .setScrollFactor(0).setDepth(301));
+    objects.push(this.add.rectangle(cx, cy, phoneW, phoneH, 0x0a1020)
+      .setScrollFactor(0).setDepth(302));
+
+    // Bank app header
+    objects.push(this.add.rectangle(cx, cy - phoneH / 2 + 30, phoneW, 50, 0x1a3050)
+      .setScrollFactor(0).setDepth(303));
+    objects.push(this.add.text(cx, cy - phoneH / 2 + 30, 'CHECKING ACCOUNT', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#80a0c0',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(304));
+
+    // Balance — big number
+    const balanceText = this.add.text(cx, cy - 100, '$0.00', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '28px', color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(304);
+    objects.push(balanceText);
+
+    // Count up to $127.43
+    let bal = 0;
+    const countUp = this.time.addEvent({
+      delay: 30,
+      repeat: 42,
+      callback: () => {
+        bal += 3.03;
+        if (bal > 127.43) bal = 127.43;
+        balanceText.setText(`$${bal.toFixed(2)}`);
+      },
+    });
+
+    // Bills list
+    const bills = [
+      { name: 'Rent', amount: '$400.00', due: 'Due Friday' },
+      { name: 'Phone', amount: '$85.00', due: 'Due 15th' },
+      { name: 'Car Insurance', amount: '$120.00', due: 'Due 20th' },
+      { name: 'Food', amount: '???', due: '' },
+    ];
+
+    let billY = cy - 20;
+    this.time.delayedCall(1500, () => {
+      objects.push(this.add.text(cx, billY - 20, 'UPCOMING', {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#f04040',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(304));
+
+      for (let i = 0; i < bills.length; i++) {
+        this.time.delayedCall(i * 400, () => {
+          const b = bills[i];
+          objects.push(this.add.text(cx - 100, billY + i * 35, b.name, {
+            fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#cccccc',
+          }).setScrollFactor(0).setDepth(304));
+          objects.push(this.add.text(cx + 80, billY + i * 35, b.amount, {
+            fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#ff6060',
+          }).setOrigin(1, 0).setScrollFactor(0).setDepth(304));
+          if (b.due) {
+            objects.push(this.add.text(cx + 80, billY + i * 35 + 14, b.due, {
+              fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#f0c040',
+            }).setOrigin(1, 0).setScrollFactor(0).setDepth(304));
+          }
+        });
+      }
+    });
+
+    // JP's reaction after all bills shown
+    this.time.delayedCall(4000, () => {
+      this.dialogue.show([
+        { speaker: 'JP\'s Mind', text: '$127. Rent is $400. Due Friday.' },
+        { speaker: 'JP\'s Mind', text: 'I need three clients this week or I\'m done.' },
+        { speaker: 'Narrator', text: 'He closes the app. Opens his laptop instead.' },
+      ], () => {
+        MoodSystem.changeMorale(-15);
+        for (const obj of objects) {
+          if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
+        }
+        this.frozen = false;
+      });
+    });
+  }
+
+  // ─── TIME PASSING MONTAGE ──────────────────────────────────────────
+  private playTimePassage() {
+    const objects: Phaser.GameObjects.GameObject[] = [];
+
+    const overlay = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0)
+      .setScrollFactor(0).setDepth(300);
+    objects.push(overlay);
+
+    this.tweens.add({ targets: overlay, alpha: 0.9, duration: 500 });
+
+    const weeks = [
+      { text: 'Week 1', sub: '47 cold emails. 2 replies. Both said no.' },
+      { text: 'Week 2', sub: 'Built a portfolio site. 3 projects. One is his own.' },
+      { text: 'Week 3', sub: 'No clients. Ramen again.' },
+      { text: 'Week 4', sub: 'One lead. Met at a coffee shop. Ghosted.' },
+      { text: 'Week 6', sub: 'Finally. First client. $300 for a website.' },
+      { text: 'Week 8', sub: 'Second client. Word of mouth. $500.' },
+    ];
+
+    let delay = 800;
+    for (let i = 0; i < weeks.length; i++) {
+      this.time.delayedCall(delay, () => {
+        const weekText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 30, weeks[i].text, {
+          fontFamily: '"Press Start 2P", monospace', fontSize: '20px',
+          color: i < 4 ? '#888888' : '#f0c040',
+        }).setOrigin(0.5).setScrollFactor(0).setDepth(301).setAlpha(0);
+        objects.push(weekText);
+
+        const subText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 15, weeks[i].sub, {
+          fontFamily: '"Press Start 2P", monospace', fontSize: '9px',
+          color: i < 4 ? '#666666' : '#aaaaaa',
+        }).setOrigin(0.5).setScrollFactor(0).setDepth(301).setAlpha(0);
+        objects.push(subText);
+
+        this.tweens.add({
+          targets: [weekText, subText],
+          alpha: 1,
+          duration: 400,
+          hold: 1200,
+          yoyo: true,
+        });
+      });
+      delay += 2000;
+    }
+
+    // End
+    this.time.delayedCall(delay + 500, () => {
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'Two months. Felt like two years.' },
+        { speaker: 'JP\'s Mind', text: 'But the momentum is building. I can feel it.' },
+      ], () => {
+        for (const obj of objects) {
+          if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
+        }
+        this.frozen = false;
+      });
+    });
+  }
+
+  // ─── POPS CALL (JP has to lie) ─────────────────────────────────────
+  private triggerPopsCall() {
+    if (this.popsCallDone) return;
+    this.popsCallDone = true;
+    this.frozen = true;
+
+    // Phone ring
+    this.cameras.main.shake(200, 0.003);
+
+    this.dialogue.show([
+      { speaker: 'Narrator', text: 'Phone rings. Pops.' },
+      { speaker: 'Pops', text: 'Hey son. How\'s everything going?' },
+      { speaker: 'JP', text: 'Good, Pops. Yeah. Everything\'s good.' },
+      { speaker: 'Pops', text: 'You eating?' },
+      { speaker: 'JP', text: 'Yeah. Three meals a day.' },
+      { speaker: 'Narrator', text: 'That\'s a lie. It\'s ramen twice and coffee.' },
+      { speaker: 'Pops', text: 'And the business stuff? The websites?' },
+      { speaker: 'JP', text: 'Getting clients. Building momentum.' },
+      { speaker: 'Narrator', text: 'That\'s half true. One client. Barely momentum.' },
+      { speaker: 'Pops', text: 'Good. I\'m proud of you for trying. Most people don\'t even try.' },
+      { speaker: 'JP', text: 'Thanks Pops.' },
+      { speaker: 'Narrator', text: 'He hangs up. Stares at the wall.' },
+      { speaker: 'JP\'s Mind', text: 'I can\'t let him down. I won\'t.' },
+    ], () => {
+      MoodSystem.changeMorale(10);
+      this.frozen = false;
+    });
   }
 
   private playTypingMinigame() {

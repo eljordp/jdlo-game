@@ -13,6 +13,7 @@ import { Analytics } from '../systems/Analytics';
 import { EmoteSystem } from '../systems/EmoteSystem';
 import { MoodSystem } from '../systems/MoodSystem';
 import { PhoneSystem } from '../systems/PhoneSystem';
+import { InventoryUI } from '../systems/InventoryUI';
 import type { MapData } from '../data/maps';
 
 type NPCObject = {
@@ -199,6 +200,9 @@ export abstract class BaseChapterScene extends Phaser.Scene {
 
     // Phone system — press P or TAB to open phone
     PhoneSystem.init(this);
+
+    // Inventory UI — press I to open inventory/crafting
+    InventoryUI.init(this);
   }
 
   private showChapterTitle() {
@@ -467,8 +471,8 @@ export abstract class BaseChapterScene extends Phaser.Scene {
       return;
     }
 
-    // Sleeping — slow breathing (scale pulse)
-    if (id.includes('girl') && (id.includes('1') || id.includes('couch'))) {
+    // Sleeping — ONLY for NPCs explicitly marked as sleeping (couch sleeper)
+    if (id.includes('couch') || id.includes('sleep') || id.includes('sunbather')) {
       this.tweens.add({
         targets: sprite,
         scaleX: CHAR_SCALE * 1.03,
@@ -499,15 +503,27 @@ export abstract class BaseChapterScene extends Phaser.Scene {
       return;
     }
 
-    // Hot tub girls — bobbing in water
+    // Girls — swaying + bobbing (looks alive, not sleeping)
     if (id.includes('girl') && !id.includes('couch')) {
+      // Side-to-side sway
       this.tweens.add({
         targets: sprite,
-        y: baseY + 4,
-        duration: 1200,
+        x: baseX + 6,
+        angle: 5,
+        duration: 800 + Math.random() * 400,
         yoyo: true,
         repeat: -1,
         ease: 'Sine.easeInOut',
+      });
+      // Bounce up/down
+      this.tweens.add({
+        targets: sprite,
+        y: baseY - 4,
+        duration: 600 + Math.random() * 300,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+        delay: 200,
       });
       return;
     }

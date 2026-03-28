@@ -101,12 +101,12 @@ export const homeMap: MapData = {
     [ _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _ ], // 1  empty (camera buffer)
     [ _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _ ], // 2  empty (camera buffer)
     [ _, _, _, _, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, _, _, _, _, _ ], // 3  upstairs top wall
-    [ _, _, _, _, K, A, A, A, A, A, A, K, A, A, A, A, A, A, K, J, J, J, K, A, A, A, A, A, A, K, F, F, F, F, K, _, _, _, _, _ ], // 4  JP room | hall | stairs landing | sister room | bath
-    [ _, _, _, _, K, A, A, A, A, A, A, K, A, A, A, A, A, A, K, J, J, J, K, A, A, A, A, A, A, K, F, F, F, F, K, _, _, _, _, _ ], // 5
-    [ _, _, _, _, K, A, A, A, A, A, A, K, A, A, A, A, A, A, K, J, J, J, K, A, A, A, A, A, A, K, F, F, F, F, K, _, _, _, _, _ ], // 6
-    [ _, _, _, _, K, A, A, A, A, A, A, K, A, A, A, A, A, A, K, J, J, J, K, A, A, A, A, A, A, K, F, F, F, F, K, _, _, _, _, _ ], // 7
-    [ _, _, _, _, K, A, A, A, A, A, A, K, A, A, A, A, A, A, K, J, J, J, K, A, A, A, A, A, A, K, F, F, F, F, K, _, _, _, _, _ ], // 8
-    [ _, _, _, _, K, K, K, K, O, K, K, K, K, K, O, K, K, K, K, K, O, K, K, K, K, K, O, K, K, K, K, O, K, K, K, _, _, _, _, _ ], // 9  single doors centered in each room
+    [ _, _, _, _, K, A, A, A, A, A, A, K, J, J, J, J, J, J, J, J, J, J, K, A, A, A, A, A, A, K, F, F, F, F, K, _, _, _, _, _ ], // 4  JP room | upstairs lounge | sister room | bath
+    [ _, _, _, _, K, A, A, A, A, A, A, K, J, J, J, J, J, J, J, J, J, J, K, A, A, A, A, A, A, K, F, F, F, F, K, _, _, _, _, _ ], // 5
+    [ _, _, _, _, K, A, A, A, A, A, A, K, J, J, J, J, J, J, J, J, J, J, K, A, A, A, A, A, A, K, F, F, F, F, K, _, _, _, _, _ ], // 6
+    [ _, _, _, _, K, A, A, A, A, A, A, K, J, J, J, J, J, J, J, J, J, J, K, A, A, A, A, A, A, K, F, F, F, F, K, _, _, _, _, _ ], // 7
+    [ _, _, _, _, K, A, A, A, A, A, A, K, J, J, J, J, J, J, J, J, J, J, K, A, A, A, A, A, A, K, F, F, F, F, K, _, _, _, _, _ ], // 8
+    [ _, _, _, _, K, K, K, K, O, K, K, K, K, K, K, K, O, K, K, K, O, K, K, K, K, K, O, K, K, K, K, O, K, K, K, _, _, _, _, _ ], // 9  single doors centered in each room
     [ _, _, _, _, K, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, K, _, _, _, _, _ ], // 10 upstairs hallway
     [ _, _, _, _, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, K, _, _, _, _, _ ], // 11 upstairs floor
     [ G, G, G, K, A, A, A, A, A, A, A, A, A, A, A, K, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, K, G, G, G ], // 12 parents master (left) | open living extension (right)
@@ -168,20 +168,16 @@ export const homeMap: MapData = {
     // JP's Room — UPSTAIRS (cols 5-10, rows 4-8)
     // JP's Room — UPSTAIRS (cols 5-10, rows 4-8)
     { id: 'ch0_bed',           x: 5,  y: 4,  type: 'examine', glow: false, sprite: 'item-bed' },        // bed against back wall
-    { id: 'ch0_nightstand',    x: 7,  y: 4,  type: 'examine', glow: false, sprite: 'item-nightstand' }, // next to bed
+    { id: 'ch0_papers',        x: 7,  y: 4,  type: 'examine', glow: true, sprite: 'item-letter' },     // papers on nightstand
     { id: 'ch0_computer',      x: 10, y: 5,  type: 'examine', glow: true, sprite: 'item-desk' },        // MacBook right wall
     { id: 'ch0_college',       x: 10, y: 6,  type: 'examine', glow: true, sprite: 'item-letter' },      // letters on desk
     { id: 'ch0_poster',        x: 6,  y: 4,  type: 'examine', glow: false, sprite: 'item-poster' },     // poster back wall
     { id: 'ch0_hidden_stash',  x: 10, y: 8,  type: 'examine', glow: true, sprite: 'item-weed-bag' },    // behind desk
     { id: 'ch0_journal',       x: 8,  y: 8,  type: 'examine', glow: true, sprite: 'item-book' },        // journal near door
     { id: 'ch0_crypto',        x: 8,  y: 4,  type: 'examine', glow: false, sprite: 'item-phone' },      // phone on nightstand
-    // Upstairs Laundry Room (cols 12-17, rows 4-8)
-    { id: 'ch0_washer',        x: 13, y: 4,  type: 'examine', glow: false, sprite: 'item-washer' },    // washing machine
-    { id: 'ch0_dryer',         x: 14, y: 4,  type: 'examine', glow: false, sprite: 'item-dryer' },     // dryer
-    { id: 'ch0_laundry',       x: 16, y: 4,  type: 'examine', glow: false, sprite: 'item-laundry-basket' }, // overflowing basket
-    { id: 'ch0_ironing_board', x: 13, y: 7,  type: 'examine', glow: false, sprite: 'item-ironing-board' }, // ironing board
-    { id: 'ch0_storage_boxes', x: 16, y: 7,  type: 'examine', glow: false, sprite: 'item-storage-box' },  // storage boxes
-    { id: 'ch0_family_albums', x: 17, y: 5,  type: 'examine', glow: true, sprite: 'item-book' },       // photo albums — story
+    // Upstairs Lounge (cols 12-21, rows 4-8)
+    { id: 'ch0_family_albums', x: 13, y: 5,  type: 'examine', glow: true, sprite: 'item-book' },       // photo albums — story
+    { id: 'ch0_lounge_rug',    x: 16, y: 7,  type: 'examine', glow: false, sprite: 'item-rug' },
     // Sister's Room — UPSTAIRS (cols 23-28, rows 4-8)
     { id: 'ch0_sister_bed',    x: 24, y: 4,  type: 'examine', glow: false, sprite: 'item-bed-pink' },   // bed
     { id: 'ch0_sister_toys',   x: 27, y: 6,  type: 'examine', glow: false },                            // toys
@@ -203,14 +199,17 @@ export const homeMap: MapData = {
     { id: 'ch0_den_plant',     x: 30, y: 12, type: 'examine', glow: false, sprite: 'item-plant' },     // potted plant
     { id: 'ch0_den_shelf',     x: 28, y: 12, type: 'examine', glow: false, sprite: 'item-bookshelf' }, // bookshelf
     { id: 'ch0_den_table',     x: 34, y: 14, type: 'examine', glow: false, sprite: 'item-nightstand' },// side table (nightstand works for this)
+    // Upstairs Lounge / Hang Spot (cols 12-21, merged lounge)
+    { id: 'ch0_upstairs_tv',   x: 15, y: 4,  type: 'examine', glow: false, sprite: 'item-tv' },        // TV on wall
+    { id: 'ch0_upstairs_couch',x: 16, y: 6,  type: 'examine', glow: false, sprite: 'item-couch' },     // couch
+    { id: 'ch0_weights',       x: 19, y: 7,  type: 'examine', glow: false, sprite: 'item-weights' },    // dumbbells
     // Sister drawings — UPSTAIRS
-    { id: 'ch0_sister_drawing_wall', x: 24, y: 4, type: 'examine', glow: true },
+    { id: 'ch0_sister_drawing_wall', x: 24, y: 4, type: 'examine', glow: false },
     // Kitchen (rows 20-22)
     { id: 'ch0_kitchen_knife',  x: 32, y: 22, type: 'examine', glow: false },
-    { id: 'ch0_cookie_jar',    x: 34, y: 22, type: 'examine', glow: true },
+    { id: 'ch0_cookie_jar',    x: 34, y: 22, type: 'examine', glow: false },
     // Bathroom — UPSTAIRS (cols 29-33, rows 4-8)
     { id: 'ch0_mirror',        x: 30, y: 4,  type: 'examine', glow: true, sprite: 'item-mirror' },
-    { id: 'ch0_toilet',        x: 32, y: 7,  type: 'examine', glow: false, sprite: 'item-toilet' },
     { id: 'ch0_shower',        x: 29, y: 7,  type: 'examine', glow: true, sprite: 'item-shower' },
     // Hallway (row 18)
     { id: 'ch0_hallway_photo', x: 20, y: 18, type: 'examine', glow: false, sprite: 'item-photo' },      // decoration
@@ -226,7 +225,7 @@ export const homeMap: MapData = {
     { id: 'ch0_pops_truck',    x: 34, y: 28, type: 'examine', glow: false, sprite: 'item-car' },        // Pops' truck in garage
     { id: 'ch0_jp_car',        x: 36, y: 28, type: 'examine', glow: false, sprite: 'item-car' },        // JP's car next to Pops in garage
     { id: 'ch0_garage_tools',  x: 32, y: 27, type: 'examine', glow: false },                            // tools on wall
-    { id: 'ch0_workbench',     x: 34, y: 27, type: 'examine', glow: true },                             // Pops' workbench
+    { id: 'ch0_workbench',     x: 34, y: 27, type: 'examine', glow: false },                             // Pops' workbench
     { id: 'ch0_record_player', x: 37, y: 27, type: 'examine', glow: true },                             // record player in garage corner
     // Yard
     { id: 'ch0_bbq',           x: 5,  y: 25, type: 'examine', glow: false, sprite: 'item-bbq' },       // BBQ near house
@@ -239,8 +238,9 @@ export const homeMap: MapData = {
     // Surprise elements
     { id: 'ch0_rooftop',       x: 33, y: 4,  type: 'examine', glow: true },                              // easter egg — bathroom window
     // Stairs
-    { id: 'ch0_stairs_up',    x: 20, y: 18, type: 'examine', glow: true, sprite: 'item-stairs' },       // stairs in downstairs hallway → go up
-    { id: 'ch0_stairs_down',  x: 20, y: 10, type: 'examine', glow: true, sprite: 'item-stairs' },       // stairs in upstairs hallway → go down
+    // Stairs are auto-trigger (step on tile = swap floor). Visual only:
+    { id: 'ch0_stairs_visual_up',   x: 20, y: 19, type: 'examine', glow: false, sprite: 'item-stairs' },  // visual stairs marker (downstairs hallway)
+    { id: 'ch0_stairs_visual_down', x: 21, y: 10, type: 'examine', glow: false, sprite: 'item-stairs' },  // visual stairs marker (upstairs hallway, offset from door)
     { id: 'ch0_shoebox',       x: 5,  y: 5,  type: 'examine', glow: true },                              // easter egg — under JP's bed
     // tv_sitdown removed — Pops already has fishing moment
 
@@ -263,80 +263,117 @@ export const homeMap: MapData = {
 export const beachMap: MapData = {
   tiles: [
     //0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39
-    [ B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B ], // 0  house top wall
-    [ B, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, F, B, C, C, C, C, C, C, C, C, C, C, B ], // 1  living rm | JP rm | kitchen | bedroom | hot tub patio
-    [ B, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, F, B, C, C, H, H, H, H, C, C, C, C, B ], // 2
-    [ B, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, F, B, C, C, H, H, H, H, C, C, C, C, B ], // 3  JP room (computer is interactable sprite)
-    [ B, F, F, F, F, F, F, F, F, O, F, F, F, F, F, F, O, F, F, F, F, F, O, F, F, F, F, F, B, C, C, H, H, H, H, C, C, C, C, B ], // 4  doors between rooms
-    [ B, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, F, B, C, C, C, C, C, C, C, C, C, C, B ], // 5
-    [ B, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, F, B, C, C, C, C, C, C, C, C, C, C, B ], // 6
-    [ B, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, F, B, C, C, C, C, C, C, C, C, C, C, B ], // 7
-    [ B, B, B, B, B, O, B, B, B, B, B, B, O, B, B, B, B, B, O, B, B, B, B, B, O, B, B, B, B, B, B, B, B, O, B, B, B, B, B, B ], // 8  house bottom wall with doors
-    [ G, G, G, G, G, C, G, G, G, G, G, G, C, G, G, G, G, G, C, G, G, G, G, G, C, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G ], // 9  concrete walks from house doors
-    [ G, G, L, G, G, C, G, G, G, G, G, G, C, G, G, G, G, G, C, G, G, G, G, G, C, G, G, G, G, G, G, G, G, C, G, G, G, L, G, G ], // 10 walks continue + palms
-    [ G, G, G, G, G, C, G, G, G, G, G, G, C, G, G, G, G, G, C, G, G, G, G, G, C, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G ], // 11
+    [ B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, G, G, G, G, G, G, G, G, G, G, G ], // 0  house top wall (house ends col 28)
+    [ B, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, F, B, G, G, C, C, C, C, C, G, G, G, G ], // 1  living rm | JP rm | kitchen | Nolan rm | hot tub patio
+    [ B, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, F, B, G, G, C, H, H, H, C, G, G, G, G ], // 2  outdoor hot tub
+    [ B, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, F, B, G, G, C, H, H, H, C, G, G, G, G ], // 3
+    [ B, F, F, F, F, F, F, F, F, O, F, F, F, F, F, F, O, F, F, F, F, F, O, F, F, F, F, F, O, G, G, C, H, H, H, C, G, G, G, G ], // 4  doors between rooms at cols 9, 16, 22, 28
+    [ B, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, F, B, G, G, C, C, C, C, C, G, G, G, G ], // 5
+    [ B, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, F, B, G, G, C, C, C, C, C, G, G, G, G ], // 6
+    [ B, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, F, B, G, G, C, C, C, C, C, G, G, G, G ], // 7
+    [ B, B, B, B, B, O, B, B, B, B, B, B, O, B, B, B, B, B, O, B, B, B, B, B, O, B, B, B, B, G, G, G, G, G, G, G, G, G, G, G ], // 8  house bottom wall with doors at cols 5, 12, 18, 24
+    [ G, G, G, G, G, C, G, G, G, G, G, G, C, G, G, G, G, G, C, G, G, G, G, G, C, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G ], // 9  concrete walks from doors + col 33 hot tub path
+    [ G, G, L, G, G, C, G, G, G, G, G, G, C, G, G, G, G, G, C, G, G, G, G, G, C, G, G, G, G, G, G, G, G, C, G, G, G, L, G, G ], // 10 walks continue + palms at cols 2, 37
+    [ G, G, G, G, G, C, G, G, G, G, G, G, C, G, G, G, G, G, C, G, G, G, G, G, C, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G ], // 11 walkways
     [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 12 concrete street
     [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 13 concrete street
-    [ G, G, T, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, T, G, G, G ], // 14 grass with trees
-    [ G, G, G, G, G, L, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, L, G, G, G, G, G, G ], // 15 two palms marking beach entrance
-    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 16 sand starts — clean
+    [ G, G, T, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, T, G, G ], // 14 grass with trees at cols 2, 37
+    [ G, G, G, G, G, L, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, L, G, G, G, G, G, G ], // 15 palms at cols 5, 33 (beach entrance markers)
+    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 16 sand starts
     [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 17 open sand
-    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, L, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 18 one palm on beach
-    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 19 open sand — volleyball area
+    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, L, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 18 one palm at col 19
+    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 19 volleyball area
     [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 20 open sand
     [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 21 open sand
     [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 22 open sand
     [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 23 open sand
-    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 24 sand near water
-    [ S, S, S, S, S, S, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, S, S, S, S, S, S ], // 25 shore break
-    [ W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W ], // 26 ocean
-    [ W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W ], // 27 ocean
+    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 24 open sand
+    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 25 open sand
+    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 26 open sand
+    [ S, S, S, S, S, S, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, S, S, S, S, S, S ], // 27 shore break
+    [ W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W ], // 28 ocean
+    [ W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W ], // 29 ocean
+    [ W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W ], // 30 ocean
+    [ W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W ], // 31 ocean
   ],
   collisions: STANDARD_COLLISIONS,
   spawns: {
     player: { x: 12, y: 11 },
     npcs: [
-      { id: 'ch1_homie1', x: 12, y: 3,  sprite: 'npc_nolan' },      // Nolan in JP's room area
-      { id: 'ch1_homie2', x: 4,  y: 3,  sprite: 'npc_david' },      // David in living room
-      { id: 'ch1_cooper',  x: 7,  y: 6,  sprite: 'npc_cooper' },     // Cooper in living room
-      { id: 'ch1_girl1',  x: 32, y: 3,  sprite: 'npc_bikini1' },     // In hot tub
-      { id: 'ch1_girl2',  x: 36, y: 3,  sprite: 'npc_bikini2' },     // On hot tub patio
-      { id: 'ch1_girl3',  x: 34, y: 4,  sprite: 'npc_bikini1' },     // In hot tub
-      { id: 'ch1_girl_couch', x: 3, y: 5, sprite: 'npc_bikini2' },   // Sleeping in living room
-      { id: 'ch1_terrell', x: 30, y: 7, sprite: 'npc_terrell' },     // By the hot tub patio
-      { id: 'ch1_volleyball1', x: 14, y: 20, sprite: 'npc_surfer' },
-      { id: 'ch1_volleyball2', x: 16, y: 20, sprite: 'npc_kid' },
-      { id: 'ch1_sunbather',   x: 24, y: 22, sprite: 'npc_bikini1' },
+      { id: 'ch1_homie1',       x: 12, y: 3,  sprite: 'npc_nolan' },      // Nolan in JP's room visiting
+      { id: 'ch1_homie2',       x: 4,  y: 3,  sprite: 'npc_david' },      // David in living room
+      { id: 'ch1_cooper',       x: 7,  y: 6,  sprite: 'npc_cooper' },      // Cooper in living room
+      { id: 'ch1_bigbart',      x: 20, y: 5,  sprite: 'npc_bigbart' },     // Big Bart in kitchen
+      { id: 'ch1_gf_k',         x: 14, y: 5,  sprite: 'npc_female' },     // K (GF) — Day 1 only, lil asian girl not a bikini NPC
+      { id: 'ch1_girl1',        x: 32, y: 3,  sprite: 'npc_bikini1' },     // In outdoor hot tub
+      { id: 'ch1_girl2',        x: 34, y: 3,  sprite: 'npc_bikini2' },     // By outdoor hot tub
+      { id: 'ch1_girl3',        x: 33, y: 4,  sprite: 'npc_bikini1' },     // In outdoor hot tub
+      { id: 'ch1_girl_couch',   x: 3,  y: 5,  sprite: 'npc_bikini2' },    // Sleeping in living room
+      { id: 'ch1_terrell',      x: 30, y: 9,  sprite: 'npc_terrell' },     // In the yard
+      { id: 'ch1_volleyball1',  x: 14, y: 20, sprite: 'npc_surfer' },
+      { id: 'ch1_volleyball2',  x: 16, y: 20, sprite: 'npc_kid' },
+      { id: 'ch1_sunbather',    x: 24, y: 22, sprite: 'npc_bikini1' },
     ],
   },
   triggers: [
-    { x: 15, y: 25, action: 'scene', target: 'WrongCrowdScene' },
-    { x: 16, y: 25, action: 'scene', target: 'WrongCrowdScene' },
-    { x: 17, y: 25, action: 'scene', target: 'WrongCrowdScene' },
-    { x: 18, y: 25, action: 'scene', target: 'WrongCrowdScene' },
-    { x: 19, y: 25, action: 'scene', target: 'WrongCrowdScene' },
-    { x: 20, y: 25, action: 'scene', target: 'WrongCrowdScene' },
-    { x: 21, y: 25, action: 'scene', target: 'WrongCrowdScene' },
-    { x: 22, y: 25, action: 'scene', target: 'WrongCrowdScene' },
+    { x: 15, y: 27, action: 'scene', target: 'WrongCrowdScene' },
+    { x: 16, y: 27, action: 'scene', target: 'WrongCrowdScene' },
+    { x: 17, y: 27, action: 'scene', target: 'WrongCrowdScene' },
+    { x: 18, y: 27, action: 'scene', target: 'WrongCrowdScene' },
+    { x: 19, y: 27, action: 'scene', target: 'WrongCrowdScene' },
+    { x: 20, y: 27, action: 'scene', target: 'WrongCrowdScene' },
+    { x: 21, y: 27, action: 'scene', target: 'WrongCrowdScene' },
+    { x: 22, y: 27, action: 'scene', target: 'WrongCrowdScene' },
   ],
   interactables: [
-    { id: 'ch1_weed1',   x: 14, y: 4,  type: 'examine', glow: true, sprite: 'item-weed-bag' },
-    { id: 'ch1_weed2',   x: 11, y: 6,  type: 'examine', glow: true, sprite: 'item-weed-bag' },
-    { id: 'ch1_weed3',   x: 5,  y: 2,  type: 'examine', glow: true, sprite: 'item-weed-bag' },
-    { id: 'ch1_bottles', x: 19, y: 2,  type: 'examine', glow: false, sprite: 'item-bottle' },
-    { id: 'ch1_hottub',  x: 30, y: 6,  type: 'examine', glow: false },
-    { id: 'ch1_mess',    x: 2,  y: 7,  type: 'examine', glow: false, sprite: 'item-bottle' },
-    { id: 'ch1_view',    x: 20, y: 21, type: 'examine', glow: true },
-    { id: 'ch1_smoke',   x: 8,  y: 11, type: 'examine', glow: true, sprite: 'item-joint' },
-    { id: 'ch1_blunt',   x: 35, y: 6,  type: 'examine', glow: true, sprite: 'item-joint' },
-    { id: 'ch1_bong',    x: 20, y: 1,  type: 'examine', glow: true, sprite: 'item-bong' },
-    { id: 'ch1_setup',   x: 11, y: 2,  type: 'examine', glow: true, sprite: 'item-tablet' },
-    { id: 'ch1_computer', x: 12, y: 3, type: 'examine', glow: true },
-    { id: 'ch1_bed',     x: 10, y: 1,  type: 'examine', glow: false, sprite: 'item-bed' },
-    { id: 'ch1_closet',  x: 15, y: 2,  type: 'examine', glow: false },
-    { id: 'ch1_speaker', x: 14, y: 1,  type: 'examine', glow: false },
+    // --- Living Room (cols 1-8, rows 1-7) ---
+    { id: 'ch1_couch',      x: 3,  y: 2,  type: 'examine', glow: false, sprite: 'item-couch' },
+    { id: 'ch1_tv',         x: 1,  y: 4,  type: 'examine', glow: false, sprite: 'item-tv' },
+    { id: 'ch1_mess',       x: 2,  y: 7,  type: 'examine', glow: false, sprite: 'item-bottle' },
+    { id: 'ch1_bottles',    x: 6,  y: 2,  type: 'examine', glow: false, sprite: 'item-bottle' },
+    { id: 'ch1_speaker',    x: 8,  y: 1,  type: 'examine', glow: false, sprite: 'item-phone' },
+    { id: 'ch1_weed1',      x: 5,  y: 2,  type: 'examine', glow: true, sprite: 'item-weed-bag' },
+
+    // --- JP's Room (cols 10-15, rows 1-7) ---
+    { id: 'ch1_bed',        x: 10, y: 1,  type: 'examine', glow: false, sprite: 'item-bed' },
+    { id: 'ch1_setup',      x: 11, y: 2,  type: 'examine', glow: false, sprite: 'item-tablet' },
+    { id: 'ch1_computer',   x: 12, y: 3,  type: 'examine', glow: false, sprite: 'item-desk' },
+    { id: 'ch1_weed2',      x: 14, y: 4,  type: 'examine', glow: true, sprite: 'item-weed-bag' },
+    { id: 'ch1_closet',     x: 15, y: 2,  type: 'examine', glow: false, sprite: 'item-nightstand' },
+    { id: 'ch1_poster',     x: 13, y: 1,  type: 'examine', glow: false, sprite: 'item-poster' },
+    { id: 'ch1_clothes',    x: 14, y: 7,  type: 'examine', glow: false, sprite: 'item-laundry-basket' },
+
+    // --- Kitchen (cols 17-21, rows 1-7) ---
+    { id: 'ch1_fridge',     x: 17, y: 1,  type: 'examine', glow: false, sprite: 'item-fridge' },
+    { id: 'ch1_counter',    x: 19, y: 2,  type: 'examine', glow: false, sprite: 'item-bottle' },
+    { id: 'ch1_bong',       x: 20, y: 1,  type: 'examine', glow: true, sprite: 'item-bong' },
+    { id: 'ch1_food',       x: 21, y: 3,  type: 'examine', glow: false, sprite: 'item-food' },
+    { id: 'ch1_weed3',      x: 18, y: 5,  type: 'examine', glow: true, sprite: 'item-weed-bag' },
+
+    // --- Nolan's Room (cols 23-27, rows 1-7) ---
+    { id: 'ch1_nolan_bed',  x: 23, y: 1,  type: 'examine', glow: false, sprite: 'item-bed' },
+    { id: 'ch1_surfboard',  x: 27, y: 2,  type: 'examine', glow: false, sprite: 'item-poster' },
+    { id: 'ch1_nolan_speaker', x: 25, y: 1, type: 'examine', glow: false, sprite: 'item-phone' },
+    { id: 'ch1_nolan_poster', x: 24, y: 1, type: 'examine', glow: false, sprite: 'item-poster' },
+    { id: 'ch1_blunt',      x: 26, y: 5,  type: 'examine', glow: true, sprite: 'item-joint' },
+
+    // --- Hot Tub Patio (outside, cols 30-36) ---
+    { id: 'ch1_hottub',     x: 30, y: 5,  type: 'examine', glow: false, sprite: 'item-shower' },
+    { id: 'ch1_shower',     x: 29, y: 1,  type: 'examine', glow: true, sprite: 'item-shower' },
+
+    // --- Yard (rows 9-11) ---
+    { id: 'ch1_smoke',      x: 8,  y: 11, type: 'examine', glow: true, sprite: 'item-joint' },
+    { id: 'ch1_beerpong',   x: 34, y: 10, type: 'examine', glow: true, sprite: 'item-bottle' },
+
+    // --- Beach (rows 16-26) ---
+    { id: 'ch1_view',       x: 20, y: 21, type: 'examine', glow: false, sprite: 'item-plant' },
     { id: 'ch1_volleyball1', x: 15, y: 20, type: 'examine', glow: true },
-    { id: 'ch1_shower',      x: 27, y: 7,  type: 'examine', glow: true, sprite: 'item-shower' },
+    { id: 'ch1_towels',     x: 8,  y: 18, type: 'examine', glow: false, sprite: 'item-rug' },
+    { id: 'ch1_cooler',     x: 10, y: 18, type: 'examine', glow: false, sprite: 'item-storage-box' },
+    { id: 'ch1_bonfire',    x: 28, y: 22, type: 'examine', glow: false, sprite: 'item-bbq' },
+    { id: 'ch1_surfboards', x: 5,  y: 17, type: 'examine', glow: false, sprite: 'item-poster' },
+    { id: 'ch1_shells',     x: 30, y: 25, type: 'examine', glow: false, sprite: 'item-ball' },
+    { id: 'ch1_sunset',     x: 35, y: 20, type: 'examine', glow: false, sprite: 'item-photo' },
   ],
 };
 
@@ -431,38 +468,38 @@ export const wrongCrowdMap: MapData = {
     { id: 'ch2_bed_pile_R2', x: 16, y: 2, type: 'examine', glow: false, sprite: 'item-weed-bag' }, // stacked on same tile
     { id: 'ch2_bed_under',  x: 15, y: 1, type: 'examine', glow: false, sprite: 'item-weed-bag' }, // bag poking out from UNDER the bed
     { id: 'ch2_grab_weed', x: 19, y: 3, type: 'examine', glow: true, sprite: 'item-weed-bag' },  // main grab bag on desk
-    { id: 'ch2_closet',    x: 20, y: 1, type: 'examine', glow: true },                            // CLOSET — bags fall out
+    { id: 'ch2_closet',    x: 20, y: 1, type: 'examine', glow: false, sprite: 'item-nightstand' },  // CLOSET — bags fall out
     { id: 'ch2_gun',       x: 16, y: 1, type: 'examine', glow: true, sprite: 'item-gun' },       // gun
-    { id: 'ch2_computer',  x: 19, y: 1, type: 'examine', glow: true },                            // computer/desk
+    { id: 'ch2_computer',  x: 19, y: 1, type: 'examine', glow: false, sprite: 'item-desk' },        // computer/desk
     { id: 'ch2_phone',     x: 16, y: 3, type: 'examine', glow: true, sprite: 'item-phone' },     // phone
     { id: 'ch2_money_stack', x: 20, y: 3, type: 'examine', glow: true, sprite: 'item-money' },   // money
     { id: 'ch2_pops_missed', x: 17, y: 5, type: 'examine', glow: true, sprite: 'item-phone' },   // missed call from pops
 
     // --- House common areas ---
-    { id: 'ch2_light1',    x: 10, y: 3, type: 'examine', glow: false },                           // light switch
-    { id: 'ch2_light2',    x: 24, y: 3, type: 'examine', glow: false },                           // light switch
+    { id: 'ch2_light1',    x: 10, y: 3, type: 'examine', glow: false, sprite: 'item-lamp' },       // light switch
+    { id: 'ch2_light2',    x: 24, y: 3, type: 'examine', glow: false, sprite: 'item-lamp' },       // light switch
     { id: 'ch2_fridge',    x: 26, y: 1, type: 'examine', glow: false, sprite: 'item-fridge' },    // appliance
-    { id: 'ch2_hottub_night', x: 31, y: 4, type: 'examine', glow: false },                        // empty at night
-    { id: 'ch2_front_door', x: 18, y: 8, type: 'examine', glow: false },                          // door
+    { id: 'ch2_hottub_night', x: 31, y: 4, type: 'examine', glow: false, sprite: 'item-shower' },  // empty at night
+    { id: 'ch2_front_door', x: 18, y: 8, type: 'examine', glow: false, sprite: 'item-nightstand' }, // door
 
     // --- Street & driving ---
     { id: 'ch2_car',       x: 18, y: 13, type: 'examine', glow: true, sprite: 'item-keys' },     // BMW parked on street
-    { id: 'ch2_streetlight', x: 25, y: 16, type: 'examine', glow: false },                        // streetlight — scenery
-    { id: 'ch2_street_walk', x: 14, y: 14, type: 'examine', glow: true },                         // walking the dark street
-    { id: 'ch2_nervous',   x: 12, y: 30, type: 'examine', glow: true },                           // nervous on second street
+    { id: 'ch2_streetlight', x: 25, y: 16, type: 'examine', glow: false, sprite: 'item-lamp' },    // streetlight — scenery
+    { id: 'ch2_street_walk', x: 14, y: 14, type: 'examine', glow: false, sprite: 'item-letter' },   // walking the dark street
+    { id: 'ch2_nervous',   x: 12, y: 30, type: 'examine', glow: false, sprite: 'item-letter' },     // nervous on second street
 
     // --- Convenience store area ---
-    { id: 'ch2_graffiti',  x: 4,  y: 17, type: 'examine', glow: true },                           // graffiti visible on store wall
-    { id: 'ch2_store',     x: 7,  y: 18, type: 'examine', glow: true },                           // inside the store
+    { id: 'ch2_graffiti',  x: 4,  y: 17, type: 'examine', glow: false, sprite: 'item-poster' },     // graffiti visible on store wall
+    { id: 'ch2_store',     x: 7,  y: 18, type: 'examine', glow: false, sprite: 'item-nightstand' }, // inside the store
 
     // --- Buyer's house area ---
     // --- Expansion area ---
-    { id: 'ch2_residential', x: 15, y: 24, type: 'examine', glow: true },                         // looking at houses where normal people sleep
-    { id: 'ch2_flashback_spot', x: 10, y: 26, type: 'examine', glow: true },                      // where Jose and JP used to hang
-    { id: 'ch2_alley',      x: 35, y: 26, type: 'examine', glow: true },                          // dark alley
+    { id: 'ch2_residential', x: 15, y: 24, type: 'examine', glow: false, sprite: 'item-photo' },    // looking at houses where normal people sleep
+    { id: 'ch2_flashback_spot', x: 10, y: 26, type: 'examine', glow: false, sprite: 'item-photo' }, // where Jose and JP used to hang
+    { id: 'ch2_alley',      x: 35, y: 26, type: 'examine', glow: false, sprite: 'item-letter' },    // dark alley
 
     // --- Buyer's house area ---
-    { id: 'ch2_parking_lot', x: 20, y: 35, type: 'examine', glow: true },                         // driveway near buyer's house
+    { id: 'ch2_parking_lot', x: 20, y: 35, type: 'examine', glow: false, sprite: 'item-car' },     // driveway near buyer's house
     { id: 'ch2_sale',      x: 25, y: 37, type: 'examine', glow: true, sprite: 'item-weed-bag' }, // THE TRIGGER — sale spot inside buyer's house
   ],
 };
@@ -552,10 +589,10 @@ export const jailMap: MapData = {
   ],
   interactables: [
     // --- Cell scratches ---
-    { id: 'ch3_wall_1',  x: 2, y: 7,  type: 'scratch', glow: true, sprite: 'item-scratch' },   // JP's cell wall
-    { id: 'ch3_wall_2',  x: 2, y: 8,  type: 'scratch', glow: true, sprite: 'item-scratch' },   // JP's cell wall
-    { id: 'ch3_wall_3',  x: 15, y: 14, type: 'scratch', glow: true, sprite: 'item-scratch' },  // near guard station
-    { id: 'ch3_wall_4',  x: 6, y: 13, type: 'scratch', glow: true, sprite: 'item-scratch' },   // hallway wall
+    { id: 'ch3_wall_1',  x: 2, y: 7,  type: 'scratch', glow: false, sprite: 'item-scratch' },   // JP's cell wall
+    { id: 'ch3_wall_2',  x: 2, y: 8,  type: 'scratch', glow: false, sprite: 'item-scratch' },   // JP's cell wall
+    { id: 'ch3_wall_3',  x: 15, y: 14, type: 'scratch', glow: false, sprite: 'item-scratch' },  // near guard station
+    { id: 'ch3_wall_4',  x: 6, y: 13, type: 'scratch', glow: false, sprite: 'item-scratch' },   // hallway wall
 
     // --- JP's cell items ---
     { id: 'ch3_bed',         x: 3, y: 6,   type: 'examine', glow: true, sprite: 'item-bed' },      // BACK of JP's cell
@@ -565,29 +602,29 @@ export const jailMap: MapData = {
 
     // --- Hallway / common ---
     { id: 'ch3_phone',       x: 10, y: 13, type: 'examine', glow: true, sprite: 'item-phone' },    // hallway phone
-    { id: 'ch3_window',      x: 14, y: 16, type: 'examine', glow: false },                         // window — no floating sprite
-    { id: 'ch3_transformation', x: 13, y: 16, type: 'examine', glow: true },                        // hallway mirror
+    { id: 'ch3_window',      x: 14, y: 16, type: 'examine', glow: false, sprite: 'item-photo' },    // window — no floating sprite
+    { id: 'ch3_transformation', x: 13, y: 16, type: 'examine', glow: false, sprite: 'item-mirror' },  // hallway mirror
 
     // --- Common area ---
-    { id: 'ch3_commissary',  x: 28, y: 4,  type: 'examine', glow: true },                          // commissary counter
-    { id: 'ch3_fight_watch', x: 23, y: 3,  type: 'examine', glow: true },                          // watching fight
+    { id: 'ch3_commissary',  x: 28, y: 4,  type: 'examine', glow: false, sprite: 'item-food' },      // commissary counter
+    { id: 'ch3_fight_watch', x: 23, y: 3,  type: 'examine', glow: true, sprite: 'item-weights' },   // watching fight
     { id: 'ch3_dice_watch',  x: 34, y: 8,  type: 'examine', glow: true, sprite: 'item-dice' },     // watching dice
-    { id: 'ch3_anger_management', x: 24, y: 8, type: 'examine', glow: false },                     // wall poster — scenery
+    { id: 'ch3_anger_management', x: 24, y: 8, type: 'examine', glow: false, sprite: 'item-poster' }, // wall poster — scenery
 
     // --- Yard ---
     { id: 'ch3_pushups',     x: 12, y: 19, type: 'examine', glow: true, sprite: 'item-weights' },  // yard
-    { id: 'ch3_yard',        x: 18, y: 23, type: 'examine', glow: false },                         // scenery
-    { id: 'ch3_birthday',    x: 30, y: 23, type: 'examine', glow: true },                          // yard, open area
-    { id: 'ch3_faith',       x: 7, y: 22,  type: 'examine', glow: true },                          // quiet corner of yard
+    { id: 'ch3_yard',        x: 18, y: 23, type: 'examine', glow: false, sprite: 'item-ball' },     // scenery
+    { id: 'ch3_birthday',    x: 30, y: 23, type: 'examine', glow: false, sprite: 'item-food' },      // yard, open area
+    { id: 'ch3_faith',       x: 7, y: 22,  type: 'examine', glow: true, sprite: 'item-book' },      // quiet corner of yard
 
     // --- Study corner / weight rack ---
-    { id: 'ch3_tablet',      x: 34, y: 24, type: 'examine', glow: true, sprite: 'item-tablet' },   // weight rack area
-    { id: 'ch3_music',       x: 34, y: 25, type: 'examine', glow: true, sprite: 'item-headphones' }, // near weights
+    { id: 'ch3_tablet',      x: 34, y: 24, type: 'examine', glow: false, sprite: 'item-tablet' },   // weight rack area
+    { id: 'ch3_music',       x: 34, y: 25, type: 'examine', glow: false, sprite: 'item-headphones' }, // near weights
     { id: 'ch3_psych_course', x: 35, y: 24, type: 'examine', glow: true, sprite: 'item-book' },    // near study corner
 
     // --- Mirrors (different locations) ---
-    { id: 'ch3_mirror_day2', x: 12, y: 13, type: 'examine', glow: true },                          // hallway mirror
-    { id: 'ch3_mirror_day3', x: 33, y: 24, type: 'examine', glow: true },                          // weight area mirror
+    { id: 'ch3_mirror_day2', x: 12, y: 13, type: 'examine', glow: false, sprite: 'item-mirror' },    // hallway mirror
+    { id: 'ch3_mirror_day3', x: 33, y: 24, type: 'examine', glow: false, sprite: 'item-mirror' },    // weight area mirror
   ],
 };
 
@@ -655,16 +692,29 @@ export const tractorMap: MapData = {
     { x: 20, y: 35, action: 'scene', target: 'TransitionScene', data: { text: 'Two months later...', subtext: 'JP is building.', nextScene: 'ComeUpScene' } },
   ],
   interactables: [
-    { id: 'ch4_tractor', x: 13, y: 9, type: 'examine', glow: true },
-    { id: 'ch4_vines', x: 25, y: 14, type: 'examine', glow: true },
+    { id: 'ch4_tractor', x: 13, y: 9, type: 'examine', glow: true, sprite: 'item-car' },
+    { id: 'ch4_vines', x: 25, y: 14, type: 'examine', glow: false, sprite: 'item-plant' },
     { id: 'ch4_phone', x: 8, y: 9, type: 'examine', glow: true, sprite: 'item-phone' },
     { id: 'ch4_ai_discovery', x: 6, y: 5, type: 'evolve', glow: true, sprite: 'item-tablet' },
-    { id: 'ch4_sunrise', x: 35, y: 2, type: 'examine', glow: true },
+    { id: 'ch4_sunrise', x: 35, y: 2, type: 'examine', glow: false, sprite: 'item-photo' },
     { id: 'ch4_lunch', x: 3, y: 9, type: 'examine', glow: true, sprite: 'item-food' },
     { id: 'ch4_paycheck', x: 30, y: 19, type: 'examine', glow: true, sprite: 'item-money' },
-    { id: 'ch4_d8_seat', x: 20, y: 6, type: 'examine', glow: true },
-    { id: 'ch4_crash', x: 14, y: 17, type: 'examine', glow: true },
-    { id: 'ch4_vineyard_row', x: 10, y: 14, type: 'examine', glow: true },
+    { id: 'ch4_d8_seat', x: 20, y: 6, type: 'examine', glow: false, sprite: 'item-car' },
+    { id: 'ch4_crash', x: 14, y: 17, type: 'examine', glow: false, sprite: 'item-car' },
+    { id: 'ch4_vineyard_row', x: 10, y: 14, type: 'examine', glow: false, sprite: 'item-plant' },
+    { id: 'ch4_farmhouse',    x: 5,  y: 3,  type: 'examine', glow: false, sprite: 'item-nightstand' },
+    { id: 'ch4_radio',        x: 3,  y: 4,  type: 'examine', glow: false, sprite: 'item-phone' },
+    { id: 'ch4_water_cooler', x: 8,  y: 5,  type: 'examine', glow: false, sprite: 'item-bottle' },
+    { id: 'ch4_tools',        x: 7,  y: 3,  type: 'examine', glow: false, sprite: 'item-weights' },
+    { id: 'ch4_truck',        x: 12, y: 3,  type: 'examine', glow: false, sprite: 'item-car' },
+    { id: 'ch4_grape_row1',   x: 20, y: 12, type: 'examine', glow: false, sprite: 'item-plant' },
+    { id: 'ch4_grape_row2',   x: 25, y: 16, type: 'examine', glow: false, sprite: 'item-plant' },
+    { id: 'ch4_shade_tree',   x: 15, y: 8,  type: 'examine', glow: false, sprite: 'item-plant' },
+    { id: 'ch4_snake',        x: 30, y: 14, type: 'examine', glow: true, sprite: 'item-ball' },
+    { id: 'ch4_break_spot',   x: 18, y: 6,  type: 'examine', glow: false, sprite: 'item-bbq' },
+    { id: 'ch4_dust',         x: 35, y: 10, type: 'examine', glow: false, sprite: 'item-photo' },
+    { id: 'ch4_hat',          x: 10, y: 7,  type: 'examine', glow: false, sprite: 'item-poster' },
+    { id: 'ch4_spanish_radio', x: 22, y: 4, type: 'examine', glow: false, sprite: 'item-phone' },
   ],
 };
 
@@ -743,18 +793,30 @@ export const comeUpMap: MapData = {
     // JP's office — spread out, no overlapping positions, max 4 items
     { id: 'ch5_first_dollar', x: 5, y: 3, type: 'examine', glow: true, sprite: 'item-money' },
     { id: 'ch5_first_site', x: 8, y: 2, type: 'examine', glow: true, sprite: 'item-tablet' },
-    { id: 'ch5_late_night', x: 11, y: 3, type: 'examine', glow: true },
-    { id: 'ch5_github', x: 12, y: 4, type: 'examine', glow: true },
+    { id: 'ch5_late_night', x: 11, y: 3, type: 'examine', glow: false, sprite: 'item-tablet' },
+    { id: 'ch5_github', x: 12, y: 4, type: 'examine', glow: false, sprite: 'item-tablet' },
     // Street — minimal items, no unnecessary sprites
-    { id: 'ch5_review', x: 35, y: 9, type: 'examine', glow: true },
+    { id: 'ch5_review', x: 35, y: 9, type: 'examine', glow: false, sprite: 'item-poster' },
     { id: 'ch5_sticker_wall', x: 27, y: 11, type: 'examine', glow: false, sprite: 'item-poster' },
-    { id: 'ch5_print_shop', x: 5, y: 16, type: 'examine', glow: true },
-    { id: 'ch5_dhl_building', x: 28, y: 24, type: 'examine', glow: true },
+    { id: 'ch5_print_shop', x: 5, y: 16, type: 'examine', glow: false, sprite: 'item-poster' },
+    { id: 'ch5_dhl_building', x: 28, y: 24, type: 'examine', glow: false, sprite: 'item-tablet' },
     // Invisible "!" markers — no sprites
-    { id: 'ch5_3am', x: 7, y: 4, type: 'examine', glow: true },
-    { id: 'ch5_pricing', x: 9, y: 2, type: 'examine', glow: true },
-    { id: 'ch5_stack', x: 6, y: 2, type: 'examine', glow: true },
-    { id: 'ch5_doubt', x: 10, y: 4, type: 'examine', glow: true },
+    { id: 'ch5_3am', x: 7, y: 4, type: 'examine', glow: false, sprite: 'item-phone' },
+    { id: 'ch5_pricing', x: 9, y: 2, type: 'examine', glow: false, sprite: 'item-money' },
+    { id: 'ch5_stack', x: 6, y: 2, type: 'examine', glow: true, sprite: 'item-tablet' },
+    { id: 'ch5_doubt', x: 10, y: 4, type: 'examine', glow: false, sprite: 'item-book' },
+    // Expanded Ch6 interactables — hustle details
+    { id: 'ch5_fiverr',       x: 12, y: 3,  type: 'examine', glow: true, sprite: 'item-tablet' },
+    { id: 'ch5_cold_email',   x: 9,  y: 4,  type: 'examine', glow: true, sprite: 'item-letter' },
+    { id: 'ch5_portfolio',    x: 7,  y: 2,  type: 'examine', glow: false, sprite: 'item-tablet' },
+    { id: 'ch5_coffee',       x: 4,  y: 3,  type: 'examine', glow: false, sprite: 'item-food' },
+    { id: 'ch5_whiteboard',   x: 6,  y: 1,  type: 'examine', glow: false, sprite: 'item-poster' },
+    { id: 'ch5_invoice',      x: 11, y: 2,  type: 'examine', glow: true, sprite: 'item-money' },
+    { id: 'ch5_rejection',    x: 20, y: 14, type: 'examine', glow: true, sprite: 'item-phone' },
+    { id: 'ch5_testimonial',  x: 30, y: 12, type: 'examine', glow: true, sprite: 'item-letter' },
+    { id: 'ch5_youtube',      x: 10, y: 5,  type: 'examine', glow: false, sprite: 'item-tv' },
+    { id: 'ch5_ramen',        x: 3,  y: 4,  type: 'examine', glow: false, sprite: 'item-food' },
+    { id: 'ch5_bank_app',     x: 8,  y: 3,  type: 'examine', glow: true, sprite: 'item-phone' },
   ],
 };
 
@@ -904,34 +966,51 @@ export const operatorMap: MapData = {
   interactables: [
     // Pomaikai HQ — one tablet (dashboard), rest are invisible "!" markers
     { id: 'ch6_dashboard', x: 12, y: 4, type: 'examine', glow: true, sprite: 'item-tablet' },
-    { id: 'ch6_pomaikai_office', x: 14, y: 6, type: 'examine', glow: true },
-    { id: 'ch6_slack', x: 5, y: 6, type: 'examine', glow: true },
+    { id: 'ch6_pomaikai_office', x: 14, y: 6, type: 'examine', glow: false, sprite: 'item-tablet' },
+    { id: 'ch6_slack', x: 5, y: 6, type: 'examine', glow: false, sprite: 'item-phone' },
     // Street — one tablet for portfolio
     { id: 'ch6_portfolio', x: 19, y: 12, type: 'examine', glow: true, sprite: 'item-tablet' },
-    { id: 'ch6_team', x: 12, y: 12, type: 'examine', glow: true },
-    { id: 'ch6_instagram', x: 16, y: 13, type: 'examine', glow: true },
-    { id: 'ch6_equal_moment', x: 22, y: 12, type: 'examine', glow: true },
+    { id: 'ch6_team', x: 12, y: 12, type: 'examine', glow: false, sprite: 'item-poster' },
+    { id: 'ch6_instagram', x: 16, y: 13, type: 'examine', glow: false, sprite: 'item-phone' },
+    { id: 'ch6_equal_moment', x: 22, y: 12, type: 'examine', glow: true, sprite: 'item-money' },
     // Office 3
-    { id: 'ch6_mirror', x: 34, y: 5, type: 'examine', glow: true },
+    { id: 'ch6_mirror', x: 34, y: 5, type: 'examine', glow: false, sprite: 'item-mirror' },
     // Downtown shops
     { id: 'ch6_revenue', x: 33, y: 16, type: 'examine', glow: true, sprite: 'item-money' },
-    { id: 'ch6_future', x: 30, y: 16, type: 'examine', glow: true, sprite: 'item-letter' },
-    { id: 'ch6_security', x: 10, y: 10, type: 'examine', glow: true },
+    { id: 'ch6_future', x: 30, y: 16, type: 'examine', glow: false, sprite: 'item-letter' },
+    { id: 'ch6_security', x: 10, y: 10, type: 'examine', glow: false, sprite: 'item-poster' },
     // Block 2
-    { id: 'ch6_steak_dinner', x: 7, y: 23, type: 'examine', glow: true },
-    { id: 'ch6_cowork_laptop', x: 19, y: 23, type: 'examine', glow: true, sprite: 'item-tablet' },
-    { id: 'ch6_luxury_view', x: 35, y: 23, type: 'examine', glow: true },
+    { id: 'ch6_steak_dinner', x: 7, y: 23, type: 'examine', glow: false, sprite: 'item-food' },
+    { id: 'ch6_cowork_laptop', x: 19, y: 23, type: 'examine', glow: false, sprite: 'item-tablet' },
+    { id: 'ch6_luxury_view', x: 35, y: 23, type: 'examine', glow: false, sprite: 'item-photo' },
     // Park
-    { id: 'ch6_park_bench', x: 20, y: 31, type: 'examine', glow: true },
+    { id: 'ch6_park_bench', x: 20, y: 31, type: 'examine', glow: false, sprite: 'item-book' },
     // Block 3 — Gym, Coffee, Highrise
-    { id: 'ch6_gym_weights', x: 6, y: 39, type: 'examine', glow: true },
-    { id: 'ch6_coffee', x: 16, y: 38, type: 'examine', glow: true },
-    { id: 'ch6_lobby_desk', x: 29, y: 40, type: 'examine', glow: true },
+    { id: 'ch6_gym_weights', x: 6, y: 39, type: 'examine', glow: false, sprite: 'item-weights' },
+    { id: 'ch6_coffee', x: 16, y: 38, type: 'examine', glow: false, sprite: 'item-food' },
+    { id: 'ch6_lobby_desk', x: 29, y: 40, type: 'examine', glow: false, sprite: 'item-tablet' },
     // Block 4 — JP's World
-    { id: 'ch6_corvette', x: 20, y: 51, type: 'examine', glow: true },
-    { id: 'ch6_food_truck_menu', x: 24, y: 48, type: 'examine', glow: true },
-    { id: 'ch6_mural', x: 33, y: 48, type: 'examine', glow: true },
-    { id: 'ch6_rooftop', x: 9, y: 48, type: 'examine', glow: true },
+    { id: 'ch6_corvette', x: 20, y: 51, type: 'examine', glow: true, sprite: 'item-car' },
+    { id: 'ch6_food_truck_menu', x: 24, y: 48, type: 'examine', glow: true, sprite: 'item-food' },
+    { id: 'ch6_mural', x: 33, y: 48, type: 'examine', glow: false, sprite: 'item-poster' },
+    { id: 'ch6_rooftop', x: 9, y: 48, type: 'examine', glow: false, sprite: 'item-photo' },
+    // --- Expansion: 16 new interactables ---
+    { id: 'ch6_whiteboard',      x: 10, y: 5,  type: 'examine', glow: false, sprite: 'item-poster' },     // office whiteboard
+    { id: 'ch6_client_call',     x: 15, y: 6,  type: 'examine', glow: true,  sprite: 'item-phone' },      // client on phone
+    { id: 'ch6_printer',         x: 8,  y: 6,  type: 'examine', glow: false, sprite: 'item-desk' },       // office printer
+    { id: 'ch6_water_cooler',    x: 13, y: 4,  type: 'examine', glow: false, sprite: 'item-bottle' },     // office water cooler
+    { id: 'ch6_elevator',        x: 30, y: 42, type: 'examine', glow: false, sprite: 'item-nightstand' }, // highrise elevator
+    { id: 'ch6_view_city',       x: 32, y: 44, type: 'examine', glow: true,  sprite: 'item-photo' },      // city view from JP's apartment
+    { id: 'ch6_closet',          x: 10, y: 48, type: 'examine', glow: false, sprite: 'item-nightstand' }, // JP's closet
+    { id: 'ch6_restaurant_menu', x: 8,  y: 23, type: 'examine', glow: false, sprite: 'item-letter' },     // restaurant menu
+    { id: 'ch6_fountain',        x: 20, y: 28, type: 'examine', glow: false, sprite: 'item-plant' },      // plaza fountain
+    { id: 'ch6_street_art',      x: 15, y: 32, type: 'examine', glow: false, sprite: 'item-poster' },     // street art
+    { id: 'ch6_lambo',           x: 22, y: 51, type: 'examine', glow: true,  sprite: 'item-car' },        // SVJ parked
+    { id: 'ch6_valet_stand',     x: 18, y: 50, type: 'examine', glow: false, sprite: 'item-keys' },       // valet stand
+    { id: 'ch6_newspaper',       x: 25, y: 30, type: 'examine', glow: false, sprite: 'item-letter' },     // LA Times on a bench
+    { id: 'ch6_homeless',        x: 5,  y: 35, type: 'examine', glow: true,  sprite: 'item-food' },       // homeless person (reality check)
+    { id: 'ch6_billboard',       x: 35, y: 15, type: 'examine', glow: false, sprite: 'item-poster' },     // billboard on the street
+    { id: 'ch6_pops_call',       x: 12, y: 48, type: 'examine', glow: true,  sprite: 'item-phone' },      // call from Pops
   ],
 };
 

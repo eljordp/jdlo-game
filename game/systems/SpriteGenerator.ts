@@ -1296,6 +1296,127 @@ function generateAllNPCs(scene: Phaser.Scene) {
     0x806030
   );
 
+  // Big Bart — fat, rambunctious, white guy, tank top — 32x32
+  generateNPC32(
+    scene,
+    'npc_bigbart',
+    0xc0a060, // dirty blonde hair
+    'short',
+    0xe0e0e0, // white tank top
+    0xd0d0d0,
+    0x404850, // dark shorts
+    0xf0c8a0, // pale skin
+    0xd0a880,
+    (g) => {
+      // Make him FAT — wider torso, belly overhang
+      // Extra body width on both sides (shirt color)
+      px(g, 4, 14, 0xe0e0e0, 3, 8);   // left body extension
+      px(g, 25, 14, 0xe0e0e0, 3, 8);   // right body extension
+      // Belly — skin colored overhang below shirt
+      px(g, 6, 22, 0xf0c8a0, 20, 3);   // belly skin
+      px(g, 7, 21, 0xf0c8a0, 18, 2);   // upper belly
+      // Thicker arms
+      px(g, 3, 16, 0xf0c8a0, 3, 5);    // left arm (skin)
+      px(g, 26, 16, 0xf0c8a0, 3, 5);   // right arm (skin)
+    }
+  );
+
+  // Bikini Girl 1 — tan, dark hair, blue bikini top
+  generateNPC32(
+    scene,
+    'npc_bikini1',
+    0x302018, // dark brown hair
+    'long',
+    0x4090d0, // blue bikini top
+    0x50a0e0,
+    0x4090d0, // matching bottom
+    0xd0a870, // tan skin
+    0xb08850
+  );
+
+  // Bikini Girl 2 — lighter skin, dark hair, pink bikini
+  generateNPC32(
+    scene,
+    'npc_bikini2',
+    0x201010, // black hair
+    'long',
+    0xd04080, // pink bikini
+    0xe050a0,
+    0xd04080,
+    0xf0c8a0, // lighter skin
+    0xd0a880
+  );
+
+  // Business NPC — suit, professional
+  generateNPC32(
+    scene,
+    'npc_business',
+    0x202020,
+    'short',
+    0x2a2a3a, // dark suit jacket
+    0x3a3a4a,
+    0x2a2a3a, // matching pants
+    0xd0a870,
+    0xb08850
+  );
+
+  // Inmate 2 — different look
+  generateNPC32(
+    scene,
+    'npc_inmate2',
+    0x101010,
+    'bald',
+    0xf08030, // orange jumpsuit
+    0xe07020,
+    0xf08030,
+    0x906838,
+    0x705028
+  );
+
+  // Inmate 3 — different look
+  generateNPC32(
+    scene,
+    'npc_inmate3',
+    0x604020,
+    'short',
+    0xf08030,
+    0xe07020,
+    0xf08030,
+    0xd0a870,
+    0xb08850
+  );
+
+  // Inmate 4 — big guy
+  generateNPC32(
+    scene,
+    'npc_inmate4',
+    0x101010,
+    'short',
+    0xf08030,
+    0xe07020,
+    0xf08030,
+    0x805830,
+    0x604020,
+    (g) => {
+      // Wider shoulders
+      px(g, 4, 14, 0xf08030, 3, 6);
+      px(g, 25, 14, 0xf08030, 3, 6);
+    }
+  );
+
+  // Tech NPC — hoodie, glasses vibe
+  generateNPC32(
+    scene,
+    'npc_tech',
+    0x302020,
+    'short',
+    0x404050, // dark hoodie
+    0x505060,
+    0x303040,
+    0xf0c8a0,
+    0xd0a880
+  );
+
   // DHL Client — professional, dark skin, DHL-ish yellow shirt
   generateNPC32(
     scene,

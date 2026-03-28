@@ -5,6 +5,8 @@ import { jailDay1Dialogue, jailDay2Dialogue, jailDay3Dialogue } from '../data/st
 import { GAME_WIDTH, GAME_HEIGHT } from '../config';
 import type { DialogueLine } from '../systems/DialogueSystem';
 import { MoodSystem } from '../systems/MoodSystem';
+import { InventorySystem } from '../systems/InventorySystem';
+import { Analytics } from '../systems/Analytics';
 
 export class JailScene extends BaseChapterScene {
   private currentDay = 1;
@@ -193,6 +195,76 @@ export class JailScene extends BaseChapterScene {
     if (interactable.id === 'ch3_fight_watch' && this.currentDay === 1) {
       this.playBattleScene();
       this.interactions.consume(interactable.id);
+      return;
+    }
+
+    if (interactable.id === 'ch3_commissary') {
+      Analytics.trackInteraction(interactable.id);
+      this.frozen = true;
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'Commissary window. Ramen, chips, soap, envelopes.' },
+        { speaker: 'Narrator', text: 'JP grabs a couple soups and a pen.' },
+        { speaker: 'JP\'s Mind', text: 'This is currency in here.' },
+      ], () => { this.frozen = false; });
+      return;
+    }
+
+    if (interactable.id === 'ch3_letter_home') {
+      Analytics.trackInteraction(interactable.id);
+      this.interactions.consume(interactable.id);
+      this.frozen = true;
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'JP sits on his bunk with a pen and paper.' },
+        { speaker: 'Narrator', text: 'He writes: "Hey Pops. I\'m okay. I\'m reading a lot."' },
+        { speaker: 'Narrator', text: '"Tell Mom I\'m sorry. Tell Sister I\'ll be home soon."' },
+        { speaker: 'Narrator', text: '"I\'m going to be different when I get out. I promise."' },
+        { speaker: 'JP\'s Mind', text: 'He folds it. Holds it for a minute before putting it in the envelope.' },
+      ], () => {
+        MoodSystem.changeMorale(10);
+        this.frozen = false;
+      });
+      return;
+    }
+
+    if (interactable.id === 'ch3_faith') {
+      Analytics.trackInteraction(interactable.id);
+      this.interactions.consume(interactable.id);
+      this.frozen = true;
+      // Dim the scene
+      const dim = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0)
+        .setScrollFactor(0).setDepth(300);
+      this.tweens.add({ targets: dim, alpha: 0.5, duration: 1000 });
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'JP sits in the corner of the yard. Alone.' },
+        { speaker: 'Narrator', text: 'He closes his eyes.' },
+        { speaker: 'JP\'s Mind', text: 'God, I know you can hear me.' },
+        { speaker: 'JP\'s Mind', text: 'I know I messed up. Bad.' },
+        { speaker: 'JP\'s Mind', text: 'But you know I never tried to hurt anyone.' },
+        { speaker: 'JP\'s Mind', text: 'I just need one more chance.' },
+        { speaker: 'JP\'s Mind', text: 'I\'ll do it right this time.' },
+        { speaker: 'Narrator', text: 'The yard is quiet. For the first time, so is his mind.' },
+      ], () => {
+        MoodSystem.setMood('locked_in', 90);
+        MoodSystem.changeMorale(20);
+        this.tweens.add({ targets: dim, alpha: 0, duration: 800, onComplete: () => { dim.destroy(); this.frozen = false; } });
+      });
+      return;
+    }
+
+    if (interactable.id === 'ch3_book') {
+      Analytics.trackInteraction(interactable.id);
+      this.frozen = true;
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'The Compound Effect. JP\'s been reading it for two weeks.' },
+        { speaker: 'Narrator', text: '"Small choices + consistency + time = massive results."' },
+        { speaker: 'JP\'s Mind', text: 'If that\'s true... then everything I did before was compounding too.' },
+        { speaker: 'JP\'s Mind', text: 'Bad choices. Consistently. Over time.' },
+        { speaker: 'JP\'s Mind', text: 'No wonder I ended up here.' },
+        { speaker: 'Narrator', text: 'He keeps reading.' },
+      ], () => {
+        MoodSystem.changeMorale(10);
+        this.frozen = false;
+      });
       return;
     }
 

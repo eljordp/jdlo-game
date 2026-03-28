@@ -5,6 +5,8 @@ import type { DialogueLine } from '../systems/DialogueSystem';
 import { SCALED_TILE, SCALE, GAME_WIDTH, GAME_HEIGHT } from '../config';
 import { Analytics } from '../systems/Analytics';
 import { MoodSystem } from '../systems/MoodSystem';
+import { InventorySystem } from '../systems/InventorySystem';
+import { InventoryUI } from '../systems/InventoryUI';
 
 export class HomeScene extends BaseChapterScene {
   private interactionCount = 0;
@@ -61,7 +63,7 @@ export class HomeScene extends BaseChapterScene {
     ).setDepth(-1);
 
     // Stairs labels so player knows where they are
-    const stairsDownX = 20 * SCALED_TILE + SCALED_TILE / 2;
+    const stairsDownX = 21 * SCALED_TILE + SCALED_TILE / 2;
     const stairsDownY = 10 * SCALED_TILE + SCALED_TILE / 2;
     this.add.text(stairsDownX, stairsDownY - 24, 'STAIRS', {
       fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#f0c040',
@@ -108,6 +110,7 @@ export class HomeScene extends BaseChapterScene {
     // Render windows directly on wall tiles (not floating sprites)
     const windowPositions = [
       { x: 4, y: 3 },   // JP's room (upstairs back wall)
+      { x: 16, y: 3 },  // Upstairs lounge (back wall)
       { x: 25, y: 3 },  // Sister's room (upstairs back wall)
       { x: 31, y: 3 },  // Bathroom (upstairs back wall)
       { x: 8, y: 11 },  // Parents' room (downstairs)
@@ -125,6 +128,22 @@ export class HomeScene extends BaseChapterScene {
       this.add.rectangle(wx, wy, 28, 2, 0x707880).setDepth(2).setAlpha(0.7); // top
       this.add.rectangle(wx, wy + 10, 28, 2, 0x606870).setDepth(2).setAlpha(0.7); // bottom
     }
+
+    // ── Mom catches you smoking inside ──
+    InventoryUI.onBeforeUse = (itemId: string) => {
+      // Cart is chill — only weed smoke triggers Mom
+      const weedSmokeables = ['preroll', 'bong'];
+      if (!weedSmokeables.includes(itemId)) return true;
+
+      // Check if inside the house (upstairs or downstairs, not yard)
+      const playerTileY = Math.round((this.player.y - SCALED_TILE / 2) / SCALED_TILE);
+      const inside = this.currentFloor === 'up' || playerTileY < 24;
+      if (!inside) return true; // outside = safe
+
+      // MOM CATCHES YOU
+      this.triggerMomCatchesSmoking();
+      return false;
+    };
   }
 
   protected getObjectiveHint(): string {
@@ -223,6 +242,36 @@ export class HomeScene extends BaseChapterScene {
     // Store where JP was BEFORE this move (so Ivy follows there next step)
     this.lastPlayerTileX = tileX;
     this.lastPlayerTileY = tileY;
+
+    // Auto-stairs — step on stairs tile, auto swap floors
+    if (this.currentFloor === 'up' && tileX === 20 && tileY === 10 && !this.frozen) {
+      this.frozen = true;
+      this.cameras.main.fadeOut(300, 0, 0, 0);
+      this.cameras.main.once('camerafadeoutcomplete', () => {
+        this.player.setPosition(20 * SCALED_TILE + SCALED_TILE / 2, 18 * SCALED_TILE + SCALED_TILE / 2);
+        const upRows = Array.from({ length: 12 }, (_, i) => i);
+        const downRows = Array.from({ length: this.mapHeight - 12 }, (_, i) => i + 12);
+        this.setFloorVisibility(downRows, upRows);
+        this.currentFloor = 'down';
+        this.cameras.main.setBounds(0, 12 * SCALED_TILE, this.mapWidth * SCALED_TILE, (this.mapHeight - 12) * SCALED_TILE);
+        this.cameras.main.fadeIn(300, 0, 0, 0);
+        this.frozen = false;
+      });
+    }
+    if (this.currentFloor === 'down' && tileX === 20 && tileY === 18 && !this.frozen) {
+      this.frozen = true;
+      this.cameras.main.fadeOut(300, 0, 0, 0);
+      this.cameras.main.once('camerafadeoutcomplete', () => {
+        this.player.setPosition(20 * SCALED_TILE + SCALED_TILE / 2, 10 * SCALED_TILE + SCALED_TILE / 2);
+        const upRows = Array.from({ length: 12 }, (_, i) => i);
+        const downRows = Array.from({ length: this.mapHeight - 12 }, (_, i) => i + 12);
+        this.setFloorVisibility(upRows, downRows);
+        this.currentFloor = 'up';
+        this.cameras.main.setBounds(0, 0, this.mapWidth * SCALED_TILE, 12 * SCALED_TILE);
+        this.cameras.main.fadeIn(300, 0, 0, 0);
+        this.frozen = false;
+      });
+    }
 
     // Sister follow hook
     if (this.sisterFollowHook) {
@@ -346,6 +395,89 @@ export class HomeScene extends BaseChapterScene {
   }
 
   // ─── MOM ROOM DARKEN (post-argument) ──────────────────────────────
+  // ─── MOM CATCHES YOU SMOKING INSIDE ──────────────────────────────
+  private triggerMomCatchesSmoking() {
+    this.frozen = true;
+    const objects: Phaser.GameObjects.GameObject[] = [];
+
+    // Screen flash red
+    const flash = this.add.rectangle(
+      GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH * 3, GAME_HEIGHT * 3, 0xff0000, 0
+    ).setScrollFactor(0).setDepth(400);
+    objects.push(flash);
+
+    this.tweens.add({
+      targets: flash,
+      alpha: 0.4,
+      duration: 200,
+      yoyo: true,
+      repeat: 2,
+    });
+
+    // Camera shake — Mom is MAD
+    this.cameras.main.shake(500, 0.01);
+
+    // Big "MOM" text slams in
+    this.time.delayedCall(300, () => {
+      const momText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 80, 'MOM', {
+        fontFamily: '"Press Start 2P", monospace',
+        fontSize: '48px',
+        color: '#ff2020',
+        stroke: '#000000',
+        strokeThickness: 6,
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(401).setScale(3).setAlpha(0);
+      objects.push(momText);
+
+      // Slam in
+      this.tweens.add({
+        targets: momText,
+        scaleX: 1,
+        scaleY: 1,
+        alpha: 1,
+        duration: 200,
+        ease: 'Back.easeOut',
+      });
+
+      // Dialogue sequence
+      this.time.delayedCall(800, () => {
+        // Dark overlay
+        const overlay = this.add.rectangle(
+          GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.7
+        ).setScrollFactor(0).setDepth(399);
+        objects.push(overlay);
+
+        this.dialogue.show([
+          { speaker: 'Mom', text: 'JORDAN!' },
+          { speaker: 'Mom', text: 'ARE YOU SMOKING IN MY HOUSE?!' },
+          { speaker: 'JP', text: '...' },
+          { speaker: 'Mom', text: 'I KNOW I DID NOT JUST SMELL THAT.' },
+          { speaker: 'Mom', text: 'GET OUT. Go to your room. NOW.' },
+          { speaker: 'Narrator', text: 'Mom drags JP back to his room by the ear.' },
+          { speaker: 'Narrator', text: 'Chapter restart.' },
+        ], () => {
+          // Full black screen
+          const black = this.add.rectangle(
+            GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0
+          ).setScrollFactor(0).setDepth(500);
+
+          this.tweens.add({
+            targets: black,
+            alpha: 1,
+            duration: 600,
+            onComplete: () => {
+              // Clean up and restart the scene
+              for (const obj of objects) {
+                if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
+              }
+              InventoryUI.onBeforeUse = null;
+              this.scene.restart();
+            },
+          });
+        });
+      });
+    });
+  }
+
   private triggerMomWalkaway() {
     this.momArgued = true;
     const mom = this.findNPC('ch0_mom');
@@ -597,66 +729,75 @@ export class HomeScene extends BaseChapterScene {
     this.frozen = true;
     const objects: Phaser.GameObjects.GameObject[] = [];
 
-    // Night sky
-    objects.push(this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x0a0820)
-      .setScrollFactor(0).setDepth(300));
+    // === SUNRISE OVER THE VINEYARD ===
 
-    // Stars
-    for (let i = 0; i < 40; i++) {
-      const star = this.add.circle(
-        Math.random() * GAME_WIDTH, Math.random() * (GAME_HEIGHT * 0.6),
-        Math.random() * 1.5 + 0.5, 0xffffff, 0.3 + Math.random() * 0.5
-      ).setScrollFactor(0).setDepth(301);
-      objects.push(star);
-      this.tweens.add({
-        targets: star,
-        alpha: star.alpha * 0.3,
-        duration: 1000 + Math.random() * 2000,
-        yoyo: true,
-        repeat: -1,
-      });
-    }
+    // Sky gradient — dawn colors (dark blue top → warm orange/pink horizon)
+    objects.push(this.add.rectangle(GAME_WIDTH / 2, 0, GAME_WIDTH, GAME_HEIGHT * 0.3, 0x1a2040)
+      .setOrigin(0.5, 0).setScrollFactor(0).setDepth(300));
+    objects.push(this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT * 0.2, GAME_WIDTH, GAME_HEIGHT * 0.2, 0x3a3060)
+      .setOrigin(0.5, 0).setScrollFactor(0).setDepth(300));
+    objects.push(this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT * 0.35, GAME_WIDTH, GAME_HEIGHT * 0.15, 0x804850)
+      .setOrigin(0.5, 0).setScrollFactor(0).setDepth(300));
+    objects.push(this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT * 0.45, GAME_WIDTH, GAME_HEIGHT * 0.1, 0xc07040)
+      .setOrigin(0.5, 0).setScrollFactor(0).setDepth(300));
 
-    // Rooftop edge (dark brown shingles)
-    objects.push(this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT - 150, GAME_WIDTH, 200, 0x3a2a1a)
+    // Sun — golden circle rising at the horizon
+    const sun = this.add.circle(GAME_WIDTH / 2 + 100, GAME_HEIGHT * 0.48, 40, 0xf0c040)
+      .setScrollFactor(0).setDepth(301).setAlpha(0.9);
+    objects.push(sun);
+    // Sun glow
+    const sunGlow = this.add.circle(GAME_WIDTH / 2 + 100, GAME_HEIGHT * 0.48, 70, 0xf0c040)
+      .setScrollFactor(0).setDepth(300).setAlpha(0.15);
+    objects.push(sunGlow);
+    // Sun rises slowly
+    this.tweens.add({ targets: [sun, sunGlow], y: GAME_HEIGHT * 0.42, duration: 8000, ease: 'Sine.easeOut' });
+
+    // Rolling hills (green, layered)
+    objects.push(this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT * 0.55, GAME_WIDTH + 100, GAME_HEIGHT * 0.5, 0x4a7a3a)
+      .setOrigin(0.5, 0).setScrollFactor(0).setDepth(301));
+    // Hill contour (lighter ridge)
+    objects.push(this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT * 0.53, GAME_WIDTH + 100, 8, 0x5a8a4a)
       .setScrollFactor(0).setDepth(302));
-    // Roof texture
-    for (let i = 0; i < 20; i++) {
-      objects.push(this.add.rectangle(
-        i * 70 + 20, GAME_HEIGHT - 180 + Math.random() * 20, 60, 3, 0x4a3a2a
-      ).setScrollFactor(0).setDepth(303).setAlpha(0.5));
-    }
 
-    // Neighborhood below — tiny lit windows
-    const houseColors = [0xf0d060, 0xe0c050, 0xf0e080, 0xd0b040];
-    for (let i = 0; i < 8; i++) {
-      const hx = 100 + i * 140 + Math.random() * 40;
-      const hy = GAME_HEIGHT - 80 + Math.random() * 30;
-      // House silhouette
-      objects.push(this.add.rectangle(hx, hy, 40 + Math.random() * 30, 25, 0x1a1a2a)
-        .setScrollFactor(0).setDepth(303));
-      // Lit window
-      if (Math.random() > 0.3) {
-        const wc = houseColors[Math.floor(Math.random() * houseColors.length)];
-        objects.push(this.add.rectangle(hx, hy - 4, 6, 6, wc, 0.7)
-          .setScrollFactor(0).setDepth(304));
+    // Vineyard rows — parallel lines across the hills
+    for (let i = 0; i < 14; i++) {
+      const rowY = GAME_HEIGHT * 0.58 + i * 18;
+      objects.push(this.add.rectangle(GAME_WIDTH / 2, rowY, GAME_WIDTH - 100, 3, 0x3a6a2a)
+        .setScrollFactor(0).setDepth(302).setAlpha(0.6));
+      // Vine posts (small dots along each row)
+      for (let j = 0; j < 20; j++) {
+        objects.push(this.add.rectangle(80 + j * 60, rowY - 2, 2, 6, 0x5a4030)
+          .setScrollFactor(0).setDepth(302).setAlpha(0.4));
       }
     }
 
-    // JP silhouette sitting on roof edge
-    const jp = this.add.sprite(GAME_WIDTH / 2 - 40, GAME_HEIGHT - 220, this.getPlayerTexture(), 0)
+    // Rooftop edge (shingles)
+    objects.push(this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT - 80, GAME_WIDTH, 120, 0x3a2a1a)
+      .setScrollFactor(0).setDepth(303));
+    for (let i = 0; i < 20; i++) {
+      objects.push(this.add.rectangle(
+        i * 70 + 20, GAME_HEIGHT - 110 + Math.random() * 15, 55, 3, 0x4a3a2a
+      ).setScrollFactor(0).setDepth(304).setAlpha(0.5));
+    }
+
+    // JP sitting on roof edge — silhouette against sunrise
+    const jp = this.add.sprite(GAME_WIDTH / 2 - 60, GAME_HEIGHT - 140, this.getPlayerTexture(), 0)
       .setScale(3).setScrollFactor(0).setDepth(305);
     objects.push(jp);
 
-    // Dialogue sequence
-    const chapterDialogue = this.getChapterDialogue();
-    const lines = chapterDialogue.npcs['ch0_rooftop'] || [
-      { speaker: 'Narrator', text: 'From up here, everything looks small. That\'s the problem.' },
-    ];
+    // Warm golden light overlay (sunrise glow on everything)
+    const warmGlow = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0xf0a030)
+      .setScrollFactor(0).setDepth(306).setAlpha(0);
+    objects.push(warmGlow);
+    this.tweens.add({ targets: warmGlow, alpha: 0.06, duration: 3000 });
 
-    this.time.delayedCall(1500, () => {
-      this.dialogue.show(lines, () => {
-        // Fade out
+    // Dialogue
+    this.time.delayedCall(2000, () => {
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'The sun comes up over the hills. Vineyard rows stretch to the horizon.' },
+        { speaker: 'JP\'s Mind', text: 'One day I\'m gonna look back at this moment.' },
+        { speaker: 'JP\'s Mind', text: 'And I\'m gonna know exactly when everything changed.' },
+      ], () => {
         const fade = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0)
           .setScrollFactor(0).setDepth(400);
         this.tweens.add({
@@ -744,6 +885,12 @@ export class HomeScene extends BaseChapterScene {
       this.trackForPhoneCall(interactable.id);
       return;
     }
+    if (interactable.id === 'ch0_college') {
+      Analytics.trackInteraction(interactable.id);
+      this.showCollegeLetters();
+      this.trackForPhoneCall(interactable.id);
+      return;
+    }
     if (interactable.id === 'ch0_computer') {
       if (this.frozen) return;
       Analytics.trackInteraction(interactable.id);
@@ -787,12 +934,30 @@ export class HomeScene extends BaseChapterScene {
       this.trackForPhoneCall(interactable.id);
       return;
     }
-    // Shoebox under the bed
+    // Shoebox under the bed — pickup items for inventory
     if (interactable.id === 'ch0_shoebox') {
       Analytics.trackInteraction(interactable.id);
       this.interactions.consume(interactable.id);
+      this.frozen = true;
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'Old shoebox under the bed. Nike. Size 10.' },
+        { speaker: 'Narrator', text: 'Inside: a stack of photos, a lighter, rolling papers, and a fake ID that says "Jordan Perez, age 22."' },
+      ], () => {
+        // Add items to inventory
+        InventorySystem.addItem('papers', 5);
+        // Lighter uses get topped up if already have one
+        const lighter = InventorySystem.getItem('lighter');
+        if (lighter && lighter.uses < lighter.maxUses) {
+          lighter.uses = lighter.maxUses; // fresh lighter from the box
+        } else if (!lighter) {
+          InventorySystem.addItem('lighter', 1);
+        }
+        this.dialogue.show([
+          { speaker: 'Narrator', text: 'JP pockets the lighter and papers. Leaves the rest.' },
+          { speaker: 'JP\'s Mind', text: 'Everyone\'s got a box they don\'t show people.' },
+        ], () => { this.frozen = false; });
+      });
       this.trackForPhoneCall(interactable.id);
-      super.handleInteractable(interactable);
       return;
     }
     // TV sit-down with Pops
@@ -989,32 +1154,36 @@ export class HomeScene extends BaseChapterScene {
       super.handleInteractable(interactable);
       return;
     }
-    // Hidden stash — smoke choice
+    // Hidden stash — pickup eighth (goes to inventory)
     if (interactable.id === 'ch0_hidden_stash' && !this.stashSmoked) {
       Analytics.trackInteraction(interactable.id);
+      this.stashSmoked = true;
       this.frozen = true;
+      this.interactions.consume(interactable.id);
+      InventorySystem.addItem('eighth', 1);
       this.dialogue.show([
-        { speaker: 'Narrator', text: 'A bag tucked behind the desk. JP knows what it is.' },
-      ], () => {
-        this.showYesNoChoice('Smoke?', 'Yeah', 'Nah', () => {
-          // Yes — smoke
-          this.stashSmoked = true;
-          MoodSystem.setMood('faded', 90);
-          this.dialogue.show([
-            { speaker: 'Narrator', text: 'JP sits on the floor. Everything slows down.' },
-          ], () => { this.frozen = false; });
-        }, () => {
-          // No
-          this.dialogue.show([
-            { speaker: 'JP', text: 'Not right now.' },
-          ], () => { this.frozen = false; });
-        });
-      });
+        { speaker: 'Narrator', text: 'A bag tucked behind the desk. JP pockets it.' },
+        { speaker: 'Narrator', text: 'Eighth added to inventory. Press I to open.' },
+      ], () => { this.frozen = false; });
       this.trackForPhoneCall(interactable.id);
       return;
     }
 
-    // Bed — lock the door choice
+    // Papers — pickup (nightstand drawer)
+    if (interactable.id === 'ch0_papers') {
+      Analytics.trackInteraction(interactable.id);
+      this.frozen = true;
+      this.interactions.consume(interactable.id);
+      InventorySystem.addItem('papers', 3);
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'RAW blacks in the nightstand. JP grabs a few.' },
+        { speaker: 'Narrator', text: 'Papers added to inventory.' },
+      ], () => { this.frozen = false; });
+      this.trackForPhoneCall(interactable.id);
+      return;
+    }
+
+    // Bed — JP lies down for a sec
     if (interactable.id === 'ch0_bed' && !this.bedLocked) {
       Analytics.trackInteraction(interactable.id);
       this.frozen = true;
@@ -1023,18 +1192,11 @@ export class HomeScene extends BaseChapterScene {
         { speaker: 'JP\'s Mind', text: 'Another night staring at the ceiling.' },
       ];
       this.dialogue.show(bedLines, () => {
-        this.showYesNoChoice('Lock the door?', 'Yeah', 'Nah', () => {
-          // Yes — lock door and vibe
-          this.bedLocked = true;
-          MoodSystem.setMood('faded', 60);
-          MoodSystem.changeMorale(5);
-          this.dialogue.show([
-            { speaker: 'Narrator', text: 'JP locks the door. Puts his phone on the charger. Vibes.' },
-          ], () => { this.frozen = false; });
-        }, () => {
-          // No — just close
-          this.frozen = false;
-        });
+        this.bedLocked = true;
+        this.dialogue.show([
+          { speaker: 'Narrator', text: 'JP lies down for a second. Stares at the ceiling.' },
+          { speaker: 'JP\'s Mind', text: 'I gotta get out of here.' },
+        ], () => { this.frozen = false; });
       });
       this.trackForPhoneCall(interactable.id);
       return;
@@ -1044,9 +1206,9 @@ export class HomeScene extends BaseChapterScene {
     super.handleInteractable(interactable);
   }
 
-  // Reusable yes/no choice UI (same pattern as playGoodbyeCutscene)
+  // Reusable yes/no choice UI — prompt shows ABOVE buttons
   private showYesNoChoice(
-    _prompt: string,
+    prompt: string,
     yesLabel: string,
     noLabel: string,
     onYes: () => void,
@@ -1055,15 +1217,19 @@ export class HomeScene extends BaseChapterScene {
     const cx = GAME_WIDTH / 2;
     const cy = GAME_HEIGHT / 2;
 
-    const yesBg = this.add.rectangle(cx - 80, cy, 120, 40, 0x30a040)
+    const promptText = this.add.text(cx, cy - 35, prompt, {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '11px', color: '#f0c040',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(201);
+
+    const yesBg = this.add.rectangle(cx - 80, cy + 10, 120, 40, 0x30a040)
       .setScrollFactor(0).setDepth(200).setInteractive({ useHandCursor: true });
-    const yesText = this.add.text(cx - 80, cy, yesLabel, {
+    const yesText = this.add.text(cx - 80, cy + 10, yesLabel, {
       fontFamily: '"Press Start 2P", monospace', fontSize: '12px', color: '#ffffff',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(201);
 
-    const noBg = this.add.rectangle(cx + 80, cy, 120, 40, 0xa03030)
+    const noBg = this.add.rectangle(cx + 80, cy + 10, 120, 40, 0xa03030)
       .setScrollFactor(0).setDepth(200).setInteractive({ useHandCursor: true });
-    const noText = this.add.text(cx + 80, cy, noLabel, {
+    const noText = this.add.text(cx + 80, cy + 10, noLabel, {
       fontFamily: '"Press Start 2P", monospace', fontSize: '12px', color: '#ffffff',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(201);
 
@@ -1073,6 +1239,7 @@ export class HomeScene extends BaseChapterScene {
     noBg.on('pointerout', () => noBg.setFillStyle(0xa03030));
 
     const cleanup = () => {
+      promptText.destroy();
       yesBg.destroy(); yesText.destroy();
       noBg.destroy(); noText.destroy();
       spaceKey.off('down', spaceHandler);
@@ -1250,21 +1417,43 @@ export class HomeScene extends BaseChapterScene {
         if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
       }
 
-      // Nolan dialogue
+      // Nolan dialogue — inviting JP to move in
       this.dialogue.show([
         { speaker: 'Nolan', text: 'Yooo JP! What\'s good bro?' },
         { speaker: 'JP', text: 'Nolan. What\'s up man?' },
-        { speaker: 'Nolan', text: 'Bro. This weekend. Santa Barbara. You gotta come.' },
-        { speaker: 'Nolan', text: 'We got the frat house, the beach, the whole thing.' },
-        { speaker: 'JP', text: 'Who\'s going?' },
-        { speaker: 'Nolan', text: 'Everyone bro. David, Cooper, Terrell. Some girls too.' },
-        { speaker: 'Nolan', text: 'It\'s gonna be crazy. You in?' },
-        { speaker: 'JP', text: '...I\'m in.' },
-        { speaker: 'Nolan', text: 'LET\'S GO! I\'ll send you the address. Pack light bro.' },
+        { speaker: 'Nolan', text: 'Bro. Santa Barbara. I got a spot down here.' },
+        { speaker: 'Nolan', text: 'I\'m tryna see if you wanna move in with us.' },
       ], () => {
-        // Mark the required interaction as done
-        this.requiredDone = true;
-        this.frozen = false;
+        // Choice: Yeah / Tell me more
+        this.showYesNoChoice('Move in?', 'Yeah', 'Tell me more', () => {
+          // "Yeah" — straight in
+          this.dialogue.show([
+            { speaker: 'JP', text: 'I\'m down. Who else is there?' },
+            { speaker: 'Nolan', text: 'David, Cooper, Terrell, Big Bart. The whole crew bro.' },
+            { speaker: 'Nolan', text: 'We got the frat house locked down. Beach is right there.' },
+            { speaker: 'JP', text: 'Say less. I\'m packing tonight.' },
+            { speaker: 'Nolan', text: 'LET\'S GO! I\'ll send you the address.' },
+          ], () => {
+            this.requiredDone = true;
+            this.frozen = false;
+          });
+        }, () => {
+          // "Tell me more" — Nolan pitches it
+          this.dialogue.show([
+            { speaker: 'Nolan', text: 'Alright listen. We got this house near campus right?' },
+            { speaker: 'Nolan', text: 'David\'s already down here. Cooper too.' },
+            { speaker: 'Nolan', text: 'Terrell and Big Bart just locked in last week.' },
+            { speaker: 'Nolan', text: 'Bro it\'s the whole squad. Beach is five minutes away.' },
+            { speaker: 'Nolan', text: 'Parties every weekend. Girls everywhere.' },
+            { speaker: 'Nolan', text: 'And rent is split five ways so it\'s nothing.' },
+            { speaker: 'JP', text: '...' },
+            { speaker: 'JP', text: 'I\'m in.' },
+            { speaker: 'Nolan', text: 'THAT\'S WHAT I\'M TALKING ABOUT! Pack your shit bro.' },
+          ], () => {
+            this.requiredDone = true;
+            this.frozen = false;
+          });
+        });
       });
     };
 
@@ -1519,6 +1708,230 @@ export class HomeScene extends BaseChapterScene {
     });
 
     renderPage();
+  }
+
+  // ─── COLLEGE ACCEPTANCE LETTERS ─────────────────────────────────
+  private showCollegeLetters() {
+    this.frozen = true;
+    const objects: Phaser.GameObjects.GameObject[] = [];
+    let trashed = 0;
+
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+
+    // Dark overlay
+    objects.push(this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.8)
+      .setScrollFactor(0).setDepth(300));
+
+    // Desk surface
+    objects.push(this.add.rectangle(cx, cy + 20, 800, 420, 0x6a5030)
+      .setScrollFactor(0).setDepth(301));
+    objects.push(this.add.rectangle(cx, cy + 20, 790, 410, 0x7a6040)
+      .setScrollFactor(0).setDepth(301));
+    // Wood grain lines
+    for (let i = 0; i < 8; i++) {
+      objects.push(this.add.rectangle(cx, cy - 160 + i * 55, 780, 1, 0x6a5030)
+        .setScrollFactor(0).setDepth(302).setAlpha(0.3));
+    }
+
+    // Trash can (bottom right)
+    const trashX = cx + 320;
+    const trashY = cy + 160;
+    objects.push(this.add.rectangle(trashX, trashY, 60, 70, 0x404048)
+      .setScrollFactor(0).setDepth(303));
+    objects.push(this.add.rectangle(trashX, trashY - 38, 68, 6, 0x505058)
+      .setScrollFactor(0).setDepth(303)); // rim
+    objects.push(this.add.rectangle(trashX, trashY + 30, 50, 4, 0x353538)
+      .setScrollFactor(0).setDepth(303)); // base
+    const trashLabel = this.add.text(trashX, trashY + 50, 'TRASH', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#666666',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303);
+    objects.push(trashLabel);
+
+    // Title
+    objects.push(this.add.text(cx, cy - 190, 'Acceptance Letters', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '14px', color: '#c0b090',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(304));
+
+    objects.push(this.add.text(cx, cy - 168, 'Click a letter to crumple it.', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#807060',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(304));
+
+    // === The 3 Letters ===
+    const letters = [
+      {
+        school: 'University of Oregon',
+        city: 'Eugene, OR',
+        color: 0x154733, accent: 0xFEE123, // Oregon green + yellow
+        logo: 'O', logoColor: '#FEE123',
+        x: cx - 240,
+      },
+      {
+        school: "University of Hawai'i",
+        city: 'Honolulu, HI',
+        color: 0x024731, accent: 0x000000, // UH green + black
+        logo: 'H', logoColor: '#ffffff',
+        x: cx,
+      },
+      {
+        school: 'Arizona State University',
+        city: 'Tempe, AZ',
+        color: 0x8C1D40, accent: 0xFFC627, // ASU maroon + gold
+        logo: 'A', logoColor: '#FFC627',
+        x: cx + 240,
+      },
+    ];
+
+    for (const letter of letters) {
+      const lx = letter.x;
+      const ly = cy + 10;
+      const lw = 200;
+      const lh = 280;
+
+      // Envelope / letter paper
+      const paper = this.add.rectangle(lx, ly, lw, lh, 0xf5f0e8)
+        .setScrollFactor(0).setDepth(305);
+      objects.push(paper);
+
+      // School color header band
+      const header = this.add.rectangle(lx, ly - lh / 2 + 30, lw, 60, letter.color)
+        .setScrollFactor(0).setDepth(306);
+      objects.push(header);
+
+      // Logo letter (big, centered in header)
+      const logo = this.add.text(lx, ly - lh / 2 + 30, letter.logo, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '28px', color: letter.logoColor,
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(307);
+      objects.push(logo);
+
+      // School name
+      const schoolName = this.add.text(lx, ly - 50, letter.school, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#333333',
+        wordWrap: { width: lw - 20 },
+        align: 'center',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(306);
+      objects.push(schoolName);
+
+      // City
+      const city = this.add.text(lx, ly - 30, letter.city, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#888888',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(306);
+      objects.push(city);
+
+      // "ACCEPTED" stamp
+      const stamp = this.add.text(lx, ly + 10, 'ACCEPTED', {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '12px', color: '#2a8040',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(306).setAngle(-8);
+      objects.push(stamp);
+
+      // Accent line
+      objects.push(this.add.rectangle(lx, ly - lh / 2 + 62, lw - 20, 2, letter.accent)
+        .setScrollFactor(0).setDepth(306));
+
+      // Fake body text lines
+      for (let i = 0; i < 4; i++) {
+        objects.push(this.add.rectangle(lx, ly + 50 + i * 14, lw - 40, 2, 0xcccccc)
+          .setScrollFactor(0).setDepth(306).setAlpha(0.5));
+      }
+
+      // "Dear Jordan Lopez," text
+      objects.push(this.add.text(lx - lw / 2 + 18, ly + 40, 'Dear Jordan Lopez,', {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#555555',
+      }).setScrollFactor(0).setDepth(306));
+
+      // Clickable — entire paper
+      paper.setInteractive({ useHandCursor: true });
+      paper.on('pointerover', () => {
+        paper.setStrokeStyle(2, 0xf04040);
+      });
+      paper.on('pointerout', () => {
+        paper.setStrokeStyle(0);
+      });
+
+      // Click → crumple and toss to trash
+      const letterParts = [paper, header, logo, schoolName, city, stamp];
+      paper.on('pointerdown', () => {
+        paper.removeInteractive();
+
+        // Gather all objects for this letter
+        const allParts: Phaser.GameObjects.GameObject[] = letterParts.filter(p => p !== paper && p.active);
+
+        // Crumple — shrink + rotate + darken
+        const crumpleTargets = [paper, ...allParts];
+        for (const t of crumpleTargets) {
+          this.tweens.add({
+            targets: t,
+            scaleX: 0.3,
+            scaleY: 0.3,
+            angle: Phaser.Math.Between(-30, 30),
+            duration: 300,
+            ease: 'Back.easeIn',
+          });
+        }
+
+        // After crumple — toss to trash
+        this.time.delayedCall(350, () => {
+          for (const t of crumpleTargets) {
+            this.tweens.add({
+              targets: t,
+              x: trashX,
+              y: trashY - 20,
+              alpha: 0,
+              duration: 400,
+              ease: 'Quad.easeIn',
+              onComplete: () => {
+                if (t && t.active) (t as Phaser.GameObjects.GameObject).destroy();
+              },
+            });
+          }
+
+          // Trash can bounce
+          this.tweens.add({
+            targets: [objects.find(o => o === objects[3])], // trash can body
+            scaleY: 1.1,
+            duration: 100,
+            delay: 350,
+            yoyo: true,
+          });
+
+          trashed++;
+
+          // After all 3 trashed — show reaction
+          if (trashed >= 3) {
+            this.time.delayedCall(800, () => {
+              this.dialogue.show([
+                { speaker: 'JP\'s Mind', text: '$40K a year to learn what YouTube teaches for free.' },
+                { speaker: 'JP\'s Mind', text: 'Nah.' },
+              ], () => {
+                // Fade out desk
+                for (const obj of objects) {
+                  if (obj && obj.active) {
+                    this.tweens.add({
+                      targets: obj,
+                      alpha: 0,
+                      duration: 400,
+                      onComplete: () => { if (obj.active) (obj as Phaser.GameObjects.GameObject).destroy(); },
+                    });
+                  }
+                }
+                this.time.delayedCall(500, () => { this.frozen = false; });
+              });
+            });
+          }
+        });
+      });
+    }
+
+    // ESC to close early
+    const escKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+    const onEsc = () => {
+      escKey.off('down', onEsc);
+      for (const obj of objects) {
+        if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
+      }
+      this.frozen = false;
+    };
+    escKey.on('down', onEsc);
   }
 
   private showComputerInterface() {

@@ -124,6 +124,15 @@ export default function GameCanvas() {
 
     gameRef.current = new Phaser.Game(config);
 
+    // Expose game to window for Playwright/automation
+    (window as unknown as Record<string, unknown>).game = gameRef.current;
+    (window as unknown as Record<string, unknown>).goTo = (sceneName: string) => {
+      if (!gameRef.current) return;
+      const active = gameRef.current.scene.getScenes(true);
+      for (const s of active) gameRef.current.scene.stop(s.scene.key);
+      gameRef.current.scene.start(sceneName);
+    };
+
     const timer = setTimeout(() => setShowControls(false), 5000);
 
     return () => {
@@ -179,7 +188,7 @@ export default function GameCanvas() {
         className="w-full h-full"
       />
 
-      {/* Speed + mute controls — always visible */}
+      {/* Top controls — always visible */}
       <div className="absolute top-3 right-3 z-20 flex gap-2">
         <button
           onClick={toggleMute}
@@ -193,6 +202,73 @@ export default function GameCanvas() {
           className="px-3 py-1.5 bg-black/70 border border-white/20 rounded text-white text-xs font-mono hover:bg-white/10 transition-colors cursor-pointer"
         >
           {SPEEDS[speedIndex].label}
+        </button>
+      </div>
+
+      {/* Chapter jump — top left */}
+      <div className="absolute top-3 left-3 z-20">
+        <select
+          onChange={(e) => {
+            const scene = e.target.value;
+            if (!scene || !gameRef.current) return;
+            const active = gameRef.current.scene.getScenes(true);
+            for (const s of active) gameRef.current.scene.stop(s.scene.key);
+            gameRef.current.scene.start(scene);
+            e.target.value = '';
+          }}
+          className="px-2 py-1.5 bg-black/70 border border-white/20 rounded text-white text-xs font-mono cursor-pointer appearance-none"
+          defaultValue=""
+        >
+          <option value="" disabled>CH</option>
+          <option value="HomeScene">Ch1</option>
+          <option value="BeachScene">Ch2</option>
+          <option value="WrongCrowdScene">Ch3</option>
+          <option value="JailScene">Ch4</option>
+          <option value="TractorScene">Ch5</option>
+          <option value="ComeUpScene">Ch6</option>
+          <option value="OperatorScene">Ch7</option>
+          <option value="MenuScene">Menu</option>
+        </select>
+      </div>
+
+      {/* Bottom right — phone, inventory, emote buttons (always visible) */}
+      <div className="absolute bottom-3 right-3 z-20 flex gap-2">
+        <button
+          onClick={() => {
+            virtualInput.emoteJustPressed = true;
+            setTimeout(() => { virtualInput.emoteJustPressed = false; }, 100);
+          }}
+          className="px-3 py-2 bg-black/70 border border-white/20 rounded text-white text-sm font-mono hover:bg-white/10 transition-colors cursor-pointer"
+          title="Emotes (E)"
+        >
+          😤
+        </button>
+        <button
+          onClick={() => {
+            if (gameRef.current) {
+              const active = gameRef.current.scene.getScenes(true);
+              for (const s of active) {
+                if (s.input?.keyboard) {
+                  s.input.keyboard.emit('keydown-I', { key: 'i', preventDefault: () => {} });
+                  s.input.keyboard.emit('keyup-I', { key: 'i', preventDefault: () => {} });
+                }
+              }
+            }
+          }}
+          className="px-3 py-2 bg-black/70 border border-white/20 rounded text-white text-sm font-mono hover:bg-white/10 transition-colors cursor-pointer"
+          title="Inventory (I)"
+        >
+          🎒
+        </button>
+        <button
+          onClick={() => {
+            virtualInput.phoneJustPressed = true;
+            setTimeout(() => { virtualInput.phoneJustPressed = false; }, 100);
+          }}
+          className="px-3 py-2 bg-black/70 border border-white/20 rounded text-white text-sm font-mono hover:bg-white/10 transition-colors cursor-pointer"
+          title="Phone (TAB)"
+        >
+          📱
         </button>
       </div>
 

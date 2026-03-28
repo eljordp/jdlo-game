@@ -5,6 +5,8 @@ import type { DialogueLine } from '../systems/DialogueSystem';
 import { EvolutionAnimation } from '../systems/EvolutionAnimation';
 import { SCALED_TILE, GAME_WIDTH, GAME_HEIGHT } from '../config';
 import { Analytics } from '../systems/Analytics';
+import { MoodSystem } from '../systems/MoodSystem';
+import { InventorySystem } from '../systems/InventorySystem';
 
 export class TractorScene extends BaseChapterScene {
   private phoneExaminedFirst = false;
@@ -100,6 +102,53 @@ export class TractorScene extends BaseChapterScene {
       super.handleInteractable(interactable);
       return;
     }
+    if (interactable.id === 'ch4_lunch') {
+      Analytics.trackInteraction(interactable.id);
+      this.frozen = true;
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'Lunch break. The crew sits under the oak tree.' },
+        { speaker: 'Narrator', text: 'Ernesto brought tamales. Juan has a Modelo.' },
+        { speaker: 'Ernesto', text: 'Oye, come. Eat.' },
+        { speaker: 'JP', text: 'Gracias.' },
+        { speaker: 'Juan', text: 'You getting faster on the tractor, güero.' },
+        { speaker: 'JP', text: 'Don\'t call me that.' },
+        { speaker: 'Juan', text: 'Ha! He\'s learning.' },
+        { speaker: 'JP\'s Mind', text: 'These guys are real. No games. Just work and eat.' },
+      ], () => {
+        MoodSystem.setMood('vibing', 60);
+        this.frozen = false;
+      });
+      return;
+    }
+
+    if (interactable.id === 'ch4_paycheck') {
+      Analytics.trackInteraction(interactable.id);
+      this.interactions.consume(interactable.id);
+      this.frozen = true;
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'Paycheck. $487.32 after taxes.' },
+        { speaker: 'JP\'s Mind', text: 'Two weeks of work for what I used to make in a night.' },
+        { speaker: 'JP\'s Mind', text: 'But this one doesn\'t come with a court date.' },
+        { speaker: 'Narrator', text: 'He deposits it. First clean money in a long time.' },
+      ], () => {
+        MoodSystem.changeMorale(15);
+        this.frozen = false;
+      });
+      return;
+    }
+
+    if (interactable.id === 'ch4_sunrise') {
+      Analytics.trackInteraction(interactable.id);
+      this.frozen = true;
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'Sun coming up over the Napa hills. Golden light on the vines.' },
+        { speaker: 'JP\'s Mind', text: 'Everyone at home is still sleeping.' },
+        { speaker: 'JP\'s Mind', text: 'Nobody knows I\'m here. Working. Quiet.' },
+        { speaker: 'JP\'s Mind', text: 'Maybe that\'s okay for now.' },
+      ], () => { this.frozen = false; });
+      return;
+    }
+
     super.handleInteractable(interactable);
   }
 

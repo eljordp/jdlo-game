@@ -6,6 +6,7 @@ import type { DialogueLine } from '../systems/DialogueSystem';
 import { SCALED_TILE, SCALE, GAME_WIDTH, GAME_HEIGHT, TILE_IDS } from '../config';
 import { Analytics } from '../systems/Analytics';
 import { MoodSystem } from '../systems/MoodSystem';
+import { InventorySystem } from '../systems/InventorySystem';
 
 export class BeachScene extends BaseChapterScene {
   private inHotTub = false;
@@ -18,6 +19,17 @@ export class BeachScene extends BaseChapterScene {
   private hotTubBlinker = false;
   private bedroomStayed = false;
   private showerBlinker = false;
+  private currentDay: 1 | 2 = 1;
+  private partyOverlay: Phaser.GameObjects.Rectangle | null = null;
+  private bartRampage = false;
+  private beerPongPlayed = false;
+  private smokeSeshDone = false;
+  private weedPickedUp = new Set<string>();
+  private partyLevel = 0; // 0=sober, 1=drinking, 2=faded, 3=coked, 4=blackout
+  private drinksDone = false;
+  private blowOffered = false;
+  private blackedOut = false;
+  private wobbleEffect: Phaser.Tweens.Tween | null = null;
 
   constructor() {
     super({ key: 'BeachScene' });
@@ -37,28 +49,63 @@ export class BeachScene extends BaseChapterScene {
   create() {
     super.create();
     // Exit triggers at y=18, x=12-15
-    this.addNavArrow(18, 24, 'Next chapter');
+    this.addNavArrow(18, 26, 'Next chapter');
 
-    // Place the BMW 335i in the driveway (right next to house, row 8-9 area)
+    // Place the BMW 335i in the driveway (row 11, away from doors)
     const carX = 4 * SCALED_TILE + SCALED_TILE / 2;
-    const carY = 9 * SCALED_TILE + SCALED_TILE / 2;
+    const carY = 11 * SCALED_TILE + SCALED_TILE / 2;
     const bmw = this.add.sprite(carX, carY, 'car-bmw335i');
     bmw.setScale(SCALE);
     bmw.setDepth(5);
-    this.collisionTiles.add('3,9');
-    this.collisionTiles.add('4,9');
-    this.collisionTiles.add('5,9');
+    this.collisionTiles.add('3,11');
+    this.collisionTiles.add('4,11');
+    this.collisionTiles.add('5,11');
 
     // Hot tub bubble jets — active bubbles rising from the water
     this.createHotTubBubbles();
 
     // Hot tub steam effect
     this.createHotTubSteam();
+
+    // Day 1 — hide all girls except K (no girls til party)
+    for (const npc of this.npcs) {
+      if (npc.id.includes('girl') || npc.id === 'ch1_sunbather') {
+        npc.sprite.setVisible(false);
+        const tx = Math.round((npc.sprite.x - SCALED_TILE / 2) / SCALED_TILE);
+        const ty = Math.round((npc.sprite.y - SCALED_TILE / 2) / SCALED_TILE);
+        this.collisionTiles.delete(`${tx},${ty}`);
+      }
+    }
+
+    // K starts sleeping in JP's bed (Day 1) — breathing + ZZZs
+    const k = this.npcs.find(n => n.id === 'ch1_gf_k');
+    if (k) {
+      k.sprite.setAngle(15); // lying down
+      this.kSleepTween = this.tweens.add({
+        targets: k.sprite,
+        scaleY: SCALE * 0.95,
+        duration: 1500,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+      });
+      this.kZzzTimer = this.time.addEvent({
+        delay: 2500,
+        loop: true,
+        callback: () => {
+          if (!k.sprite.visible || !this.scene.isActive()) return;
+          const z = this.add.text(k.sprite.x + 15, k.sprite.y - 20, 'z', {
+            fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#8888aa',
+          }).setDepth(20).setAlpha(0.7);
+          this.tweens.add({ targets: z, y: z.y - 20, alpha: 0, duration: 1800, onComplete: () => z.destroy() });
+        },
+      });
+    }
   }
 
   private createHotTubSteam() {
-    // Hot tub is at cols 31-34, rows 2-4 in the beachMap
-    const tubCenterX = 32.5 * SCALED_TILE;
+    // Hot tub is at cols 32-34, rows 2-4 (outdoor)
+    const tubCenterX = 33 * SCALED_TILE;
     const tubTopY = 2 * SCALED_TILE;
 
     // 4 steam columns that rise and fade infinitely
@@ -96,11 +143,11 @@ export class BeachScene extends BaseChapterScene {
   }
 
   private createHotTubBubbles() {
-    // Hot tub is at cols 31-34, rows 2-4 in the beachMap
-    const tubCenterX = 32.5 * SCALED_TILE;
-    const tubCenterY = 3.5 * SCALED_TILE;
-    const tubWidth = 5 * SCALED_TILE;
-    const tubHeight = 4 * SCALED_TILE;
+    // Hot tub is at cols 32-34, rows 2-4 (outdoor)
+    const tubCenterX = 33 * SCALED_TILE;
+    const tubCenterY = 3 * SCALED_TILE;
+    const tubWidth = 3 * SCALED_TILE;
+    const tubHeight = 3 * SCALED_TILE;
 
     // Continuous bubble jets
     this.time.addEvent({
@@ -216,15 +263,100 @@ export class BeachScene extends BaseChapterScene {
     }
   }
 
-  // David puts his phone down when you talk to him
+  // GF K — sleeping in bed, wakes up when you talk
+  private kGoodbyeDone = false;
+  private kSleepTween: Phaser.Tweens.Tween | null = null;
+  private kZzzTimer: Phaser.Time.TimerEvent | null = null;
+
+  // NPC reactive behaviors
   protected handleNPCDialogue(npcId: string, dialogue: DialogueLine[]): void {
+    // K wakes up — moment together, then she leaves
+    if (npcId === 'ch1_gf_k' && !this.kGoodbyeDone && this.currentDay === 1) {
+      this.kGoodbyeDone = true;
+      // Stop sleeping animation
+      if (this.kSleepTween) this.kSleepTween.stop();
+      if (this.kZzzTimer) this.kZzzTimer.remove();
+      const kNpc = this.npcs.find(n => n.id === 'ch1_gf_k');
+      if (kNpc) {
+        kNpc.sprite.setAngle(0); // sit up
+        this.tweens.add({ targets: kNpc.sprite, scaleY: SCALE, duration: 300 }); // reset scale
+      }
+      this.dialogue.show(dialogue, () => {
+        const k = this.npcs.find(n => n.id === 'ch1_gf_k');
+        if (k) {
+          // K walks to the door and disappears
+          this.tweens.add({
+            targets: k.sprite,
+            x: 5 * SCALED_TILE + SCALED_TILE / 2,
+            duration: 1200,
+            ease: 'Linear',
+            onComplete: () => {
+              this.tweens.add({
+                targets: k.sprite,
+                alpha: 0,
+                duration: 400,
+                onComplete: () => {
+                  k.sprite.setVisible(false);
+                  const kTX = Math.round((k.sprite.x - SCALED_TILE / 2) / SCALED_TILE);
+                  const kTY = Math.round((k.sprite.y - SCALED_TILE / 2) / SCALED_TILE);
+                  this.collisionTiles.delete(`${kTX},${kTY}`);
+                },
+              });
+            },
+          });
+        }
+      });
+      return;
+    }
+
+    // Girls at the party (Day 2) — the move
+    if ((npcId === 'ch1_girl1' || npcId === 'ch1_girl2') && this.currentDay === 2) {
+      this.dialogue.show([
+        { speaker: 'Girl', text: 'You live here right? This party is insane.' },
+        { speaker: 'JP', text: 'Yeah. My boy Nolan set it up.' },
+        { speaker: 'Girl', text: 'My friend thinks you\'re cute. She\'s too shy to say it.' },
+        { speaker: 'Girl 2', text: 'I am NOT shy. I just don\'t talk to random guys.' },
+        { speaker: 'JP', text: 'I\'m not random. I live here.' },
+        { speaker: 'Girl 2', text: '...okay. That was smooth.' },
+        { speaker: 'Girl', text: 'We should go somewhere quieter. All three of us.' },
+        { speaker: 'JP\'s Mind', text: '...' },
+      ], () => {
+        // Fade to black — implied scene
+        this.frozen = true;
+        const fadeObj = this.add.rectangle(
+          GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0
+        ).setScrollFactor(0).setDepth(400);
+        this.tweens.add({
+          targets: fadeObj,
+          alpha: 1,
+          duration: 1000,
+          onComplete: () => {
+            this.time.delayedCall(2000, () => {
+              this.dialogue.show([
+                { speaker: 'Narrator', text: 'The party keeps going outside. Nobody noticed they left.' },
+              ], () => {
+                this.tweens.add({
+                  targets: fadeObj,
+                  alpha: 0,
+                  duration: 800,
+                  onComplete: () => {
+                    fadeObj.destroy();
+                    this.frozen = false;
+                  },
+                });
+              });
+            });
+          },
+        });
+      });
+      return;
+    }
+    // David puts his phone down
     if (npcId === 'ch1_david' && !this.davidPhoneDown) {
       this.davidPhoneDown = true;
-      // Show normal dialogue, then David reacts
       this.dialogue.show(dialogue, () => {
         const david = this.npcs.find(n => n.id === 'ch1_david');
         if (david) {
-          // Quick phone-pocket animation
           this.tweens.add({
             targets: david.sprite,
             scaleX: SCALE * 0.9,
@@ -232,6 +364,59 @@ export class BeachScene extends BaseChapterScene {
             yoyo: true,
           });
         }
+      });
+      return;
+    }
+
+    // Big Bart — causes havoc when you talk to him
+    if (npcId === 'ch1_bigbart' && !this.bartRampage) {
+      this.bartRampage = true;
+      this.dialogue.show(dialogue, () => {
+        const bart = this.npcs.find(n => n.id === 'ch1_bigbart');
+        if (!bart) return;
+
+        // Bart goes on a rampage — runs around, knocks into walls, camera shakes
+        this.cameras.main.shake(300, 0.005);
+
+        // Bart charges left
+        this.tweens.add({
+          targets: bart.sprite,
+          x: bart.sprite.x - SCALED_TILE * 3,
+          duration: 500,
+          ease: 'Quad.easeIn',
+          onComplete: () => {
+            // SLAM into wall
+            this.cameras.main.shake(200, 0.008);
+
+            // Bounce back right
+            this.tweens.add({
+              targets: bart.sprite,
+              x: bart.sprite.x + SCALED_TILE * 5,
+              duration: 600,
+              ease: 'Quad.easeInOut',
+              onComplete: () => {
+                this.cameras.main.shake(150, 0.006);
+
+                // Bart does a belly flop (squash animation)
+                this.tweens.add({
+                  targets: bart.sprite,
+                  scaleY: SCALE * 0.6,
+                  scaleX: SCALE * 1.4,
+                  duration: 200,
+                  yoyo: true,
+                  onComplete: () => {
+                    this.dialogue.show([
+                      { speaker: 'Big Bart', text: 'WHOOOOO! SB BABY!!' },
+                      { speaker: 'Narrator', text: 'Big Bart just body-slammed the coffee table.' },
+                      { speaker: 'Nolan', text: 'BRO THE TABLE!' },
+                      { speaker: 'Big Bart', text: 'IT\'S A PARTY!!' },
+                    ]);
+                  },
+                });
+              },
+            });
+          },
+        });
       });
       return;
     }
@@ -280,22 +465,140 @@ export class BeachScene extends BaseChapterScene {
       return;
     }
 
-    // Bedroom — stay the night choice
-    if (interactable.id === 'ch1_bed' && !this.bedroomStayed) {
+    // Weed bags — inventory pickups
+    if ((interactable.id === 'ch1_weed1' || interactable.id === 'ch1_weed2' || interactable.id === 'ch1_weed3') && !this.weedPickedUp.has(interactable.id)) {
       Analytics.trackInteraction(interactable.id);
+      this.weedPickedUp.add(interactable.id);
+      this.interactions.consume(interactable.id);
+      InventorySystem.addItem('eighth', 1);
       this.frozen = true;
-      this.showYesNoChoice('Stay the night?', 'Yeah', 'Nah', () => {
-        this.bedroomStayed = true;
-        MoodSystem.setMood('tired', 120);
-        MoodSystem.changeMorale(-20);
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'JP pockets it. Eighth added to inventory.' },
+      ], () => { this.frozen = false; });
+      return;
+    }
+
+    // Bong — inventory pickup
+    if (interactable.id === 'ch1_bong') {
+      Analytics.trackInteraction(interactable.id);
+      this.interactions.consume(interactable.id);
+      InventorySystem.addItem('bong', 1);
+      this.frozen = true;
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'Glass piece on the counter. JP adds it to the collection.' },
+        { speaker: 'Narrator', text: 'Bong added to inventory.' },
+      ], () => { this.frozen = false; });
+      return;
+    }
+
+    // Beer pong — Day 2 only
+    if (interactable.id === 'ch1_beerpong' && !this.beerPongPlayed) {
+      if (this.currentDay < 2) {
+        this.frozen = true;
         this.dialogue.show([
-          { speaker: 'Narrator', text: 'JP wakes up hours later. Groggy. Not sure where he is for a second.' },
+          { speaker: 'Narrator', text: 'Beer pong table. Not set up yet.' },
+          { speaker: 'JP\'s Mind', text: 'Tonight though...' },
         ], () => { this.frozen = false; });
-      }, () => {
-        this.dialogue.show([
-          { speaker: 'JP', text: 'Nah I\'m good. Early morning.' },
-        ], () => { this.frozen = false; });
+        return;
+      }
+      Analytics.trackInteraction(interactable.id);
+      this.playBeerPong();
+      return;
+    }
+
+    // Drinks — Day 2 party only
+    if (interactable.id === 'ch1_bottles' && this.currentDay === 2 && !this.drinksDone) {
+      Analytics.trackInteraction(interactable.id);
+      this.drinksDone = true;
+      this.frozen = true;
+      this.partyLevel = 1;
+      this.dialogue.show([
+        { speaker: 'Cooper', text: 'Bro take a shot. We\'re celebrating.' },
+        { speaker: 'JP', text: 'Celebrating what?' },
+        { speaker: 'Cooper', text: 'Being ALIVE bro. In SB. With a hot tub.' },
+        { speaker: 'Narrator', text: 'JP takes the shot. Then another. Then another.' },
+        { speaker: 'Narrator', text: 'The room starts to feel warmer.' },
+      ], () => {
+        MoodSystem.setMood('vibing', 120);
+        // Slight wobble effect on camera
+        this.wobbleEffect = this.tweens.add({
+          targets: this.cameras.main,
+          scrollX: this.cameras.main.scrollX + 2,
+          duration: 800,
+          yoyo: true,
+          repeat: -1,
+          ease: 'Sine.easeInOut',
+        });
+        this.frozen = false;
       });
+      return;
+    }
+
+    // Group smoke sesh — Day 2 after drinking
+    if (interactable.id === 'ch1_smoke' && this.currentDay === 2 && !this.smokeSeshDone && this.partyLevel >= 1) {
+      Analytics.trackInteraction(interactable.id);
+      this.smokeSeshDone = true;
+      this.frozen = true;
+      this.partyLevel = 2;
+      this.interactions.consume(interactable.id);
+      this.dialogue.show([
+        { speaker: 'Nolan', text: 'Aye everybody outside! We\'re rolling up!' },
+        { speaker: 'Narrator', text: 'The whole crew circles up in the yard. Girls too.' },
+        { speaker: 'Big Bart', text: 'PASS IT! PASS IT!' },
+        { speaker: 'Narrator', text: 'Bart takes the biggest hit anyone\'s ever seen. Coughs for 30 seconds.' },
+        { speaker: 'Terrell', text: 'Bro you good??' },
+        { speaker: 'Big Bart', text: '*coughing* I\'M GREAT!' },
+        { speaker: 'Narrator', text: 'Smoke hangs in the air. Nobody\'s going anywhere tonight.' },
+        { speaker: 'Girl', text: 'This is the best party I\'ve been to all year.' },
+        { speaker: 'JP\'s Mind', text: 'It feels good. For now.' },
+      ], () => {
+        MoodSystem.setMood('faded', 120);
+        // Heavier wobble
+        if (this.wobbleEffect) this.wobbleEffect.stop();
+        this.wobbleEffect = this.tweens.add({
+          targets: this.cameras.main,
+          scrollX: this.cameras.main.scrollX + 4,
+          duration: 600,
+          yoyo: true,
+          repeat: -1,
+          ease: 'Sine.easeInOut',
+        });
+        // Green tint overlay
+        const greenHaze = this.add.rectangle(
+          GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH * 3, GAME_HEIGHT * 3,
+          0x204010, 0
+        ).setScrollFactor(0).setDepth(7);
+        this.tweens.add({ targets: greenHaze, alpha: 0.1, duration: 2000 });
+        this.frozen = false;
+
+        // After smoke sesh, someone offers blow (delayed)
+        this.time.delayedCall(15000, () => {
+          if (this.scene.isActive() && !this.blowOffered && this.currentDay === 2) {
+            this.triggerBlowOffer();
+          }
+        });
+      });
+      return;
+    }
+
+    // Bedroom — Day 1: JP lies down, eyes blink, wakes up to party. Day 2: no sleeping
+    if (interactable.id === 'ch1_bed') {
+      Analytics.trackInteraction(interactable.id);
+      if (this.currentDay === 1 && !this.bedroomStayed) {
+        this.bedroomStayed = true;
+        this.frozen = true;
+        // JP lies down
+        this.dialogue.show([
+          { speaker: 'JP\'s Mind', text: 'Just a quick nap...' },
+        ], () => {
+          this.triggerPartyNight();
+        });
+      } else if (this.currentDay === 2) {
+        this.frozen = true;
+        this.dialogue.show([
+          { speaker: 'Narrator', text: 'No sleeping at a party.' },
+        ], () => { this.frozen = false; });
+      }
       return;
     }
 
@@ -337,7 +640,7 @@ export class BeachScene extends BaseChapterScene {
 
       const nearBMW =
         playerTileX >= 2 && playerTileX <= 6 &&
-        playerTileY >= 8 && playerTileY <= 10;
+        playerTileY >= 10 && playerTileY <= 12;
 
       if (nearBMW) {
         this.bmwInteracted = true;
@@ -355,9 +658,9 @@ export class BeachScene extends BaseChapterScene {
     super.handleInteract();
   }
 
-  // Reusable yes/no choice UI
+  // Reusable yes/no choice UI — prompt text shows ABOVE buttons so you know what you're choosing
   private showYesNoChoice(
-    _prompt: string,
+    prompt: string,
     yesLabel: string,
     noLabel: string,
     onYes: () => void,
@@ -366,15 +669,20 @@ export class BeachScene extends BaseChapterScene {
     const cx = GAME_WIDTH / 2;
     const cy = GAME_HEIGHT / 2;
 
-    const yesBg = this.add.rectangle(cx - 80, cy, 120, 40, 0x30a040)
+    // Prompt text — tells you what you're deciding
+    const promptText = this.add.text(cx, cy - 35, prompt, {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '11px', color: '#f0c040',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(201);
+
+    const yesBg = this.add.rectangle(cx - 80, cy + 10, 120, 40, 0x30a040)
       .setScrollFactor(0).setDepth(200).setInteractive({ useHandCursor: true });
-    const yesText = this.add.text(cx - 80, cy, yesLabel, {
+    const yesText = this.add.text(cx - 80, cy + 10, yesLabel, {
       fontFamily: '"Press Start 2P", monospace', fontSize: '12px', color: '#ffffff',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(201);
 
-    const noBg = this.add.rectangle(cx + 80, cy, 120, 40, 0xa03030)
+    const noBg = this.add.rectangle(cx + 80, cy + 10, 120, 40, 0xa03030)
       .setScrollFactor(0).setDepth(200).setInteractive({ useHandCursor: true });
-    const noText = this.add.text(cx + 80, cy, noLabel, {
+    const noText = this.add.text(cx + 80, cy + 10, noLabel, {
       fontFamily: '"Press Start 2P", monospace', fontSize: '12px', color: '#ffffff',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(201);
 
@@ -384,6 +692,7 @@ export class BeachScene extends BaseChapterScene {
     noBg.on('pointerout', () => noBg.setFillStyle(0xa03030));
 
     const cleanup = () => {
+      promptText.destroy();
       yesBg.destroy(); yesText.destroy();
       noBg.destroy(); noText.destroy();
       spaceKey.off('down', spaceHandler);
@@ -399,6 +708,879 @@ export class BeachScene extends BaseChapterScene {
     const nHandler = () => { cleanup(); onNo(); };
     spaceKey.on('down', spaceHandler);
     nKey.on('down', nHandler);
+  }
+
+  // ─── PARTY NIGHT TRANSITION (Day 1 → Day 2) ─────────────────────
+  private triggerPartyNight() {
+    this.frozen = true;
+
+    const black = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0)
+      .setScrollFactor(0).setDepth(500);
+
+    // Eye blink effect — rapid black flashes simulating falling asleep
+    let blinkCount = 0;
+    const blink = () => {
+      blinkCount++;
+      // Each blink gets longer (eyes staying closed longer)
+      const closeTime = 200 + blinkCount * 150;
+      const openTime = Math.max(100, 400 - blinkCount * 80);
+
+      this.tweens.add({
+        targets: black,
+        alpha: 1,
+        duration: 150,
+        hold: closeTime,
+        yoyo: true,
+        onComplete: () => {
+          if (blinkCount < 4) {
+            this.time.delayedCall(openTime, blink);
+          } else {
+            // Final close — eyes shut, asleep
+            this.tweens.add({
+              targets: black,
+              alpha: 1,
+              duration: 300,
+              onComplete: () => {
+                // Time passes text
+                const timeText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 30, 'Later that night...', {
+                  fontFamily: '"Press Start 2P", monospace', fontSize: '16px', color: '#f0c040',
+                }).setOrigin(0.5).setScrollFactor(0).setDepth(501).setAlpha(0);
+
+                this.tweens.add({
+                  targets: timeText,
+                  alpha: 1,
+                  duration: 800,
+                  hold: 1500,
+                  yoyo: true,
+                  onComplete: () => {
+                    timeText.destroy();
+
+            // Switch to Day 2
+            this.currentDay = 2;
+
+            // Night overlay — purple party tint (not too dark)
+            this.partyOverlay = this.add.rectangle(
+              GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH * 3, GAME_HEIGHT * 3,
+              0x1a0840, 0.25
+            ).setScrollFactor(0).setDepth(8);
+
+            // Spawn party vibes — floating music notes
+            this.time.addEvent({
+              delay: 2000,
+              loop: true,
+              callback: () => {
+                if (!this.scene.isActive() || this.currentDay !== 2) return;
+                const notes = ['♪', '♫', '♬'];
+                const note = this.add.text(
+                  this.player.x + Phaser.Math.Between(-200, 200),
+                  this.player.y + Phaser.Math.Between(-150, 100),
+                  notes[Math.floor(Math.random() * notes.length)],
+                  { fontSize: '14px', color: '#f0c040' }
+                ).setDepth(9).setAlpha(0);
+                this.tweens.add({
+                  targets: note,
+                  alpha: 0.6,
+                  y: note.y - 40,
+                  duration: 1500,
+                  yoyo: true,
+                  onComplete: () => note.destroy(),
+                });
+              },
+            });
+
+            // Update NPC dialogue for party mode
+            for (const npc of this.npcs) {
+              if (npc.id === 'ch1_homie1') {
+                npc.dialogue = [
+                  { speaker: 'Nolan', text: 'BRO THIS PARTY IS CRAZY!' },
+                  { speaker: 'Nolan', text: 'I told you SB was the move!' },
+                ];
+              }
+              if (npc.id === 'ch1_bigbart') {
+                npc.dialogue = [
+                  { speaker: 'Big Bart', text: 'SOMEBODY GET ME ANOTHER DRINK!' },
+                  { speaker: 'Narrator', text: 'Bart\'s shirt is off. Has been for an hour.' },
+                  { speaker: 'Big Bart', text: 'WHO WANTS TO PLAY BEER PONG?!' },
+                ];
+              }
+              if (npc.id === 'ch1_cooper') {
+                npc.dialogue = [
+                  { speaker: 'Cooper', text: 'Bro I just woke up from a nap and now there\'s a PARTY?' },
+                  { speaker: 'Cooper', text: 'I love this house.' },
+                ];
+              }
+            }
+
+            // ── SPAWN THE PARTY ──────────────────────────────
+            this.spawnPartyScene();
+
+            // Move player back to room
+            this.player.setPosition(12 * SCALED_TILE + SCALED_TILE / 2, 5 * SCALED_TILE + SCALED_TILE / 2);
+
+            // Fade in
+            this.tweens.add({
+              targets: black,
+              alpha: 0,
+              duration: 600,
+              onComplete: () => {
+                black.destroy();
+
+
+                // Disco lights — colored circles pulsing around the yard
+                const discoColors = [0xff2080, 0x20c0ff, 0xf0c040, 0x40ff60, 0xc040ff];
+                this.time.addEvent({
+                  delay: 800,
+                  loop: true,
+                  callback: () => {
+                    if (!this.scene.isActive() || this.currentDay !== 2) return;
+                    const color = discoColors[Math.floor(Math.random() * discoColors.length)];
+                    const lx = this.player.x + Phaser.Math.Between(-300, 300);
+                    const ly = this.player.y + Phaser.Math.Between(-200, 200);
+                    const light = this.add.circle(lx, ly, 30 + Math.random() * 40, color, 0)
+                      .setDepth(7);
+                    this.tweens.add({
+                      targets: light,
+                      alpha: 0.12,
+                      duration: 400,
+                      yoyo: true,
+                      onComplete: () => light.destroy(),
+                    });
+                  },
+                });
+
+
+                // Hide K on Day 2 — she left
+                const kNpc = this.npcs.find(n => n.id === 'ch1_gf_k');
+                if (kNpc) {
+                  kNpc.sprite.setVisible(false);
+                  const kTileX = Math.round((kNpc.sprite.x - SCALED_TILE / 2) / SCALED_TILE);
+                  const kTileY = Math.round((kNpc.sprite.y - SCALED_TILE / 2) / SCALED_TILE);
+                  this.collisionTiles.delete(`${kTileX},${kTileY}`);
+                }
+
+                // K's texts — phone buzzing on screen before party starts
+                this.dialogue.show([
+                  { speaker: 'Narrator', text: 'JP\'s phone is blowing up.' },
+                  { speaker: 'K (text)', text: 'babe??' },
+                  { speaker: 'K (text)', text: 'hello???' },
+                  { speaker: 'K (text)', text: 'why aren\'t you answering' },
+                  { speaker: 'K (text)', text: 'jp.' },
+                  { speaker: 'K (text)', text: 'whatever.' },
+                  { speaker: 'Narrator', text: 'JP stares at the screen. Puts the phone face-down.' },
+                ], () => {
+                  // Party arrival
+                  this.dialogue.show([
+                    { speaker: 'Narrator', text: 'Bass is shaking the walls. There\'s a DJ outside.' },
+                    { speaker: 'Narrator', text: 'Lights flashing. People EVERYWHERE. Hella girls.' },
+                    { speaker: 'Narrator', text: 'Big Bart\'s already shirtless. Has been for an hour.' },
+                    { speaker: 'JP\'s Mind', text: 'I took a nap and they threw a whole party.' },
+                    { speaker: 'Nolan', text: 'YOOO HE\'S UP! JP GET OUT HERE!' },
+                  ], () => {
+                    this.frozen = false;
+                  });
+                });
+              },
+            });
+          },
+        });
+              },
+            });
+          }
+        },
+      });
+    };
+    blink();
+  }
+
+  // ─── SPAWN PARTY SCENE ─────────────────────────────────────────
+  private spawnPartyScene() {
+    const CHAR_SCALE = SCALE;
+
+    // Show the girls — they arrive for the party
+    for (const npc of this.npcs) {
+      if (npc.id.includes('girl') || npc.id === 'ch1_sunbather') {
+        npc.sprite.setVisible(true);
+        const tx = Math.round((npc.sprite.x - SCALED_TILE / 2) / SCALED_TILE);
+        const ty = Math.round((npc.sprite.y - SCALED_TILE / 2) / SCALED_TILE);
+        this.collisionTiles.add(`${tx},${ty}`);
+      }
+    }
+
+    // ── LED STRIP LIGHTS in rooms (Gen Z vibes) ──
+    // Each room gets a color-cycling strip along the top wall
+    const ledRooms = [
+      { startCol: 1, endCol: 8, row: 1 },   // Living room
+      { startCol: 10, endCol: 15, row: 1 },  // JP's room
+      { startCol: 17, endCol: 21, row: 1 },  // Kitchen
+      { startCol: 23, endCol: 27, row: 1 },  // Nolan's room
+    ];
+    const ledColors = [0xff2080, 0x8020ff, 0x20c0ff, 0xff2080, 0x40ff60];
+    for (const room of ledRooms) {
+      for (let col = room.startCol; col <= room.endCol; col++) {
+        const lx = col * SCALED_TILE + SCALED_TILE / 2;
+        const ly = room.row * SCALED_TILE + 4; // tight against ceiling
+        const led = this.add.rectangle(lx, ly, SCALED_TILE - 2, 4,
+          ledColors[Math.floor(Math.random() * ledColors.length)], 0.7
+        ).setDepth(6);
+        // Color cycle
+        this.tweens.add({
+          targets: led,
+          fillColor: ledColors[(Math.floor(Math.random() * ledColors.length))],
+          duration: 1500 + Math.random() * 1000,
+          yoyo: true,
+          repeat: -1,
+          delay: Math.random() * 500,
+        });
+        // Pulse brightness
+        this.tweens.add({
+          targets: led,
+          alpha: 0.3,
+          duration: 800 + Math.random() * 400,
+          yoyo: true,
+          repeat: -1,
+          delay: Math.random() * 300,
+        });
+      }
+    }
+
+    // ── DJ SETUP (front yard, center) ──
+    const djX = 18 * SCALED_TILE + SCALED_TILE / 2;
+    const djY = 10 * SCALED_TILE + SCALED_TILE / 2;
+
+    // DJ table (dark rectangle)
+    this.add.rectangle(djX, djY, SCALED_TILE * 2, SCALED_TILE * 0.6, 0x202028).setDepth(5);
+    // Turntable circles
+    this.add.circle(djX - 18, djY, 10, 0x404048).setDepth(6);
+    this.add.circle(djX + 18, djY, 10, 0x404048).setDepth(6);
+    // Spinning records
+    const record1 = this.add.circle(djX - 18, djY, 8, 0x101010).setDepth(6);
+    const record2 = this.add.circle(djX + 18, djY, 8, 0x101010).setDepth(6);
+    this.tweens.add({ targets: record1, angle: 360, duration: 2000, repeat: -1 });
+    this.tweens.add({ targets: record2, angle: 360, duration: 2000, repeat: -1, delay: 500 });
+    // DJ NPC
+    const dj = this.add.sprite(djX, djY - SCALED_TILE * 0.5, 'npc_generic', 0)
+      .setScale(CHAR_SCALE).setDepth(9);
+    // DJ head-bob
+    this.tweens.add({
+      targets: dj,
+      y: dj.y + 3,
+      duration: 300,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
+    });
+    // "DJ" label
+    this.add.text(djX, djY - SCALED_TILE, 'DJ', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#f0c040',
+    }).setOrigin(0.5).setDepth(10);
+    this.collisionTiles.add(`${36},${10}`);
+
+    // ── SPEAKERS (bass visual) ──
+    const spkL = this.add.rectangle(djX - SCALED_TILE * 1.5, djY, 20, 30, 0x1a1a1a).setDepth(5);
+    const spkR = this.add.rectangle(djX + SCALED_TILE * 1.5, djY, 20, 30, 0x1a1a1a).setDepth(5);
+    // Speaker cones
+    this.add.circle(spkL.x, spkL.y, 8, 0x303030).setDepth(6);
+    this.add.circle(spkR.x, spkR.y, 8, 0x303030).setDepth(6);
+    // Bass pulse
+    this.tweens.add({
+      targets: [spkL, spkR],
+      scaleX: 1.15,
+      scaleY: 1.15,
+      duration: 400,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
+    });
+
+    // ── PARTY PEOPLE (spawn extra NPCs in the yard/house) ──
+    const partyPositions = [
+      { x: 8, y: 10, sprite: 'npc_bikini1' },   // girl in yard
+      { x: 15, y: 10, sprite: 'npc_generic' },   // random dude
+      { x: 25, y: 9, sprite: 'npc_bikini2' },    // girl near patio
+      { x: 30, y: 10, sprite: 'npc_bikini1' },   // girl by DJ
+      { x: 3, y: 3, sprite: 'npc_generic' },     // dude in living room
+      { x: 18, y: 3, sprite: 'npc_bikini2' },    // girl in kitchen
+      { x: 24, y: 3, sprite: 'npc_generic' },    // dude in bedroom
+      { x: 12, y: 10, sprite: 'npc_bikini1' },   // girl on walkway
+      { x: 28, y: 10, sprite: 'npc_generic' },   // dude near hot tub
+      { x: 6, y: 6, sprite: 'npc_bikini2' },     // girl in living room
+    ];
+
+    for (const pos of partyPositions) {
+      const px = pos.x * SCALED_TILE + SCALED_TILE / 2;
+      const py = pos.y * SCALED_TILE + SCALED_TILE / 2;
+      const partyNpc = this.add.sprite(px, py, pos.sprite, 0)
+        .setScale(CHAR_SCALE).setDepth(9);
+
+      // Random dance animation — sway side to side
+      const swayAmount = 2 + Math.random() * 3;
+      const swaySpeed = 300 + Math.random() * 400;
+      this.tweens.add({
+        targets: partyNpc,
+        x: px + swayAmount,
+        angle: swayAmount,
+        duration: swaySpeed,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+        delay: Math.random() * 500,
+      });
+
+      this.collisionTiles.add(`${pos.x},${pos.y}`);
+    }
+
+    // ── DANCE FLOOR LIGHTS (on the ground near DJ) ──
+    const floorColors = [0xff2080, 0x20c0ff, 0xf0c040, 0x40ff60, 0xc040ff, 0xff6030];
+    for (let i = 0; i < 8; i++) {
+      const fx = (32 + Math.random() * 6) * SCALED_TILE;
+      const fy = (9 + Math.random() * 3) * SCALED_TILE;
+      const floorLight = this.add.circle(fx, fy, 20 + Math.random() * 15,
+        floorColors[Math.floor(Math.random() * floorColors.length)], 0
+      ).setDepth(1);
+      this.tweens.add({
+        targets: floorLight,
+        alpha: 0.15,
+        duration: 600 + Math.random() * 800,
+        yoyo: true,
+        repeat: -1,
+        delay: Math.random() * 1000,
+      });
+    }
+
+    // ── RED SOLO CUPS scattered around ──
+    const cupPositions = [
+      { x: 6, y: 2 }, { x: 19, y: 4 }, { x: 25, y: 6 },
+      { x: 10, y: 9 }, { x: 22, y: 10 }, { x: 33, y: 9 },
+      { x: 3, y: 6 }, { x: 17, y: 1 },
+    ];
+    for (const pos of cupPositions) {
+      const cupX = pos.x * SCALED_TILE + SCALED_TILE / 2 + Phaser.Math.Between(-10, 10);
+      const cupY = pos.y * SCALED_TILE + SCALED_TILE / 2 + Phaser.Math.Between(-5, 5);
+      this.add.rectangle(cupX, cupY, 8, 12, 0xe03030).setDepth(3);
+      this.add.rectangle(cupX, cupY - 6, 10, 2, 0xf04040).setDepth(3); // rim
+    }
+
+    // ── SMOKE HAZE (party fog) ──
+    this.time.addEvent({
+      delay: 3000,
+      loop: true,
+      callback: () => {
+        if (!this.scene.isActive() || this.currentDay !== 2) return;
+        const haze = this.add.circle(
+          this.player.x + Phaser.Math.Between(-250, 250),
+          this.player.y + Phaser.Math.Between(-150, 150),
+          40 + Math.random() * 30,
+          0xcccccc, 0
+        ).setDepth(7);
+        this.tweens.add({
+          targets: haze,
+          alpha: 0.04,
+          scaleX: 3,
+          scaleY: 3,
+          duration: 4000,
+          yoyo: true,
+          onComplete: () => haze.destroy(),
+        });
+      },
+    });
+  }
+
+  // ─── BLOW OFFER + BLACKOUT SEQUENCE ─────────────────────────────
+  private triggerBlowOffer() {
+    if (this.blowOffered || this.frozen) return;
+    this.blowOffered = true;
+    this.frozen = true;
+
+    // Camera shake — someone taps JP's shoulder
+    this.cameras.main.shake(100, 0.002);
+
+    this.dialogue.show([
+      { speaker: 'Narrator', text: 'Someone JP doesn\'t recognize pulls him aside.' },
+      { speaker: '???', text: 'Aye. You want a bump?' },
+    ], () => {
+      this.showYesNoChoice('Do a line?', 'Fuck it', 'Nah I\'m good', () => {
+        // YES — escalates to blackout
+        this.partyLevel = 3;
+        this.dialogue.show([
+          { speaker: 'Narrator', text: 'JP leans over the counter.' },
+          { speaker: 'Narrator', text: 'Everything gets LOUD. The music. The people. His own heartbeat.' },
+          { speaker: 'JP\'s Mind', text: 'Oh shit.' },
+        ], () => {
+          // Intense visual effects
+          this.cameras.main.shake(500, 0.01);
+
+          // White flash
+          const flash = this.add.rectangle(
+            GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0xffffff, 0
+          ).setScrollFactor(0).setDepth(400);
+          this.tweens.add({
+            targets: flash,
+            alpha: 0.5,
+            duration: 200,
+            yoyo: true,
+            repeat: 2,
+            onComplete: () => flash.destroy(),
+          });
+
+          // Hyped mood
+          MoodSystem.setMood('hyped', 30);
+
+          // More party chaos dialogue
+          this.time.delayedCall(1500, () => {
+            this.dialogue.show([
+              { speaker: 'Big Bart', text: 'YOOOOO JP IS LOCKED IN!!' },
+              { speaker: 'Narrator', text: 'JP doesn\'t remember the next hour.' },
+              { speaker: 'Narrator', text: 'Flashes. Beer pong. Dancing on tables. More drinks.' },
+              { speaker: 'Narrator', text: 'Someone hands him another line.' },
+              { speaker: 'JP\'s Mind', text: 'I should stop.' },
+              { speaker: 'Narrator', text: 'He doesn\'t stop.' },
+            ], () => {
+              // BLACKOUT
+              this.triggerBlackout();
+            });
+          });
+        });
+      }, () => {
+        // NO — stays at party level 2
+        this.dialogue.show([
+          { speaker: 'JP', text: 'Nah I\'m straight.' },
+          { speaker: '???', text: 'Suit yourself.' },
+          { speaker: 'JP\'s Mind', text: 'Smart decision. First one tonight.' },
+        ], () => {
+          this.frozen = false;
+        });
+      });
+    });
+  }
+
+  private triggerBlackout() {
+    this.partyLevel = 4;
+    this.blackedOut = true;
+    this.frozen = true;
+
+    // Kill all tweens/effects
+    if (this.wobbleEffect) this.wobbleEffect.stop();
+
+    // Rapid flash montage — fragments of the night
+    const fragments = [
+      'Beer pong. Cups flying.',
+      'Dancing. Someone\'s on the table.',
+      'Bart tackles someone into the pool.',
+      'Girls screaming. Good screaming.',
+      'Another shot. Another line.',
+      'Nolan yelling. Can\'t hear what.',
+      'Kissing someone. Two someones.',
+      'The world spinning.',
+      'Floor.',
+    ];
+
+    const overlay = this.add.rectangle(
+      GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0
+    ).setScrollFactor(0).setDepth(500);
+
+    this.tweens.add({
+      targets: overlay,
+      alpha: 1,
+      duration: 400,
+    });
+
+    // Flash each fragment quickly
+    let delay = 600;
+    for (let i = 0; i < fragments.length; i++) {
+      this.time.delayedCall(delay, () => {
+        const frag = this.add.text(
+          GAME_WIDTH / 2 + Phaser.Math.Between(-80, 80),
+          GAME_HEIGHT / 2 + Phaser.Math.Between(-40, 40),
+          fragments[i],
+          {
+            fontFamily: '"Press Start 2P", monospace',
+            fontSize: i < 7 ? '10px' : '14px',
+            color: i < 6 ? '#ffffff' : i === 7 ? '#f04040' : '#888888',
+          }
+        ).setOrigin(0.5).setScrollFactor(0).setDepth(501).setAlpha(0);
+
+        this.tweens.add({
+          targets: frag,
+          alpha: 1,
+          duration: 150,
+          hold: i === fragments.length - 1 ? 1000 : 300,
+          yoyo: true,
+          onComplete: () => frag.destroy(),
+        });
+
+        // Camera shake gets worse
+        if (i < 8) this.cameras.main.shake(200, 0.003 + i * 0.002);
+      });
+      delay += i < 6 ? 600 : i === 7 ? 800 : 1200;
+    }
+
+    // After all fragments — wake up scene
+    this.time.delayedCall(delay + 1500, () => {
+      // Full black, then slowly reveal
+      const wakeText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2, '...', {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '20px', color: '#ffffff',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(501).setAlpha(0);
+
+      this.tweens.add({
+        targets: wakeText,
+        alpha: 1,
+        duration: 1500,
+        hold: 1000,
+        yoyo: true,
+        onComplete: () => {
+          wakeText.destroy();
+
+          // Spawn patio chair with slumped girl near hot tub
+          const chairX = 35 * SCALED_TILE + SCALED_TILE / 2;
+          const chairY = 6 * SCALED_TILE + SCALED_TILE / 2;
+          // Chair (brown rectangle)
+          this.add.rectangle(chairX, chairY, 30, 20, 0x6a5030).setDepth(5);
+          this.add.rectangle(chairX, chairY - 14, 30, 8, 0x6a5030).setDepth(5); // back rest
+          // Slumped girl on chair — tilted, sleeping
+          const slumpedGirl = this.add.sprite(chairX, chairY - 6, 'npc_bikini1', 0)
+            .setScale(SCALE).setDepth(9).setAngle(25);
+          // Breathing animation — she's out cold
+          this.tweens.add({
+            targets: slumpedGirl,
+            scaleY: SCALE * 0.95,
+            duration: 1500,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut',
+          });
+          // ZZZs from her
+          this.time.addEvent({
+            delay: 2500,
+            loop: true,
+            callback: () => {
+              if (!this.scene.isActive()) return;
+              const z = this.add.text(chairX + 15, chairY - 25, 'z', {
+                fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#8888aa',
+              }).setDepth(20).setAlpha(0.6);
+              this.tweens.add({
+                targets: z, y: z.y - 20, alpha: 0, duration: 1800,
+                onComplete: () => z.destroy(),
+              });
+            },
+          });
+
+          // Wake up somewhere random
+          this.dialogue.show([
+            { speaker: 'Narrator', text: 'Sunlight. Concrete. The sound of waves.' },
+            { speaker: 'Narrator', text: 'JP is lying on the ground next to the hot tub. Fully clothed. One shoe missing.' },
+            { speaker: 'JP\'s Mind', text: '...what happened.' },
+            { speaker: 'Narrator', text: 'His phone has 23 missed calls. K. Nolan. Mom.' },
+            { speaker: 'Narrator', text: 'There\'s a girl slumped on a patio chair next to him. He doesn\'t know her name.' },
+            { speaker: 'JP\'s Mind', text: 'I did some fucked up shit last night.' },
+            { speaker: 'Narrator', text: 'Cooper walks out with coffee. Doesn\'t even look surprised.' },
+            { speaker: 'Cooper', text: 'Bro. You were ON ONE last night.' },
+            { speaker: 'JP', text: 'How bad?' },
+            { speaker: 'Cooper', text: 'You don\'t wanna know.' },
+            { speaker: 'JP\'s Mind', text: 'He\'s right. I don\'t.' },
+          ], () => {
+            // Remove party overlay, clear effects
+            if (this.partyOverlay) {
+              this.tweens.add({ targets: this.partyOverlay, alpha: 0, duration: 1000 });
+            }
+            overlay.destroy();
+
+            // Move player to hot tub area (outside, on the ground)
+            this.player.setPosition(33 * SCALED_TILE + SCALED_TILE / 2, 6 * SCALED_TILE + SCALED_TILE / 2);
+
+            // Mark required interaction done — time to move to Wrong Crowd
+            this.requiredDone = true;
+            this.frozen = false;
+          });
+        },
+      });
+    });
+  }
+
+  // ─── BEER PONG MINIGAME ──────────────────────────────────────────
+  private playBeerPong() {
+    this.frozen = true;
+    this.beerPongPlayed = true;
+    const objects: Phaser.GameObjects.GameObject[] = [];
+
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+
+    // Dark overlay
+    objects.push(this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.85)
+      .setScrollFactor(0).setDepth(300));
+
+    // Table
+    objects.push(this.add.rectangle(cx, cy, 600, 280, 0x2a5030)
+      .setScrollFactor(0).setDepth(301));
+    objects.push(this.add.rectangle(cx, cy, 590, 270, 0x306838)
+      .setScrollFactor(0).setDepth(301));
+    // Center line
+    objects.push(this.add.rectangle(cx, cy, 2, 270, 0xffffff)
+      .setScrollFactor(0).setDepth(302).setAlpha(0.3));
+
+    // Title
+    objects.push(this.add.text(cx, cy - 170, 'BEER PONG', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '18px', color: '#f0c040',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303));
+
+    // Instructions
+    objects.push(this.add.text(cx, cy - 148, 'LEFT/RIGHT to aim  |  SPACE to shoot  |  Power fills automatically', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#888888',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303));
+
+    // Cups — 6 per side (triangle: 3-2-1)
+    const cupRadius = 16;
+    const cupColor = 0xe03030;
+    const cupSpacing = 38;
+
+    // Opponent cups (right side)
+    const oppCupPositions = [
+      { x: cx + 220, y: cy - 50 }, { x: cx + 220, y: cy }, { x: cx + 220, y: cy + 50 },
+      { x: cx + 258, y: cy - 25 }, { x: cx + 258, y: cy + 25 },
+      { x: cx + 296, y: cy },
+    ];
+
+    // Player cups (left side)
+    const myCupPositions = [
+      { x: cx - 220, y: cy - 50 }, { x: cx - 220, y: cy }, { x: cx - 220, y: cy + 50 },
+      { x: cx - 258, y: cy - 25 }, { x: cx - 258, y: cy + 25 },
+      { x: cx - 296, y: cy },
+    ];
+
+    const oppCups: { obj: Phaser.GameObjects.Arc; hit: boolean; pos: { x: number; y: number } }[] = [];
+    const myCups: { obj: Phaser.GameObjects.Arc; hit: boolean }[] = [];
+
+    for (const pos of oppCupPositions) {
+      const cup = this.add.circle(pos.x, pos.y, cupRadius, cupColor).setScrollFactor(0).setDepth(302);
+      // Beer inside
+      this.add.circle(pos.x, pos.y, cupRadius - 4, 0xf0c040).setScrollFactor(0).setDepth(302).setAlpha(0.6);
+      objects.push(cup);
+      oppCups.push({ obj: cup, hit: false, pos });
+    }
+
+    for (const pos of myCupPositions) {
+      const cup = this.add.circle(pos.x, pos.y, cupRadius, cupColor).setScrollFactor(0).setDepth(302);
+      this.add.circle(pos.x, pos.y, cupRadius - 4, 0xf0c040).setScrollFactor(0).setDepth(302).setAlpha(0.6);
+      objects.push(cup);
+      myCups.push({ obj: cup, hit: false });
+    }
+
+    // Score
+    let jpScore = 0;
+    let oppScore = 0;
+    let jpTurn = true;
+    let shots = 0;
+    const maxShots = 12;
+
+    const scoreText = this.add.text(cx, cy + 160, 'JP: 0  |  THEM: 0', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '12px', color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303);
+    objects.push(scoreText);
+
+    const turnText = this.add.text(cx, cy + 180, 'YOUR SHOT', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#60c060',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303);
+    objects.push(turnText);
+
+    // Aiming cursor (moves up/down)
+    let aimY = cy;
+    let aimDir = 1;
+    const aimSpeed = 2;
+    const aimCursor = this.add.triangle(cx - 160, aimY, 0, -8, 0, 8, 12, 0, 0xffffff)
+      .setScrollFactor(0).setDepth(304);
+    objects.push(aimCursor);
+
+    // Power bar
+    let power = 0;
+    let powerDir = 1;
+    const powerBarBg = this.add.rectangle(cx - 330, cy, 20, 200, 0x333333)
+      .setScrollFactor(0).setDepth(302);
+    objects.push(powerBarBg);
+    const powerBar = this.add.rectangle(cx - 330, cy + 100, 16, 0, 0x30c060)
+      .setOrigin(0.5, 1).setScrollFactor(0).setDepth(303);
+    objects.push(powerBar);
+
+    let shooting = false;
+    let gameOver = false;
+
+    // Game loop
+    const updateEvent = this.time.addEvent({
+      delay: 16,
+      loop: true,
+      callback: () => {
+        if (gameOver || shooting) return;
+
+        if (jpTurn) {
+          // Move aim cursor
+          aimY += aimSpeed * aimDir;
+          if (aimY > cy + 100) aimDir = -1;
+          if (aimY < cy - 100) aimDir = 1;
+          aimCursor.setY(aimY);
+
+          // Power oscillates
+          power += 1.5 * powerDir;
+          if (power > 100) powerDir = -1;
+          if (power < 0) powerDir = 1;
+          powerBar.setSize(16, power * 2);
+          powerBar.setFillStyle(power > 70 ? 0x30c060 : power > 40 ? 0xf0c040 : 0xf04040);
+        }
+      },
+    });
+
+    // Shoot handler
+    const shoot = () => {
+      if (!jpTurn || shooting || gameOver) return;
+      shooting = true;
+
+      // Ball animation
+      const ball = this.add.circle(cx - 140, aimY, 8, 0xffffff)
+        .setScrollFactor(0).setDepth(305);
+      objects.push(ball);
+
+      // Arc toward opponent cups based on aim + power
+      const targetX = cx + 220 + (power / 100) * 80;
+      const targetY = aimY;
+
+      this.tweens.add({
+        targets: ball,
+        x: targetX,
+        y: targetY - 30,
+        duration: 400,
+        ease: 'Quad.easeOut',
+        onComplete: () => {
+          // Drop
+          this.tweens.add({
+            targets: ball,
+            y: targetY,
+            duration: 200,
+            ease: 'Bounce.easeOut',
+            onComplete: () => {
+              // Check hit
+              let hitCup = false;
+              for (const cup of oppCups) {
+                if (cup.hit) continue;
+                const dist = Math.sqrt((ball.x - cup.pos.x) ** 2 + (ball.y - cup.pos.y) ** 2);
+                if (dist < cupRadius + 8) {
+                  // HIT!
+                  hitCup = true;
+                  cup.hit = true;
+                  jpScore++;
+
+                  // Cup disappears
+                  this.tweens.add({ targets: cup.obj, alpha: 0.2, scaleX: 0.5, scaleY: 0.5, duration: 300 });
+
+                  // Hit text
+                  const hitText = this.add.text(cup.pos.x, cup.pos.y - 20, 'SPLASH!', {
+                    fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#f0c040',
+                  }).setOrigin(0.5).setScrollFactor(0).setDepth(306);
+                  this.tweens.add({
+                    targets: hitText,
+                    y: hitText.y - 30,
+                    alpha: 0,
+                    duration: 800,
+                    onComplete: () => hitText.destroy(),
+                  });
+                  break;
+                }
+              }
+
+              if (!hitCup) {
+                // Miss text
+                const missText = this.add.text(ball.x, ball.y - 15, 'MISS', {
+                  fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#f04040',
+                }).setOrigin(0.5).setScrollFactor(0).setDepth(306);
+                this.tweens.add({
+                  targets: missText,
+                  alpha: 0,
+                  duration: 600,
+                  onComplete: () => missText.destroy(),
+                });
+              }
+
+              ball.destroy();
+              scoreText.setText(`JP: ${jpScore}  |  THEM: ${oppScore}`);
+              shots++;
+
+              // Check game over
+              if (jpScore >= 6 || oppScore >= 6 || shots >= maxShots) {
+                gameOver = true;
+                updateEvent.remove();
+                spaceKey.off('down', shootHandler);
+                this.time.delayedCall(800, () => this.endBeerPong(jpScore, oppScore, objects));
+                return;
+              }
+
+              // Opponent turn
+              jpTurn = false;
+              turnText.setText('THEIR SHOT').setColor('#f04040');
+              aimCursor.setAlpha(0.3);
+
+              this.time.delayedCall(1200, () => {
+                // Opponent shoots (40% hit rate)
+                const hit = Math.random() < 0.4;
+                if (hit) {
+                  const available = myCups.filter(c => !c.hit);
+                  if (available.length > 0) {
+                    const target = available[Math.floor(Math.random() * available.length)];
+                    target.hit = true;
+                    oppScore++;
+                    this.tweens.add({ targets: target.obj, alpha: 0.2, scaleX: 0.5, scaleY: 0.5, duration: 300 });
+                  }
+                }
+
+                scoreText.setText(`JP: ${jpScore}  |  THEM: ${oppScore}`);
+                shots++;
+
+                if (jpScore >= 6 || oppScore >= 6 || shots >= maxShots) {
+                  gameOver = true;
+                  updateEvent.remove();
+                  spaceKey.off('down', shootHandler);
+                  this.time.delayedCall(800, () => this.endBeerPong(jpScore, oppScore, objects));
+                  return;
+                }
+
+                // Back to player
+                jpTurn = true;
+                turnText.setText('YOUR SHOT').setColor('#60c060');
+                aimCursor.setAlpha(1);
+                shooting = false;
+              });
+            },
+          });
+        },
+      });
+    };
+
+    const spaceKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    const shootHandler = () => shoot();
+    spaceKey.on('down', shootHandler);
+  }
+
+  private endBeerPong(jpScore: number, oppScore: number, objects: Phaser.GameObjects.GameObject[]) {
+    const won = jpScore > oppScore;
+
+    const lines: DialogueLine[] = won ? [
+      { speaker: 'Narrator', text: `JP sinks ${jpScore} cups. The table erupts.` },
+      { speaker: 'Big Bart', text: 'THAT\'S MY BOY!! LET\'S GOOO!' },
+      { speaker: 'Narrator', text: 'Bart bear-hugs JP so hard he lifts him off the ground.' },
+    ] : [
+      { speaker: 'Narrator', text: 'JP only hits ' + jpScore + '. Not his night.' },
+      { speaker: 'Cooper', text: 'It\'s all good bro. Next round.' },
+      { speaker: 'Big Bart', text: 'NAH NAH RUN IT BACK! RUN IT BACK!' },
+    ];
+
+    if (won) {
+      MoodSystem.setMood('hyped', 30);
+    }
+
+    // Clean up
+    for (const obj of objects) {
+      if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
+    }
+
+    this.dialogue.show(lines, () => {
+      this.frozen = false;
+    });
   }
 
   private playVolleyballMinigame() {

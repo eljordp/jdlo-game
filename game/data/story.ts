@@ -297,6 +297,44 @@ export const chapter1NPCs: NPCData[] = [
       { speaker: 'JP\'s Mind', text: 'Or maybe he doesn\'t think enough.' },
     ],
   },
+  {
+    id: 'ch1_bigbart',
+    x: 20,
+    y: 5,
+    sprite: 'npc_bigbart',
+    dialogue: [
+      { speaker: 'Big Bart', text: 'JPPPPP! What\'s good big dawg!' },
+      { speaker: 'Narrator', text: 'Big Bart bear-hugs JP before he can answer.' },
+      { speaker: 'JP', text: 'Bart. Chill. You\'re crushing me.' },
+      { speaker: 'Big Bart', text: 'Bro I\'m just HYPED! This house is CRAZY!' },
+      { speaker: 'Big Bart', text: 'I already broke a chair. Don\'t tell Nolan.' },
+      { speaker: 'JP', text: 'It\'s been one day, Bart.' },
+      { speaker: 'Big Bart', text: 'AND IT\'S ALREADY THE BEST DAY OF MY LIFE!' },
+    ],
+  },
+  {
+    id: 'ch1_gf_k',
+    x: 14,
+    y: 5,
+    sprite: 'npc_female',
+    dialogue: [
+      { speaker: 'Narrator', text: 'K stirs. Opens her eyes.' },
+      { speaker: 'K', text: 'Mmm... hey baby.' },
+      { speaker: 'JP', text: 'Hey. Morning.' },
+      { speaker: 'K', text: 'What time is it?' },
+      { speaker: 'JP', text: 'Like 11.' },
+      { speaker: 'K', text: 'Shit. I gotta go. UCLA orientation stuff today.' },
+      { speaker: 'Narrator', text: 'She gets up. Fixes her hair in his mirror.' },
+      { speaker: 'K', text: 'Have a good day okay? Work hard. Don\'t just smoke all day.' },
+      { speaker: 'JP', text: 'I won\'t.' },
+      { speaker: 'K', text: 'I\'m serious JP.' },
+      { speaker: 'Narrator', text: 'She kisses him. Grabs her bag.' },
+      { speaker: 'K', text: 'Be safe. I love you.' },
+      { speaker: 'JP', text: 'Love you too.' },
+      { speaker: 'Narrator', text: 'The door closes. The room gets quiet.' },
+      { speaker: 'JP\'s Mind', text: 'She\'s the only person who actually cares if I make it.' },
+    ],
+  },
 ];
 
 export const chapter1OutroText: string[] = [
@@ -1095,17 +1133,15 @@ const ch0Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'Nolan wasn\'t offering anything shady. Just a fresh start. JP needed that.' },
   ],
   ch0_hidden_stash: [
-    { speaker: 'Narrator', text: 'JP reaches behind the desk. A small bag of weed.' },
-    { speaker: 'Narrator', text: 'The habit started before Santa Barbara.' },
+    { speaker: 'Narrator', text: 'A bag tucked behind the desk. JP pockets it.' },
   ],
   ch0_journal: [
     { speaker: 'Narrator', text: 'A journal with one entry:' },
     { speaker: 'Narrator', text: '\'I\'m going to be somebody. I just don\'t know how yet.\'' },
     { speaker: 'Narrator', text: 'Dated six months ago.' },
   ],
-  ch0_nightstand: [
-    { speaker: 'Narrator', text: 'Phone charger, a half-empty water bottle, and a receipt from In-N-Out.' },
-    { speaker: 'Narrator', text: 'The essentials.' },
+  ch0_papers: [
+    { speaker: 'Narrator', text: 'RAW blacks. JP always keeps a pack in the nightstand.' },
   ],
   // --- Sister's Room ---
   ch0_sister_bed: [
@@ -1151,21 +1187,16 @@ const ch0Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP', text: 'What are you doing, bro?' },
     { speaker: 'Narrator', text: 'No answer.' },
   ],
-  ch0_washer: [
-    { speaker: 'Narrator', text: 'Washing machine. Still running. Mom does a load every morning.' },
+  ch0_upstairs_tv: [
+    { speaker: 'Narrator', text: 'Small TV upstairs. JP and his sister watch cartoons here on weekends.' },
   ],
-  ch0_dryer: [
-    { speaker: 'Narrator', text: 'Dryer. A sock stuck to the lint trap. Always.' },
+  ch0_upstairs_couch: [
+    { speaker: 'Narrator', text: 'Love seat. Sister falls asleep here every night watching TV.' },
+    { speaker: 'JP\'s Mind', text: 'She looks so peaceful when she sleeps.' },
   ],
-  ch0_laundry: [
-    { speaker: 'Narrator', text: 'Laundry basket. Overflowing. Mom gave up asking JP to bring his clothes down.' },
-  ],
-  ch0_storage_boxes: [
-    { speaker: 'Narrator', text: 'Old boxes. Baby clothes, school projects, Christmas decorations.' },
-    { speaker: 'JP\'s Mind', text: 'Mom keeps everything.' },
-  ],
-  ch0_ironing_board: [
-    { speaker: 'Narrator', text: 'Ironing board. Pops\' work shirts hang next to it.' },
+  ch0_weights: [
+    { speaker: 'Narrator', text: 'Dumbbells. 25s and 35s. JP\'s been hitting these before school.' },
+    { speaker: 'JP\'s Mind', text: 'Gotta stay disciplined.' },
   ],
   ch0_family_albums: [
     { speaker: 'Narrator', text: 'Photo albums. Thick ones, from before phones had cameras.' },
@@ -1185,6 +1216,9 @@ const ch0Extras: Record<string, DialogueLine[]> = {
   ch0_den_rug: [
     { speaker: 'Narrator', text: 'Area rug. Sister spilled juice on it last month. Mom flipped.' },
   ],
+  ch0_lounge_rug: [
+    { speaker: 'Narrator', text: 'Mom picked this rug. Nobody touches it with shoes on.' },
+  ],
   ch0_den_lamp: [
     { speaker: 'Narrator', text: 'Floor lamp. The one that flickers when you bump it.' },
   ],
@@ -1196,9 +1230,6 @@ const ch0Extras: Record<string, DialogueLine[]> = {
   ],
   ch0_den_table: [
     { speaker: 'Narrator', text: 'Side table. Remote, coasters, a candle Mom never lights.' },
-  ],
-  ch0_toilet: [
-    { speaker: 'Narrator', text: 'A toilet. What did you expect?' },
   ],
   ch0_shower: [
     { speaker: 'Narrator', text: 'JP hops in the shower.' },
@@ -1456,8 +1487,12 @@ const ch1Extras: Record<string, DialogueLine[]> = {
     { speaker: 'Narrator', text: 'This is what Tuesday looks like in Santa Barbara.' },
   ],
   ch1_setup: [
-    { speaker: 'JP\'s Mind', text: 'JP\'s setup. Dual monitors. Crypto charts on one, YouTube tutorials on the other.' },
-    { speaker: 'JP\'s Mind', text: 'This is where the hustle happens.' },
+    { speaker: 'JP\'s Mind', text: 'Dual monitors. Crypto charts on one, Depop on the other.' },
+    { speaker: 'JP\'s Mind', text: 'Trading crypto. Selling clothes. Moving weed. All from this desk.' },
+    { speaker: 'JP\'s Mind', text: 'Everyone out there partying and I\'m in here running three hustles.' },
+  ],
+  ch1_beerpong: [
+    { speaker: 'Narrator', text: 'Beer pong table. Red cups ready.' },
   ],
   ch1_computer: [
     { speaker: 'Narrator', text: 'JP opens his laptop. The spreadsheet loads.' },
@@ -1486,6 +1521,72 @@ const ch1Extras: Record<string, DialogueLine[]> = {
   ],
   ch1_shower: [
     { speaker: 'JP\'s Mind', text: 'Frat house shower. At least the water\'s hot.' },
+  ],
+  // --- Living Room ---
+  ch1_couch: [
+    { speaker: 'Narrator', text: 'Couch has seen better days. Stains from parties nobody remembers.' },
+    { speaker: 'JP\'s Mind', text: 'This couch has more stories than I do.' },
+  ],
+  ch1_tv: [
+    { speaker: 'Narrator', text: 'Flat screen. Someone left FIFA paused from last night.' },
+  ],
+  ch1_poster: [
+    { speaker: 'Narrator', text: 'Bob Marley poster. Obviously.' },
+  ],
+  ch1_clothes: [
+    { speaker: 'Narrator', text: 'JP\'s clothes all over the floor. Mom would lose her mind.' },
+    { speaker: 'JP\'s Mind', text: 'I\'ll pick it up later. Probably.' },
+  ],
+  // --- Kitchen ---
+  ch1_fridge: [
+    { speaker: 'Narrator', text: 'Fridge has beer, leftover pizza, and a jar of pickles nobody claims.' },
+    { speaker: 'JP\'s Mind', text: 'Five dudes. Zero groceries.' },
+  ],
+  ch1_counter: [
+    { speaker: 'Narrator', text: 'Counter covered in red solo cups and a sticky bottle of Hennessy.' },
+  ],
+  ch1_food: [
+    { speaker: 'Narrator', text: 'Leftover In-N-Out. Animal style. Cold but still hits.' },
+  ],
+  // --- Nolan's Room ---
+  ch1_nolan_bed: [
+    { speaker: 'Narrator', text: 'Nolan\'s bed. Unmade since move-in day.' },
+    { speaker: 'Narrator', text: 'Surfboard leaning against the wall. Board shorts on the floor.' },
+  ],
+  ch1_surfboard: [
+    { speaker: 'Narrator', text: 'Nolan\'s surfboard. He goes out every morning before anyone\'s awake.' },
+    { speaker: 'JP\'s Mind', text: 'He found his thing. Surfing, parties, vibes. He\'s home here.' },
+    { speaker: 'JP\'s Mind', text: 'I\'m still looking.' },
+  ],
+  ch1_nolan_speaker: [
+    { speaker: 'Narrator', text: 'JBL speaker. Always playing something. Right now it\'s Travis Scott.' },
+  ],
+  ch1_nolan_poster: [
+    { speaker: 'Narrator', text: 'Poster of some surf competition in Hawaii. Nolan circled a date on it.' },
+  ],
+  // --- Beach ---
+  ch1_towels: [
+    { speaker: 'Narrator', text: 'Beach towels laid out. Someone left sunscreen and a half-read book.' },
+  ],
+  ch1_cooler: [
+    { speaker: 'Narrator', text: 'Cooler full of Modelos and White Claws. The essentials.' },
+    { speaker: 'JP\'s Mind', text: 'Tuesday afternoon and we\'re drinking on the beach. This can\'t last.' },
+  ],
+  ch1_bonfire: [
+    { speaker: 'Narrator', text: 'Bonfire pit from last weekend. Ashes and a couple burnt marshmallow sticks.' },
+    { speaker: 'JP\'s Mind', text: 'That night was different. Everyone was actually talking. Not just drinking.' },
+  ],
+  ch1_surfboards: [
+    { speaker: 'Narrator', text: 'Surfboards stuck in the sand. Nolan\'s, David\'s, and a rental nobody returned.' },
+  ],
+  ch1_shells: [
+    { speaker: 'Narrator', text: 'Shells. JP picks one up. Puts it back.' },
+    { speaker: 'JP\'s Mind', text: 'Sister would love this. Maybe I\'ll grab one before I leave.' },
+  ],
+  ch1_sunset: [
+    { speaker: 'Narrator', text: 'The sun is starting to drop. Orange light across the water.' },
+    { speaker: 'Narrator', text: 'Santa Barbara sunsets hit different. Even JP can\'t deny that.' },
+    { speaker: 'JP\'s Mind', text: 'If I could freeze one moment... it might be this one.' },
   ],
 };
 
@@ -2321,6 +2422,70 @@ const ch4Extras: Record<string, DialogueLine[]> = {
     { speaker: 'Juan', text: 'Otra vez con el teléfono, güey.' },
     { speaker: 'JP\'s Mind', text: 'He\'s not wrong.' },
   ],
+  ch4_farmhouse: [
+    { speaker: 'Narrator', text: 'The farmhouse. White paint peeling. Screen door that never closes right.' },
+    { speaker: 'Narrator', text: 'Ernesto\'s been running this vineyard for 30 years.' },
+  ],
+  ch4_radio: [
+    { speaker: 'Narrator', text: 'Old radio on the windowsill. Norteño music crackling through the speaker.' },
+    { speaker: 'JP\'s Mind', text: 'This song has been playing since I got here. Nobody changes it.' },
+  ],
+  ch4_water_cooler: [
+    { speaker: 'Narrator', text: 'Water jug. Lukewarm. Everyone drinks from the same cup.' },
+    { speaker: 'JP\'s Mind', text: 'Hydrate or die out here.' },
+  ],
+  ch4_tools: [
+    { speaker: 'Narrator', text: 'Pruning shears, wire cutters, gloves with holes in them.' },
+    { speaker: 'Narrator', text: 'These tools are older than JP.' },
+  ],
+  ch4_truck: [
+    { speaker: 'Narrator', text: 'Ernesto\'s truck. 1998 Ford F-150. Dents on every panel.' },
+    { speaker: 'Narrator', text: 'Rosary hanging from the mirror. Mexican flag sticker on the bumper.' },
+    { speaker: 'JP\'s Mind', text: 'This man works harder than anyone I know.' },
+  ],
+  ch4_grape_row1: [
+    { speaker: 'Narrator', text: 'Cabernet Sauvignon vines. Thick trunks, heavy clusters.' },
+    { speaker: 'Narrator', text: 'Each one pruned by hand. Thousands of them.' },
+    { speaker: 'JP\'s Mind', text: 'This is real work. No shortcuts.' },
+  ],
+  ch4_grape_row2: [
+    { speaker: 'Narrator', text: 'These vines have been here longer than the freeway.' },
+    { speaker: 'JP\'s Mind', text: 'Something about growing things that takes patience I never had.' },
+  ],
+  ch4_shade_tree: [
+    { speaker: 'Narrator', text: 'Massive oak tree. The only shade for a quarter mile.' },
+    { speaker: 'Narrator', text: 'Everyone eats lunch here. Names carved in the trunk.' },
+    { speaker: 'JP\'s Mind', text: 'Juan carved "J+M" with a heart. Won\'t say who M is.' },
+  ],
+  ch4_snake: [
+    { speaker: 'Narrator', text: 'JP freezes. Rattlesnake. Coiled up between the vines.' },
+    { speaker: 'JP', text: 'YO!' },
+    { speaker: 'Ernesto', text: '¡No te muevas!' },
+    { speaker: 'Narrator', text: 'Ernesto walks over calm as hell. Picks it up with a stick and flings it.' },
+    { speaker: 'JP', text: 'BRO WHAT.' },
+    { speaker: 'Ernesto', text: 'Es normal. Don\'t be a baby.' },
+    { speaker: 'JP\'s Mind', text: 'This man just picked up a rattlesnake like it was a garden hose.' },
+  ],
+  ch4_break_spot: [
+    { speaker: 'Narrator', text: 'Wooden bench under the shade. Water cooler. Napkins from yesterday.' },
+    { speaker: 'Narrator', text: 'This is where the crew takes breaks. Ernesto times them.' },
+  ],
+  ch4_dust: [
+    { speaker: 'Narrator', text: 'Dust everywhere. In JP\'s hair. In his lungs. In his shoes.' },
+    { speaker: 'JP\'s Mind', text: 'I used to complain about traffic in SB. Now I\'m eating dirt for $12 an hour.' },
+  ],
+  ch4_hat: [
+    { speaker: 'Narrator', text: 'Straw hat on a fence post. Nobody claims it.' },
+    { speaker: 'Juan', text: 'Put it on, güero. Your head is burning.' },
+    { speaker: 'JP', text: 'I told you to stop calling me that.' },
+    { speaker: 'Juan', text: 'Then stop being so white.' },
+  ],
+  ch4_spanish_radio: [
+    { speaker: 'Narrator', text: 'Someone\'s phone propped against a vine post. Corridos playing.' },
+    { speaker: 'Narrator', text: 'JP doesn\'t understand all the words yet. But he feels it.' },
+    { speaker: 'JP\'s Mind', text: 'Eliseo said this song is about a guy who left home and never came back.' },
+    { speaker: 'JP\'s Mind', text: 'Heavy.' },
+  ],
 };
 
 // ─── Chapter 5 extras ──────────────────────────────────────────────────
@@ -2405,6 +2570,61 @@ const ch5Extras: Record<string, DialogueLine[]> = {
   ch5_ghost_leaves: [
     { speaker: 'Narrator', text: 'He sees you coming and suddenly has somewhere to be.' },
     { speaker: 'JP\'s Mind', text: 'Some people just waste your time. Learn to spot them.' },
+  ],
+  ch5_fiverr: [
+    { speaker: 'Narrator', text: 'Fiverr inbox. "Your gig has been removed for violating terms."' },
+    { speaker: 'JP\'s Mind', text: 'They want me to charge $5 for a logo and then they ban me anyway?' },
+    { speaker: 'JP\'s Mind', text: 'Forget Fiverr. I\'ll find my own clients.' },
+  ],
+  ch5_cold_email: [
+    { speaker: 'Narrator', text: 'Gmail. 47 cold emails sent this week. 2 replies. Both "not interested."' },
+    { speaker: 'JP\'s Mind', text: '2 out of 47. That\'s... bad.' },
+    { speaker: 'JP\'s Mind', text: 'But two people read it. That\'s more than zero.' },
+  ],
+  ch5_portfolio: [
+    { speaker: 'Narrator', text: 'JP\'s portfolio site. Three projects. One of them is his own.' },
+    { speaker: 'JP\'s Mind', text: 'Gotta start somewhere. Even if "somewhere" looks embarrassing.' },
+  ],
+  ch5_coffee: [
+    { speaker: 'Narrator', text: 'Cold coffee. Made it 4 hours ago. Forgot about it.' },
+    { speaker: 'JP\'s Mind', text: 'Still drinking it.' },
+  ],
+  ch5_whiteboard: [
+    { speaker: 'Narrator', text: 'Whiteboard on the wall. Written in marker:' },
+    { speaker: 'Narrator', text: '"GOAL: $1,000/mo by December"' },
+    { speaker: 'Narrator', text: '"10 clients. $100 each. Simple."' },
+    { speaker: 'JP\'s Mind', text: 'Simple on paper. Nothing about this is simple.' },
+  ],
+  ch5_invoice: [
+    { speaker: 'Narrator', text: 'First real invoice. Sent from a Gmail account with a Google Doc template.' },
+    { speaker: 'Narrator', text: '"Website Development — $300. Due on completion."' },
+    { speaker: 'JP\'s Mind', text: 'It\'s not professional. But it\'s mine.' },
+  ],
+  ch5_rejection: [
+    { speaker: 'Narrator', text: 'Text message: "Hey JP, we decided to go with someone else. Thanks though."' },
+    { speaker: 'JP\'s Mind', text: '...' },
+    { speaker: 'JP\'s Mind', text: 'That one stung. I spent 3 hours on that proposal.' },
+    { speaker: 'JP\'s Mind', text: 'Whatever. Next.' },
+  ],
+  ch5_testimonial: [
+    { speaker: 'Narrator', text: 'Email from WCT: "JP built our site in a week. Already getting traffic. Highly recommend."' },
+    { speaker: 'JP\'s Mind', text: 'First testimonial. First proof that this works.' },
+    { speaker: 'JP\'s Mind', text: 'Screenshot that. Put it everywhere.' },
+  ],
+  ch5_youtube: [
+    { speaker: 'Narrator', text: 'YouTube. "How to Build a Website in 2024" — 14 hour watch time this week.' },
+    { speaker: 'JP\'s Mind', text: 'My real college. Free tuition. No degree. Better education.' },
+  ],
+  ch5_ramen: [
+    { speaker: 'Narrator', text: 'Ramen noodles. Third time this week.' },
+    { speaker: 'JP\'s Mind', text: 'Pops would kill me if he saw what I\'m eating.' },
+    { speaker: 'JP\'s Mind', text: 'One day I\'ll eat steak every night. Not yet.' },
+  ],
+  ch5_bank_app: [
+    { speaker: 'Narrator', text: 'Bank app. Checking: $127.43.' },
+    { speaker: 'JP\'s Mind', text: 'Rent is $400. That\'s due Friday.' },
+    { speaker: 'JP\'s Mind', text: 'I need two more clients this week or I\'m cooked.' },
+    { speaker: 'Narrator', text: 'He closes the app. Opens his laptop instead.' },
   ],
 };
 
@@ -2583,6 +2803,85 @@ const ch6Extras: Record<string, DialogueLine[]> = {
     { speaker: 'Narrator', text: 'The balcony overlooks the whole block. Sunset hitting the buildings.' },
     { speaker: 'JP\'s Mind', text: 'This view. This is what they don\'t show you about the grind.' },
     { speaker: 'JP\'s Mind', text: 'The quiet moments where you just... breathe.' },
+  ],
+  ch6_whiteboard: [
+    { speaker: 'Narrator', text: 'Office whiteboard. Quarterly goals, client pipeline, revenue targets.' },
+    { speaker: 'JP\'s Mind', text: 'Six months ago I didn\'t know what a pipeline was. Now I run one.' },
+  ],
+  ch6_client_call: [
+    { speaker: 'Narrator', text: 'Phone rings. New prospect.' },
+    { speaker: 'JP', text: 'Hey, this is JP. How can I help?' },
+    { speaker: 'Client', text: 'We need a full website rebuild. Our current one is garbage.' },
+    { speaker: 'JP', text: 'I can fix that. Let me send you a proposal by end of day.' },
+    { speaker: 'JP\'s Mind', text: 'Smooth. Didn\'t even flinch.' },
+  ],
+  ch6_printer: [
+    { speaker: 'Narrator', text: 'Printer spitting out contracts. Real contracts. With real numbers.' },
+  ],
+  ch6_water_cooler: [
+    { speaker: 'Narrator', text: 'Water cooler. Where the office gossip happens.' },
+    { speaker: 'Narrator', text: 'JP doesn\'t gossip. He listens.' },
+  ],
+  ch6_elevator: [
+    { speaker: 'Narrator', text: 'Elevator to the 14th floor. JP\'s apartment.' },
+    { speaker: 'JP\'s Mind', text: 'From a cell to a highrise. God is good.' },
+  ],
+  ch6_view_city: [
+    { speaker: 'Narrator', text: 'Floor-to-ceiling windows. Downtown LA spread out below.' },
+    { speaker: 'Narrator', text: 'Lights everywhere. Each one is someone else grinding too.' },
+    { speaker: 'JP\'s Mind', text: 'I used to look at buildings like this and wonder who lived in them.' },
+    { speaker: 'JP\'s Mind', text: 'Now I know. People like me.' },
+  ],
+  ch6_closet: [
+    { speaker: 'Narrator', text: 'JP\'s closet. Button-downs, clean sneakers, a couple suits.' },
+    { speaker: 'Narrator', text: 'No orange jumpsuit. Never again.' },
+  ],
+  ch6_restaurant_menu: [
+    { speaker: 'Narrator', text: 'Prix fixe menu. $85 per person. Wine pairings extra.' },
+    { speaker: 'JP\'s Mind', text: '$85 for dinner. I used to live on $85 a week.' },
+  ],
+  ch6_fountain: [
+    { speaker: 'Narrator', text: 'Fountain in the plaza. People eating lunch around it.' },
+    { speaker: 'Narrator', text: 'Normal people with normal jobs on a normal Tuesday.' },
+    { speaker: 'JP\'s Mind', text: 'Nothing about my path was normal. But I\'m here too.' },
+  ],
+  ch6_street_art: [
+    { speaker: 'Narrator', text: 'Mural on the building. Angel wings. "You Are Enough."' },
+    { speaker: 'JP\'s Mind', text: 'I used to walk past these and think it was corny.' },
+    { speaker: 'JP\'s Mind', text: 'Hits different now.' },
+  ],
+  ch6_lambo: [
+    { speaker: 'Narrator', text: 'Lamborghini SVJ. Parked next to JP\'s C8. Both green.' },
+    { speaker: 'JP\'s Mind', text: 'His costs 4x mine. But we\'re in the same parking lot.' },
+    { speaker: 'JP\'s Mind', text: 'Give me time.' },
+  ],
+  ch6_valet_stand: [
+    { speaker: 'Narrator', text: 'Valet stand. The guy nods at JP like he knows him.' },
+    { speaker: 'JP\'s Mind', text: 'He doesn\'t know me. But he recognizes the car.' },
+  ],
+  ch6_newspaper: [
+    { speaker: 'Narrator', text: 'LA Times on a bench. Headline about tech layoffs.' },
+    { speaker: 'JP\'s Mind', text: 'They\'re laying people off. I\'m hiring people.' },
+    { speaker: 'JP\'s Mind', text: 'Different game when you own it.' },
+  ],
+  ch6_homeless: [
+    { speaker: 'Narrator', text: 'Man on the sidewalk. Cardboard sign. Backpack that holds everything he owns.' },
+    { speaker: 'JP\'s Mind', text: 'That could have been me. Easily.' },
+    { speaker: 'JP\'s Mind', text: 'One wrong turn and that IS me.' },
+    { speaker: 'Narrator', text: 'JP gives him $20. Doesn\'t say anything.' },
+  ],
+  ch6_billboard: [
+    { speaker: 'Narrator', text: 'Billboard. Some tech company. "The Future is Now."' },
+    { speaker: 'JP\'s Mind', text: 'They\'re right. I just didn\'t believe it until I built my own.' },
+  ],
+  ch6_pops_call: [
+    { speaker: 'Narrator', text: 'Phone buzzes. Pops.' },
+    { speaker: 'Pops', text: 'Just calling to say I\'m proud of you, son.' },
+    { speaker: 'JP', text: '...thanks, Pops.' },
+    { speaker: 'Pops', text: 'Your mom showed me the website you built. That\'s real.' },
+    { speaker: 'JP', text: 'It\'s just a website.' },
+    { speaker: 'Pops', text: 'No it\'s not. It\'s proof you can do anything you set your mind to.' },
+    { speaker: 'JP\'s Mind', text: 'Don\'t cry. Don\'t cry. Don\'t cry.' },
   ],
 };
 
