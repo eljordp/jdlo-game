@@ -13,6 +13,7 @@ export interface DialogueLine {
 }
 
 export class DialogueSystem {
+  private static blipCtx: AudioContext | null = null;
   private scene: Phaser.Scene;
   private container: Phaser.GameObjects.Container;
   private boxImage: Phaser.GameObjects.Image;
@@ -336,6 +337,12 @@ export class DialogueSystem {
       this.currentCharIndex++;
       this.displayedText = this.fullCurrentText.substring(0, this.currentCharIndex);
       this.textObject.setText(this.displayedText);
+
+      // Dialogue blip — play on every 2nd non-space character
+      const ch = this.fullCurrentText[this.currentCharIndex - 1];
+      if (ch && ch !== ' ' && this.currentCharIndex % 2 === 0) {
+        this.playBlip();
+      }
     }
 
     if (this.currentCharIndex >= this.fullCurrentText.length) {
@@ -348,6 +355,49 @@ export class DialogueSystem {
       } else {
         this.showArrow();
       }
+    }
+  }
+
+  /** Per-character blip — pitch varies by speaker for personality */
+  private playBlip(): void {
+    const line = this.lines[this.currentLineIndex];
+    const speaker = line?.speaker || '';
+
+    // Base frequency per speaker type
+    let baseFreq: number;
+    if (speaker === 'Narrator') {
+      baseFreq = 180; // low, calm
+    } else if (speaker.includes('JP') || speaker === 'Jordan') {
+      baseFreq = 280; // mid, natural
+    } else if (speaker.includes('Girl') || speaker === 'K' || speaker === 'Mom' || speaker === 'Sister') {
+      baseFreq = 400; // higher, feminine
+    } else {
+      baseFreq = 240; // default — other NPCs
+    }
+
+    // Slight random variation per character (+/- 20hz) for organic feel
+    const freq = baseFreq + (Math.random() - 0.5) * 40;
+
+    // Reuse SoundEffects' AudioContext pattern
+    try {
+      if (!DialogueSystem.blipCtx) DialogueSystem.blipCtx = new AudioContext();
+      const ctx = DialogueSystem.blipCtx;
+      if (ctx.state === 'suspended') ctx.resume();
+
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.type = 'square';
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.025, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.035);
+
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.035);
+    } catch {
+      // Audio not available
     }
   }
 
