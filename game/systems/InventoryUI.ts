@@ -7,6 +7,7 @@ import { GAME_WIDTH, GAME_HEIGHT } from '../config';
 import { InventorySystem, CraftRecipe } from './InventorySystem';
 import { MoodSystem } from './MoodSystem';
 import { SoundEffects } from './SoundEffects';
+import { virtualInput } from '../../components/GameCanvas';
 
 // ── Smoke Animation (reused when using preroll/cart) ─────────────
 
@@ -82,6 +83,14 @@ export class InventoryUI {
     this.escKey = scene.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
 
     this.iKey.on('down', () => this.toggle());
+
+    // Mobile: poll virtualInput for inventory button
+    scene.events.on('update', () => {
+      if (virtualInput.inventoryJustPressed) {
+        virtualInput.inventoryJustPressed = false;
+        this.toggle();
+      }
+    });
 
     // Listen for inventory changes to re-render
     this.unsubscribe = InventorySystem.onChange(() => {

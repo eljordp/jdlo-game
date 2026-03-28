@@ -613,21 +613,42 @@ export class HomeScene extends BaseChapterScene {
       { speaker: 'Pops', text: 'Oh hell yeah! Just like when you were little!' },
       { speaker: 'Pops', text: 'Hold on, let me grab the rods.' },
     ], () => {
-      // Pops runs to the pond
-      this.moveNPCTo('ch0_pops', 23, 28, 1500, () => {
-        // Pops excited bounce
-        this.tweens.add({
-          targets: pops.sprite,
-          y: pops.sprite.y - 10,
-          duration: 200,
-          yoyo: true,
-          repeat: 2,
-          onComplete: () => {
-            this.frozen = false;
-            this.playFishing();
-          },
-        });
-      });
+      // Pops SPRINTS a real path — through the house, out the door, across the yard to the pond
+      // Path waypoints (tile coords): living room → hallway → front door → yard → pond
+      const path = [
+        { x: 8, y: 22 },   // walk to hallway
+        { x: 13, y: 22 },  // walk to front door area
+        { x: 13, y: 24 },  // out the front door
+        { x: 13, y: 28 },  // sprint through yard
+        { x: 20, y: 30 },  // cut across to pond
+        { x: 25, y: 32 },  // arrive at pond
+      ];
+
+      let step = 0;
+      const runNext = () => {
+        if (step >= path.length) {
+          // Arrived! Excited bounce
+          this.tweens.add({
+            targets: pops.sprite,
+            y: pops.sprite.y - 10,
+            duration: 200,
+            yoyo: true,
+            repeat: 2,
+            onComplete: () => {
+              this.frozen = false;
+              this.playFishing();
+            },
+          });
+          return;
+        }
+
+        const wp = path[step];
+        const speed = 400; // fast sprint speed
+        step++;
+        this.moveNPCTo('ch0_pops', wp.x, wp.y, speed, runNext);
+      };
+
+      runNext();
     });
   }
 
@@ -1149,36 +1170,12 @@ export class HomeScene extends BaseChapterScene {
       super.handleInteractable(interactable);
       return;
     }
-    // Hidden stash — pickup eighth (goes to inventory)
-    if (interactable.id === 'ch0_hidden_stash' && !this.stashSmoked) {
-      Analytics.trackInteraction(interactable.id);
-      this.stashSmoked = true;
-      this.frozen = true;
-      this.interactions.consume(interactable.id);
-      InventorySystem.addItem('eighth', 1);
-      this.dialogue.show([
-        { speaker: 'Narrator', text: 'A bag tucked behind the desk. JP pockets it.' },
-        { speaker: 'Narrator', text: 'Eighth added to inventory. Press I to open.' },
-      ], () => { this.frozen = false; });
-      this.trackForPhoneCall(interactable.id);
-      return;
-    }
+    // Hidden stash is now discovered through the computer (no standalone interactable)
 
     // Papers — pickup (nightstand drawer)
-    if (interactable.id === 'ch0_papers') {
-      Analytics.trackInteraction(interactable.id);
-      this.frozen = true;
-      this.interactions.consume(interactable.id);
-      InventorySystem.addItem('papers', 3);
-      this.dialogue.show([
-        { speaker: 'Narrator', text: 'RAW blacks in the nightstand. JP grabs a few.' },
-        { speaker: 'Narrator', text: 'Papers added to inventory.' },
-      ], () => { this.frozen = false; });
-      this.trackForPhoneCall(interactable.id);
-      return;
-    }
+    // Papers now discovered through bed (shoebox). Old standalone handler removed.
 
-    // Bed — JP lies down for a sec
+    // Bed — JP lies down, discovers shoebox underneath
     if (interactable.id === 'ch0_bed' && !this.bedLocked) {
       Analytics.trackInteraction(interactable.id);
       this.frozen = true;
@@ -1191,7 +1188,20 @@ export class HomeScene extends BaseChapterScene {
         this.dialogue.show([
           { speaker: 'Narrator', text: 'JP lies down for a second. Stares at the ceiling.' },
           { speaker: 'JP\'s Mind', text: 'I gotta get out of here.' },
-        ], () => { this.frozen = false; });
+        ], () => {
+          // Hidden discovery — shoebox under the bed
+          this.dialogue.show([
+            { speaker: 'Narrator', text: 'Something under the bed catches his eye. Old Nike shoebox.' },
+            { speaker: 'Narrator', text: 'Inside: a stack of photos, a lighter, rolling papers, and a fake ID.' },
+          ], () => {
+            InventorySystem.addItem('papers', 5);
+            InventorySystem.addItem('lighter', 1);
+            this.dialogue.show([
+              { speaker: 'Narrator', text: 'JP pockets the lighter and papers. Leaves the rest.' },
+              { speaker: 'JP\'s Mind', text: 'Everyone\'s got a box they don\'t show people.' },
+            ], () => { this.frozen = false; });
+          });
+        });
       });
       this.trackForPhoneCall(interactable.id);
       return;
@@ -2007,7 +2017,20 @@ export class HomeScene extends BaseChapterScene {
       for (const obj of objects) {
         if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
       }
-      this.frozen = false;
+
+      // Hidden discovery — first time closing the computer, JP notices the bag
+      if (!this.stashSmoked) {
+        this.stashSmoked = true;
+        this.frozen = true;
+        InventorySystem.addItem('eighth', 1);
+        this.dialogue.show([
+          { speaker: 'Narrator', text: 'JP closes the laptop. Reaches behind the desk.' },
+          { speaker: 'Narrator', text: 'A bag tucked behind the monitor. JP pockets it.' },
+          { speaker: 'Narrator', text: 'Eighth added to inventory.' },
+        ], () => { this.frozen = false; });
+      } else {
+        this.frozen = false;
+      }
     };
 
     const escKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);

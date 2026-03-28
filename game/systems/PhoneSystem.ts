@@ -25,11 +25,11 @@ const APPS: AppDef[] = [
 ];
 
 // Phone dimensions
-const PHONE_W = 220;
-const PHONE_H = 400;
-const BORDER = 6;
-const NOTCH_W = 60;
-const NOTCH_H = 14;
+const PHONE_W = 240;
+const PHONE_H = 420;
+const BORDER = 4;
+const NOTCH_W = 70;
+const NOTCH_H = 16;
 const CORNER_R = 18; // simulated via border rect offset
 const HOME_IND_W = 80;
 const HOME_IND_H = 3;
@@ -108,52 +108,90 @@ export class PhoneSystem {
     // But we'll group them and tween together
     const phoneObjects: Phaser.GameObjects.GameObject[] = [];
 
-    // Outer body (border)
-    const outerBody = scene.add.rectangle(cx, cy, PHONE_W + BORDER * 2, PHONE_H + BORDER * 2, 0x0a0a0e)
+    // Outer body (border) — titanium frame
+    const outerBody = scene.add.rectangle(cx, cy, PHONE_W + BORDER * 2, PHONE_H + BORDER * 2, 0x2a2a30)
       .setScrollFactor(0).setDepth(DEPTH_BASE + 1);
     phoneObjects.push(outerBody);
 
     // Inner body
-    const innerBody = scene.add.rectangle(cx, cy, PHONE_W, PHONE_H, 0x1a1a1e)
+    const innerBody = scene.add.rectangle(cx, cy, PHONE_W, PHONE_H, 0x0e0e12)
       .setScrollFactor(0).setDepth(DEPTH_BASE + 2);
     phoneObjects.push(innerBody);
 
     // Screen area (slightly inset)
     const screenX = cx;
     const screenY = cy;
-    const screenW = PHONE_W - 16;
-    const screenH = PHONE_H - 40;
-    const screen = scene.add.rectangle(screenX, screenY, screenW, screenH, 0x0a0a14)
+    const screenW = PHONE_W - 12;
+    const screenH = PHONE_H - 32;
+    const screen = scene.add.rectangle(screenX, screenY, screenW, screenH, 0x0c0c1a)
       .setScrollFactor(0).setDepth(DEPTH_BASE + 3);
     phoneObjects.push(screen);
 
-    // Dynamic Island (notch)
-    const notch = scene.add.rectangle(cx, cy - PHONE_H / 2 + 28, NOTCH_W, NOTCH_H, 0x000000)
+    // Wallpaper gradient layers (subtle purple-blue gradient)
+    const gradientSteps = 6;
+    for (let i = 0; i < gradientSteps; i++) {
+      const t = i / gradientSteps;
+      const gy = screenY - screenH / 2 + t * screenH;
+      const gh = screenH / gradientSteps + 1;
+      const r = Math.floor(0x10 + t * 0x08);
+      const g = Math.floor(0x08 + t * 0x0c);
+      const b = Math.floor(0x20 + (1 - t) * 0x18);
+      const color = (r << 16) | (g << 8) | b;
+      const grad = scene.add.rectangle(screenX, gy + gh / 2, screenW, gh, color, 0.6)
+        .setScrollFactor(0).setDepth(DEPTH_BASE + 3);
+      phoneObjects.push(grad);
+    }
+
+    // Dynamic Island (notch) — pill shape via two circles + rect
+    const notchY = cy - PHONE_H / 2 + 24;
+    const notch = scene.add.rectangle(cx, notchY, NOTCH_W, NOTCH_H, 0x000000)
       .setScrollFactor(0).setDepth(DEPTH_BASE + 4);
     phoneObjects.push(notch);
+    // Round ends
+    const notchL = scene.add.circle(cx - NOTCH_W / 2, notchY, NOTCH_H / 2, 0x000000)
+      .setScrollFactor(0).setDepth(DEPTH_BASE + 4);
+    phoneObjects.push(notchL);
+    const notchR = scene.add.circle(cx + NOTCH_W / 2, notchY, NOTCH_H / 2, 0x000000)
+      .setScrollFactor(0).setDepth(DEPTH_BASE + 4);
+    phoneObjects.push(notchR);
 
     // Home indicator
-    const homeInd = scene.add.rectangle(cx, cy + PHONE_H / 2 - 12, HOME_IND_W, HOME_IND_H, 0xffffff, 0.4)
+    const homeInd = scene.add.rectangle(cx, cy + PHONE_H / 2 - 10, HOME_IND_W, HOME_IND_H, 0xffffff, 0.5)
       .setScrollFactor(0).setDepth(DEPTH_BASE + 4);
     phoneObjects.push(homeInd);
 
     // Status bar
-    const statusY = cy - PHONE_H / 2 + 48;
+    const statusY = cy - PHONE_H / 2 + 46;
 
-    const carrier = scene.add.text(cx - screenW / 2 + 10, statusY, 'JDLO', {
+    const carrier = scene.add.text(cx - screenW / 2 + 12, statusY, 'JDLO', {
       fontFamily: FONT, fontSize: '7px', color: '#ffffff',
     }).setOrigin(0, 0.5).setScrollFactor(0).setDepth(DEPTH_BASE + 5);
     phoneObjects.push(carrier);
+
+    // Signal dots
+    const sigX = cx - screenW / 2 + 48;
+    for (let i = 0; i < 4; i++) {
+      const dot = scene.add.circle(sigX + i * 6, statusY, 2, 0xffffff, i < 3 ? 0.9 : 0.3)
+        .setScrollFactor(0).setDepth(DEPTH_BASE + 5);
+      phoneObjects.push(dot);
+    }
 
     const timeText = scene.add.text(cx, statusY, '4:20 PM', {
       fontFamily: FONT, fontSize: '7px', color: '#ffffff',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(DEPTH_BASE + 5);
     phoneObjects.push(timeText);
 
-    const battery = scene.add.text(cx + screenW / 2 - 10, statusY, '100%', {
-      fontFamily: FONT, fontSize: '7px', color: '#34c759',
-    }).setOrigin(1, 0.5).setScrollFactor(0).setDepth(DEPTH_BASE + 5);
-    phoneObjects.push(battery);
+    // Battery indicator (icon-style)
+    const batX = cx + screenW / 2 - 20;
+    const batBody = scene.add.rectangle(batX, statusY, 16, 8, 0x000000, 0)
+      .setStrokeStyle(1, 0x34c759).setScrollFactor(0).setDepth(DEPTH_BASE + 5);
+    phoneObjects.push(batBody);
+    const batFill = scene.add.rectangle(batX - 2, statusY, 11, 5, 0x34c759)
+      .setScrollFactor(0).setDepth(DEPTH_BASE + 5);
+    phoneObjects.push(batFill);
+    const batTip = scene.add.rectangle(batX + 9, statusY, 2, 4, 0x34c759, 0.5)
+      .setScrollFactor(0).setDepth(DEPTH_BASE + 5);
+    phoneObjects.push(batTip);
 
     // Store all phone objects
     this.objects.push(...phoneObjects);
@@ -263,13 +301,13 @@ export class PhoneSystem {
 
     const cols = 3;
     const rows = 2;
-    const appSize = 44;
-    const gapX = 56;
-    const gapY = 64;
+    const appSize = 48;
+    const gapX = 62;
+    const gapY = 70;
     const gridW = (cols - 1) * gapX;
     const gridH = (rows - 1) * gapY;
     const gridStartX = cx - gridW / 2;
-    const gridStartY = statusY + 40;
+    const gridStartY = statusY + 44;
 
     for (let i = 0; i < APPS.length; i++) {
       const app = APPS[i];
@@ -278,31 +316,45 @@ export class PhoneSystem {
       const ax = gridStartX + col * gapX;
       const ay = gridStartY + row * gapY;
 
+      // App icon shadow
+      const iconShadow = scene.add.rectangle(ax + 1, ay + 2, appSize, appSize, 0x000000, 0.3)
+        .setScrollFactor(0).setDepth(DEPTH_BASE + 5);
+      this.objects.push(iconShadow);
+
       // App icon background
-      const iconBg = scene.add.rectangle(ax, ay, appSize, appSize, app.color, 0.9)
+      const iconBg = scene.add.rectangle(ax, ay, appSize, appSize, app.color, 0.95)
         .setScrollFactor(0).setDepth(DEPTH_BASE + 6).setInteractive({ useHandCursor: true });
       this.objects.push(iconBg);
 
+      // Glossy highlight on icon (top half, lighter)
+      const gloss = scene.add.rectangle(ax, ay - appSize / 4, appSize - 2, appSize / 2 - 2, 0xffffff, 0.12)
+        .setScrollFactor(0).setDepth(DEPTH_BASE + 6);
+      this.objects.push(gloss);
+
       // Emoji icon
       const iconText = scene.add.text(ax, ay - 2, app.icon, {
-        fontSize: '18px',
+        fontSize: '20px',
       }).setOrigin(0.5).setScrollFactor(0).setDepth(DEPTH_BASE + 7);
       this.objects.push(iconText);
 
       // App label
-      const label = scene.add.text(ax, ay + appSize / 2 + 6, app.name, {
-        fontFamily: FONT, fontSize: '5px', color: '#cccccc',
+      const label = scene.add.text(ax, ay + appSize / 2 + 8, app.name, {
+        fontFamily: FONT, fontSize: '5px', color: '#dddddd',
       }).setOrigin(0.5, 0).setScrollFactor(0).setDepth(DEPTH_BASE + 7);
       this.objects.push(label);
 
       // Hover effect
       iconBg.on('pointerover', () => {
-        iconBg.setScale(1.1);
-        iconText.setScale(1.1);
+        iconBg.setScale(1.08);
+        iconText.setScale(1.08);
+        gloss.setScale(1.08);
+        iconShadow.setAlpha(0.15);
       });
       iconBg.on('pointerout', () => {
         iconBg.setScale(1);
         iconText.setScale(1);
+        gloss.setScale(1);
+        iconShadow.setAlpha(0.3);
       });
 
       // Click — open app
@@ -311,20 +363,39 @@ export class PhoneSystem {
       });
     }
 
-    // Balance display below apps
-    const balanceY = gridStartY + gridH + 50;
-    const balanceBg = scene.add.rectangle(cx, balanceY, screenW - 20, 32, 0x1a1a2e, 0.8)
-      .setScrollFactor(0).setDepth(DEPTH_BASE + 6);
+    // Balance widget — glassmorphic card
+    const balanceY = gridStartY + gridH + 56;
+    const cardW = screenW - 24;
+    const cardH = 42;
+
+    // Card shadow
+    const cardShadow = scene.add.rectangle(cx + 1, balanceY + 2, cardW, cardH, 0x000000, 0.25)
+      .setScrollFactor(0).setDepth(DEPTH_BASE + 5);
+    this.objects.push(cardShadow);
+
+    // Card background (frosted glass effect)
+    const balanceBg = scene.add.rectangle(cx, balanceY, cardW, cardH, 0x1a1a3e, 0.7)
+      .setScrollFactor(0).setDepth(DEPTH_BASE + 6).setStrokeStyle(1, 0x3a3a6e, 0.5);
     this.objects.push(balanceBg);
 
-    const balanceLabel = scene.add.text(cx - screenW / 2 + 20, balanceY, 'Balance', {
-      fontFamily: FONT, fontSize: '6px', color: '#888899',
+    // Card highlight (top edge glow)
+    const cardHighlight = scene.add.rectangle(cx, balanceY - cardH / 2 + 1, cardW - 4, 1, 0xffffff, 0.08)
+      .setScrollFactor(0).setDepth(DEPTH_BASE + 6);
+    this.objects.push(cardHighlight);
+
+    const walletIcon = scene.add.text(cx - cardW / 2 + 14, balanceY - 4, '\u{1F4B0}', {
+      fontSize: '12px',
+    }).setOrigin(0, 0.5).setScrollFactor(0).setDepth(DEPTH_BASE + 7);
+    this.objects.push(walletIcon);
+
+    const balanceLabel = scene.add.text(cx - cardW / 2 + 30, balanceY - 8, 'Balance', {
+      fontFamily: FONT, fontSize: '5px', color: '#8888aa',
     }).setOrigin(0, 0.5).setScrollFactor(0).setDepth(DEPTH_BASE + 7);
     this.objects.push(balanceLabel);
 
-    const balanceValue = scene.add.text(cx + screenW / 2 - 20, balanceY, BalanceSystem.formatted(), {
-      fontFamily: FONT, fontSize: '10px', color: '#40c060',
-    }).setOrigin(1, 0.5).setScrollFactor(0).setDepth(DEPTH_BASE + 7);
+    const balanceValue = scene.add.text(cx - cardW / 2 + 30, balanceY + 6, BalanceSystem.formatted(), {
+      fontFamily: FONT, fontSize: '11px', color: '#50e070',
+    }).setOrigin(0, 0.5).setScrollFactor(0).setDepth(DEPTH_BASE + 7);
     this.objects.push(balanceValue);
   }
 
@@ -339,7 +410,7 @@ export class PhoneSystem {
     // We'll remove objects from the content area only
     // Content objects start after the phone frame objects
     // Phone frame = overlay(1) + outerBody + innerBody + screen + notch + homeInd + carrier + time + battery = 9
-    const frameCount = 10; // overlay + 9 phone frame objects
+    const frameCount = 23; // overlay + phone frame objects (body, screen, gradient, notch, status bar)
     const contentObjects = this.objects.splice(frameCount);
     for (const obj of contentObjects) {
       if (obj && obj.active) obj.destroy();

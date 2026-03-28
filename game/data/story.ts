@@ -66,6 +66,8 @@ export const chapter0NPCs: NPCData[] = [
       { speaker: 'Pops', text: 'You been on that computer all day.' },
       { speaker: 'JP', text: 'I\'m looking at crypto.' },
       { speaker: 'Pops', text: 'Crypto? Just don\'t lose your shirt.' },
+      { speaker: 'JP\'s Mind', text: 'Everyone else seems to know what they\'re doing.' },
+      { speaker: 'JP\'s Mind', text: 'Maybe Pops did too at my age. Maybe not.' },
       { speaker: 'JP', text: '', choices: [
         { text: '"I won\'t. I\'ve been studying it."', next: [
           { speaker: 'Pops', text: 'Studying. That\'s good. Just don\'t bet the house.' },
@@ -1104,8 +1106,8 @@ const ch0Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'He chose Santa Barbara and the network instead.' },
   ],
   ch0_bed: [
-    { speaker: 'JP\'s Mind', text: 'Another night staring at the ceiling.' },
-    { speaker: 'JP\'s Mind', text: 'I gotta get out of here.' },
+    { speaker: 'JP\'s Mind', text: 'My bed. Same sheets since high school.' },
+    { speaker: 'JP\'s Mind', text: 'At least it\'s comfortable.' },
   ],
   ch0_poster: [
     { speaker: 'Narrator', text: 'A poster on the wall. Big bold letters:' },

@@ -39,6 +39,7 @@ export const virtualInput = {
   actionJustPressed: false,
   phoneJustPressed: false,
   emoteJustPressed: false,
+  inventoryJustPressed: false,
   gameSpeed: 1,
 };
 
@@ -182,7 +183,14 @@ export default function GameCanvas() {
   }, []);
 
   return (
-    <div className="relative w-screen h-screen bg-black overflow-hidden select-none touch-none">
+    <div
+      className="relative w-screen h-screen bg-black overflow-hidden select-none touch-none"
+      onClick={() => {
+        // Re-focus canvas so Phaser keyboard input works after clicking HTML buttons
+        const canvas = containerRef.current?.querySelector('canvas');
+        if (canvas) canvas.focus();
+      }}
+    >
       <div
         ref={containerRef}
         className="w-full h-full"
@@ -245,14 +253,8 @@ export default function GameCanvas() {
         </button>
         <button
           onClick={() => {
-            // Dispatch a real keyboard event so Phaser's Key listener picks it up
-            const canvas = document.querySelector('canvas');
-            if (canvas) {
-              canvas.dispatchEvent(new KeyboardEvent('keydown', { key: 'i', code: 'KeyI', keyCode: 73, bubbles: true }));
-              setTimeout(() => {
-                canvas.dispatchEvent(new KeyboardEvent('keyup', { key: 'i', code: 'KeyI', keyCode: 73, bubbles: true }));
-              }, 50);
-            }
+            virtualInput.inventoryJustPressed = true;
+            setTimeout(() => { virtualInput.inventoryJustPressed = false; }, 100);
           }}
           className="px-3 py-2 bg-black/70 border border-white/20 rounded text-white text-sm font-mono hover:bg-white/10 transition-colors cursor-pointer"
           title="Inventory (I)"
