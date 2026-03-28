@@ -181,31 +181,29 @@ function animRipBong(scene: Phaser.Scene, player: Phaser.GameObjects.Sprite): nu
 
 function animShoulderDance(scene: Phaser.Scene, player: Phaser.GameObjects.Sprite): number {
   const baseX = player.x;
-  const baseAngle = player.angle;
 
-  // Fast side-to-side rock with angle tilt
-  scene.tweens.add({
-    targets: player,
-    x: baseX + 4,
-    angle: baseAngle + 4,
-    duration: 140,
-    yoyo: true,
-    repeat: 5,
-    ease: 'Sine.easeInOut',
-    onYoyo: () => {
-      // On each yoyo, overshoot to the other side
-      scene.tweens.add({
-        targets: player,
-        x: baseX - 4,
-        angle: baseAngle - 4,
-        duration: 140,
-        yoyo: true,
-      });
+  // Kill any existing tweens on player first to prevent stacking
+  scene.tweens.killTweensOf(player);
+  player.angle = 0;
+
+  // Clean side-to-side sway — no sub-tweens
+  let step = 0;
+  const timer = scene.time.addEvent({
+    delay: 140,
+    repeat: 11,
+    callback: () => {
+      step++;
+      const dir = step % 2 === 0 ? 1 : -1;
+      player.x = baseX + dir * 4;
+      player.angle = dir * 5;
     },
-    onComplete: () => {
-      player.x = baseX;
-      player.angle = baseAngle;
-    },
+  });
+
+  // Reset after animation
+  scene.time.delayedCall(1500, () => {
+    timer.remove();
+    player.x = baseX;
+    player.angle = 0;
   });
 
   return 1500;
