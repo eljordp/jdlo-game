@@ -41,7 +41,7 @@ export class HomeScene extends BaseChapterScene {
   }
 
   protected getMusicTrack(): string {
-    return ''; // Home is quiet — no synthetic music needed
+    return 'home';
   }
 
   create() {

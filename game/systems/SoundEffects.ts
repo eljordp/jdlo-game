@@ -198,4 +198,106 @@ export class SoundEffects {
     osc.start(ctx.currentTime);
     osc.stop(ctx.currentTime + 0.15);
   }
+
+  /** Cinematic swoosh for letterbox bars sliding in */
+  static playCinematicSwoosh() {
+    const ctx = this.getCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(400, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 0.3);
+    gain.gain.setValueAtTime(0.06, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.3);
+  }
+
+  /** Red/blue police siren flash sound */
+  static playPoliceSiren() {
+    const ctx = this.getCtx();
+    // Alternating high-low siren
+    for (let i = 0; i < 4; i++) {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'square';
+      osc.frequency.value = i % 2 === 0 ? 700 : 500;
+      const t = ctx.currentTime + i * 0.15;
+      gain.gain.setValueAtTime(0.06, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+      osc.start(t);
+      osc.stop(t + 0.12);
+    }
+  }
+
+  /** Bright flash whoosh for freedom/release */
+  static playFreedomFlash() {
+    const ctx = this.getCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(200, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.4);
+    gain.gain.setValueAtTime(0.08, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.5);
+  }
+
+  /** Car engine/driving hint sound */
+  static playCarDrive() {
+    const ctx = this.getCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(80, ctx.currentTime);
+    osc.frequency.linearRampToValueAtTime(120, ctx.currentTime + 0.3);
+    osc.frequency.linearRampToValueAtTime(80, ctx.currentTime + 0.6);
+    gain.gain.setValueAtTime(0.04, ctx.currentTime);
+    gain.gain.setValueAtTime(0.04, ctx.currentTime + 0.4);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
+
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.6);
+  }
+
+  /** Road/highway wind sound for road stretching effect */
+  static playRoadWind() {
+    const ctx = this.getCtx();
+    // White noise burst for wind
+    const bufferSize = ctx.sampleRate * 0.5;
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = (Math.random() * 2 - 1) * 0.3;
+    }
+    const noise = ctx.createBufferSource();
+    noise.buffer = buffer;
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = 800;
+    filter.Q.value = 0.5;
+    const gain = ctx.createGain();
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+    gain.gain.setValueAtTime(0.001, ctx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.05, ctx.currentTime + 0.15);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+    noise.start(ctx.currentTime);
+    noise.stop(ctx.currentTime + 0.5);
+  }
 }

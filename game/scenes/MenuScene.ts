@@ -51,7 +51,7 @@ export class MenuScene extends Phaser.Scene {
   create() {
     this.menuState = 'main';
     this.selectedIndex = 0;
-    MusicSystem.stop();
+    MusicSystem.play('menu');
 
     // Dark background with subtle gradient
     this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000).setDepth(0);

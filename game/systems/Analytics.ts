@@ -30,6 +30,30 @@ export class Analytics {
     this.trackEvent('game_complete');
   }
 
+  static trackChapterTime(chapter: string, ms: number): void {
+    this.trackEvent('chapter_time', { chapter, ms });
+  }
+
+  static getChapterStats(chapter: string): { interactions: number; timeMs: number } {
+    try {
+      const data = JSON.parse(localStorage.getItem(this.KEY) || '[]');
+      const interactions = data.filter(
+        (e: { event: string; data?: { id?: string } }) =>
+          e.event === 'interaction' && e.data?.id?.startsWith(chapter)
+      ).length;
+      const timeEntries = data.filter(
+        (e: { event: string; data?: { chapter?: string } }) =>
+          e.event === 'chapter_time' && e.data?.chapter === chapter
+      );
+      const timeMs = timeEntries.length > 0
+        ? (timeEntries[timeEntries.length - 1] as { data: { ms: number } }).data.ms
+        : 0;
+      return { interactions, timeMs };
+    } catch {
+      return { interactions: 0, timeMs: 0 };
+    }
+  }
+
   static getStats(): { events: number; chaptersReached: string[] } {
     try {
       const data = JSON.parse(localStorage.getItem(this.KEY) || '[]');

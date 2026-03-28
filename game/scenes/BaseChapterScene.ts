@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { virtualInput } from '../../components/GameCanvas';
-import { GAME_WIDTH, GAME_HEIGHT, SCALED_TILE, SCALE, CHAR_SCALE } from '../config';
+import { GAME_WIDTH, GAME_HEIGHT, SCALED_TILE, SCALE, CHAR_SCALE, TILE_IDS } from '../config';
 import { DialogueSystem, DialogueLine } from '../systems/DialogueSystem';
 import { MapBuilder } from '../systems/MapBuilder';
 import { InteractionSystem } from '../systems/InteractionSystem';
@@ -40,6 +40,7 @@ export abstract class BaseChapterScene extends Phaser.Scene {
   protected mapWidth = 0;
   protected mapHeight = 0;
   protected tilesByRow: Map<number, Phaser.GameObjects.Sprite[]> = new Map();
+  protected mapTiles: number[][] = [];
   protected chapterTitle = '';
   protected nextScene = '';
   protected requiredInteractionId: string = '';
@@ -48,6 +49,8 @@ export abstract class BaseChapterScene extends Phaser.Scene {
   private navArrows: Phaser.GameObjects.Text[] = [];
   private navArrowTweens: Phaser.Tweens.Tween[] = [];
   private speechBubbles: Map<string, Phaser.GameObjects.Text> = new Map();
+  private npcIndicators: Map<string, Phaser.GameObjects.Text> = new Map();
+  private talkedToNpcs: Set<string> = new Set();
 
   abstract getMapData(): MapData;
   abstract getChapterDialogue(): { intro: DialogueLine[]; npcs: Record<string, DialogueLine[]> };
@@ -74,6 +77,8 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     this.frozen = false;
     this.requiredDone = false;
     this.speechBubbles = new Map();
+    this.npcIndicators = new Map();
+    this.talkedToNpcs = new Set();
 
     // Analytics
     Analytics.trackChapterStart(this.scene.key);
@@ -133,6 +138,7 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     this.mapHeight = bounds.height;
     this.tilesByRow = tilesByRow;
     this.triggers = mapData.triggers || [];
+    this.mapTiles = mapData.tiles;
 
     // Create player at spawn point
     const spawn = mapData.spawns.player;
@@ -164,6 +170,9 @@ export abstract class BaseChapterScene extends Phaser.Scene {
         dialogue: chapterDialogue.npcs[npcData.id] || [{ text: '...' }],
       });
     }
+
+    // Create floating "!" indicators above NPCs
+    this.createNpcIndicators();
 
     // Set up interaction system
     this.interactions = new InteractionSystem(this);
@@ -612,6 +621,68 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     });
   }
 
+  private createNpcIndicators() {
+    for (const npc of this.npcs) {
+      const indicator = this.add.text(
+        npc.sprite.x,
+        npc.sprite.y - 22,
+        '!',
+        {
+          fontFamily: '"Press Start 2P", monospace',
+          fontSize: '8px',
+          color: '#f0c040',
+        }
+      ).setOrigin(0.5).setDepth(14);
+
+      // Match initial NPC visibility
+      if (!npc.sprite.visible) indicator.setVisible(false);
+
+      // Gentle bob animation (4px range, 1.5s cycle)
+      this.tweens.add({
+        targets: indicator,
+        y: indicator.y - 4,
+        duration: 750,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+      });
+
+      // Alpha pulse (0.7 to 1.0)
+      this.tweens.add({
+        targets: indicator,
+        alpha: 0.7,
+        duration: 750,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+      });
+
+      this.npcIndicators.set(npc.id, indicator);
+    }
+  }
+
+  private removeNpcIndicator(npcId: string) {
+    const indicator = this.npcIndicators.get(npcId);
+    if (!indicator) return;
+
+    // Stop any running tweens on this indicator
+    this.tweens.killTweensOf(indicator);
+
+    // Quick scale-down dismiss animation
+    this.tweens.add({
+      targets: indicator,
+      scaleX: 0,
+      scaleY: 0,
+      alpha: 0,
+      duration: 200,
+      ease: 'Back.easeIn',
+      onComplete: () => {
+        indicator.destroy();
+        this.npcIndicators.delete(npcId);
+      },
+    });
+  }
+
   private playDiscoveryScene(onComplete: () => void) {
     const objects: Phaser.GameObjects.GameObject[] = [];
 
@@ -877,37 +948,337 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     }
   }
 
+  /**
+   * Chapter title lookup for transition title cards.
+   * Maps scene keys to their display title.
+   */
+  private static readonly CHAPTER_TITLES: Record<string, string> = {
+    HomeScene: 'Chapter 1: Home',
+    BeachScene: 'Chapter 2: Santa Barbara',
+    WrongCrowdScene: 'Chapter 3: Wrong Crowd',
+    CourtScene: 'Chapter 3: The Verdict',
+    JailScene: 'Chapter 4: Locked Up',
+    ReleaseScene: 'Chapter 4: Release',
+    TractorScene: 'Chapter 5: Caymus Vineyards',
+    ComeUpScene: 'Chapter 6: The Come Up',
+    LAScene: 'Chapter 6: Los Angeles',
+    OperatorScene: 'Chapter 7: Operator Mode',
+    VegasScene: 'Chapter 7: Vegas',
+    HomeReturnScene: 'Home',
+  };
+
   protected transitionToScene(sceneKey: string, sceneData?: Record<string, string>) {
     this.frozen = true;
     SoundEffects.playDoorOpen();
     Analytics.trackChapterComplete(this.scene.key);
 
-    // Pokemon-style bars closing in from top and bottom
-    const topBar = this.add.rectangle(GAME_WIDTH / 2, -GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000)
-      .setScrollFactor(0).setDepth(1000);
-    const bottomBar = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT + GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000)
-      .setScrollFactor(0).setDepth(1000);
+    const currentScene = this.scene.key;
+    const DEPTH = 2000;
+    const LETTERBOX_H = 60; // Height of each letterbox bar
+
+    // --- Phase 1: Letterbox bars slide in ---
+    SoundEffects.playCinematicSwoosh();
+
+    const topBar = this.add.rectangle(GAME_WIDTH / 2, -LETTERBOX_H / 2, GAME_WIDTH, LETTERBOX_H, 0x000000)
+      .setScrollFactor(0).setDepth(DEPTH);
+    const bottomBar = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT + LETTERBOX_H / 2, GAME_WIDTH, LETTERBOX_H, 0x000000)
+      .setScrollFactor(0).setDepth(DEPTH);
 
     this.tweens.add({
       targets: topBar,
-      y: GAME_HEIGHT / 4,
-      duration: 600,
-      ease: 'Quad.easeIn',
+      y: LETTERBOX_H / 2,
+      duration: 400,
+      ease: 'Quad.easeOut',
     });
     this.tweens.add({
       targets: bottomBar,
-      y: GAME_HEIGHT * 3 / 4,
-      duration: 600,
-      ease: 'Quad.easeIn',
+      y: GAME_HEIGHT - LETTERBOX_H / 2,
+      duration: 400,
+      ease: 'Quad.easeOut',
+    });
+
+    // --- Phase 2: Chapter-specific effect (runs during letterbox) ---
+    this.playCinematicEffect(currentScene, sceneKey);
+
+    // --- Phase 3: Fade to black after letterbox settles ---
+    this.time.delayedCall(500, () => {
+      // Full-screen black overlay fades in
+      const blackOverlay = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000)
+        .setScrollFactor(0).setDepth(DEPTH + 1).setAlpha(0);
+
+      this.tweens.add({
+        targets: blackOverlay,
+        alpha: 1,
+        duration: 500,
+        ease: 'Quad.easeIn',
+        onComplete: () => {
+          // --- Phase 4: Show chapter title card on black ---
+          // If going to TransitionScene, let that handle its own text
+          if (sceneKey === 'TransitionScene') {
+            this.scene.start(sceneKey, sceneData);
+            return;
+          }
+
+          const nextTitle = BaseChapterScene.CHAPTER_TITLES[sceneKey];
+          if (nextTitle) {
+            this.showTransitionTitleCard(nextTitle, () => {
+              this.scene.start(sceneKey, sceneData);
+            });
+          } else {
+            // No title card, just go
+            this.scene.start(sceneKey, sceneData);
+          }
+        },
+      });
+    });
+  }
+
+  /**
+   * Show a title card ("Chapter X: Title") on the already-black screen,
+   * then call onComplete when done.
+   */
+  private showTransitionTitleCard(title: string, onComplete: () => void) {
+    const DEPTH = 2100;
+
+    // Split "Chapter X: Title" into chapter number and name
+    const colonIdx = title.indexOf(':');
+    let chapterNum = '';
+    let chapterName = title;
+    if (colonIdx > -1) {
+      chapterNum = title.substring(0, colonIdx).trim();
+      chapterName = title.substring(colonIdx + 1).trim();
+    }
+
+    // Chapter number (smaller, above)
+    const numText = chapterNum ? this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 25, chapterNum, {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '12px',
+      color: '#8888aa',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(DEPTH).setAlpha(0) : null;
+
+    // Chapter name (larger, center)
+    const nameText = this.add.text(GAME_WIDTH / 2, chapterNum ? GAME_HEIGHT / 2 + 10 : GAME_HEIGHT / 2, chapterName, {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '18px',
+      color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(DEPTH).setAlpha(0);
+
+    // Decorative line under the title
+    const lineWidth = 200;
+    const line = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2 + (chapterNum ? 40 : 30), lineWidth, 2, 0x4060c0)
+      .setScrollFactor(0).setDepth(DEPTH).setAlpha(0);
+
+    // Fade in title
+    if (numText) {
+      this.tweens.add({ targets: numText, alpha: 1, duration: 400 });
+    }
+    this.tweens.add({ targets: nameText, alpha: 1, duration: 500, delay: 150 });
+    this.tweens.add({
+      targets: line,
+      alpha: 0.6,
+      duration: 400,
+      delay: 300,
       onComplete: () => {
-        this.scene.start(sceneKey, sceneData);
+        // Hold for a beat, then fade out
+        this.time.delayedCall(1200, () => {
+          const fadeTargets = [nameText, line];
+          if (numText) fadeTargets.push(numText);
+          this.tweens.add({
+            targets: fadeTargets,
+            alpha: 0,
+            duration: 400,
+            onComplete: () => {
+              nameText.destroy();
+              line.destroy();
+              if (numText) numText.destroy();
+              onComplete();
+            },
+          });
+        });
       },
+    });
+  }
+
+  /**
+   * Play chapter-pair-specific cinematic effects during the transition.
+   * These run DURING the letterbox + fade sequence.
+   */
+  private playCinematicEffect(fromScene: string, toScene: string) {
+    const DEPTH = 1999; // Below letterbox bars but above game
+
+    // Ch1 -> Ch2: Screen wipe + car driving hint
+    if (fromScene === 'HomeScene' && (toScene === 'TransitionScene' || toScene === 'BeachScene')) {
+      SoundEffects.playCarDrive();
+      // Horizontal wipe overlay
+      const wipe = this.add.rectangle(-GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000)
+        .setScrollFactor(0).setDepth(DEPTH).setAlpha(0.5);
+      this.tweens.add({
+        targets: wipe,
+        x: GAME_WIDTH * 1.5,
+        duration: 800,
+        ease: 'Quad.easeIn',
+        onComplete: () => wipe.destroy(),
+      });
+    }
+
+    // Ch2 -> Ch3: Night overlay fade
+    if (fromScene === 'BeachScene' && toScene === 'WrongCrowdScene') {
+      const nightOverlay = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000030)
+        .setScrollFactor(0).setDepth(DEPTH).setAlpha(0);
+      this.tweens.add({
+        targets: nightOverlay,
+        alpha: 0.6,
+        duration: 600,
+        onComplete: () => nightOverlay.destroy(),
+      });
+    }
+
+    // Ch3 -> Court: Red/blue police flash
+    if (fromScene === 'WrongCrowdScene' && toScene === 'CourtScene') {
+      SoundEffects.playPoliceSiren();
+      this.playPoliceFlash(DEPTH);
+    }
+
+    // Ch4 -> Ch5: Bright white freedom flash
+    if ((fromScene === 'JailScene' || fromScene === 'ReleaseScene') && toScene === 'TractorScene') {
+      SoundEffects.playFreedomFlash();
+      const flash = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0xffffff)
+        .setScrollFactor(0).setDepth(DEPTH + 5).setAlpha(0);
+      this.tweens.add({
+        targets: flash,
+        alpha: 1,
+        duration: 300,
+        yoyo: true,
+        hold: 200,
+        onComplete: () => flash.destroy(),
+      });
+    }
+
+    // Ch6 -> Ch7: City skyline silhouette wipe
+    if ((fromScene === 'ComeUpScene' || fromScene === 'LAScene') && toScene === 'OperatorScene') {
+      this.playSkylineWipe(DEPTH);
+    }
+
+    // Ch7 -> Vegas: Road stretching out
+    if (fromScene === 'OperatorScene' && toScene === 'VegasScene') {
+      SoundEffects.playRoadWind();
+      this.playRoadStretch(DEPTH);
+    }
+  }
+
+  /** Red/blue alternating police flash overlay */
+  private playPoliceFlash(depth: number) {
+    const flash = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0xff0000)
+      .setScrollFactor(0).setDepth(depth).setAlpha(0);
+
+    let count = 0;
+    const maxFlashes = 6;
+    const flashInterval = 120;
+
+    const doFlash = () => {
+      if (count >= maxFlashes) {
+        flash.destroy();
+        return;
+      }
+      const isRed = count % 2 === 0;
+      flash.setFillStyle(isRed ? 0xff0000 : 0x0000ff);
+      flash.setAlpha(0.4);
+      this.tweens.add({
+        targets: flash,
+        alpha: 0,
+        duration: flashInterval,
+        onComplete: () => {
+          count++;
+          doFlash();
+        },
+      });
+    };
+    doFlash();
+  }
+
+  /** City skyline silhouette wipe (buildings rise from bottom) */
+  private playSkylineWipe(depth: number) {
+    const buildingCount = 12;
+    const buildingWidth = GAME_WIDTH / buildingCount;
+    const buildings: Phaser.GameObjects.Rectangle[] = [];
+
+    for (let i = 0; i < buildingCount; i++) {
+      const height = 60 + Math.random() * 120;
+      const bldg = this.add.rectangle(
+        i * buildingWidth + buildingWidth / 2,
+        GAME_HEIGHT + height / 2,
+        buildingWidth - 2,
+        height,
+        0x101020
+      ).setScrollFactor(0).setDepth(depth);
+      buildings.push(bldg);
+
+      this.tweens.add({
+        targets: bldg,
+        y: GAME_HEIGHT - height / 2,
+        duration: 500,
+        delay: i * 40,
+        ease: 'Quad.easeOut',
+      });
+    }
+
+    // Clean up after transition takes over
+    this.time.delayedCall(1200, () => {
+      buildings.forEach(b => b.destroy());
+    });
+  }
+
+  /** Road lines stretching toward horizon (vanishing point perspective) */
+  private playRoadStretch(depth: number) {
+    // Road background
+    const road = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH * 0.4, GAME_HEIGHT, 0x333338)
+      .setScrollFactor(0).setDepth(depth).setAlpha(0);
+
+    // Center line dashes
+    const dashes: Phaser.GameObjects.Rectangle[] = [];
+    for (let i = 0; i < 8; i++) {
+      const dash = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT + i * 60, 4, 30, 0xf0c040)
+        .setScrollFactor(0).setDepth(depth + 1).setAlpha(0);
+      dashes.push(dash);
+    }
+
+    // Fade road in
+    this.tweens.add({ targets: road, alpha: 0.7, duration: 300 });
+    dashes.forEach(d => this.tweens.add({ targets: d, alpha: 0.8, duration: 300 }));
+
+    // Animate dashes flying toward viewer
+    dashes.forEach((dash, i) => {
+      this.tweens.add({
+        targets: dash,
+        y: -60,
+        scaleX: 3,
+        scaleY: 2,
+        duration: 800,
+        delay: i * 80,
+        ease: 'Quad.easeIn',
+      });
+    });
+
+    // Clean up
+    this.time.delayedCall(1200, () => {
+      road.destroy();
+      dashes.forEach(d => d.destroy());
     });
   }
 
   update(_time: number, _delta: number) {
     // Update mood system every frame (particles, effects, timer)
     MoodSystem.update(this, this.player);
+
+    // Update NPC indicator positions (NPCs may animate/move)
+    for (const npc of this.npcs) {
+      const indicator = this.npcIndicators.get(npc.id);
+      if (indicator) {
+        indicator.x = npc.sprite.x;
+        // Respect NPC visibility
+        indicator.setVisible(npc.sprite.visible);
+      }
+    }
 
     // Check mobile action button
     if (virtualInput.actionJustPressed) {
@@ -964,6 +1335,12 @@ export abstract class BaseChapterScene extends Phaser.Scene {
       onComplete: () => {
         this.isMoving = false;
         this.player.setFrame(frameMap[this.facing]);
+
+        // Play door sound when stepping on a door tile
+        if (this.mapTiles[targetTileY] && this.mapTiles[targetTileY][targetTileX] === TILE_IDS.DOOR) {
+          SoundEffects.playDoorOpen();
+        }
+
         this.onPlayerMove(targetTileX, targetTileY);
         this.checkTriggers(targetTileX, targetTileY);
       },
@@ -1033,11 +1410,17 @@ export abstract class BaseChapterScene extends Phaser.Scene {
       if (sprites) sprites.forEach(s => s.setVisible(true));
     }
 
-    // Toggle NPCs
+    // Toggle NPCs and their indicators
     for (const npc of this.npcs) {
       const npcTileY = Math.round((npc.sprite.y - SCALED_TILE / 2) / SCALED_TILE);
-      if (hideSet.has(npcTileY)) npc.sprite.setVisible(false);
-      if (showSet.has(npcTileY)) npc.sprite.setVisible(true);
+      if (hideSet.has(npcTileY)) {
+        npc.sprite.setVisible(false);
+        this.npcIndicators.get(npc.id)?.setVisible(false);
+      }
+      if (showSet.has(npcTileY)) {
+        npc.sprite.setVisible(true);
+        this.npcIndicators.get(npc.id)?.setVisible(true);
+      }
     }
 
     // Toggle interactable sprites and markers
@@ -1056,6 +1439,12 @@ export abstract class BaseChapterScene extends Phaser.Scene {
 
   /** Override in subclasses to add reactive NPC dialogue behaviors */
   protected handleNPCDialogue(_npcId: string, dialogue: DialogueLine[]): void {
+    // Remove the floating indicator for this NPC
+    if (!this.talkedToNpcs.has(_npcId)) {
+      this.talkedToNpcs.add(_npcId);
+      this.removeNpcIndicator(_npcId);
+    }
+
     // Mood-reactive NPC dialogue: if faded, 30% chance NPCs comment on it
     if (MoodSystem.isFaded() && Math.random() < 0.3) {
       const fadedLines: string[] = [
