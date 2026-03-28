@@ -3,6 +3,7 @@ import { GAME_WIDTH, GAME_HEIGHT } from '../config';
 import { SaveSystem } from '../systems/SaveSystem';
 import { MusicSystem } from '../systems/MusicSystem';
 import { SoundEffects } from '../systems/SoundEffects';
+import { GameSettings } from '../systems/GameSettings';
 import { virtualInput } from '../../components/GameCanvas';
 
 type MenuState = 'main' | 'chapters' | 'settings';
@@ -14,13 +15,13 @@ interface MenuItem {
 }
 
 const CHAPTERS = [
-  { key: 'HomeScene', label: 'Chapter 1: Home' },
-  { key: 'BeachScene', label: 'Chapter 2: Santa Barbara' },
-  { key: 'WrongCrowdScene', label: 'Chapter 3: Wrong Crowd' },
-  { key: 'CourtScene', label: 'Chapter 4: Locked Up' },
-  { key: 'TractorScene', label: 'Chapter 5: Caymus Vineyards' },
-  { key: 'ComeUpScene', label: 'Chapter 6: The Come Up' },
-  { key: 'OperatorScene', label: 'Chapter 7: Operator Mode' },
+  { key: 'HomeScene', label: 'Ch 1: Home', desc: 'Where it all started' },
+  { key: 'BeachScene', label: 'Ch 2: Santa Barbara', desc: 'The boys, the beach, the bad ideas' },
+  { key: 'WrongCrowdScene', label: 'Ch 3: Wrong Crowd', desc: '3 AM. Nothing good happens.' },
+  { key: 'CourtScene', label: 'Ch 4: Locked Up', desc: 'Faced 13 years. Took the plea.' },
+  { key: 'TractorScene', label: 'Ch 5: Caymus Vineyards', desc: 'Honest work. Restless mind.' },
+  { key: 'ComeUpScene', label: 'Ch 6: The Come Up', desc: '$300. Then $500. Then $900.' },
+  { key: 'OperatorScene', label: 'Ch 7: Operator Mode', desc: 'They treat him like an equal now.' },
 ];
 
 const SPEEDS = [1, 1.5, 2, 3];
@@ -144,6 +145,37 @@ export class MenuScene extends Phaser.Scene {
       ease: 'Quad.easeOut',
     });
 
+    // Rotating tagline — cycles through different hooks
+    const taglines = [
+      'Based on real events. No cap.',
+      '7 chapters. 1 real story.',
+      'From the bedroom to the boardroom.',
+      'He faced 13 years. Took the plea.',
+      'Self-taught everything. In 5 months.',
+      'Not a game about a coder. A game about a person.',
+    ];
+    let tagIdx = 0;
+    const tagline = this.add.text(GAME_WIDTH / 2, 450, '', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '7px',
+      color: '#555577',
+    }).setOrigin(0.5).setDepth(1).setAlpha(0);
+
+    // Cycle taglines every 4 seconds
+    const showTag = () => {
+      tagline.setText(taglines[tagIdx % taglines.length]);
+      tagIdx++;
+      this.tweens.add({ targets: tagline, alpha: 0.6, duration: 600 });
+      this.time.delayedCall(3400, () => {
+        if (!tagline.active) return;
+        this.tweens.add({
+          targets: tagline, alpha: 0, duration: 600,
+          onComplete: () => { if (tagline.active) showTag(); },
+        });
+      });
+    };
+    this.time.delayedCall(2000, showTag);
+
     // Arrow indicator (reused for all menus)
     this.arrowIndicator = this.add.text(0, 0, '\u25b6', {
       fontFamily: '"Press Start 2P", monospace',
@@ -191,6 +223,8 @@ export class MenuScene extends Phaser.Scene {
     this.renderMenu(520);
   }
 
+  private chapterDescText?: Phaser.GameObjects.Text;
+
   private buildChapterSelect() {
     this.clearMenu();
     this.menuState = 'chapters';
@@ -202,12 +236,28 @@ export class MenuScene extends Phaser.Scene {
     this.subtitleText.setVisible(false);
 
     // Header
-    const header = this.add.text(GAME_WIDTH / 2, 200, 'CHAPTER SELECT', {
+    const header = this.add.text(GAME_WIDTH / 2, 140, 'SELECT YOUR CHAPTER', {
       fontFamily: '"Press Start 2P", monospace',
-      fontSize: '16px',
-      color: WHITE,
+      fontSize: '14px',
+      color: YELLOW,
     }).setOrigin(0.5).setDepth(1);
     this.menuTexts.push(header);
+
+    // Subheader
+    const sub = this.add.text(GAME_WIDTH / 2, 165, 'Every chapter is a real part of JP\'s life', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '7px',
+      color: FADED,
+    }).setOrigin(0.5).setDepth(1);
+    this.menuTexts.push(sub);
+
+    // Description area — updates on hover
+    this.chapterDescText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 80, CHAPTERS[0].desc, {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '9px',
+      color: '#aaaacc',
+    }).setOrigin(0.5).setDepth(1);
+    this.menuTexts.push(this.chapterDescText);
 
     this.menuItems = CHAPTERS.map((ch) => ({
       label: ch.label,
@@ -221,7 +271,7 @@ export class MenuScene extends Phaser.Scene {
       enabled: true,
     });
 
-    this.renderMenu(300);
+    this.renderMenu(220);
   }
 
   private buildSettings() {
@@ -235,12 +285,17 @@ export class MenuScene extends Phaser.Scene {
     this.subtitleText.setVisible(false);
 
     // Header
-    const header = this.add.text(GAME_WIDTH / 2, 280, 'SETTINGS', {
+    const header = this.add.text(GAME_WIDTH / 2, 160, 'SETTINGS', {
       fontFamily: '"Press Start 2P", monospace',
-      fontSize: '16px',
-      color: WHITE,
+      fontSize: '14px',
+      color: YELLOW,
     }).setOrigin(0.5).setDepth(1);
     this.menuTexts.push(header);
+
+    const kidsOn = GameSettings.kidsMode;
+    const bigHeadOn = GameSettings.bigHead;
+    const hardOn = GameSettings.hardMode;
+    const speedRunOn = GameSettings.get('speedRun');
 
     this.menuItems = [
       {
@@ -254,13 +309,46 @@ export class MenuScene extends Phaser.Scene {
         enabled: true,
       },
       {
+        label: `Kids Mode: ${kidsOn ? 'ON (lol)' : 'OFF'}`,
+        action: () => { GameSettings.toggle('kidsMode'); this.buildSettings(); },
+        enabled: true,
+      },
+      {
+        label: `Big Head Mode: ${bigHeadOn ? 'HUGE' : 'Normal'}`,
+        action: () => { GameSettings.toggle('bigHead'); this.buildSettings(); },
+        enabled: true,
+      },
+      {
+        label: `Hard Mode: ${hardOn ? 'Pain' : 'Normal'}`,
+        action: () => { GameSettings.toggle('hardMode'); this.buildSettings(); },
+        enabled: true,
+      },
+      {
+        label: `Speed Run: ${speedRunOn ? 'Clock ON' : 'OFF'}`,
+        action: () => { GameSettings.toggle('speedRun'); this.buildSettings(); },
+        enabled: true,
+      },
+      {
         label: 'Back',
         action: () => this.buildMainMenu(),
         enabled: true,
       },
     ];
 
-    this.renderMenu(380);
+    // Fun description for kids mode
+    const descText = kidsOn
+      ? '"Weed" is now "Candy". "Bong" is "Juice Box". You\'re welcome, parents.'
+      : 'Toggle settings to customize your experience';
+    const desc = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 60, descText, {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '7px',
+      color: kidsOn ? '#50e070' : FADED,
+      wordWrap: { width: GAME_WIDTH - 100 },
+      align: 'center',
+    }).setOrigin(0.5).setDepth(1);
+    this.menuTexts.push(desc);
+
+    this.renderMenu(240);
   }
 
   private renderMenu(startY: number) {
@@ -300,11 +388,15 @@ export class MenuScene extends Phaser.Scene {
   }
 
   private updateMenuVisuals() {
+    // Update chapter description if in chapter select
+    if (this.menuState === 'chapters' && this.chapterDescText && this.selectedIndex < CHAPTERS.length) {
+      this.chapterDescText.setText(CHAPTERS[this.selectedIndex].desc);
+    }
+
     // Update text colors
+    const skipTexts = ['SELECT YOUR CHAPTER', 'SETTINGS', 'Every chapter is a real part of JP\'s life', '"Weed" is now "Candy". "Bong" is "Juice Box". You\'re welcome, parents.', 'Toggle settings to customize your experience'];
     const menuOnlyTexts = this.menuTexts.filter(t => {
-      const text = t.text;
-      // Skip headers
-      return text !== 'CHAPTER SELECT' && text !== 'SETTINGS';
+      return !skipTexts.includes(t.text) && !t.text.startsWith('"') && t !== this.chapterDescText;
     });
 
     for (let i = 0; i < this.menuItems.length; i++) {
