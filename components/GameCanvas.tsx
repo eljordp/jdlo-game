@@ -55,6 +55,36 @@ if (typeof window !== 'undefined') {
     virtualInput.actionJustPressed = true;
     setTimeout(() => { virtualInput.actionJustPressed = false; virtualInput.action = false; }, 150);
   };
+  // Dev helpers for Playwright/console testing
+  // Usage: scene() — get active scene, tp(x,y) — teleport player, day2() — skip to day 2
+  (window as unknown as Record<string, unknown>).getScene = () => {
+    const g = (window as unknown as Record<string, unknown>).game as Phaser.Game | undefined;
+    return g ? g.scene.getScenes(true)[0] : null;
+  };
+  (window as unknown as Record<string, unknown>).tp = (tileX: number, tileY: number) => {
+    const g = (window as unknown as Record<string, unknown>).game as Phaser.Game | undefined;
+    if (!g) return;
+    const s = g.scene.getScenes(true)[0] as unknown as Record<string, unknown>;
+    if (s?.player) {
+      const SCALED_TILE = 64;
+      (s.player as Phaser.GameObjects.Sprite).setPosition(
+        tileX * SCALED_TILE + SCALED_TILE / 2,
+        tileY * SCALED_TILE + SCALED_TILE / 2
+      );
+    }
+  };
+  (window as unknown as Record<string, unknown>).day2 = () => {
+    const g = (window as unknown as Record<string, unknown>).game as Phaser.Game | undefined;
+    if (!g) return;
+    const s = g.scene.getScenes(true)[0] as unknown as Record<string, unknown>;
+    if (s && 'currentDay' in s) (s as Record<string, unknown>).currentDay = 2;
+  };
+  (window as unknown as Record<string, unknown>).unfreeze = () => {
+    const g = (window as unknown as Record<string, unknown>).game as Phaser.Game | undefined;
+    if (!g) return;
+    const s = g.scene.getScenes(true)[0] as unknown as Record<string, unknown>;
+    if (s && 'frozen' in s) (s as Record<string, unknown>).frozen = false;
+  };
 }
 
 export default function GameCanvas() {
@@ -213,8 +243,8 @@ export default function GameCanvas() {
         </button>
       </div>
 
-      {/* Chapter jump — top left */}
-      <div className="absolute top-3 left-3 z-20">
+      {/* Chapter jump + dev controls — top left */}
+      <div className="absolute top-3 left-3 z-20 flex gap-1">
         <select
           onChange={(e) => {
             const scene = e.target.value;
@@ -228,15 +258,47 @@ export default function GameCanvas() {
           defaultValue=""
         >
           <option value="" disabled>CH</option>
-          <option value="HomeScene">Ch1</option>
-          <option value="BeachScene">Ch2</option>
-          <option value="WrongCrowdScene">Ch3</option>
-          <option value="JailScene">Ch4</option>
-          <option value="TractorScene">Ch5</option>
-          <option value="ComeUpScene">Ch6</option>
-          <option value="OperatorScene">Ch7</option>
+          <option value="IntroScene">Intro</option>
+          <option value="HomeScene">Ch1 Home</option>
+          <option value="BeachScene">Ch2 SB</option>
+          <option value="WrongCrowdScene">Ch3 Night</option>
+          <option value="CourtScene">Court</option>
+          <option value="JailScene">Ch4 Jail</option>
+          <option value="ReleaseScene">Release</option>
+          <option value="TractorScene">Ch5 Caymus</option>
+          <option value="ComeUpScene">Ch6 Come Up</option>
+          <option value="LAScene">LA Scene</option>
+          <option value="OperatorScene">Ch7 LA</option>
+          <option value="VegasScene">Vegas</option>
+          <option value="HomeReturnScene">Home Return</option>
+          <option value="EndScene">End</option>
           <option value="MenuScene">Menu</option>
         </select>
+        <button
+          onClick={() => {
+            if (!gameRef.current) return;
+            const s = gameRef.current.scene.getScenes(true)[0] as unknown as Record<string, unknown>;
+            if (s && 'currentDay' in s) {
+              const cur = s.currentDay as number;
+              (s as Record<string, unknown>).currentDay = cur >= 3 ? 1 : cur + 1;
+            }
+          }}
+          className="px-2 py-1.5 bg-black/70 border border-white/20 rounded text-white text-xs font-mono hover:bg-white/10 transition-colors cursor-pointer"
+          title="Advance day (for multi-day scenes)"
+        >
+          DAY+
+        </button>
+        <button
+          onClick={() => {
+            if (!gameRef.current) return;
+            const s = gameRef.current.scene.getScenes(true)[0] as unknown as Record<string, unknown>;
+            if (s && 'frozen' in s) (s as Record<string, unknown>).frozen = false;
+          }}
+          className="px-2 py-1.5 bg-black/70 border border-white/20 rounded text-white text-xs font-mono hover:bg-white/10 transition-colors cursor-pointer"
+          title="Unfreeze (unstick from stuck states)"
+        >
+          GO
+        </button>
       </div>
 
       {/* Bottom right — phone, inventory, emote buttons (always visible) */}

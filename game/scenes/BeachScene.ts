@@ -8,6 +8,7 @@ import { Analytics } from '../systems/Analytics';
 import { MoodSystem } from '../systems/MoodSystem';
 import { InventorySystem } from '../systems/InventorySystem';
 import { GameSettings } from '../systems/GameSettings';
+import { SubstanceSystem } from '../systems/SubstanceSystem';
 
 export class BeachScene extends BaseChapterScene {
   private inHotTub = false;
@@ -49,6 +50,7 @@ export class BeachScene extends BaseChapterScene {
 
   create() {
     super.create();
+    SubstanceSystem.reset();
     // Exit triggers at south beach
     this.addNavArrow(18, 26, 'Next chapter');
 
@@ -61,6 +63,29 @@ export class BeachScene extends BaseChapterScene {
     this.collisionTiles.add('3,17');
     this.collisionTiles.add('4,17');
     this.collisionTiles.add('5,17');
+
+    // === VOLLEYBALL NET on the beach ===
+    const netLeftX = 15 * SCALED_TILE + SCALED_TILE / 2;
+    const netRightX = 19 * SCALED_TILE + SCALED_TILE / 2;
+    const netY = 25 * SCALED_TILE + SCALED_TILE / 2;
+    const poleHeight = 20;
+    // Left pole
+    this.add.rectangle(netLeftX, netY - poleHeight / 2, 2, poleHeight, 0x4a3020).setDepth(5);
+    // Right pole
+    this.add.rectangle(netRightX, netY - poleHeight / 2, 2, poleHeight, 0x4a3020).setDepth(5);
+    // Net (horizontal line between poles, slightly sagging via two segments)
+    const netWidth = netRightX - netLeftX;
+    const netTopY = netY - poleHeight + 4;
+    // Top rope
+    this.add.rectangle(netLeftX + netWidth / 2, netTopY, netWidth, 1, 0xffffff).setDepth(5).setAlpha(0.8);
+    // Bottom rope (slight sag — 3px lower in the middle)
+    this.add.rectangle(netLeftX + netWidth / 2, netTopY + 6, netWidth, 1, 0xcccccc).setDepth(5).setAlpha(0.6);
+    // Vertical net lines
+    const netSegments = 6;
+    for (let i = 1; i < netSegments; i++) {
+      const segX = netLeftX + (netWidth / netSegments) * i;
+      this.add.rectangle(segX, netTopY + 3, 1, 6, 0xdddddd).setDepth(5).setAlpha(0.5);
+    }
 
     // === NOLAN'S MASTER BEDROOM — LED lights + gaming vibes ===
     // LED strip behind TV (cycling colors)
@@ -109,6 +134,7 @@ export class BeachScene extends BaseChapterScene {
     for (const npc of this.npcs) {
       if (npc.id.includes('girl') || npc.id === 'ch1_sunbather') {
         npc.sprite.setVisible(false);
+        npc.sprite.setActive(false);
         const tx = Math.round((npc.sprite.x - SCALED_TILE / 2) / SCALED_TILE);
         const ty = Math.round((npc.sprite.y - SCALED_TILE / 2) / SCALED_TILE);
         this.collisionTiles.delete(`${tx},${ty}`);
@@ -625,7 +651,7 @@ export class BeachScene extends BaseChapterScene {
       this.frozen = true;
       this.showYesNoChoice('Hit the blinker?', 'Yeah', 'Nah', () => {
         this.hotTubBlinker = true;
-        MoodSystem.setMood('faded', 120);
+        SubstanceSystem.hit(1);
         this.dialogue.show([
           { speaker: 'Nolan', text: 'Ayy pass that!' },
           { speaker: 'Narrator', text: 'The boys pass it around. Nobody has anywhere to be.' },
@@ -692,7 +718,9 @@ export class BeachScene extends BaseChapterScene {
         { speaker: 'Narrator', text: 'JP takes the shot. Then another. Then another.' },
         { speaker: 'Narrator', text: 'The room starts to feel warmer.' },
       ], () => {
-        MoodSystem.setMood('vibing', 120);
+        SubstanceSystem.drink();
+        SubstanceSystem.drink();
+        SubstanceSystem.drink(); // 3 shots
         // Slight wobble effect on camera
         this.wobbleEffect = this.tweens.add({
           targets: this.cameras.main,
@@ -730,6 +758,7 @@ export class BeachScene extends BaseChapterScene {
             for (const npc of this.npcs) {
               if (npc.id.includes('girl') || npc.id === 'ch1_sunbather') {
                 npc.sprite.setVisible(true);
+                npc.sprite.setActive(true);
                 npc.sprite.setAlpha(0);
                 this.tweens.add({ targets: npc.sprite, alpha: 1, duration: 500 });
                 const tx = Math.round((npc.sprite.x - SCALED_TILE / 2) / SCALED_TILE);
@@ -762,7 +791,8 @@ export class BeachScene extends BaseChapterScene {
         { speaker: 'Girl', text: 'This is the best party I\'ve been to all year.' },
         { speaker: 'JP\'s Mind', text: 'It feels good. For now.' },
       ], () => {
-        MoodSystem.setMood('faded', 120);
+        SubstanceSystem.hit(1); // group smoke
+        SubstanceSystem.hit(1); // extra pass
         // Heavier wobble
         if (this.wobbleEffect) this.wobbleEffect.stop();
         this.wobbleEffect = this.tweens.add({
@@ -818,7 +848,7 @@ export class BeachScene extends BaseChapterScene {
       this.frozen = true;
       this.showYesNoChoice('Hit it in the shower?', 'Yeah', 'Nah', () => {
         this.showerBlinker = true;
-        MoodSystem.setMood('faded', 90);
+        SubstanceSystem.hit(3); // blinker = potency 3
         this.dialogue.show([
           { speaker: 'Narrator', text: 'Steam and smoke. JP\'s favorite combination.' },
         ], () => { this.frozen = false; });
@@ -1110,6 +1140,7 @@ export class BeachScene extends BaseChapterScene {
     for (const npc of this.npcs) {
       if (npc.id.includes('girl') || npc.id === 'ch1_sunbather') {
         npc.sprite.setVisible(true);
+        npc.sprite.setActive(true);
         const tx = Math.round((npc.sprite.x - SCALED_TILE / 2) / SCALED_TILE);
         const ty = Math.round((npc.sprite.y - SCALED_TILE / 2) / SCALED_TILE);
         this.collisionTiles.add(`${tx},${ty}`);
@@ -1153,9 +1184,9 @@ export class BeachScene extends BaseChapterScene {
       }
     }
 
-    // ── DJ SETUP (front yard, center) ──
-    const djX = 18 * SCALED_TILE + SCALED_TILE / 2;
-    const djY = 10 * SCALED_TILE + SCALED_TILE / 2;
+    // ── DJ SETUP (yard, center) ──
+    const djX = 12 * SCALED_TILE + SCALED_TILE / 2;
+    const djY = 18 * SCALED_TILE + SCALED_TILE / 2;
 
     // DJ table (dark rectangle)
     this.add.rectangle(djX, djY, SCALED_TILE * 2, SCALED_TILE * 0.6, 0x202028).setDepth(5);
@@ -1183,7 +1214,7 @@ export class BeachScene extends BaseChapterScene {
     this.add.text(djX, djY - SCALED_TILE, 'DJ', {
       fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#f0c040',
     }).setOrigin(0.5).setDepth(10);
-    this.collisionTiles.add(`${36},${10}`);
+    this.collisionTiles.add(`${12},${18}`);
 
     // ── SPEAKERS (bass visual) ──
     const spkL = this.add.rectangle(djX - SCALED_TILE * 1.5, djY, 20, 30, 0x1a1a1a).setDepth(5);
@@ -1345,6 +1376,7 @@ export class BeachScene extends BaseChapterScene {
           });
 
           // Hyped mood
+          SubstanceSystem.hype();
           MoodSystem.setMood('hyped', 30);
 
           // More party chaos dialogue
@@ -1575,15 +1607,15 @@ export class BeachScene extends BaseChapterScene {
     for (const pos of oppCupPositions) {
       const cup = this.add.circle(pos.x, pos.y, cupRadius, cupColor).setScrollFactor(0).setDepth(302);
       // Beer inside
-      this.add.circle(pos.x, pos.y, cupRadius - 4, 0xf0c040).setScrollFactor(0).setDepth(302).setAlpha(0.6);
-      objects.push(cup);
+      const beer = this.add.circle(pos.x, pos.y, cupRadius - 4, 0xf0c040).setScrollFactor(0).setDepth(302).setAlpha(0.6);
+      objects.push(cup, beer);
       oppCups.push({ obj: cup, hit: false, pos });
     }
 
     for (const pos of myCupPositions) {
       const cup = this.add.circle(pos.x, pos.y, cupRadius, cupColor).setScrollFactor(0).setDepth(302);
-      this.add.circle(pos.x, pos.y, cupRadius - 4, 0xf0c040).setScrollFactor(0).setDepth(302).setAlpha(0.6);
-      objects.push(cup);
+      const beer = this.add.circle(pos.x, pos.y, cupRadius - 4, 0xf0c040).setScrollFactor(0).setDepth(302).setAlpha(0.6);
+      objects.push(cup, beer);
       myCups.push({ obj: cup, hit: false });
     }
 
@@ -1792,6 +1824,7 @@ export class BeachScene extends BaseChapterScene {
     ];
 
     if (won) {
+      SubstanceSystem.hype();
       MoodSystem.setMood('hyped', 30);
     }
 

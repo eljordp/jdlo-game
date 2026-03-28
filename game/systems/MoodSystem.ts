@@ -40,7 +40,11 @@ export class MoodSystem {
   private static noteTimer: number = 0;
   private static glowCircle: Phaser.GameObjects.Arc | null = null;
   private static warmTint: Phaser.GameObjects.Rectangle | null = null;
+  private static fadedTint: Phaser.GameObjects.Rectangle | null = null;
+  private static fadedVignette: Phaser.GameObjects.Rectangle[] | null = null;
+  private static fadedTintTime: number = 0;
   private static bounceTime: number = 0;
+  private static drunkWobbleAngle: number = 0;
 
   // Track which scene we initialized for (to clean up on scene change)
   private static activeScene: Phaser.Scene | null = null;
@@ -151,6 +155,8 @@ export class MoodSystem {
       this.hudBg = null;
       this.glowCircle = null;
       this.warmTint = null;
+      this.fadedTint = null;
+      this.fadedVignette = null;
     }
 
     const delta = scene.game.loop.delta;
@@ -190,6 +196,9 @@ export class MoodSystem {
         break;
     }
 
+    // Substance-driven overlay effects (layers on top of mood effects)
+    this.updateSubstanceOverlay(scene, player, delta);
+
     // Keep HUD updated
     this.ensureHUD(scene);
   }
@@ -198,22 +207,48 @@ export class MoodSystem {
   // Subtle camera wobble + smoke trail particles
 
   private static updateFadedEffects(scene: Phaser.Scene, player: Phaser.GameObjects.Sprite, delta: number): void {
-    // Camera wobble: very subtle +-1px oscillation
-    this.wobbleTime += delta * 0.003;
-    this.wobbleOffset = Math.sin(this.wobbleTime) * 1;
-    scene.cameras.main.setFollowOffset(this.wobbleOffset, Math.cos(this.wobbleTime * 0.7) * 0.5);
+    const cam = scene.cameras.main;
 
-    // Smoke trail: spawn a small grey circle behind player periodically
+    // Camera wobble: dreamy +-3px oscillation, slower wave
+    this.wobbleTime += delta * 0.002;
+    this.wobbleOffset = Math.sin(this.wobbleTime) * 3;
+    cam.setFollowOffset(this.wobbleOffset, Math.cos(this.wobbleTime * 0.7) * 1.5);
+
+    // Green/purple tint overlay that pulses slowly
+    if (!this.fadedTint || !this.fadedTint.active) {
+      this.fadedTint = scene.add.rectangle(
+        cam.width / 2, cam.height / 2, cam.width, cam.height,
+        0x40c060, 0.06,
+      ).setScrollFactor(0).setDepth(300).setBlendMode(Phaser.BlendModes.ADD);
+    }
+    this.fadedTintTime += delta * 0.001;
+    this.fadedTint.setAlpha(0.04 + Math.sin(this.fadedTintTime) * 0.02);
+
+    // Vignette: 4 dark edge rectangles
+    if (!this.fadedVignette || this.fadedVignette.length === 0 || !this.fadedVignette[0].active) {
+      const thickness = 40;
+      const top = scene.add.rectangle(cam.width / 2, thickness / 2, cam.width, thickness, 0x000000, 0.08)
+        .setScrollFactor(0).setDepth(301);
+      const bottom = scene.add.rectangle(cam.width / 2, cam.height - thickness / 2, cam.width, thickness, 0x000000, 0.08)
+        .setScrollFactor(0).setDepth(301);
+      const left = scene.add.rectangle(thickness / 2, cam.height / 2, thickness, cam.height, 0x000000, 0.08)
+        .setScrollFactor(0).setDepth(301);
+      const right = scene.add.rectangle(cam.width - thickness / 2, cam.height / 2, thickness, cam.height, 0x000000, 0.08)
+        .setScrollFactor(0).setDepth(301);
+      this.fadedVignette = [top, bottom, left, right];
+    }
+
+    // Smoke trail: bigger, greener, more opaque, faster spawn
     this.smokeTrailTimer += delta;
-    if (this.smokeTrailTimer > 400) {
+    if (this.smokeTrailTimer > 250) {
       this.smokeTrailTimer = 0;
 
       const puff = scene.add.circle(
         player.x + (Math.random() * 6 - 3),
         player.y + 5,
-        2 + Math.random() * 1.5,
-        0x999999,
-        0.3,
+        3 + Math.random() * 2,
+        0x90b090,
+        0.5,
       ).setDepth(player.depth - 1);
 
       scene.tweens.add({
@@ -305,6 +340,70 @@ export class MoodSystem {
     this.glowCircle.setPosition(player.x, player.y + 2);
   }
 
+  // ── Substance Overlay Effects ──────────────────────────────────
+  // Extra visuals driven by SubstanceSystem that layer on mood effects
+
+  private static updateSubstanceOverlay(scene: Phaser.Scene, player: Phaser.GameObjects.Sprite, delta: number): void {
+    // Import inline to avoid circular dependency
+    const { SubstanceSystem } = require('./SubstanceSystem');
+
+    const drunkLevel = SubstanceSystem.getDrinkLevel();
+    const highLevel = SubstanceSystem.getHighLevel();
+    const crossfaded = SubstanceSystem.isCrossfaded();
+    const postNut = SubstanceSystem.isPostNut();
+
+    // Drunk camera tilt — screen rotates slightly back and forth
+    if (drunkLevel === 'drunk' || drunkLevel === 'wasted' || drunkLevel === 'blacked_out') {
+      this.drunkWobbleAngle += delta * 0.0008;
+      const intensity = drunkLevel === 'drunk' ? 0.3 : drunkLevel === 'wasted' ? 0.8 : 1.2;
+      scene.cameras.main.setRotation(Math.sin(this.drunkWobbleAngle) * intensity * (Math.PI / 180));
+    } else if (this.drunkWobbleAngle !== 0) {
+      this.drunkWobbleAngle = 0;
+      scene.cameras.main.setRotation(0);
+    }
+
+    // Post-nut: desaturated screen + thought bubbles
+    if (postNut) {
+      // Grey desaturation effect via a dark overlay
+      if (!this.warmTint || !this.warmTint.active) {
+        const cam = scene.cameras.main;
+        this.warmTint = scene.add.rectangle(
+          cam.width / 2, cam.height / 2, cam.width, cam.height,
+          0x000020, 0.08,
+        ).setScrollFactor(0).setDepth(300);
+      }
+
+      // "..." thought bubbles every 3 seconds
+      this.noteTimer += delta;
+      if (this.noteTimer > 3000) {
+        this.noteTimer = 0;
+        const dots = scene.add.text(
+          player.x + (Math.random() * 12 - 6),
+          player.y - 24,
+          '...',
+          { fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#808080' },
+        ).setOrigin(0.5).setDepth(player.depth + 1).setAlpha(0.6);
+
+        scene.tweens.add({
+          targets: dots,
+          y: dots.y - 20,
+          alpha: 0,
+          duration: 2000,
+          onComplete: () => dots.destroy(),
+        });
+      }
+    }
+
+    // Crossfaded: screen breathing (zoom in/out subtly)
+    if (crossfaded) {
+      this.bounceTime += delta * 0.001;
+      const breathZoom = 1 + Math.sin(this.bounceTime) * 0.008;
+      scene.cameras.main.setZoom(breathZoom);
+    } else if (scene.cameras.main.zoom !== 1 && !crossfaded) {
+      scene.cameras.main.setZoom(1);
+    }
+  }
+
   // ── HUD ────────────────────────────────────────────────────────
 
   private static ensureHUD(scene: Phaser.Scene): void {
@@ -326,12 +425,12 @@ export class MoodSystem {
 
     // Create HUD elements if missing
     if (!this.hudBg || !this.hudBg.active) {
-      this.hudBg = scene.add.rectangle(28, 56, 40, 40, 0x000000, 0.5)
+      this.hudBg = scene.add.rectangle(20, 42, 28, 28, 0x000000, 0.3)
         .setScrollFactor(0).setDepth(350);
     }
     if (!this.hudIcon || !this.hudIcon.active) {
-      this.hudIcon = scene.add.text(28, 56, icon, {
-        fontSize: '20px',
+      this.hudIcon = scene.add.text(20, 42, icon, {
+        fontSize: '14px',
       }).setOrigin(0.5).setScrollFactor(0).setDepth(351);
     }
 
@@ -374,6 +473,28 @@ export class MoodSystem {
       this.warmTint = null;
     }
 
+    // Destroy faded tint
+    if (this.fadedTint && this.fadedTint.active) {
+      this.fadedTint.destroy();
+      this.fadedTint = null;
+    }
+    this.fadedTintTime = 0;
+
+    // Destroy faded vignette
+    if (this.fadedVignette) {
+      for (const rect of this.fadedVignette) {
+        if (rect && rect.active) rect.destroy();
+      }
+      this.fadedVignette = null;
+    }
+
+    // Reset drunk wobble
+    this.drunkWobbleAngle = 0;
+    if (this.activeScene) {
+      this.activeScene.cameras.main.setRotation(0);
+      this.activeScene.cameras.main.setZoom(1);
+    }
+
     // Reset player origin if vibing
     // (Will be handled naturally when mood changes since updateVibingEffects stops running)
   }
@@ -387,6 +508,7 @@ export class MoodSystem {
     this.smokeTrailTimer = 0;
     this.noteTimer = 0;
     this.bounceTime = 0;
+    this.drunkWobbleAngle = 0;
 
     if (this.hudIcon && this.hudIcon.active) {
       this.hudIcon.destroy();

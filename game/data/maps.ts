@@ -364,7 +364,7 @@ export const beachMap: MapData = {
 
     // --- Hot Tub Patio (outside, cols 36-38, rows 3-5) ---
     { id: 'ch1_hottub',     x: 37, y: 4,  type: 'examine', glow: false, sprite: 'item-hottub' },
-    { id: 'ch1_shower',     x: 36, y: 2,  type: 'examine', glow: true, sprite: 'item-shower' },
+    { id: 'ch1_shower',     x: 23, y: 15, type: 'examine', glow: true, sprite: 'item-shower' },
 
     // --- NOLAN'S MASTER BEDROOM (cols 22-32, rows 12-15) — THE room ---
     { id: 'ch1_nolan_bed',   x: 23, y: 12, type: 'examine', glow: false, sprite: 'item-bed' },         // king size bed
@@ -384,7 +384,7 @@ export const beachMap: MapData = {
     { id: 'ch1_volleyball1', x: 17, y: 25, type: 'examine', glow: true, sprite: 'item-ball' },
     { id: 'ch1_towels',     x: 8,  y: 24, type: 'examine', glow: false, sprite: 'item-rug' },
     { id: 'ch1_cooler',     x: 10, y: 24, type: 'examine', glow: false, sprite: 'item-storage-box' },
-    { id: 'ch1_bonfire',    x: 30, y: 26, type: 'examine', glow: false, sprite: 'item-bbq' },
+    { id: 'ch1_bonfire',    x: 30, y: 26, type: 'examine', glow: false, sprite: 'item-bonfire' },
     { id: 'ch1_surfboards', x: 5,  y: 24, type: 'examine', glow: false, sprite: 'item-surfboard' },
     { id: 'ch1_sunset',     x: 36, y: 25, type: 'examine', glow: false, sprite: 'item-photo' },
   ],

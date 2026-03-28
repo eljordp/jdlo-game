@@ -14,6 +14,7 @@ import { EmoteSystem } from '../systems/EmoteSystem';
 import { MoodSystem } from '../systems/MoodSystem';
 import { PhoneSystem } from '../systems/PhoneSystem';
 import { InventoryUI } from '../systems/InventoryUI';
+import { SubstanceSystem } from '../systems/SubstanceSystem';
 import type { MapData } from '../data/maps';
 
 type NPCObject = {
@@ -869,6 +870,8 @@ export abstract class BaseChapterScene extends Phaser.Scene {
       const npcTileY = Math.round((npc.sprite.y - SCALED_TILE / 2) / SCALED_TILE);
 
       if (npcTileX === facingX && npcTileY === facingY) {
+        // Skip invisible/inactive NPCs — they shouldn't be interactable
+        if (!npc.sprite.visible || !npc.sprite.active) continue;
         SoundEffects.playBlip();
         this.handleNPCDialogue(npc.id, npc.dialogue);
         return;
@@ -1269,6 +1272,7 @@ export abstract class BaseChapterScene extends Phaser.Scene {
   update(_time: number, _delta: number) {
     // Update mood system every frame (particles, effects, timer)
     MoodSystem.update(this, this.player);
+    SubstanceSystem.update(_delta);
 
     // Update NPC indicator positions (NPCs may animate/move)
     for (const npc of this.npcs) {
@@ -1309,6 +1313,17 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     const key = `${targetTileX},${targetTileY}`;
     if (this.collisionTiles.has(key)) return;
     if (targetTileX < 0 || targetTileX >= this.mapWidth || targetTileY < 0 || targetTileY >= this.mapHeight) return;
+
+    // Stumble check — drunk/high causes random movement interrupts
+    if (SubstanceSystem.shouldStumble()) {
+      this.isMoving = true;
+      this.time.delayedCall(300, () => {
+        this.isMoving = false;
+      });
+      // Camera shake for stumble feel
+      this.cameras.main.shake(100, 0.003);
+      return; // skip this move
+    }
 
     this.isMoving = true;
     const targetX = targetTileX * SCALED_TILE + SCALED_TILE / 2;
