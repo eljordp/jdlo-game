@@ -705,6 +705,43 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     });
   }
 
+  /** Burst confetti/particles at a point — reusable celebration effect */
+  protected playConfetti(x: number, y: number, count = 14) {
+    const colors = [0x30c060, 0xf0c040, 0xffffff, 0x60a0ff, 0xff6060, 0xff80d0];
+    for (let i = 0; i < count; i++) {
+      const color = colors[i % colors.length];
+      const particle = this.add.rectangle(
+        x, y,
+        4 + Math.random() * 4, 4 + Math.random() * 4,
+        color
+      ).setDepth(400);
+      this.tweens.add({
+        targets: particle,
+        x: x + (Math.random() - 0.5) * 200,
+        y: y - 40 - Math.random() * 120,
+        alpha: 0,
+        angle: Math.random() * 360,
+        duration: 800 + Math.random() * 600,
+        ease: 'Quad.easeOut',
+        onComplete: () => particle.destroy(),
+      });
+    }
+  }
+
+  /** Screen impact — shake + flash for big moments */
+  protected playScreenImpact(intensity: 'light' | 'medium' | 'heavy' = 'medium') {
+    const config = {
+      light: { duration: 100, intensity: 0.005, flashAlpha: 0.1 },
+      medium: { duration: 200, intensity: 0.01, flashAlpha: 0.2 },
+      heavy: { duration: 400, intensity: 0.025, flashAlpha: 0.35 },
+    }[intensity];
+    this.cameras.main.shake(config.duration, config.intensity);
+    SoundEffects.playImpact();
+    const flash = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0xffffff, config.flashAlpha)
+      .setScrollFactor(0).setDepth(500);
+    this.tweens.add({ targets: flash, alpha: 0, duration: 200, onComplete: () => flash.destroy() });
+  }
+
   protected playSmokingAnimation() {
     // Create smoke particles above player for 3 seconds
     const emitSmoke = () => {
@@ -797,6 +834,7 @@ export abstract class BaseChapterScene extends Phaser.Scene {
           // Check if this is a smoking interaction
           const isSmoking = interactable.id.includes('smoke') || interactable.id.includes('blunt') || interactable.id.includes('bong');
           this.dialogue.show(lines, isSmoking ? () => this.playSmokingAnimation() : undefined);
+          SoundEffects.playPickup();
           this.interactions.consume(interactable.id);
         }
         break;
@@ -914,6 +952,9 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     const baseMoveDuration = isSprinting ? 110 : 200;
     // Mood affects walk speed: multiplier > 1 = slower (higher duration), < 1 = faster
     const moveDuration = Math.round(baseMoveDuration * MoodSystem.getSpeedMultiplier());
+
+    // Footstep sound
+    SoundEffects.playFootstep();
 
     this.tweens.add({
       targets: this.player,

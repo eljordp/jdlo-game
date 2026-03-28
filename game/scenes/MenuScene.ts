@@ -53,12 +53,55 @@ export class MenuScene extends Phaser.Scene {
     this.selectedIndex = 0;
     MusicSystem.stop();
 
-    // Black background
+    // Dark background with subtle gradient
     this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000).setDepth(0);
+    // Subtle vignette gradient at top
+    const vignette = this.add.rectangle(GAME_WIDTH / 2, 0, GAME_WIDTH, 200, 0x0a0818, 0.5).setOrigin(0.5, 0).setDepth(0);
 
-    // Player sprite — centered, breathing animation
+    // Floating particles — ambient dust/stars
+    this.time.addEvent({
+      delay: 300,
+      loop: true,
+      callback: () => {
+        const px = Math.random() * GAME_WIDTH;
+        const py = GAME_HEIGHT + 10;
+        const size = 1 + Math.random() * 2;
+        const alpha = 0.1 + Math.random() * 0.2;
+        const particle = this.add.circle(px, py, size, 0xffffff, alpha).setDepth(0);
+        this.tweens.add({
+          targets: particle,
+          y: -10,
+          x: px + (Math.random() - 0.5) * 60,
+          alpha: 0,
+          duration: 6000 + Math.random() * 4000,
+          onComplete: () => particle.destroy(),
+        });
+      },
+    });
+
+    // Ambient glow behind player
+    const glow = this.add.circle(GAME_WIDTH / 2, 260, 80, 0x2040a0, 0.08).setDepth(0);
+    this.tweens.add({
+      targets: glow,
+      scaleX: 1.3,
+      scaleY: 1.3,
+      alpha: 0.04,
+      duration: 3000,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
+    });
+
+    // Player sprite — centered, breathing animation, fades in
     this.playerSprite = this.add.sprite(GAME_WIDTH / 2, 260, 'player', 0)
-      .setScale(6).setDepth(1);
+      .setScale(6).setDepth(1).setAlpha(0);
+
+    this.tweens.add({
+      targets: this.playerSprite,
+      alpha: 1,
+      duration: 1200,
+      ease: 'Quad.easeOut',
+    });
 
     this.tweens.add({
       targets: this.playerSprite,
@@ -70,19 +113,36 @@ export class MenuScene extends Phaser.Scene {
       ease: 'Sine.easeInOut',
     });
 
-    // Title
-    this.titleText = this.add.text(GAME_WIDTH / 2, 380, 'JDLO', {
+    // Title — fades in with slight rise
+    this.titleText = this.add.text(GAME_WIDTH / 2, 395, 'JDLO', {
       fontFamily: '"Press Start 2P", monospace',
       fontSize: '28px',
       color: WHITE,
-    }).setOrigin(0.5).setDepth(1);
+    }).setOrigin(0.5).setDepth(1).setAlpha(0);
 
-    // Subtitle
+    this.tweens.add({
+      targets: this.titleText,
+      alpha: 1,
+      y: 380,
+      duration: 1000,
+      delay: 600,
+      ease: 'Quad.easeOut',
+    });
+
+    // Subtitle — fades in after title
     this.subtitleText = this.add.text(GAME_WIDTH / 2, 420, 'A True Story', {
       fontFamily: '"Press Start 2P", monospace',
       fontSize: '12px',
       color: FADED,
-    }).setOrigin(0.5).setDepth(1);
+    }).setOrigin(0.5).setDepth(1).setAlpha(0);
+
+    this.tweens.add({
+      targets: this.subtitleText,
+      alpha: 1,
+      duration: 800,
+      delay: 1200,
+      ease: 'Quad.easeOut',
+    });
 
     // Arrow indicator (reused for all menus)
     this.arrowIndicator = this.add.text(0, 0, '\u25b6', {

@@ -144,6 +144,9 @@ export class HomeScene extends BaseChapterScene {
       this.triggerMomCatchesSmoking();
       return false;
     };
+
+    // Start family NPC ambient movement
+    this.startFamilyMovement();
   }
 
   protected getObjectiveHint(): string {
@@ -187,6 +190,81 @@ export class HomeScene extends BaseChapterScene {
         // Add new collision
         this.collisionTiles.add(`${tileX},${tileY}`);
         if (onComplete) onComplete();
+      },
+    });
+  }
+
+  // ─── FAMILY AMBIENT MOVEMENT ────────────────────────────────────
+  private popsForward = true;
+  private momForward = true;
+
+  private startFamilyMovement(): void {
+    // ── Pops: wanders between den couch (18,18) and kitchen table (26,18) ──
+    this.time.addEvent({
+      delay: 7000,
+      loop: true,
+      callback: () => {
+        if (!this.scene.isActive() || this.frozen) return;
+        const pops = this.findNPC('ch0_pops');
+        if (!pops || !pops.sprite.visible) return;
+
+        // Don't move if player is in dialogue or pops is being used in a scripted sequence
+        if (this.frozen) return;
+
+        const targetX = this.popsForward ? 24 : 18;
+        const targetY = 18;
+        this.popsForward = !this.popsForward;
+
+        this.moveNPCTo('ch0_pops', targetX, targetY, 3500);
+      },
+    });
+
+    // ── Mom: patrols between kitchen counter (28,18) and parents room (8,16) ──
+    this.time.addEvent({
+      delay: 8000,
+      loop: true,
+      callback: () => {
+        if (!this.scene.isActive() || this.frozen) return;
+        const mom = this.findNPC('ch0_mom');
+        if (!mom || !mom.sprite.visible) return;
+
+        const targetX = this.momForward ? 8 : 28;
+        const targetY = this.momForward ? 16 : 18;
+        this.momForward = !this.momForward;
+
+        this.moveNPCTo('ch0_mom', targetX, targetY, 4000);
+      },
+    });
+
+    // ── Ivy the dog: wanders randomly around the yard when not following JP ──
+    this.time.addEvent({
+      delay: 5000,
+      loop: true,
+      callback: () => {
+        if (!this.scene.isActive() || this.frozen) return;
+        if (this.ivyFollowing) return; // Don't wander when following JP
+
+        const ivy = this.findNPC('ch0_frenchie');
+        if (!ivy || !ivy.sprite.visible) return;
+
+        // Random tile within the yard area (cols 4-30, rows 26-36)
+        const minX = 4, maxX = 30, minY = 26, maxY = 36;
+        const randX = minX + Math.floor(Math.random() * (maxX - minX + 1));
+        const randY = minY + Math.floor(Math.random() * (maxY - minY + 1));
+
+        // Skip if target is a collision tile
+        if (this.collisionTiles.has(`${randX},${randY}`)) return;
+
+        this.moveNPCTo('ch0_frenchie', randX, randY, 2000);
+
+        // Tail wag animation
+        this.tweens.add({
+          targets: ivy.sprite,
+          angle: 5,
+          duration: 100,
+          yoyo: true,
+          repeat: 4,
+        });
       },
     });
   }

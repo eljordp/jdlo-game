@@ -1,4 +1,5 @@
 import { GAME_WIDTH, GAME_HEIGHT, FONT_STYLE, SPEAKER_FONT_STYLE } from '../config';
+import { SoundEffects } from './SoundEffects';
 
 export interface DialogueChoice {
   text: string;
@@ -270,6 +271,7 @@ export class DialogueSystem {
     }
 
     // Advance to next line
+    SoundEffects.playDialogueClick();
     this.currentLineIndex++;
     if (this.currentLineIndex >= this.lines.length) {
       // Dialogue complete

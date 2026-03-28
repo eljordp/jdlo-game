@@ -88,6 +88,99 @@ export class SoundEffects {
     osc.stop(ctx.currentTime + 0.08);
   }
 
+  /** Soft footstep — alternating pitch for L/R */
+  private static stepToggle = false;
+  static playFootstep() {
+    const ctx = this.getCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.type = 'sine';
+    this.stepToggle = !this.stepToggle;
+    osc.frequency.value = this.stepToggle ? 120 : 100;
+    gain.gain.setValueAtTime(0.03, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.04);
+
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.04);
+  }
+
+  /** Sparkle pickup — rising arpeggio */
+  static playPickup() {
+    const ctx = this.getCtx();
+    const notes = [660, 880, 1100];
+    notes.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      const t = ctx.currentTime + i * 0.04;
+      gain.gain.setValueAtTime(0.06, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.06);
+      osc.start(t);
+      osc.stop(t + 0.06);
+    });
+  }
+
+  /** Dialogue advance click */
+  static playDialogueClick() {
+    const ctx = this.getCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.type = 'square';
+    osc.frequency.value = 600;
+    gain.gain.setValueAtTime(0.04, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.025);
+
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.025);
+  }
+
+  /** Impact thud for minigames */
+  static playImpact() {
+    const ctx = this.getCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(150, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(40, ctx.currentTime + 0.12);
+    gain.gain.setValueAtTime(0.12, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.12);
+  }
+
+  /** Phone vibrate buzz */
+  static playVibrate() {
+    const ctx = this.getCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.type = 'sawtooth';
+    osc.frequency.value = 60;
+    gain.gain.setValueAtTime(0.05, ctx.currentTime);
+    gain.gain.setValueAtTime(0.05, ctx.currentTime + 0.08);
+    gain.gain.setValueAtTime(0, ctx.currentTime + 0.1);
+    gain.gain.setValueAtTime(0.05, ctx.currentTime + 0.15);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.25);
+  }
+
   /** Sharp warning beep for police/alert */
   static playAlert() {
     const ctx = this.getCtx();

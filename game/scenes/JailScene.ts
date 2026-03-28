@@ -15,6 +15,7 @@ export class JailScene extends BaseChapterScene {
   private diceBroke = false; // went to 0 in dice
   private shirtOff = false;
   private guardPatrolTimer?: Phaser.Time.TimerEvent;
+  private inmatePatrolTimers: Phaser.Time.TimerEvent[] = [];
 
   constructor() {
     super({ key: 'JailScene' });
@@ -46,6 +47,9 @@ export class JailScene extends BaseChapterScene {
 
     // Guard patrol — walks between guard station and cells
     this.startGuardPatrol();
+
+    // Inmate movement — crew and other inmates pace/wander
+    this.startInmateMovement();
 
     // Shirt toggle button (Day 2+)
     this.createShirtToggle();
@@ -87,6 +91,67 @@ export class JailScene extends BaseChapterScene {
         });
       },
     });
+  }
+
+  private startInmateMovement() {
+    const S = 64; // SCALED_TILE
+    const half = 32; // center offset
+
+    // Each entry: npcId, target tile X/Y, delay between moves, tween duration
+    const patrols: { id: string; axis: 'x' | 'y'; endTile: number; delay: number; duration: number }[] = [
+      // Mikey — paces back and forth in JP's cell row (y=7, x 2→4)
+      { id: 'ch3_mikey', axis: 'x', endTile: 4, delay: 5000, duration: 2500 },
+      // Chris — wanders down the cell hallway (x=9, y 3→6)
+      { id: 'ch3_chris', axis: 'y', endTile: 6, delay: 7000, duration: 3500 },
+      // Bird — walks toward the yard entrance (x=9, y 7→10)
+      { id: 'ch3_bird', axis: 'y', endTile: 10, delay: 8000, duration: 4000 },
+      // Smoker — paces in the yard corner (y=23, x 5→8)
+      { id: 'ch3_smoker', axis: 'x', endTile: 8, delay: 9000, duration: 3000 },
+      // Pullups guy — walks along the exercise zone (y=19, x 10→13)
+      { id: 'ch3_pullups', axis: 'x', endTile: 13, delay: 10000, duration: 4500 },
+    ];
+
+    for (const patrol of patrols) {
+      const npc = this.npcs.find(n => n.id === patrol.id);
+      if (!npc) continue;
+
+      let forward = true;
+      const startVal = npc.sprite[patrol.axis];
+      const endVal = patrol.endTile * S + half;
+
+      const timer = this.time.addEvent({
+        delay: patrol.delay,
+        loop: true,
+        callback: () => {
+          if (!this.scene.isActive() || this.frozen) return;
+          const npcRef = this.npcs.find(n => n.id === patrol.id);
+          if (!npcRef) return;
+
+          const targetVal = forward ? endVal : startVal;
+          forward = !forward;
+
+          // Remove old collision tile
+          const oldTX = Math.round((npcRef.sprite.x - half) / S);
+          const oldTY = Math.round((npcRef.sprite.y - half) / S);
+          this.collisionTiles.delete(`${oldTX},${oldTY}`);
+
+          this.tweens.add({
+            targets: npcRef.sprite,
+            [patrol.axis]: targetVal,
+            duration: patrol.duration,
+            ease: 'Linear',
+            onComplete: () => {
+              // Add new collision tile at destination
+              const newTX = Math.round((npcRef.sprite.x - half) / S);
+              const newTY = Math.round((npcRef.sprite.y - half) / S);
+              this.collisionTiles.add(`${newTX},${newTY}`);
+            },
+          });
+        },
+      });
+
+      this.inmatePatrolTimers.push(timer);
+    }
   }
 
   private createShirtToggle() {
