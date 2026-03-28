@@ -13,6 +13,7 @@ export class OperatorScene extends BaseChapterScene {
   private dashboardDone = false;
   private pitchDone = false;
   private clockText?: Phaser.GameObjects.Text;
+  private dayNightOverlay?: Phaser.GameObjects.Rectangle;
 
   constructor() {
     super({ key: 'OperatorScene' });
@@ -121,6 +122,11 @@ export class OperatorScene extends BaseChapterScene {
     if (corvSprite) corvSprite.setVisible(false);
     const lamboSprite = this.interactions.getSprite('ch6_lambo');
     if (lamboSprite) lamboSprite.setVisible(false);
+
+    // Day/night cycle overlay — starts invisible, shifts warm as clock advances
+    this.dayNightOverlay = this.add.rectangle(
+      GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH * 2, GAME_HEIGHT * 2, 0xff8020, 0
+    ).setScrollFactor(0).setDepth(2).setBlendMode(Phaser.BlendModes.MULTIPLY);
 
     // --- NPC MOVEMENT — city feels alive ---
     this.startNPCPatrols();
@@ -263,13 +269,38 @@ export class OperatorScene extends BaseChapterScene {
     patrolX('ch6_valet', 17, 25, 5000, 3000);
   }
 
-  // Clock advances based on NPC count
+  // Clock advances based on NPC count + shifts day/night lighting
   private advanceClock() {
     if (!this.clockText) return;
     const count = this.npcsTalkedTo.size;
     const times = ['2:00 PM', '2:15 PM', '2:30 PM', '2:45 PM', '3:00 PM', '3:30 PM', '4:00 PM', '4:30 PM', '5:00 PM'];
     const timeIndex = Math.min(count, times.length - 1);
     this.clockText.setText(times[timeIndex]);
+
+    // Day/night shift — overlay gets warmer and more visible as time passes
+    if (this.dayNightOverlay) {
+      // 0 = 2PM (bright), 8 = 5PM (sunset)
+      // Color shifts: clear → golden → orange → deep sunset
+      const colors = [
+        { color: 0xffffff, alpha: 0 },      // 2:00 — bright, no tint
+        { color: 0xfff8e0, alpha: 0.02 },   // 2:15 — barely warm
+        { color: 0xffe8c0, alpha: 0.04 },   // 2:30
+        { color: 0xffd890, alpha: 0.06 },   // 2:45 — noticeable warmth
+        { color: 0xffb860, alpha: 0.09 },   // 3:00 — golden hour starts
+        { color: 0xff9840, alpha: 0.12 },   // 3:30 — deep golden
+        { color: 0xff7830, alpha: 0.15 },   // 4:00 — orange sunset
+        { color: 0xff5820, alpha: 0.18 },   // 4:30 — deep sunset
+        { color: 0xe04020, alpha: 0.22 },   // 5:00 — dusk
+      ];
+      const target = colors[timeIndex];
+      this.dayNightOverlay.setFillStyle(target.color, 1);
+      this.tweens.add({
+        targets: this.dayNightOverlay,
+        alpha: target.alpha,
+        duration: 2000,
+        ease: 'Sine.easeInOut',
+      });
+    }
   }
 
   // Malachi reacts based on client count + dashboard/pitch
