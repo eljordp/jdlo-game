@@ -310,14 +310,37 @@ export class BeachScene extends BaseChapterScene {
       { speaker: 'K', text: 'Mmm... hey baby.' },
       { speaker: 'Narrator', text: 'She pulls him closer under the covers.' },
       { speaker: 'K', text: 'Don\'t get up yet.' },
-      { speaker: 'JP', text: 'I wasn\'t planning on it.' },
-      { speaker: 'Narrator', text: 'The room goes quiet for a while. Just them.' },
+      { speaker: 'JP', text: 'Come here.' },
+      { speaker: 'Narrator', text: 'He pulls her on top of him. She laughs.' },
+      { speaker: 'K', text: 'Your hands are cold!' },
+      { speaker: 'JP', text: 'Let me crack your back real quick.' },
+      { speaker: 'K', text: 'Be gentle.' },
+      { speaker: 'Narrator', text: '*CRACK*' },
+      { speaker: 'K', text: 'OH my god. Okay that felt amazing.' },
+      { speaker: 'JP', text: 'You\'re welcome.' },
+      { speaker: 'Narrator', text: 'Neither of them moves. The covers are warm.' },
+      { speaker: 'JP', text: 'Ayo did you see that TikTok with the—' },
+      { speaker: 'K', text: 'JP. I swear to god if you show me another brain rot video right now.' },
+      { speaker: 'JP', text: 'Nah nah this one is actually funny though—' },
+      { speaker: 'K', text: 'I will literally leave.' },
+      { speaker: 'JP', text: '...okay fine.' },
+      { speaker: 'Narrator', text: 'She puts her phone down. He puts his phone down.' },
+      { speaker: 'Narrator', text: 'They look at each other.' },
+      { speaker: 'K', text: '...' },
+      { speaker: 'JP', text: '...' },
+      { speaker: 'Narrator', text: 'The covers shift.' },
       { speaker: 'Narrator', text: '...' },
       { speaker: 'Narrator', text: 'Some moments you don\'t narrate.' },
-      { speaker: 'Narrator', text: 'Time passes. The light shifts in the room.' },
+      { speaker: 'Narrator', text: '...' },
+      { speaker: 'Narrator', text: 'Time passes. The light in the room shifts.' },
+      { speaker: 'K', text: '...wow.' },
+      { speaker: 'JP', text: '...' },
+      { speaker: 'K', text: 'You\'re not gonna say anything?' },
+      { speaker: 'JP', text: 'I\'m trying to breathe.' },
+      { speaker: 'Narrator', text: 'They lay there for a while. Not talking. Just existing.' },
       { speaker: 'K', text: 'Okay NOW I really gotta go. UCLA orientation.' },
       { speaker: 'JP', text: 'Five more minutes.' },
-      { speaker: 'K', text: 'That\'s what you said 30 minutes ago.' },
+      { speaker: 'K', text: 'That\'s what you said 40 minutes ago.' },
       { speaker: 'Narrator', text: 'She gets up. Steals his t-shirt. Fixes her hair in the mirror.' },
       { speaker: 'K', text: 'Don\'t just smoke all day okay? Actually do something.' },
       { speaker: 'JP', text: 'I will. Promise.' },
@@ -376,19 +399,30 @@ export class BeachScene extends BaseChapterScene {
       return;
     }
 
-    // Girls at the party (Day 2) — the move
-    if ((npcId === 'ch1_girl1' || npcId === 'ch1_girl2') && this.currentDay === 2) {
-      this.dialogue.show([
+    // Girls at the party (Day 2) — threesome only after partying hard (faded+)
+    if ((npcId === 'ch1_girl1' || npcId === 'ch1_girl2') && this.currentDay === 2 && this.partyLevel >= 2) {
+      const isKids = GameSettings.kidsMode;
+
+      const ratedRIntro: DialogueLine[] = [
         { speaker: 'Girl', text: 'You live here right? This party is insane.' },
         { speaker: 'JP', text: 'Yeah. My boy Nolan set it up.' },
         { speaker: 'Girl', text: 'My friend thinks you\'re cute. She\'s too shy to say it.' },
         { speaker: 'Girl 2', text: 'I am NOT shy. I just don\'t talk to random guys.' },
         { speaker: 'JP', text: 'I\'m not random. I live here.' },
-        { speaker: 'Girl 2', text: '...okay. That was smooth.' },
+        { speaker: 'Girl 2', text: '...okay that was smooth.' },
+        { speaker: 'Narrator', text: 'The first girl whispers something in her friend\'s ear. They both look at JP.' },
         { speaker: 'Girl', text: 'We should go somewhere quieter. All three of us.' },
-        { speaker: 'JP\'s Mind', text: '...' },
-      ], () => {
-        // Fade to black — implied scene
+        { speaker: 'JP\'s Mind', text: 'No way this is happening right now.' },
+      ];
+
+      const kidsIntro: DialogueLine[] = [
+        { speaker: 'Girl', text: 'Hey! Wanna play Mario Kart?' },
+        { speaker: 'JP', text: 'I\'m pretty good at Mario Kart.' },
+        { speaker: 'Girl 2', text: 'We\'ll see about that!' },
+        { speaker: 'Narrator', text: 'They go inside to play video games. What a fun party!' },
+      ];
+
+      this.dialogue.show(isKids ? kidsIntro : ratedRIntro, () => {
         this.frozen = true;
         const fadeObj = this.add.rectangle(
           GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0
@@ -398,10 +432,32 @@ export class BeachScene extends BaseChapterScene {
           alpha: 1,
           duration: 1000,
           onComplete: () => {
+            const afterLines: DialogueLine[] = isKids ? [
+              { speaker: 'Narrator', text: 'JP won 3 races in a row! Then lost the last one on purpose.' },
+              { speaker: 'Girl', text: 'Rematch tomorrow?' },
+              { speaker: 'JP', text: 'Absolutely.' },
+            ] : [
+              { speaker: 'Narrator', text: '...' },
+              { speaker: 'Narrator', text: 'The bedroom door is locked.' },
+              { speaker: 'Narrator', text: '...' },
+              { speaker: 'Narrator', text: 'Time passes.' },
+              { speaker: 'Narrator', text: '...' },
+              { speaker: 'Girl 2', text: '...is that it?' },
+              { speaker: 'Girl', text: 'Bro.' },
+              { speaker: 'JP', text: '...give me a minute.' },
+              { speaker: 'Girl 2', text: 'Nah it\'s like... small.' },
+              { speaker: 'JP', text: 'I\'ve been drinking all night! And smoking! That\'s not—' },
+              { speaker: 'Girl', text: 'Sure babe.' },
+              { speaker: 'Girl 2', text: 'It\'s okay. It happens.' },
+              { speaker: 'JP\'s Mind', text: 'This is the worst moment of my life.' },
+              { speaker: 'Narrator', text: '...' },
+              { speaker: 'Narrator', text: 'They get dressed. Nobody makes eye contact.' },
+              { speaker: 'Girl', text: 'The party\'s still going right? Let\'s just... go back out there.' },
+              { speaker: 'JP\'s Mind', text: 'I am never drinking and smoking before... nah forget it.' },
+              { speaker: 'Narrator', text: 'The party keeps going outside. Nobody noticed they left. Thank god.' },
+            ];
             this.time.delayedCall(2000, () => {
-              this.dialogue.show([
-                { speaker: 'Narrator', text: 'The party keeps going outside. Nobody noticed they left.' },
-              ], () => {
+              this.dialogue.show(afterLines, () => {
                 this.tweens.add({
                   targets: fadeObj,
                   alpha: 0,
@@ -603,6 +659,43 @@ export class BeachScene extends BaseChapterScene {
           ease: 'Sine.easeInOut',
         });
         this.frozen = false;
+
+        // After a few seconds of drinking, girls walk in
+        this.time.delayedCall(8000, () => {
+          if (!this.scene.isActive() || this.currentDay !== 2) return;
+          this.frozen = true;
+          this.cameras.main.shake(80, 0.002);
+
+          const isKids = GameSettings.kidsMode;
+
+          this.dialogue.show(isKids ? [
+            { speaker: 'Nolan', text: 'Ayo! More friends are here!' },
+            { speaker: 'Narrator', text: 'A group of girls walk in with board games and snacks.' },
+            { speaker: 'Cooper', text: 'GAME NIGHT LET\'S GOOO!' },
+          ] : [
+            { speaker: 'Nolan', text: 'AYO! THE GIRLS ARE HERE!' },
+            { speaker: 'Narrator', text: 'The front door swings open. A group of girls walk in like they own the place.' },
+            { speaker: 'Narrator', text: 'Short skirts. High heels. The whole house turns around.' },
+            { speaker: 'Big Bart', text: 'OH WE\'RE PARTYING PARTYING!' },
+            { speaker: 'Cooper', text: 'Who invited them??' },
+            { speaker: 'Nolan', text: 'I did. You\'re welcome.' },
+            { speaker: 'Narrator', text: 'The music gets louder. The energy shifts. This isn\'t a kickback anymore.' },
+            { speaker: 'JP\'s Mind', text: 'This just went from a 5 to a 10 real quick.' },
+          ], () => {
+            // Make all hidden girls visible now
+            for (const npc of this.npcs) {
+              if (npc.id.includes('girl') || npc.id === 'ch1_sunbather') {
+                npc.sprite.setVisible(true);
+                npc.sprite.setAlpha(0);
+                this.tweens.add({ targets: npc.sprite, alpha: 1, duration: 500 });
+                const tx = Math.round((npc.sprite.x - SCALED_TILE / 2) / SCALED_TILE);
+                const ty = Math.round((npc.sprite.y - SCALED_TILE / 2) / SCALED_TILE);
+                this.collisionTiles.add(`${tx},${ty}`);
+              }
+            }
+            this.frozen = false;
+          });
+        });
       });
       return;
     }
