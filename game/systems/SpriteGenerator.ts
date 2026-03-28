@@ -5638,6 +5638,78 @@ function generateMoreItems(scene: Phaser.Scene) {
     px(g, 3, 9, 0xd04080, 3, 2);    // pink box
     px(g, 9, 9, 0x303030, 2, 2);    // dark item
   });
+
+  // --- item-truck ---
+  makeTexture(scene, 'item-truck', TILE_SIZE, TILE_SIZE, (g) => {
+    // Pickup truck side view
+    px(g, 2, 6, 0x404850, 12, 6);    // truck body (dark grey)
+    px(g, 2, 5, 0x505860, 5, 1);     // cab roof
+    px(g, 2, 4, 0x505860, 5, 2);     // cab top
+    px(g, 7, 5, 0x303840, 7, 1);     // bed rail
+    px(g, 7, 6, 0x353e48, 7, 6);     // truck bed
+    // Windshield
+    px(g, 6, 5, 0x80b0d0, 1, 3);     // glass
+    // Wheels
+    px(g, 3, 12, 0x1a1a1a, 3, 3);    // front wheel
+    px(g, 10, 12, 0x1a1a1a, 3, 3);   // rear wheel
+    px(g, 4, 13, 0x404040, 1, 1);    // hubcap front
+    px(g, 11, 13, 0x404040, 1, 1);   // hubcap rear
+    // Headlight
+    px(g, 1, 8, 0xf0e060, 1, 2);
+    // Taillight
+    px(g, 14, 8, 0xe03030, 1, 2);
+  });
+
+  // --- item-closet ---
+  makeTexture(scene, 'item-closet', TILE_SIZE, TILE_SIZE, (g) => {
+    // Double door closet
+    px(g, 2, 1, 0x8a6840, 12, 14);   // closet body (wood)
+    px(g, 2, 0, 0x705530, 12, 1);    // top trim
+    px(g, 2, 15, 0x705530, 12, 1);   // bottom trim
+    // Two doors
+    px(g, 2, 1, 0x906e48, 5, 14);    // left door
+    px(g, 9, 1, 0x906e48, 5, 14);    // right door
+    // Center gap
+    px(g, 7, 1, 0x604020, 2, 14);    // gap between doors
+    // Door knobs
+    px(g, 6, 8, 0xc0a040, 1, 1);     // left knob
+    px(g, 9, 8, 0xc0a040, 1, 1);     // right knob
+    // Panel lines
+    px(g, 3, 4, 0x7a5830, 3, 1);
+    px(g, 3, 10, 0x7a5830, 3, 1);
+    px(g, 10, 4, 0x7a5830, 3, 1);
+    px(g, 10, 10, 0x7a5830, 3, 1);
+  });
+
+  // --- item-knife ---
+  makeTexture(scene, 'item-knife', TILE_SIZE, TILE_SIZE, (g) => {
+    // Knife block with knives
+    px(g, 5, 4, 0x6a4020, 6, 10);    // wood block
+    px(g, 4, 3, 0x6a4020, 8, 1);     // top
+    // Knife handles sticking out
+    px(g, 6, 2, 0x303030, 1, 2);     // handle 1
+    px(g, 8, 1, 0x303030, 1, 3);     // handle 2 (taller)
+    px(g, 10, 2, 0x303030, 1, 2);    // handle 3
+    // Blade glints
+    px(g, 6, 1, 0xd0d0d0, 1, 1);
+    px(g, 8, 0, 0xd0d0d0, 1, 1);
+    px(g, 10, 1, 0xd0d0d0, 1, 1);
+  });
+
+  // --- item-fishing ---
+  makeTexture(scene, 'item-fishing', TILE_SIZE, TILE_SIZE, (g) => {
+    // Fishing rod + bobber
+    px(g, 7, 0, 0x6a5030, 1, 12);    // rod (vertical)
+    px(g, 7, 12, 0x6a5030, 4, 1);    // rod tip bent
+    px(g, 11, 12, 0x808080, 1, 3);   // line going down
+    px(g, 11, 15, 0xff3030, 2, 1);   // bobber (red)
+    px(g, 12, 14, 0xffffff, 1, 1);   // bobber white top
+    // Reel
+    px(g, 6, 8, 0x808080, 3, 2);     // reel body
+    px(g, 7, 9, 0xc0c0c0, 1, 1);     // reel handle
+    // Handle grip
+    px(g, 6, 3, 0x404040, 2, 3);     // cork grip
+  });
 }
 
 export function generateAllSprites(scene: Phaser.Scene): void {
