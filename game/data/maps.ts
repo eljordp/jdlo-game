@@ -180,7 +180,7 @@ export const homeMap: MapData = {
     { id: 'ch0_lounge_rug',    x: 16, y: 7,  type: 'examine', glow: false, sprite: 'item-rug' },
     // Sister's Room — UPSTAIRS (cols 23-28, rows 4-8)
     { id: 'ch0_sister_bed',    x: 24, y: 4,  type: 'examine', glow: false, sprite: 'item-bed-pink' },   // bed
-    { id: 'ch0_sister_toys',   x: 27, y: 6,  type: 'examine', glow: false },                            // toys
+    { id: 'ch0_sister_toys',   x: 27, y: 6,  type: 'examine', glow: false, sprite: 'item-ball' },       // toys
     { id: 'ch0_sister_mirror', x: 23, y: 4,  type: 'examine', glow: false, sprite: 'item-mirror' },     // mirror on wall
     { id: 'ch0_sister_nightlight', x: 28, y: 8, type: 'examine', glow: false, sprite: 'item-phone' },   // nightlight (glow on floor)
     // Parents' Room — DOWNSTAIRS (rows 12-16, they keep the master)
@@ -188,9 +188,9 @@ export const homeMap: MapData = {
     { id: 'ch0_family_photo',  x: 8,  y: 12, type: 'examine', glow: true, sprite: 'item-photo' },
     { id: 'ch0_parents_tv',    x: 12, y: 15, type: 'examine', glow: false, sprite: 'item-tv' },
     { id: 'ch0_parents_bookshelf', x: 10, y: 12, type: 'examine', glow: false, sprite: 'item-bookshelf' },
-    { id: 'ch0_parents_closet', x: 13, y: 12, type: 'examine', glow: false },
-    { id: 'ch0_parents_dresser', x: 6, y: 15, type: 'examine', glow: false },
-    { id: 'ch0_parents_safe',   x: 14, y: 15, type: 'examine', glow: true },
+    { id: 'ch0_parents_closet', x: 13, y: 12, type: 'examine', glow: false, sprite: 'item-nightstand' },
+    { id: 'ch0_parents_dresser', x: 6, y: 15, type: 'examine', glow: false, sprite: 'item-nightstand' },
+    { id: 'ch0_parents_safe',   x: 14, y: 15, type: 'examine', glow: true, sprite: 'item-storage-box' },
     // Downstairs living extension (cols 16-36, rows 12-16) — den / family room
     { id: 'ch0_den_couch',     x: 20, y: 14, type: 'examine', glow: false, sprite: 'item-couch' },     // big couch
     { id: 'ch0_den_tv',        x: 18, y: 12, type: 'examine', glow: false, sprite: 'item-tv' },        // TV on wall
@@ -204,10 +204,10 @@ export const homeMap: MapData = {
     { id: 'ch0_upstairs_couch',x: 16, y: 6,  type: 'examine', glow: false, sprite: 'item-couch' },     // couch
     { id: 'ch0_weights',       x: 19, y: 7,  type: 'examine', glow: false, sprite: 'item-weights' },    // dumbbells
     // Sister drawings — UPSTAIRS
-    { id: 'ch0_sister_drawing_wall', x: 24, y: 4, type: 'examine', glow: false },
+    { id: 'ch0_sister_drawing_wall', x: 24, y: 4, type: 'examine', glow: false, sprite: 'item-poster' },
     // Kitchen (rows 20-22)
-    { id: 'ch0_kitchen_knife',  x: 32, y: 22, type: 'examine', glow: false },
-    { id: 'ch0_cookie_jar',    x: 34, y: 22, type: 'examine', glow: false },
+    { id: 'ch0_kitchen_knife',  x: 32, y: 22, type: 'examine', glow: false, sprite: 'item-food' },
+    { id: 'ch0_cookie_jar',    x: 34, y: 22, type: 'examine', glow: false, sprite: 'item-food' },
     // Bathroom — UPSTAIRS (cols 29-33, rows 4-8)
     { id: 'ch0_mirror',        x: 30, y: 4,  type: 'examine', glow: true, sprite: 'item-mirror' },
     { id: 'ch0_shower',        x: 29, y: 7,  type: 'examine', glow: true, sprite: 'item-shower' },
@@ -216,7 +216,7 @@ export const homeMap: MapData = {
     // Living Room (left side, row 20-22)
     { id: 'ch0_tv',            x: 4,  y: 20, type: 'examine', glow: false, sprite: 'item-tv' },         // TV against wall (row 20)
     { id: 'ch0_couch',         x: 6,  y: 21, type: 'examine', glow: false, sprite: 'item-couch' },      // furniture
-    { id: 'ch0_window_view',   x: 3,  y: 21, type: 'examine', glow: false },                            // window on side wall — no sprite
+    { id: 'ch0_window_view',   x: 3,  y: 21, type: 'examine', glow: false, sprite: 'item-photo' },      // window on side wall
     // Kitchen (right side, row 20-22)
     { id: 'ch0_fridge',        x: 35, y: 20, type: 'examine', glow: false, sprite: 'item-fridge' },     // appliance
     { id: 'ch0_food',          x: 33, y: 20, type: 'examine', glow: false, sprite: 'item-food' },       // scenery
@@ -224,31 +224,31 @@ export const homeMap: MapData = {
     // Garage (cols 32-36, rows 27-28)
     { id: 'ch0_pops_truck',    x: 34, y: 28, type: 'examine', glow: false, sprite: 'item-car' },        // Pops' truck in garage
     { id: 'ch0_jp_car',        x: 36, y: 28, type: 'examine', glow: false, sprite: 'item-car' },        // JP's car next to Pops in garage
-    { id: 'ch0_garage_tools',  x: 32, y: 27, type: 'examine', glow: false },                            // tools on wall
-    { id: 'ch0_workbench',     x: 34, y: 27, type: 'examine', glow: false },                             // Pops' workbench
-    { id: 'ch0_record_player', x: 37, y: 27, type: 'examine', glow: true },                             // record player in garage corner
+    { id: 'ch0_garage_tools',  x: 32, y: 27, type: 'examine', glow: false, sprite: 'item-weights' },    // tools on wall
+    { id: 'ch0_workbench',     x: 34, y: 27, type: 'examine', glow: false, sprite: 'item-desk' },        // Pops' workbench
+    { id: 'ch0_record_player', x: 37, y: 27, type: 'examine', glow: true, sprite: 'item-phone' },       // record player in garage corner
     // Yard
     { id: 'ch0_bbq',           x: 5,  y: 25, type: 'examine', glow: false, sprite: 'item-bbq' },       // BBQ near house
-    { id: 'ch0_basketball',    x: 20, y: 32, type: 'examine', glow: true },                              // basketball half-court
+    { id: 'ch0_basketball',    x: 20, y: 32, type: 'examine', glow: true, sprite: 'item-ball' },         // basketball half-court
     { id: 'ch0_frenchie_ball', x: 8,  y: 35, type: 'examine', glow: true, sprite: 'item-ball' },        // fetch in open grass
-    { id: 'ch0_fishing',       x: 27, y: 32, type: 'examine', glow: true },                              // fishing at pond
-    { id: 'ch0_goodbye',       x: 13, y: 38, type: 'examine', glow: true },                              // goodbye near curb
-    { id: 'ch0_patio',         x: 19, y: 37, type: 'examine', glow: false },                             // patio seating area
+    { id: 'ch0_fishing',       x: 27, y: 32, type: 'examine', glow: true, sprite: 'item-plant' },        // fishing at pond
+    { id: 'ch0_goodbye',       x: 13, y: 38, type: 'examine', glow: true, sprite: 'item-letter' },       // goodbye near curb
+    { id: 'ch0_patio',         x: 19, y: 37, type: 'examine', glow: false, sprite: 'item-bbq' },         // patio seating area
 
     // Surprise elements
-    { id: 'ch0_rooftop',       x: 33, y: 4,  type: 'examine', glow: true },                              // easter egg — bathroom window
+    { id: 'ch0_rooftop',       x: 33, y: 4,  type: 'examine', glow: true, sprite: 'item-photo' },        // easter egg — bathroom window
     // Stairs
     // Stairs are auto-trigger (step on tile = swap floor). Visual only:
     { id: 'ch0_stairs_visual_up',   x: 20, y: 19, type: 'examine', glow: false, sprite: 'item-stairs' },  // visual stairs marker (downstairs hallway)
     { id: 'ch0_stairs_visual_down', x: 21, y: 10, type: 'examine', glow: false, sprite: 'item-stairs' },  // visual stairs marker (upstairs hallway, offset from door)
-    { id: 'ch0_shoebox',       x: 5,  y: 5,  type: 'examine', glow: true },                              // easter egg — under JP's bed
+    { id: 'ch0_shoebox',       x: 5,  y: 5,  type: 'examine', glow: true, sprite: 'item-storage-box' },  // easter egg — under JP's bed
     // tv_sitdown removed — Pops already has fishing moment
 
     // Windows — on wall tiles, no floating sprite
-    { id: 'ch0_window_jp',     x: 6,  y: 3,  type: 'examine', glow: false },
-    { id: 'ch0_window_sister', x: 13, y: 3,  type: 'examine', glow: false },
-    { id: 'ch0_window_parents',x: 22, y: 11, type: 'examine', glow: false },
-    { id: 'ch0_window_bath',   x: 34, y: 3,  type: 'examine', glow: false },
+    { id: 'ch0_window_jp',     x: 6,  y: 3,  type: 'examine', glow: false, sprite: 'item-photo' },
+    { id: 'ch0_window_sister', x: 13, y: 3,  type: 'examine', glow: false, sprite: 'item-photo' },
+    { id: 'ch0_window_parents',x: 22, y: 11, type: 'examine', glow: false, sprite: 'item-photo' },
+    { id: 'ch0_window_bath',   x: 34, y: 3,  type: 'examine', glow: false, sprite: 'item-photo' },
     // kitchen window removed — no back wall exit anymore
   ],
 };
@@ -367,7 +367,7 @@ export const beachMap: MapData = {
 
     // --- Beach (rows 16-26) ---
     { id: 'ch1_view',       x: 20, y: 21, type: 'examine', glow: false, sprite: 'item-plant' },
-    { id: 'ch1_volleyball1', x: 15, y: 20, type: 'examine', glow: true },
+    { id: 'ch1_volleyball1', x: 15, y: 20, type: 'examine', glow: true, sprite: 'item-ball' },
     { id: 'ch1_towels',     x: 8,  y: 18, type: 'examine', glow: false, sprite: 'item-rug' },
     { id: 'ch1_cooler',     x: 10, y: 18, type: 'examine', glow: false, sprite: 'item-storage-box' },
     { id: 'ch1_bonfire',    x: 28, y: 22, type: 'examine', glow: false, sprite: 'item-bbq' },
