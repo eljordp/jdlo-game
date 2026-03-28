@@ -172,7 +172,7 @@ export const homeMap: MapData = {
     { id: 'ch0_computer',      x: 10, y: 5,  type: 'examine', glow: true, sprite: 'item-desk' },        // MacBook right wall
     { id: 'ch0_college',       x: 10, y: 6,  type: 'examine', glow: true, sprite: 'item-letter' },      // letters on desk
     { id: 'ch0_poster',        x: 6,  y: 4,  type: 'examine', glow: false, sprite: 'item-poster' },     // poster back wall
-    { id: 'ch0_hidden_stash',  x: 10, y: 8,  type: 'examine', glow: true, sprite: 'item-weed-bag' },    // behind desk
+    { id: 'ch0_hidden_stash',  x: 10, y: 7,  type: 'examine', glow: true, sprite: 'item-weed-bag' },    // tucked behind desk (desk at 10,5 / college at 10,6)
     { id: 'ch0_journal',       x: 8,  y: 8,  type: 'examine', glow: true, sprite: 'item-book' },        // journal near door
     { id: 'ch0_crypto',        x: 8,  y: 4,  type: 'examine', glow: false, sprite: 'item-phone' },      // phone on nightstand
     // Upstairs Lounge (cols 12-21, rows 4-8)
@@ -180,7 +180,7 @@ export const homeMap: MapData = {
     { id: 'ch0_lounge_rug',    x: 16, y: 7,  type: 'examine', glow: false, sprite: 'item-rug' },
     // Sister's Room — UPSTAIRS (cols 23-28, rows 4-8)
     { id: 'ch0_sister_bed',    x: 24, y: 4,  type: 'examine', glow: false, sprite: 'item-bed-pink' },   // bed
-    { id: 'ch0_sister_toys',   x: 27, y: 6,  type: 'examine', glow: false, sprite: 'item-ball' },       // toys
+    { id: 'ch0_sister_toys',   x: 27, y: 6,  type: 'examine', glow: false, sprite: 'item-poster' },     // drawings + stuffed animals
     { id: 'ch0_sister_mirror', x: 23, y: 4,  type: 'examine', glow: false, sprite: 'item-mirror' },     // mirror on wall
     { id: 'ch0_sister_nightlight', x: 28, y: 8, type: 'examine', glow: false, sprite: 'item-phone' },   // nightlight (glow on floor)
     // Parents' Room — DOWNSTAIRS (rows 12-16, they keep the master)
@@ -204,13 +204,13 @@ export const homeMap: MapData = {
     { id: 'ch0_upstairs_couch',x: 16, y: 6,  type: 'examine', glow: false, sprite: 'item-couch' },     // couch
     { id: 'ch0_weights',       x: 19, y: 7,  type: 'examine', glow: false, sprite: 'item-weights' },    // dumbbells
     // Sister drawings — UPSTAIRS
-    { id: 'ch0_sister_drawing_wall', x: 24, y: 4, type: 'examine', glow: false, sprite: 'item-poster' },
+    { id: 'ch0_sister_drawing_wall', x: 26, y: 4, type: 'examine', glow: false, sprite: 'item-poster' },  // on wall, away from bed
     // Kitchen (rows 20-22)
     { id: 'ch0_kitchen_knife',  x: 32, y: 22, type: 'examine', glow: false, sprite: 'item-food' },
     { id: 'ch0_cookie_jar',    x: 34, y: 22, type: 'examine', glow: false, sprite: 'item-food' },
     // Bathroom — UPSTAIRS (cols 29-33, rows 4-8)
     { id: 'ch0_mirror',        x: 30, y: 4,  type: 'examine', glow: true, sprite: 'item-mirror' },
-    { id: 'ch0_shower',        x: 29, y: 7,  type: 'examine', glow: true, sprite: 'item-shower' },
+    { id: 'ch0_shower',        x: 32, y: 6,  type: 'examine', glow: true, sprite: 'item-shower' },  // clearly inside bathroom
     // Hallway (row 18)
     { id: 'ch0_hallway_photo', x: 20, y: 18, type: 'examine', glow: false, sprite: 'item-photo' },      // decoration
     // Living Room (left side, row 20-22)
@@ -239,8 +239,8 @@ export const homeMap: MapData = {
     { id: 'ch0_rooftop',       x: 33, y: 4,  type: 'examine', glow: true, sprite: 'item-photo' },        // easter egg — bathroom window
     // Stairs
     // Stairs are auto-trigger (step on tile = swap floor). Visual only:
-    { id: 'ch0_stairs_visual_up',   x: 20, y: 19, type: 'examine', glow: false, sprite: 'item-stairs' },  // visual stairs marker (downstairs hallway)
-    { id: 'ch0_stairs_visual_down', x: 21, y: 10, type: 'examine', glow: false, sprite: 'item-stairs' },  // visual stairs marker (upstairs hallway, offset from door)
+    { id: 'ch0_stairs_visual_up',   x: 20, y: 18, type: 'examine', glow: false, sprite: 'item-stairs' },  // visual stairs (downstairs, against wall)
+    { id: 'ch0_stairs_visual_down', x: 20, y: 4,  type: 'examine', glow: false, sprite: 'item-stairs' },  // visual stairs (upstairs lounge, against back wall)
     { id: 'ch0_shoebox',       x: 5,  y: 5,  type: 'examine', glow: true, sprite: 'item-storage-box' },  // easter egg — under JP's bed
     // tv_sitdown removed — Pops already has fishing moment
 

@@ -62,9 +62,9 @@ export class HomeScene extends BaseChapterScene {
       0x000000
     ).setDepth(-1);
 
-    // Stairs labels so player knows where they are
-    const stairsDownX = 21 * SCALED_TILE + SCALED_TILE / 2;
-    const stairsDownY = 10 * SCALED_TILE + SCALED_TILE / 2;
+    // Stairs labels — in the lounge against the back wall
+    const stairsDownX = 20 * SCALED_TILE + SCALED_TILE / 2;
+    const stairsDownY = 4 * SCALED_TILE + SCALED_TILE / 2;
     this.add.text(stairsDownX, stairsDownY - 24, 'STAIRS', {
       fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#f0c040',
     }).setOrigin(0.5).setDepth(15).setAlpha(0.8);
@@ -243,8 +243,8 @@ export class HomeScene extends BaseChapterScene {
     this.lastPlayerTileX = tileX;
     this.lastPlayerTileY = tileY;
 
-    // Auto-stairs — step on stairs tile, auto swap floors
-    if (this.currentFloor === 'up' && tileX === 20 && tileY === 10 && !this.frozen) {
+    // Auto-stairs — against the wall in the lounge (20,4), NOT in the hallway
+    if (this.currentFloor === 'up' && tileX === 20 && tileY === 4 && !this.frozen) {
       this.frozen = true;
       this.cameras.main.fadeOut(300, 0, 0, 0);
       this.cameras.main.once('camerafadeoutcomplete', () => {
@@ -262,7 +262,7 @@ export class HomeScene extends BaseChapterScene {
       this.frozen = true;
       this.cameras.main.fadeOut(300, 0, 0, 0);
       this.cameras.main.once('camerafadeoutcomplete', () => {
-        this.player.setPosition(20 * SCALED_TILE + SCALED_TILE / 2, 10 * SCALED_TILE + SCALED_TILE / 2);
+        this.player.setPosition(20 * SCALED_TILE + SCALED_TILE / 2, 4 * SCALED_TILE + SCALED_TILE / 2);
         const upRows = Array.from({ length: 12 }, (_, i) => i);
         const downRows = Array.from({ length: this.mapHeight - 12 }, (_, i) => i + 12);
         this.setFloorVisibility(upRows, downRows);
@@ -945,15 +945,10 @@ export class HomeScene extends BaseChapterScene {
       ], () => {
         // Add items to inventory
         InventorySystem.addItem('papers', 5);
-        // Lighter uses get topped up if already have one
-        const lighter = InventorySystem.getItem('lighter');
-        if (lighter && lighter.uses < lighter.maxUses) {
-          lighter.uses = lighter.maxUses; // fresh lighter from the box
-        } else if (!lighter) {
-          InventorySystem.addItem('lighter', 1);
-        }
+        InventorySystem.addItem('lighter', 1); // extra lighter from the box
         this.dialogue.show([
           { speaker: 'Narrator', text: 'JP pockets the lighter and papers. Leaves the rest.' },
+          { speaker: 'Narrator', text: 'Papers x5 and Lighter added to inventory.' },
           { speaker: 'JP\'s Mind', text: 'Everyone\'s got a box they don\'t show people.' },
         ], () => { this.frozen = false; });
       });
@@ -973,7 +968,7 @@ export class HomeScene extends BaseChapterScene {
       this.frozen = true;
       this.cameras.main.fadeOut(300, 0, 0, 0);
       this.cameras.main.once('camerafadeoutcomplete', () => {
-        this.player.setPosition(20 * SCALED_TILE + SCALED_TILE / 2, 10 * SCALED_TILE + SCALED_TILE / 2);
+        this.player.setPosition(20 * SCALED_TILE + SCALED_TILE / 2, 4 * SCALED_TILE + SCALED_TILE / 2);
         const upRows = Array.from({ length: 12 }, (_, i) => i); // rows 0-11
         const downRows = Array.from({ length: this.mapHeight - 12 }, (_, i) => i + 12);
         this.setFloorVisibility(upRows, downRows);
@@ -1047,9 +1042,9 @@ export class HomeScene extends BaseChapterScene {
       this.frozen = true;
       this.interactions.consume(interactable.id);
 
-      // Move JP to shower tile
-      const showerX = 35 * SCALED_TILE + SCALED_TILE / 2;
-      const showerY = 7 * SCALED_TILE + SCALED_TILE / 2;
+      // Move JP to shower tile (bathroom is cols 30-33)
+      const showerX = 32 * SCALED_TILE + SCALED_TILE / 2;
+      const showerY = 6 * SCALED_TILE + SCALED_TILE / 2;
       this.tweens.add({
         targets: this.player,
         x: showerX,
@@ -1308,20 +1303,24 @@ export class HomeScene extends BaseChapterScene {
     // After 4 unique interactions, queue surprise phone call
     if (this.interactionCount >= 7) {
       this.phoneTriggered = true;
-      // Wait until player is unfrozen (dialogue finished) before ringing
+      // Wait until player is TRULY free — check every 500ms, must be unfrozen for 2 consecutive checks
+      let freeCount = 0;
       const checkReady = () => {
         if (!this.scene.isActive()) return;
-        if (this.frozen) {
-          // Still in dialogue — check again in 500ms
+        if (this.frozen || this.dialogue.isActive()) {
+          freeCount = 0;
           this.time.delayedCall(500, checkReady);
         } else {
-          // Dialogue done — wait a beat then ring
-          this.time.delayedCall(1500, () => {
-            if (this.scene.isActive() && !this.frozen) this.triggerPhoneCall();
-          });
+          freeCount++;
+          if (freeCount >= 2) {
+            // Truly free — ring
+            this.triggerPhoneCall();
+          } else {
+            this.time.delayedCall(800, checkReady);
+          }
         }
       };
-      this.time.delayedCall(1000, checkReady);
+      this.time.delayedCall(1500, checkReady);
     }
   }
 
@@ -1788,128 +1787,99 @@ export class HomeScene extends BaseChapterScene {
       const lw = 200;
       const lh = 280;
 
-      // Envelope / letter paper
+      // Track ALL parts of this letter for crumpling
+      const thisLetterParts: Phaser.GameObjects.GameObject[] = [];
+
       const paper = this.add.rectangle(lx, ly, lw, lh, 0xf5f0e8)
         .setScrollFactor(0).setDepth(305);
       objects.push(paper);
+      thisLetterParts.push(paper);
 
-      // School color header band
       const header = this.add.rectangle(lx, ly - lh / 2 + 30, lw, 60, letter.color)
         .setScrollFactor(0).setDepth(306);
       objects.push(header);
+      thisLetterParts.push(header);
 
-      // Logo letter (big, centered in header)
       const logo = this.add.text(lx, ly - lh / 2 + 30, letter.logo, {
         fontFamily: '"Press Start 2P", monospace', fontSize: '28px', color: letter.logoColor,
       }).setOrigin(0.5).setScrollFactor(0).setDepth(307);
       objects.push(logo);
+      thisLetterParts.push(logo);
 
-      // School name
       const schoolName = this.add.text(lx, ly - 50, letter.school, {
         fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#333333',
-        wordWrap: { width: lw - 20 },
-        align: 'center',
+        wordWrap: { width: lw - 20 }, align: 'center',
       }).setOrigin(0.5).setScrollFactor(0).setDepth(306);
       objects.push(schoolName);
+      thisLetterParts.push(schoolName);
 
-      // City
       const city = this.add.text(lx, ly - 30, letter.city, {
         fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#888888',
       }).setOrigin(0.5).setScrollFactor(0).setDepth(306);
       objects.push(city);
+      thisLetterParts.push(city);
 
-      // "ACCEPTED" stamp
       const stamp = this.add.text(lx, ly + 10, 'ACCEPTED', {
         fontFamily: '"Press Start 2P", monospace', fontSize: '12px', color: '#2a8040',
       }).setOrigin(0.5).setScrollFactor(0).setDepth(306).setAngle(-8);
       objects.push(stamp);
+      thisLetterParts.push(stamp);
 
-      // Accent line
-      objects.push(this.add.rectangle(lx, ly - lh / 2 + 62, lw - 20, 2, letter.accent)
-        .setScrollFactor(0).setDepth(306));
+      const accent = this.add.rectangle(lx, ly - lh / 2 + 62, lw - 20, 2, letter.accent)
+        .setScrollFactor(0).setDepth(306);
+      objects.push(accent);
+      thisLetterParts.push(accent);
 
-      // Fake body text lines
       for (let i = 0; i < 4; i++) {
-        objects.push(this.add.rectangle(lx, ly + 50 + i * 14, lw - 40, 2, 0xcccccc)
-          .setScrollFactor(0).setDepth(306).setAlpha(0.5));
+        const line = this.add.rectangle(lx, ly + 50 + i * 14, lw - 40, 2, 0xcccccc)
+          .setScrollFactor(0).setDepth(306).setAlpha(0.5);
+        objects.push(line);
+        thisLetterParts.push(line);
       }
 
-      // "Dear Jordan Lopez," text
-      objects.push(this.add.text(lx - lw / 2 + 18, ly + 40, 'Dear Jordan Lopez,', {
+      const dear = this.add.text(lx - lw / 2 + 18, ly + 40, 'Dear Jordan Lopez,', {
         fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#555555',
-      }).setScrollFactor(0).setDepth(306));
+      }).setScrollFactor(0).setDepth(306);
+      objects.push(dear);
+      thisLetterParts.push(dear);
 
-      // Clickable — entire paper
+      // Clickable
       paper.setInteractive({ useHandCursor: true });
-      paper.on('pointerover', () => {
-        paper.setStrokeStyle(2, 0xf04040);
-      });
-      paper.on('pointerout', () => {
-        paper.setStrokeStyle(0);
-      });
+      paper.on('pointerover', () => paper.setStrokeStyle(2, 0xf04040));
+      paper.on('pointerout', () => paper.setStrokeStyle(0));
 
-      // Click → crumple and toss to trash
-      const letterParts = [paper, header, logo, schoolName, city, stamp];
       paper.on('pointerdown', () => {
         paper.removeInteractive();
 
-        // Gather all objects for this letter
-        const allParts: Phaser.GameObjects.GameObject[] = letterParts.filter(p => p !== paper && p.active);
-
-        // Crumple — shrink + rotate + darken
-        const crumpleTargets = [paper, ...allParts];
-        for (const t of crumpleTargets) {
+        // Crumple ALL parts
+        for (const t of thisLetterParts) {
           this.tweens.add({
-            targets: t,
-            scaleX: 0.3,
-            scaleY: 0.3,
-            angle: Phaser.Math.Between(-30, 30),
-            duration: 300,
-            ease: 'Back.easeIn',
+            targets: t, scaleX: 0.3, scaleY: 0.3,
+            angle: Phaser.Math.Between(-30, 30), duration: 300, ease: 'Back.easeIn',
           });
         }
 
-        // After crumple — toss to trash
+        // Toss to trash
         this.time.delayedCall(350, () => {
-          for (const t of crumpleTargets) {
+          for (const t of thisLetterParts) {
             this.tweens.add({
-              targets: t,
-              x: trashX,
-              y: trashY - 20,
-              alpha: 0,
-              duration: 400,
-              ease: 'Quad.easeIn',
-              onComplete: () => {
-                if (t && t.active) (t as Phaser.GameObjects.GameObject).destroy();
-              },
+              targets: t, x: trashX, y: trashY - 20, alpha: 0,
+              duration: 400, ease: 'Quad.easeIn',
+              onComplete: () => { if (t && t.active) (t as Phaser.GameObjects.GameObject).destroy(); },
             });
           }
 
-          // Trash can bounce
-          this.tweens.add({
-            targets: [objects.find(o => o === objects[3])], // trash can body
-            scaleY: 1.1,
-            duration: 100,
-            delay: 350,
-            yoyo: true,
-          });
-
           trashed++;
-
-          // After all 3 trashed — show reaction
           if (trashed >= 3) {
             this.time.delayedCall(800, () => {
               this.dialogue.show([
                 { speaker: 'JP\'s Mind', text: '$40K a year to learn what YouTube teaches for free.' },
                 { speaker: 'JP\'s Mind', text: 'Nah.' },
               ], () => {
-                // Fade out desk
                 for (const obj of objects) {
                   if (obj && obj.active) {
                     this.tweens.add({
-                      targets: obj,
-                      alpha: 0,
-                      duration: 400,
+                      targets: obj, alpha: 0, duration: 400,
                       onComplete: () => { if (obj.active) (obj as Phaser.GameObjects.GameObject).destroy(); },
                     });
                   }
@@ -1944,9 +1914,9 @@ export class HomeScene extends BaseChapterScene {
     const monW = 780;
     const monH = 520;
 
-    // Dark overlay
+    // Dark overlay — click to close
     const overlay = this.add.rectangle(cx, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.85)
-      .setScrollFactor(0).setDepth(300);
+      .setScrollFactor(0).setDepth(300).setInteractive();
     objects.push(overlay);
 
     // === MacBook Pro — space grey ===
@@ -1997,9 +1967,9 @@ export class HomeScene extends BaseChapterScene {
     // === macOS Dock ===
     const dockY = cy + monH / 2 - 36;
     const dockW = 420;
-    // Glass dock
-    objects.push(this.add.rectangle(cx, dockY, dockW, 50, 0x2a2a3a, 0.5).setScrollFactor(0).setDepth(303));
-    objects.push(this.add.rectangle(cx, dockY - 25, dockW, 1, 0x505070, 0.25).setScrollFactor(0).setDepth(304));
+    // Glass dock — above app windows so buttons always clickable
+    objects.push(this.add.rectangle(cx, dockY, dockW, 50, 0x2a2a3a, 0.5).setScrollFactor(0).setDepth(319));
+    objects.push(this.add.rectangle(cx, dockY - 25, dockW, 1, 0x505070, 0.25).setScrollFactor(0).setDepth(319));
 
     // Dock apps
     const apps = [
@@ -2013,16 +1983,16 @@ export class HomeScene extends BaseChapterScene {
     const appButtons: Phaser.GameObjects.Rectangle[] = [];
     for (const app of apps) {
       const btn = this.add.rectangle(app.x, dockY, 38, 38, app.color)
-        .setScrollFactor(0).setDepth(304).setInteractive({ useHandCursor: true });
+        .setScrollFactor(0).setDepth(320).setInteractive({ useHandCursor: true });
       objects.push(btn);
       appButtons.push(btn);
       // Gloss
       objects.push(this.add.rectangle(app.x, dockY - 9, 32, 6, 0xffffff)
-        .setScrollFactor(0).setDepth(305).setAlpha(0.1));
+        .setScrollFactor(0).setDepth(321).setAlpha(0.1));
       // Letter
       objects.push(this.add.text(app.x, dockY + 1, app.icon, {
         fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#ffffff',
-      }).setOrigin(0.5).setScrollFactor(0).setDepth(305));
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(321));
       // Hover scale
       btn.on('pointerover', () => { this.tweens.add({ targets: btn, scaleX: 1.15, scaleY: 1.15, duration: 80 }); });
       btn.on('pointerout', () => { this.tweens.add({ targets: btn, scaleX: 1, scaleY: 1, duration: 80 }); });
@@ -2042,6 +2012,9 @@ export class HomeScene extends BaseChapterScene {
 
     const escKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
     escKey.on('down', closeAll);
+
+    // Click overlay (outside the laptop) to close
+    overlay.on('pointerdown', closeAll);
 
     // App window state — track current open window for switching
     let currentWinObjs: Phaser.GameObjects.GameObject[] = [];

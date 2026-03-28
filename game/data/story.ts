@@ -1105,7 +1105,7 @@ const ch0Extras: Record<string, DialogueLine[]> = {
   ],
   ch0_bed: [
     { speaker: 'JP\'s Mind', text: 'Another night staring at the ceiling.' },
-    { speaker: 'JP\'s Mind', text: 'Everyone else seems to know what they\'re doing.' },
+    { speaker: 'JP\'s Mind', text: 'I gotta get out of here.' },
   ],
   ch0_poster: [
     { speaker: 'Narrator', text: 'A poster on the wall. Big bold letters:' },
@@ -1192,7 +1192,7 @@ const ch0Extras: Record<string, DialogueLine[]> = {
   ],
   ch0_upstairs_couch: [
     { speaker: 'Narrator', text: 'Love seat. Sister falls asleep here every night watching TV.' },
-    { speaker: 'JP\'s Mind', text: 'She looks so peaceful when she sleeps.' },
+    { speaker: 'JP\'s Mind', text: 'She\'s always out by the second episode.' },
   ],
   ch0_weights: [
     { speaker: 'Narrator', text: 'Dumbbells. 25s and 35s. JP\'s been hitting these before school.' },

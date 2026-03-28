@@ -245,14 +245,13 @@ export default function GameCanvas() {
         </button>
         <button
           onClick={() => {
-            if (gameRef.current) {
-              const active = gameRef.current.scene.getScenes(true);
-              for (const s of active) {
-                if (s.input?.keyboard) {
-                  s.input.keyboard.emit('keydown-I', { key: 'i', preventDefault: () => {} });
-                  s.input.keyboard.emit('keyup-I', { key: 'i', preventDefault: () => {} });
-                }
-              }
+            // Dispatch a real keyboard event so Phaser's Key listener picks it up
+            const canvas = document.querySelector('canvas');
+            if (canvas) {
+              canvas.dispatchEvent(new KeyboardEvent('keydown', { key: 'i', code: 'KeyI', keyCode: 73, bubbles: true }));
+              setTimeout(() => {
+                canvas.dispatchEvent(new KeyboardEvent('keyup', { key: 'i', code: 'KeyI', keyCode: 73, bubbles: true }));
+              }, 50);
             }
           }}
           className="px-3 py-2 bg-black/70 border border-white/20 rounded text-white text-sm font-mono hover:bg-white/10 transition-colors cursor-pointer"
