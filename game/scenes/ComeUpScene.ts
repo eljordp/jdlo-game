@@ -36,11 +36,11 @@ export class ComeUpScene extends BaseChapterScene {
   create() {
     super.create();
     // Client showcases
-    this.addNavArrow(5, 13, 'WCT');
-    this.addNavArrow(17, 13, 'Sticker Smith');
-    this.addNavArrow(13, 16, 'DHL');
-    // Exit at 27,23
-    this.addNavArrow(27, 22, 'Exit');
+    this.addNavArrow(5, 16, 'WCT');
+    this.addNavArrow(18, 16, 'Sticker Smith');
+    this.addNavArrow(15, 21, 'DHL');
+    // Exit at bottom
+    this.addNavArrow(30, 27, 'Exit');
   }
 
   protected getObjectiveHint(): string {

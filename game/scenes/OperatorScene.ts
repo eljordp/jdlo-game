@@ -116,6 +116,15 @@ export class OperatorScene extends BaseChapterScene {
       ease: 'Sine.easeInOut',
     });
 
+    // Hide car interactable sprites — real car sprites are placed above
+    const corvSprite = this.interactions.getSprite('ch6_corvette');
+    if (corvSprite) corvSprite.setVisible(false);
+    const lamboSprite = this.interactions.getSprite('ch6_lambo');
+    if (lamboSprite) lamboSprite.setVisible(false);
+
+    // --- NPC MOVEMENT — city feels alive ---
+    this.startNPCPatrols();
+
     // Location tag: "LA, CA" in the top-right corner
     const locationTag = this.add.text(GAME_WIDTH - 16, GAME_HEIGHT - 20, 'LA, CA', {
       fontFamily: '"Press Start 2P", monospace',
@@ -145,6 +154,113 @@ export class OperatorScene extends BaseChapterScene {
       delay: 4200,
       ease: 'Quad.easeOut',
     });
+  }
+
+  // --- NPC Patrol System ---
+  private startNPCPatrols() {
+    // Helper: make an NPC walk back and forth on X axis
+    const patrolX = (npcId: string, tileStart: number, tileEnd: number, delay: number, speed: number) => {
+      const npc = this.npcs.find(n => n.id === npcId);
+      if (!npc) return;
+      let forward = true;
+      const startX = tileStart * SCALED_TILE + SCALED_TILE / 2;
+      const endX = tileEnd * SCALED_TILE + SCALED_TILE / 2;
+      // Initial position
+      npc.sprite.x = startX;
+
+      this.time.addEvent({
+        delay,
+        loop: true,
+        callback: () => {
+          if (!this.scene.isActive() || this.frozen) return;
+          const n = this.npcs.find(np => np.id === npcId);
+          if (!n || !n.sprite.visible) return;
+
+          const oldTX = Math.round((n.sprite.x - SCALED_TILE / 2) / SCALED_TILE);
+          const oldTY = Math.round((n.sprite.y - SCALED_TILE / 2) / SCALED_TILE);
+          this.collisionTiles.delete(`${oldTX},${oldTY}`);
+
+          const targetX = forward ? endX : startX;
+          forward = !forward;
+
+          this.tweens.add({
+            targets: n.sprite,
+            x: targetX,
+            duration: speed,
+            ease: 'Linear',
+            onComplete: () => {
+              const newTX = Math.round((n.sprite.x - SCALED_TILE / 2) / SCALED_TILE);
+              this.collisionTiles.add(`${newTX},${oldTY}`);
+            },
+          });
+        },
+      });
+    };
+
+    // Helper: make an NPC walk back and forth on Y axis
+    const patrolY = (npcId: string, tileStart: number, tileEnd: number, delay: number, speed: number) => {
+      const npc = this.npcs.find(n => n.id === npcId);
+      if (!npc) return;
+      let forward = true;
+      const startY = tileStart * SCALED_TILE + SCALED_TILE / 2;
+      const endY = tileEnd * SCALED_TILE + SCALED_TILE / 2;
+      npc.sprite.y = startY;
+
+      this.time.addEvent({
+        delay,
+        loop: true,
+        callback: () => {
+          if (!this.scene.isActive() || this.frozen) return;
+          const n = this.npcs.find(np => np.id === npcId);
+          if (!n || !n.sprite.visible) return;
+
+          const oldTX = Math.round((n.sprite.x - SCALED_TILE / 2) / SCALED_TILE);
+          const oldTY = Math.round((n.sprite.y - SCALED_TILE / 2) / SCALED_TILE);
+          this.collisionTiles.delete(`${oldTX},${oldTY}`);
+
+          const targetY = forward ? endY : startY;
+          forward = !forward;
+
+          this.tweens.add({
+            targets: n.sprite,
+            y: targetY,
+            duration: speed,
+            ease: 'Linear',
+            onComplete: () => {
+              const newTY = Math.round((n.sprite.y - SCALED_TILE / 2) / SCALED_TILE);
+              this.collisionTiles.add(`${oldTX},${newTY}`);
+            },
+          });
+        },
+      });
+    };
+
+    // Security — paces back and forth outside Pomaikai (row 10, cols 5-15)
+    patrolX('ch6_security', 5, 15, 4000, 3000);
+
+    // Tony — strolls the boulevard (row 11, cols 10-28)
+    patrolX('ch6_tony', 10, 28, 5000, 4500);
+
+    // Pedestrian 1 — walks the tree-lined boulevard (row 35, cols 5-35)
+    patrolX('ch6_pedestrian1', 5, 35, 3000, 6000);
+
+    // Pedestrian 2 — walks opposite direction (row 44, cols 30-5)
+    patrolX('ch6_pedestrian2', 5, 30, 4000, 5500);
+
+    // Manza — walks between buildings (row 12, cols 28-38)
+    patrolX('ch6_manza', 28, 38, 6000, 3500);
+
+    // DHL client — paces near his office (row 12, cols 26-33)
+    patrolX('ch6_dhl', 26, 33, 5500, 2500);
+
+    // Gym bro — moves between equipment (col 5, rows 38-41)
+    patrolY('ch6_gym_bro', 38, 41, 4500, 2000);
+
+    // Doorman — patrols highrise entrance (row 42, cols 27-33)
+    patrolX('ch6_doorman', 27, 33, 7000, 4000);
+
+    // Valet — walks near the cars (row 51, cols 17-25)
+    patrolX('ch6_valet', 17, 25, 5000, 3000);
   }
 
   // Clock advances based on NPC count

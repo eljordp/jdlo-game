@@ -178,7 +178,8 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     this.input.keyboard!.on('keydown-ENTER', () => this.handleInteract());
     this.input.on('pointerdown', () => this.handleInteract());
 
-    // Camera follows player
+    // Camera follows player — zoomed out slightly for Pokemon-style proportions
+    this.cameras.main.setZoom(0.85);
     this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
     this.cameras.main.setBounds(0, 0, this.mapWidth * SCALED_TILE, this.mapHeight * SCALED_TILE);
 

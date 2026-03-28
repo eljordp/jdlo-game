@@ -15,13 +15,24 @@ interface AppDef {
   color: number;
 }
 
+// Home screen apps (NOT in dock — these are the grid apps)
 const APPS: AppDef[] = [
-  { id: 'inventory', name: 'Inventory', icon: '\u{1F392}', color: 0x4a90d9 },
-  { id: 'messages',  name: 'Messages',  icon: '\u{1F4AC}', color: 0x34c759 },
   { id: 'instagram', name: 'Instagram', icon: '\u{1F4F7}', color: 0xc13584 },
-  { id: 'call',      name: 'Call',      icon: '\u{1F4DE}', color: 0x30d158 },
   { id: 'photos',    name: 'Photos',    icon: '\u{1F5BC}\u{FE0F}', color: 0xff9500 },
-  { id: 'music',     name: 'Music',     icon: '\u{1F3B5}', color: 0xff2d55 },
+  { id: 'calculator',name: 'Calculator', icon: '\u{1F5A9}', color: 0x1c1c1e },
+  { id: 'weather',   name: 'Weather',   icon: '\u{2600}\u{FE0F}', color: 0x5ac8fa },
+  { id: 'settings',  name: 'Settings',  icon: '\u{2699}\u{FE0F}', color: 0x8e8e93 },
+  { id: 'health',    name: 'Health',    icon: '\u{2764}\u{FE0F}', color: 0xff2d55 },
+  { id: 'wallet',    name: 'Wallet',    icon: '\u{1F4B3}', color: 0x1c1c1e },
+  { id: 'camera',    name: 'Camera',    icon: '\u{1F4F8}', color: 0x636366 },
+];
+
+// Dock apps (bottom 4 — iPhone essentials)
+const DOCK_APPS: AppDef[] = [
+  { id: 'call',      name: '',  icon: '\u{1F4DE}', color: 0x34c759 },
+  { id: 'messages',  name: '',  icon: '\u{1F4AC}', color: 0x34c759 },
+  { id: 'safari',    name: '',  icon: '\u{1F310}', color: 0x007aff },
+  { id: 'music',     name: '',  icon: '\u{1F3B5}', color: 0xff2d55 },
 ];
 
 // Phone dimensions
@@ -330,17 +341,11 @@ export class PhoneSystem {
     this.objects.push(scene.add.rectangle(cx, dockY - dockH / 2, screenW - 12, 1, 0xffffff, 0.06)
       .setScrollFactor(0).setDepth(DEPTH_BASE + 5));
 
-    // Dock apps (4 pinned)
-    const dockApps: AppDef[] = [
-      { id: 'call', name: '', icon: '\u{1F4DE}', color: 0x34c759 },
-      { id: 'messages', name: '', icon: '\u{1F4AC}', color: 0x34c759 },
-      { id: 'instagram', name: '', icon: '\u{1F4F7}', color: 0xc13584 },
-      { id: 'music', name: '', icon: '\u{1F3B5}', color: 0xff2d55 },
-    ];
+    // Dock apps (4 pinned — Phone, Messages, Safari, Music)
     const dockGapX = (screenW - 30) / 4;
     const dockStartX = cx - screenW / 2 + 15 + dockGapX / 2;
-    for (let i = 0; i < dockApps.length; i++) {
-      const app = dockApps[i];
+    for (let i = 0; i < DOCK_APPS.length; i++) {
+      const app = DOCK_APPS[i];
       const dx = dockStartX + i * dockGapX;
       this.buildAppIcon(scene, dx, dockY, iconSize - 4, app, cx, cy, screenW, screenH, statusY);
     }
@@ -384,19 +389,56 @@ export class PhoneSystem {
   }
 
   private static buildAppIcon(scene: Phaser.Scene, ax: number, ay: number, size: number, app: AppDef, cx: number, cy: number, screenW: number, screenH: number, statusY: number) {
-    // iOS squircle-style icon (simulated with layered rectangles)
-    // Outer shadow
-    this.objects.push(scene.add.rectangle(ax + 1, ay + 1, size, size, 0x000000, 0.2)
-      .setScrollFactor(0).setDepth(DEPTH_BASE + 5));
+    // iOS squircle icon with rounded corners + gradient
+    const r = Math.floor(size * 0.22); // iOS corner radius ~22% of size
+    const half = size / 2;
 
-    // Icon background
-    const iconBg = scene.add.rectangle(ax, ay, size, size, app.color)
+    // Drop shadow (rounded rect) — positioned at icon center so scale works from center
+    const shadow = scene.add.graphics().setScrollFactor(0).setDepth(DEPTH_BASE + 5);
+    shadow.setPosition(ax, ay);
+    shadow.fillStyle(0x000000, 0.25);
+    shadow.fillRoundedRect(-half + 1, -half + 2, size, size, r);
+    this.objects.push(shadow);
+
+    // Main icon background (rounded rect) — draw relative to (0,0), position at center
+    const iconGfx = scene.add.graphics().setScrollFactor(0).setDepth(DEPTH_BASE + 6);
+    iconGfx.setPosition(ax, ay);
+    iconGfx.fillStyle(app.color, 1);
+    iconGfx.fillRoundedRect(-half, -half, size, size, r);
+
+    // iOS gradient: lighter top → darker bottom
+    const baseR = (app.color >> 16) & 0xff;
+    const baseG = (app.color >> 8) & 0xff;
+    const baseB = app.color & 0xff;
+    // Top highlight band
+    const lightR = Math.min(255, baseR + 40);
+    const lightG = Math.min(255, baseG + 40);
+    const lightB = Math.min(255, baseB + 40);
+    const lightColor = (lightR << 16) | (lightG << 8) | lightB;
+    iconGfx.fillStyle(lightColor, 0.35);
+    iconGfx.fillRoundedRect(-half, -half, size, size * 0.5, { tl: r, tr: r, bl: 0, br: 0 });
+    // Bottom darken band
+    const darkR = Math.max(0, baseR - 30);
+    const darkG = Math.max(0, baseG - 30);
+    const darkB = Math.max(0, baseB - 30);
+    const darkColor = (darkR << 16) | (darkG << 8) | darkB;
+    iconGfx.fillStyle(darkColor, 0.25);
+    iconGfx.fillRoundedRect(-half, 0, size, size * 0.5, { tl: 0, tr: 0, bl: r, br: r });
+    // Glass sheen (subtle white bar at top)
+    iconGfx.fillStyle(0xffffff, 0.12);
+    iconGfx.fillRoundedRect(-half + 3, -half + 2, size - 6, size * 0.3, { tl: r - 2, tr: r - 2, bl: 0, br: 0 });
+    // Subtle border for dark icons so they don't vanish into background
+    const brightness = baseR + baseG + baseB;
+    if (brightness < 150) {
+      iconGfx.lineStyle(1, 0x444466, 0.5);
+      iconGfx.strokeRoundedRect(-half, -half, size, size, r);
+    }
+    this.objects.push(iconGfx);
+
+    // Hit area for interaction (invisible rect over the icon)
+    const iconBg = scene.add.rectangle(ax, ay, size, size, 0x000000, 0)
       .setScrollFactor(0).setDepth(DEPTH_BASE + 6).setInteractive({ useHandCursor: true });
     this.objects.push(iconBg);
-
-    // Inner rounded highlight (top half — iOS glass effect)
-    this.objects.push(scene.add.rectangle(ax, ay - size / 4, size - 4, size / 2 - 4, 0xffffff, 0.15)
-      .setScrollFactor(0).setDepth(DEPTH_BASE + 6));
 
     // Emoji
     const iconText = scene.add.text(ax, ay, app.icon, {
@@ -411,9 +453,9 @@ export class PhoneSystem {
       }).setOrigin(0.5, 0).setScrollFactor(0).setDepth(DEPTH_BASE + 7));
     }
 
-    // Hover
-    iconBg.on('pointerover', () => { iconBg.setScale(1.1); iconText.setScale(1.1); });
-    iconBg.on('pointerout', () => { iconBg.setScale(1); iconText.setScale(1); });
+    // Hover — scale the graphics + emoji + hitbox together
+    iconBg.on('pointerover', () => { iconGfx.setScale(1.1); iconText.setScale(1.1); iconBg.setScale(1.1); });
+    iconBg.on('pointerout', () => { iconGfx.setScale(1); iconText.setScale(1); iconBg.setScale(1); });
 
     // Click
     iconBg.on('pointerdown', () => {

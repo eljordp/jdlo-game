@@ -48,18 +48,18 @@ export class BeachScene extends BaseChapterScene {
 
   create() {
     super.create();
-    // Exit triggers at y=18, x=12-15
-    this.addNavArrow(18, 26, 'Next chapter');
+    // Exit triggers at south beach
+    this.addNavArrow(18, 28, 'Next chapter');
 
-    // Place the BMW 335i in the driveway (row 11, away from doors)
+    // Place the BMW 335i in the yard (row 13)
     const carX = 4 * SCALED_TILE + SCALED_TILE / 2;
-    const carY = 11 * SCALED_TILE + SCALED_TILE / 2;
+    const carY = 13 * SCALED_TILE + SCALED_TILE / 2;
     const bmw = this.add.sprite(carX, carY, 'car-bmw335i');
     bmw.setScale(SCALE);
     bmw.setDepth(5);
-    this.collisionTiles.add('3,11');
-    this.collisionTiles.add('4,11');
-    this.collisionTiles.add('5,11');
+    this.collisionTiles.add('3,13');
+    this.collisionTiles.add('4,13');
+    this.collisionTiles.add('5,13');
 
     // Hot tub bubble jets — active bubbles rising from the water
     this.createHotTubBubbles();
@@ -77,36 +77,49 @@ export class BeachScene extends BaseChapterScene {
       }
     }
 
-    // K starts sleeping in JP's bed (Day 1) — breathing + ZZZs
+    // K starts hidden — she's visually part of the bed sprite (item-bed-k)
     const k = this.npcs.find(n => n.id === 'ch1_gf_k');
     if (k) {
-      k.sprite.setAngle(15); // lying down
+      k.sprite.setVisible(false);
+      // Remove K's collision so player can walk near the bed
+      const kTX = Math.round((k.sprite.x - SCALED_TILE / 2) / SCALED_TILE);
+      const kTY = Math.round((k.sprite.y - SCALED_TILE / 2) / SCALED_TILE);
+      this.collisionTiles.delete(`${kTX},${kTY}`);
+    }
+
+    // ZZZ floating from the bed
+    const bedSprite = this.interactions.getSprite('ch1_bed');
+    if (bedSprite) {
+      this.kZzzTimer = this.time.addEvent({
+        delay: 2500,
+        loop: true,
+        callback: () => {
+          if (!bedSprite.visible || !this.scene.isActive() || this.kGoodbyeDone) return;
+          const z = this.add.text(bedSprite.x + 40, bedSprite.y - 10, 'z', {
+            fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#8888aa',
+          }).setDepth(20).setAlpha(0.7);
+          this.tweens.add({ targets: z, y: z.y - 25, alpha: 0, duration: 1800, onComplete: () => z.destroy() });
+        },
+      });
+      // Subtle breathing — bed sprite gently pulses
       this.kSleepTween = this.tweens.add({
-        targets: k.sprite,
-        scaleY: SCALE * 0.95,
+        targets: bedSprite,
+        scaleY: SCALE * 0.98,
         duration: 1500,
         yoyo: true,
         repeat: -1,
         ease: 'Sine.easeInOut',
       });
-      this.kZzzTimer = this.time.addEvent({
-        delay: 2500,
-        loop: true,
-        callback: () => {
-          if (!k.sprite.visible || !this.scene.isActive()) return;
-          const z = this.add.text(k.sprite.x + 15, k.sprite.y - 20, 'z', {
-            fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#8888aa',
-          }).setDepth(20).setAlpha(0.7);
-          this.tweens.add({ targets: z, y: z.y - 20, alpha: 0, duration: 1800, onComplete: () => z.destroy() });
-        },
-      });
     }
+
+    // Update BMW position for new map layout
+    // Update hot tub steam/bubble positions for new map
   }
 
   private createHotTubSteam() {
-    // Hot tub is at cols 32-34, rows 2-4 (outdoor)
-    const tubCenterX = 33 * SCALED_TILE;
-    const tubTopY = 2 * SCALED_TILE;
+    // Hot tub is at cols 35-37, rows 3-5 (outdoor patio)
+    const tubCenterX = 36 * SCALED_TILE;
+    const tubTopY = 3 * SCALED_TILE;
 
     // 4 steam columns that rise and fade infinitely
     for (let i = 0; i < 4; i++) {
@@ -143,9 +156,9 @@ export class BeachScene extends BaseChapterScene {
   }
 
   private createHotTubBubbles() {
-    // Hot tub is at cols 32-34, rows 2-4 (outdoor)
-    const tubCenterX = 33 * SCALED_TILE;
-    const tubCenterY = 3 * SCALED_TILE;
+    // Hot tub is at cols 35-37, rows 3-5 (outdoor patio)
+    const tubCenterX = 36 * SCALED_TILE;
+    const tubCenterY = 4 * SCALED_TILE;
     const tubWidth = 3 * SCALED_TILE;
     const tubHeight = 3 * SCALED_TILE;
 
@@ -268,26 +281,39 @@ export class BeachScene extends BaseChapterScene {
   private kSleepTween: Phaser.Tweens.Tween | null = null;
   private kZzzTimer: Phaser.Time.TimerEvent | null = null;
 
-  // NPC reactive behaviors
-  protected handleNPCDialogue(npcId: string, dialogue: DialogueLine[]): void {
-    // K wakes up — moment together, then she leaves
-    if (npcId === 'ch1_gf_k' && !this.kGoodbyeDone && this.currentDay === 1) {
-      this.kGoodbyeDone = true;
-      // Stop sleeping animation
-      if (this.kSleepTween) this.kSleepTween.stop();
-      if (this.kZzzTimer) this.kZzzTimer.remove();
-      const kNpc = this.npcs.find(n => n.id === 'ch1_gf_k');
-      if (kNpc) {
-        kNpc.sprite.setAngle(0); // sit up
-        this.tweens.add({ targets: kNpc.sprite, scaleY: SCALE, duration: 300 }); // reset scale
-      }
-      this.dialogue.show(dialogue, () => {
+  private wakeUpK() {
+    this.kGoodbyeDone = true;
+    // Stop sleeping animation
+    if (this.kSleepTween) this.kSleepTween.stop();
+    if (this.kZzzTimer) this.kZzzTimer.remove();
+
+    // Swap bed to open covers version
+    const bedSprite = this.interactions.getSprite('ch1_bed');
+    if (bedSprite) {
+      bedSprite.setTexture('item-bed-k-open');
+      bedSprite.setScale(SCALE);
+    }
+
+    // Make K appear standing next to the bed
+    const kNpc = this.npcs.find(n => n.id === 'ch1_gf_k');
+    if (kNpc) {
+      kNpc.sprite.setPosition(16 * SCALED_TILE + SCALED_TILE / 2, 3 * SCALED_TILE + SCALED_TILE / 2);
+      kNpc.sprite.setVisible(true);
+      kNpc.sprite.setAlpha(0);
+      this.tweens.add({ targets: kNpc.sprite, alpha: 1, duration: 500 });
+    }
+
+    // Show the wake-up dialogue
+    const chapterDialogue = this.getChapterDialogue();
+    const lines = chapterDialogue.npcs['ch1_gf_k'];
+    if (lines) {
+      this.dialogue.show(lines, () => {
         const k = this.npcs.find(n => n.id === 'ch1_gf_k');
         if (k) {
           // K walks to the door and disappears
           this.tweens.add({
             targets: k.sprite,
-            x: 5 * SCALED_TILE + SCALED_TILE / 2,
+            x: 13 * SCALED_TILE + SCALED_TILE / 2,
             duration: 1200,
             ease: 'Linear',
             onComplete: () => {
@@ -297,15 +323,20 @@ export class BeachScene extends BaseChapterScene {
                 duration: 400,
                 onComplete: () => {
                   k.sprite.setVisible(false);
-                  const kTX = Math.round((k.sprite.x - SCALED_TILE / 2) / SCALED_TILE);
-                  const kTY = Math.round((k.sprite.y - SCALED_TILE / 2) / SCALED_TILE);
-                  this.collisionTiles.delete(`${kTX},${kTY}`);
                 },
               });
             },
           });
         }
       });
+    }
+  }
+
+  // NPC reactive behaviors
+  protected handleNPCDialogue(npcId: string, dialogue: DialogueLine[]): void {
+    // K — already woke up, just show dialogue if she's still visible
+    if (npcId === 'ch1_gf_k') {
+      this.dialogue.show(dialogue);
       return;
     }
 
@@ -437,8 +468,14 @@ export class BeachScene extends BaseChapterScene {
     return beachDialogue;
   }
 
-  // Override to add volleyball mini-game and BMW interaction
+  // Override to add volleyball mini-game, BMW, and bed wake-up
   protected handleInteractable(interactable: { id: string; type: string; consumed?: boolean }) {
+    // Bed — K wakes up
+    if (interactable.id === 'ch1_bed' && !this.kGoodbyeDone && this.currentDay === 1) {
+      this.wakeUpK();
+      return;
+    }
+
     if (interactable.id === 'ch1_volleyball1') {
       Analytics.trackInteraction(interactable.id);
       this.playVolleyballMinigame();

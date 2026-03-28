@@ -916,6 +916,46 @@ function generateAllNPCs(scene: Phaser.Scene) {
     }
   );
 
+  // K (GF) — Hawaiian, tan, petite, prettiest character — 32x32
+  generateNPC32(
+    scene,
+    'npc_k',
+    0x1a1010, // dark brown/black hair (long, wavy)
+    'long',
+    0xf0e8e0, // white crop top
+    0xe0d8d0,
+    0x506878, // light wash jean shorts
+    0xc8a080, // tan/golden Hawaiian skin
+    0xb08860, // warm shadow
+    (g) => {
+      // Wavy hair texture — flows past shoulders
+      px(g, 5, 4, 0x221812, 2, 8);   // left hair strand
+      px(g, 25, 4, 0x221812, 2, 8);  // right hair strand
+      px(g, 6, 11, 0x1a1010, 1, 4);  // inner left strand
+      px(g, 25, 11, 0x1a1010, 1, 4); // inner right strand
+      // Big pretty eyes — longer lashes
+      px(g, 9, 7, 0x201010, 4, 2);   // left eye (bigger)
+      px(g, 19, 7, 0x201010, 4, 2);  // right eye (bigger)
+      px(g, 10, 7, 0x402820, 2, 1);  // left iris (warm brown)
+      px(g, 20, 7, 0x402820, 2, 1);  // right iris (warm brown)
+      px(g, 9, 6, 0x1a1010, 4, 1);   // left lashes
+      px(g, 19, 6, 0x1a1010, 4, 1);  // right lashes
+      // Soft lips — pink/coral
+      px(g, 13, 10, 0xd08080, 6, 1);
+      // Small nose
+      px(g, 15, 9, 0xb89070, 2, 1);
+      // Flower in hair (plumeria — Hawaiian)
+      px(g, 5, 2, 0xf0e0e0, 3, 3);   // white petals
+      px(g, 6, 3, 0xf0d040, 1, 1);   // yellow center
+      // Skinnier frame — narrow shoulders
+      px(g, 8, 14, 0xc8a080, 1, 4);  // exposed left arm (crop top)
+      px(g, 23, 14, 0xc8a080, 1, 4); // exposed right arm
+      // Small earrings (shell-like)
+      px(g, 7, 8, 0xf0e8d0, 1, 2);
+      px(g, 24, 8, 0xf0e8d0, 1, 2);
+    }
+  );
+
   // Pops — Mexican, older, warm, strong, grey goatee — 32x32
   generateNPC32(
     scene,
@@ -1237,50 +1277,80 @@ function generateAllNPCs(scene: Phaser.Scene) {
     }
   );
 
-  // Nolan — JP's homie — 32x32
+  // Nolan — JP's homie, light brown skin, dark brown shaggy hair, white tee, baggy jeans — 32x32
   generateNPC32(
     scene,
     'npc_nolan',
-    0x604830,
-    'short',
-    0x40a050,
-    0x50b060,
-    0x4060a0,
-    0xf0c890,
-    0xd0a870
-  );
-
-  // David — JP's homie — 32x32
-  generateNPC32(
-    scene,
-    'npc_david',
-    0x302020,
-    'short',
-    0xc04040,
-    0xd05050,
-    0x383840,
-    0xe0b080,
-    0xc09060,
+    0x3a2818, // dark brown shaggy hair
+    'long',   // shaggy = long style
+    0xf0f0f0, // white t-shirt
+    0xe0e0e0,
+    0x6080a0, // baggy light wash jeans
+    0xc09868, // light brown skin
+    0xa08050, // warm shadow
     (g) => {
-      // Curly hair texture — extra dots on top
-      px(g, 9, 1, 0x383028, 2, 1);
-      px(g, 14, 0, 0x383028, 2, 1);
-      px(g, 19, 1, 0x383028, 2, 1);
-      px(g, 11, 0, 0x383028, 1, 1);
+      // Shaggy hair texture — messy, not neat
+      px(g, 6, 3, 0x3a2818, 2, 3);   // left shaggy strand
+      px(g, 24, 3, 0x3a2818, 2, 3);  // right shaggy strand
+      px(g, 10, 2, 0x2a1808, 3, 1);  // messy top bits
+      px(g, 19, 2, 0x2a1808, 3, 1);
+      // Baggy jeans — wider legs
+      px(g, 9, 24, 0x6080a0, 6, 4);  // left leg wider
+      px(g, 17, 24, 0x6080a0, 6, 4); // right leg wider
+      // Green eyes
+      px(g, 11, 7, 0x40a050, 2, 1);  // left eye green
+      px(g, 19, 7, 0x40a050, 2, 1);  // right eye green
     }
   );
 
-  // Cooper — JP's homie — 32x32
+  // David — JP's homie, tall, black, long curly black hair, white shirt, skinny blue jeans, red J1s — 32x32
+  generateNPC32(
+    scene,
+    'npc_david',
+    0x1a1010, // black curly hair
+    'long',   // long curly
+    0xf0f0f0, // white shirt
+    0xe0e0e0,
+    0x3050a0, // skinny blue jeans
+    0x4a3020, // dark/black skin
+    0x3a2018, // dark shadow
+    (g) => {
+      // Long curly hair texture — volume, curls past ears
+      px(g, 6, 2, 0x1a1010, 3, 6);   // left curls flowing down
+      px(g, 23, 2, 0x1a1010, 3, 6);  // right curls flowing down
+      px(g, 8, 1, 0x0a0808, 2, 1);   // top curl bits
+      px(g, 13, 0, 0x0a0808, 3, 1);  // top center curls
+      px(g, 19, 1, 0x0a0808, 2, 1);
+      px(g, 7, 4, 0x1a1010, 1, 4);   // inner left curl
+      px(g, 24, 4, 0x1a1010, 1, 4);  // inner right curl
+      // Red Jordan 1 shoes
+      px(g, 10, 28, 0xc02020, 4, 3); // left shoe
+      px(g, 18, 28, 0xc02020, 4, 3); // right shoe
+      px(g, 10, 28, 0xf0f0f0, 4, 1); // left shoe white midsole
+      px(g, 18, 28, 0xf0f0f0, 4, 1); // right shoe white midsole
+      // Skinny jeans tighter than default
+      px(g, 11, 24, 0x3050a0, 4, 4); // left leg tight
+      px(g, 17, 24, 0x3050a0, 4, 4); // right leg tight
+    }
+  );
+
+  // Cooper — JP's homie, blonde, fireman/cop mustache — 32x32
   generateNPC32(
     scene,
     'npc_cooper',
-    0xc0a050,
+    0xd0b060, // blonde hair
     'short',
-    0x4060c0,
+    0x4060c0, // blue shirt
     0x5070d0,
-    0xa09060,
-    0xf0c890,
-    0xd0a870
+    0xa09060, // khaki pants
+    0xf0c890, // white skin
+    0xd0a870,
+    (g) => {
+      // Thick blonde mustache — cop/fireman style
+      px(g, 11, 10, 0xc0a050, 10, 2); // mustache bar
+      px(g, 10, 11, 0xb09040, 2, 1);  // left droop
+      px(g, 20, 11, 0xb09040, 2, 1);  // right droop
+    }
   );
 
   // Terrel — chill frat homie — 32x32
@@ -1296,28 +1366,33 @@ function generateAllNPCs(scene: Phaser.Scene) {
     0x806030
   );
 
-  // Big Bart — fat, rambunctious, white guy, tank top — 32x32
+  // Big Bart — fat, African American, messy undone hair, tank top — 32x32
   generateNPC32(
     scene,
     'npc_bigbart',
-    0xc0a060, // dirty blonde hair
+    0x1a1010, // dark messy hair
     'short',
     0xe0e0e0, // white tank top
     0xd0d0d0,
     0x404850, // dark shorts
-    0xf0c8a0, // pale skin
-    0xd0a880,
+    0x8a6840, // lighter brown skin
+    0x705030,
     (g) => {
+      // Messy undone hair — sticking up everywhere
+      px(g, 8, 0, 0x1a1010, 3, 2);    // left tufts
+      px(g, 14, -1, 0x1a1010, 4, 2);  // center sticking up
+      px(g, 21, 0, 0x1a1010, 3, 2);   // right tufts
+      px(g, 6, 1, 0x1a1010, 2, 2);    // far left mess
+      px(g, 24, 1, 0x1a1010, 2, 2);   // far right mess
       // Make him FAT — wider torso, belly overhang
-      // Extra body width on both sides (shirt color)
-      px(g, 4, 14, 0xe0e0e0, 3, 8);   // left body extension
-      px(g, 25, 14, 0xe0e0e0, 3, 8);   // right body extension
+      px(g, 4, 14, 0xe0e0e0, 3, 8);   // left body extension (shirt)
+      px(g, 25, 14, 0xe0e0e0, 3, 8);  // right body extension
       // Belly — skin colored overhang below shirt
-      px(g, 6, 22, 0xf0c8a0, 20, 3);   // belly skin
-      px(g, 7, 21, 0xf0c8a0, 18, 2);   // upper belly
+      px(g, 6, 22, 0x8a6840, 20, 3);  // belly skin
+      px(g, 7, 21, 0x8a6840, 18, 2);  // upper belly
       // Thicker arms
-      px(g, 3, 16, 0xf0c8a0, 3, 5);    // left arm (skin)
-      px(g, 26, 16, 0xf0c8a0, 3, 5);   // right arm (skin)
+      px(g, 3, 16, 0x8a6840, 3, 5);   // left arm (skin)
+      px(g, 26, 16, 0x8a6840, 3, 5);  // right arm (skin)
     }
   );
 
@@ -4805,6 +4880,73 @@ function generateMoreItems(scene: Phaser.Scene) {
     px(g, 27, 9, 0x5a3018, 1, 16); // right frame
   });
 
+  // --- item-bed-k --- JP's bed with K sleeping in it (2x1 tile, 64x32)
+  makeTexture(scene, 'item-bed-k', TILE_SIZE * 2, TILE_SIZE, (g) => {
+    // Wide bed frame (dark wood)
+    px(g, 2, 5, 0x503010, 60, 2);   // headboard
+    px(g, 2, 5, 0x604020, 60, 1);   // headboard highlight
+    px(g, 2, 7, 0x6a4020, 60, 22);  // bed frame body
+    px(g, 2, 7, 0x7a5030, 60, 1);   // top highlight
+    px(g, 2, 28, 0x5a3018, 60, 1);  // bottom shadow
+    px(g, 2, 7, 0x5a3018, 1, 22);   // left frame edge
+    px(g, 61, 7, 0x5a3018, 1, 22);  // right frame edge
+    // Mattress
+    px(g, 3, 8, 0xe8e0d8, 58, 20);
+    // Two pillows
+    px(g, 5, 8, 0xf0ece8, 10, 5);   // left pillow
+    px(g, 6, 9, 0xf8f4f0, 8, 3);    // left pillow highlight
+    px(g, 38, 8, 0xf0ece8, 10, 5);  // right pillow (K's)
+    px(g, 39, 9, 0xf8f4f0, 8, 3);   // right pillow highlight
+    // K's dark hair spilling across right pillow
+    px(g, 36, 8, 0x1a1010, 14, 4);  // hair spread on pillow
+    px(g, 34, 10, 0x1a1010, 4, 3);  // hair strand left
+    px(g, 50, 9, 0x1a1010, 3, 3);   // hair strand right
+    // K's face peeking out (small, tan skin)
+    px(g, 41, 10, 0xc8a080, 6, 3);  // face
+    px(g, 42, 11, 0xd08080, 3, 1);  // lips
+    // Blanket (messy white/cream covers)
+    px(g, 3, 14, 0xe0e8f0, 58, 14); // main blanket
+    px(g, 3, 14, 0xf0f4f8, 58, 1);  // top fold highlight
+    px(g, 3, 20, 0xd0d8e0, 58, 1);  // mid fold
+    px(g, 3, 25, 0xc8d0d8, 58, 1);  // wrinkle
+    // Blanket bunched up slightly on K's side (she's wrapped up)
+    px(g, 35, 13, 0xf0f4f8, 20, 2); // bunched top
+    // K's shoulder barely visible
+    px(g, 40, 13, 0xc8a080, 4, 2);  // shoulder peeking
+    // Plumeria flower fell on pillow
+    px(g, 48, 9, 0xf0e0e0, 3, 3);
+    px(g, 49, 10, 0xf0d040, 1, 1);
+  });
+
+  // --- item-bed-k-open --- Same bed but covers thrown open (after K wakes up)
+  makeTexture(scene, 'item-bed-k-open', TILE_SIZE * 2, TILE_SIZE, (g) => {
+    // Same frame
+    px(g, 2, 5, 0x503010, 60, 2);
+    px(g, 2, 5, 0x604020, 60, 1);
+    px(g, 2, 7, 0x6a4020, 60, 22);
+    px(g, 2, 7, 0x7a5030, 60, 1);
+    px(g, 2, 28, 0x5a3018, 60, 1);
+    px(g, 2, 7, 0x5a3018, 1, 22);
+    px(g, 61, 7, 0x5a3018, 1, 22);
+    // Mattress fully visible
+    px(g, 3, 8, 0xe8e0d8, 58, 20);
+    // Two pillows (with hair indent on K's)
+    px(g, 5, 8, 0xf0ece8, 10, 5);
+    px(g, 6, 9, 0xf8f4f0, 8, 3);
+    px(g, 38, 8, 0xf0ece8, 10, 5);
+    px(g, 39, 9, 0xf0e8e0, 8, 3);  // slightly darker — head indent
+    // Hair strands left on pillow
+    px(g, 40, 9, 0x1a1010, 6, 1);
+    px(g, 37, 10, 0x1a1010, 3, 1);
+    // Blanket thrown to one side (messy, folded over)
+    px(g, 3, 20, 0xe0e8f0, 30, 8);  // blanket bunched to left side
+    px(g, 3, 20, 0xf0f4f8, 30, 1);  // fold highlight
+    px(g, 10, 22, 0xd0d8e0, 20, 1); // wrinkle
+    // Plumeria flower still on pillow
+    px(g, 48, 9, 0xf0e0e0, 3, 3);
+    px(g, 49, 10, 0xf0d040, 1, 1);
+  });
+
   // --- item-bed-pink --- (sister's room)
   makeTexture(scene, 'item-bed-pink', TILE_SIZE, TILE_SIZE, (g) => {
     // Headboard (white painted wood)
@@ -5573,6 +5715,24 @@ function generateMoreItems(scene: Phaser.Scene) {
     px(g, 9, 13, 0xc0a040, 1, 1);
     px(g, 11, 13, 0xc0a040, 1, 1);
     px(g, 13, 13, 0xc0a040, 1, 1);
+  });
+
+  // --- item-yoga-mat --- Rolled-out yoga/exercise mat (flat on floor)
+  makeTexture(scene, 'item-yoga-mat', TILE_SIZE, TILE_SIZE, (g) => {
+    // Main mat body (dark purple/blue like a real yoga mat)
+    px(g, 2, 3, 0x4a3a6a, 14, 12);
+    // Lighter center stripe (texture detail)
+    px(g, 3, 4, 0x5a4a7a, 12, 10);
+    // Subtle grip texture dots
+    for (let row = 0; row < 4; row++) {
+      for (let col = 0; col < 5; col++) {
+        px(g, 4 + col * 2, 5 + row * 2, 0x6a5a8a, 1, 1);
+      }
+    }
+    // Mat edge shadow (bottom)
+    px(g, 2, 14, 0x2a1a3a, 14, 1);
+    // Mat edge highlight (top)
+    px(g, 2, 3, 0x6a5a8a, 14, 1);
   });
 
   // --- item-hottub ---

@@ -1196,6 +1196,10 @@ const ch0Extras: Record<string, DialogueLine[]> = {
     { speaker: 'Narrator', text: 'Love seat. Sister falls asleep here every night watching TV.' },
     { speaker: 'JP\'s Mind', text: 'She\'s always out by the second episode.' },
   ],
+  ch0_yoga_mat: [
+    { speaker: 'Narrator', text: 'A worn-out yoga mat. More for stretching than yoga.' },
+    { speaker: 'JP\'s Mind', text: 'Gotta warm up before the weights.' },
+  ],
   ch0_weights: [
     { speaker: 'Narrator', text: 'Dumbbells. 25s and 35s. JP\'s been hitting these before school.' },
     { speaker: 'JP\'s Mind', text: 'Gotta stay disciplined.' },
@@ -2487,6 +2491,44 @@ const ch4Extras: Record<string, DialogueLine[]> = {
     { speaker: 'Narrator', text: 'JP doesn\'t understand all the words yet. But he feels it.' },
     { speaker: 'JP\'s Mind', text: 'Eliseo said this song is about a guy who left home and never came back.' },
     { speaker: 'JP\'s Mind', text: 'Heavy.' },
+  ],
+  ch4_grape_crate1: [
+    { speaker: 'Narrator', text: 'Wooden crates stacked three high. Full of Cabernet grapes.' },
+    { speaker: 'JP\'s Mind', text: 'These things are heavy as hell when they\'re full.' },
+  ],
+  ch4_grape_crate2: [
+    { speaker: 'Narrator', text: 'More crates. Someone wrote "BLOCK 4" in marker on the side.' },
+  ],
+  ch4_water_barrel: [
+    { speaker: 'Narrator', text: 'A big blue water barrel. The handle on the spigot is taped.' },
+    { speaker: 'JP\'s Mind', text: 'At least the water\'s cold.' },
+  ],
+  ch4_wheelbarrow: [
+    { speaker: 'Narrator', text: 'A beat-up wheelbarrow. One tire is low.' },
+  ],
+  ch4_hose: [
+    { speaker: 'Narrator', text: 'A coiled irrigation hose. Green, cracked from the sun.' },
+  ],
+  ch4_grape_bucket: [
+    { speaker: 'Narrator', text: 'A five-gallon bucket half full of clipped grape clusters.' },
+  ],
+  ch4_pruning: [
+    { speaker: 'Narrator', text: 'Pruning shears stuck blade-down in the dirt.' },
+    { speaker: 'JP\'s Mind', text: 'My hands are already cut up from these.' },
+  ],
+  ch4_water_jug: [
+    { speaker: 'Narrator', text: 'A gallon jug. Someone wrote "JUAN" on it in Sharpie.' },
+  ],
+  ch4_crate_stack: [
+    { speaker: 'Narrator', text: 'Empty crates ready for tomorrow\'s pick.' },
+  ],
+  ch4_shade_bench: [
+    { speaker: 'Narrator', text: 'A wooden bench under the tree. Carved initials in the armrest.' },
+    { speaker: 'JP\'s Mind', text: 'This is where Ernesto eats lunch every day. Same spot.' },
+  ],
+  ch4_irrigation: [
+    { speaker: 'Narrator', text: 'Drip irrigation line running between the rows.' },
+    { speaker: 'JP\'s Mind', text: 'Juan showed me how to fix these when they crack.' },
   ],
 };
 

@@ -176,7 +176,7 @@ export const homeMap: MapData = {
     { id: 'ch0_journal',       x: 8,  y: 8,  type: 'examine', glow: true, sprite: 'item-book' },        // journal near door
     { id: 'ch0_crypto',        x: 8,  y: 4,  type: 'examine', glow: false, sprite: 'item-phone' },      // phone on nightstand
     // Upstairs Lounge (cols 12-21, rows 4-8)
-    { id: 'ch0_family_albums', x: 13, y: 5,  type: 'examine', glow: true, sprite: 'item-book' },       // photo albums — story
+    { id: 'ch0_family_albums', x: 13, y: 4,  type: 'examine', glow: true, sprite: 'item-book' },       // photo albums on shelf (wall)
     { id: 'ch0_lounge_rug',    x: 16, y: 7,  type: 'examine', glow: false, sprite: 'item-rug' },
     // Sister's Room — UPSTAIRS (cols 23-28, rows 4-8)
     { id: 'ch0_sister_bed',    x: 24, y: 4,  type: 'examine', glow: false, sprite: 'item-bed-pink' },   // bed
@@ -202,7 +202,8 @@ export const homeMap: MapData = {
     // Upstairs Lounge / Hang Spot (cols 12-21, merged lounge)
     { id: 'ch0_upstairs_tv',   x: 15, y: 4,  type: 'examine', glow: false, sprite: 'item-tv' },        // TV on wall
     { id: 'ch0_upstairs_couch',x: 16, y: 6,  type: 'examine', glow: false, sprite: 'item-couch' },     // couch
-    { id: 'ch0_weights',       x: 19, y: 7,  type: 'examine', glow: false, sprite: 'item-weights' },    // dumbbells
+    { id: 'ch0_yoga_mat',      x: 19, y: 8,  type: 'examine', glow: false, sprite: 'item-yoga-mat' },   // yoga mat under weights
+    { id: 'ch0_weights',       x: 19, y: 7,  type: 'examine', glow: false, sprite: 'item-weights' },    // dumbbells on mat
     // Sister drawings — UPSTAIRS
     { id: 'ch0_sister_drawing_wall', x: 26, y: 4, type: 'examine', glow: false, sprite: 'item-poster' },  // on wall, away from bed
     // Kitchen (rows 20-22)
@@ -245,7 +246,7 @@ export const homeMap: MapData = {
     // tv_sitdown removed — Pops already has fishing moment
 
     // Windows — on wall tiles, no floating sprite
-    { id: 'ch0_window_jp',     x: 6,  y: 3,  type: 'examine', glow: false, sprite: 'item-window' },
+    { id: 'ch0_window_jp',     x: 9,  y: 3,  type: 'examine', glow: false, sprite: 'item-window' },
     { id: 'ch0_window_sister', x: 13, y: 3,  type: 'examine', glow: false, sprite: 'item-window' },
     { id: 'ch0_window_parents',x: 22, y: 11, type: 'examine', glow: false, sprite: 'item-window' },
     { id: 'ch0_window_bath',   x: 34, y: 3,  type: 'examine', glow: false, sprite: 'item-window' },
@@ -263,117 +264,126 @@ export const homeMap: MapData = {
 export const beachMap: MapData = {
   tiles: [
     //0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39
-    [ B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, G, G, G, G, G, G, G, G, G, G, G ], // 0  house top wall (house ends col 28)
-    [ B, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, F, B, G, G, C, C, C, C, C, G, G, G, G ], // 1  living rm | JP rm | kitchen | Nolan rm | hot tub patio
-    [ B, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, F, B, G, G, C, H, H, H, C, G, G, G, G ], // 2  outdoor hot tub
-    [ B, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, F, B, G, G, C, H, H, H, C, G, G, G, G ], // 3
-    [ B, F, F, F, F, F, F, F, F, O, F, F, F, F, F, F, O, F, F, F, F, F, O, F, F, F, F, F, O, G, G, C, H, H, H, C, G, G, G, G ], // 4  doors between rooms at cols 9, 16, 22, 28
-    [ B, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, F, B, G, G, C, C, C, C, C, G, G, G, G ], // 5
-    [ B, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, F, B, G, G, C, C, C, C, C, G, G, G, G ], // 6
-    [ B, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, B, F, F, F, F, F, B, F, F, F, F, F, B, G, G, C, C, C, C, C, G, G, G, G ], // 7
-    [ B, B, B, B, B, O, B, B, B, B, B, B, O, B, B, B, B, B, O, B, B, B, B, B, O, B, B, B, B, G, G, G, G, G, G, G, G, G, G, G ], // 8  house bottom wall with doors at cols 5, 12, 18, 24
-    [ G, G, G, G, G, C, G, G, G, G, G, G, C, G, G, G, G, G, C, G, G, G, G, G, C, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G ], // 9  concrete walks from doors + col 33 hot tub path
-    [ G, G, L, G, G, C, G, G, G, G, G, G, C, G, G, G, G, G, C, G, G, G, G, G, C, G, G, G, G, G, G, G, G, C, G, G, G, L, G, G ], // 10 walks continue + palms at cols 2, 37
-    [ G, G, G, G, G, C, G, G, G, G, G, G, C, G, G, G, G, G, C, G, G, G, G, G, C, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G ], // 11 walkways
-    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 12 concrete street
-    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 13 concrete street
-    [ G, G, T, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, T, G, G ], // 14 grass with trees at cols 2, 37
-    [ G, G, G, G, G, L, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, L, G, G, G, G, G, G ], // 15 palms at cols 5, 33 (beach entrance markers)
-    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 16 sand starts
-    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 17 open sand
-    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, L, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 18 one palm at col 19
-    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 19 volleyball area
-    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 20 open sand
-    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 21 open sand
-    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 22 open sand
-    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 23 open sand
-    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 24 open sand
-    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 25 open sand
-    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 26 open sand
-    [ S, S, S, S, S, S, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, S, S, S, S, S, S ], // 27 shore break
-    [ W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W ], // 28 ocean
-    [ W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W ], // 29 ocean
+    // === FRAT HOUSE — 3 big rooms + open kitchen + hot tub patio ===
+    [ B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, G, G, G, G, G, G, G ], // 0  house top wall
+    [ B, F, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, B, G, G, G, G, G, G, G ], // 1  living rm (1-11) | JP rm (13-22) | kitchen (24-31)
+    [ B, F, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, B, G, C, C, C, C, C, G ], // 2
+    [ B, F, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, B, G, C, H, H, H, C, G ], // 3  hot tub
+    [ B, F, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, B, G, C, H, H, H, C, G ], // 4
+    [ B, F, F, F, F, F, F, F, F, F, F, F, O, F, F, F, F, F, F, F, F, F, F, O, F, F, F, F, F, F, F, F, O, G, C, H, H, H, C, G ], // 5  doors between rooms (12, 23, 32)
+    [ B, F, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, B, G, C, C, C, C, C, G ], // 6
+    [ B, F, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, N, N, F, F, B, G, G, G, G, G, G, G ], // 7  kitchen counter
+    [ B, F, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, B, G, G, G, G, G, G, G ], // 8
+    [ B, F, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, B, G, G, G, G, G, G, G ], // 9
+    [ B, B, B, B, B, B, O, B, B, B, B, B, B, B, B, B, B, B, O, B, B, B, B, B, B, B, B, B, O, B, B, B, B, G, G, G, G, G, G, G ], // 10 bottom wall, doors at 6, 18, 28
+    [ G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G ], // 11 concrete walks
+    [ G, G, L, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, L, G, G ], // 12 palms + walks
+    [ G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G ], // 13 yard
+    [ G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G ], // 14 yard
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 15 street
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 16 street
+    [ G, G, T, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, T, G, G ], // 17 trees
+    [ G, G, G, G, G, L, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, L, G, G, G, G, G, G ], // 18 palms
+    // === BEACH ===
+    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 19 sand starts
+    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 20
+    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, L, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 21 palm
+    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 22 volleyball area
+    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 23
+    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 24
+    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 25
+    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 26
+    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 27
+    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 28
+    [ S, S, S, S, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, S, S, S, S ], // 29 shore
     [ W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W ], // 30 ocean
     [ W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W ], // 31 ocean
+    [ W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W ], // 32 ocean
+    [ W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W ], // 33 ocean
+    [ W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W ], // 34 ocean
+    [ W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W ], // 35 ocean
   ],
   collisions: STANDARD_COLLISIONS,
   spawns: {
-    player: { x: 12, y: 11 },
+    player: { x: 18, y: 13 },
     npcs: [
-      { id: 'ch1_homie1',       x: 12, y: 3,  sprite: 'npc_nolan' },      // Nolan in JP's room visiting
-      { id: 'ch1_homie2',       x: 4,  y: 3,  sprite: 'npc_david' },      // David in living room
-      { id: 'ch1_cooper',       x: 7,  y: 6,  sprite: 'npc_cooper' },      // Cooper in living room
-      { id: 'ch1_bigbart',      x: 20, y: 5,  sprite: 'npc_bigbart' },     // Big Bart in kitchen
-      { id: 'ch1_gf_k',         x: 14, y: 5,  sprite: 'npc_female' },     // K (GF) — Day 1 only, lil asian girl not a bikini NPC
-      { id: 'ch1_girl1',        x: 32, y: 3,  sprite: 'npc_bikini1' },     // In outdoor hot tub
-      { id: 'ch1_girl2',        x: 34, y: 3,  sprite: 'npc_bikini2' },     // By outdoor hot tub
-      { id: 'ch1_girl3',        x: 33, y: 4,  sprite: 'npc_bikini1' },     // In outdoor hot tub
-      { id: 'ch1_girl_couch',   x: 3,  y: 5,  sprite: 'npc_bikini2' },    // Sleeping in living room
-      { id: 'ch1_terrell',      x: 30, y: 9,  sprite: 'npc_terrell' },     // In the yard
-      { id: 'ch1_volleyball1',  x: 14, y: 20, sprite: 'npc_surfer' },
-      { id: 'ch1_volleyball2',  x: 16, y: 20, sprite: 'npc_kid' },
-      { id: 'ch1_sunbather',    x: 24, y: 22, sprite: 'npc_bikini1' },
+      // Living room
+      { id: 'ch1_homie2',       x: 5,  y: 4,  sprite: 'npc_david' },      // David in living room
+      { id: 'ch1_cooper',       x: 9,  y: 8,  sprite: 'npc_cooper' },      // Cooper in living room
+      { id: 'ch1_girl_couch',   x: 4,  y: 6,  sprite: 'npc_bikini2' },    // Girl sleeping on couch
+      // JP's room — just JP and K
+      { id: 'ch1_gf_k',         x: 15, y: 2,  sprite: 'npc_k' },          // K sleeping in JP's bed
+      // Kitchen
+      { id: 'ch1_bigbart',      x: 27, y: 4,  sprite: 'npc_bigbart' },     // Big Bart raiding the fridge
+      { id: 'ch1_homie1',       x: 30, y: 8,  sprite: 'npc_nolan' },      // Nolan hanging in kitchen
+      // Hot tub patio
+      { id: 'ch1_girl1',        x: 36, y: 4,  sprite: 'npc_bikini1' },     // In hot tub
+      { id: 'ch1_girl2',        x: 37, y: 5,  sprite: 'npc_bikini2' },     // By hot tub
+      { id: 'ch1_girl3',        x: 35, y: 5,  sprite: 'npc_bikini1' },     // In hot tub
+      // Yard
+      { id: 'ch1_terrell',      x: 34, y: 12, sprite: 'npc_terrell' },     // In the yard
+      // Beach
+      { id: 'ch1_volleyball1',  x: 16, y: 22, sprite: 'npc_surfer' },
+      { id: 'ch1_volleyball2',  x: 18, y: 22, sprite: 'npc_kid' },
+      { id: 'ch1_sunbather',    x: 28, y: 24, sprite: 'npc_bikini1' },
     ],
   },
   triggers: [
-    { x: 15, y: 27, action: 'scene', target: 'WrongCrowdScene' },
-    { x: 16, y: 27, action: 'scene', target: 'WrongCrowdScene' },
-    { x: 17, y: 27, action: 'scene', target: 'WrongCrowdScene' },
-    { x: 18, y: 27, action: 'scene', target: 'WrongCrowdScene' },
-    { x: 19, y: 27, action: 'scene', target: 'WrongCrowdScene' },
-    { x: 20, y: 27, action: 'scene', target: 'WrongCrowdScene' },
-    { x: 21, y: 27, action: 'scene', target: 'WrongCrowdScene' },
-    { x: 22, y: 27, action: 'scene', target: 'WrongCrowdScene' },
+    { x: 15, y: 29, action: 'scene', target: 'WrongCrowdScene' },
+    { x: 16, y: 29, action: 'scene', target: 'WrongCrowdScene' },
+    { x: 17, y: 29, action: 'scene', target: 'WrongCrowdScene' },
+    { x: 18, y: 29, action: 'scene', target: 'WrongCrowdScene' },
+    { x: 19, y: 29, action: 'scene', target: 'WrongCrowdScene' },
+    { x: 20, y: 29, action: 'scene', target: 'WrongCrowdScene' },
+    { x: 21, y: 29, action: 'scene', target: 'WrongCrowdScene' },
+    { x: 22, y: 29, action: 'scene', target: 'WrongCrowdScene' },
   ],
   interactables: [
-    // --- Living Room (cols 1-8, rows 1-7) ---
-    { id: 'ch1_couch',      x: 3,  y: 2,  type: 'examine', glow: false, sprite: 'item-couch' },
-    { id: 'ch1_tv',         x: 1,  y: 4,  type: 'examine', glow: false, sprite: 'item-tv' },
-    { id: 'ch1_mess',       x: 2,  y: 7,  type: 'examine', glow: false, sprite: 'item-bottle' },
-    { id: 'ch1_bottles',    x: 6,  y: 2,  type: 'examine', glow: false, sprite: 'item-bottle' },
-    { id: 'ch1_speaker',    x: 8,  y: 1,  type: 'examine', glow: false, sprite: 'item-speaker' },     // bluetooth speaker
-    { id: 'ch1_weed1',      x: 5,  y: 2,  type: 'examine', glow: true, sprite: 'item-weed-bag' },
+    // --- Living Room (cols 1-11, rows 1-9) — BIG open space ---
+    { id: 'ch1_couch',      x: 4,  y: 3,  type: 'examine', glow: false, sprite: 'item-couch' },
+    { id: 'ch1_tv',         x: 1,  y: 5,  type: 'examine', glow: false, sprite: 'item-tv' },
+    { id: 'ch1_mess',       x: 3,  y: 9,  type: 'examine', glow: false, sprite: 'item-bottle' },
+    { id: 'ch1_bottles',    x: 8,  y: 2,  type: 'examine', glow: false, sprite: 'item-bottle' },
+    { id: 'ch1_speaker',    x: 11, y: 1,  type: 'examine', glow: false, sprite: 'item-speaker' },
+    { id: 'ch1_weed1',      x: 7,  y: 3,  type: 'examine', glow: true, sprite: 'item-weed-bag' },
 
-    // --- JP's Room (cols 10-15, rows 1-7) ---
-    { id: 'ch1_bed',        x: 10, y: 1,  type: 'examine', glow: false, sprite: 'item-bed' },
-    { id: 'ch1_setup',      x: 11, y: 2,  type: 'examine', glow: false, sprite: 'item-tablet' },
-    { id: 'ch1_computer',   x: 12, y: 3,  type: 'examine', glow: false, sprite: 'item-desk' },
-    { id: 'ch1_weed2',      x: 14, y: 4,  type: 'examine', glow: true, sprite: 'item-weed-bag' },
-    { id: 'ch1_closet',     x: 15, y: 2,  type: 'examine', glow: false, sprite: 'item-nightstand' },
-    { id: 'ch1_poster',     x: 13, y: 1,  type: 'examine', glow: false, sprite: 'item-poster' },
-    { id: 'ch1_clothes',    x: 14, y: 7,  type: 'examine', glow: false, sprite: 'item-laundry-basket' },
+    // --- JP's Room (cols 13-22, rows 1-9) — spacious ---
+    { id: 'ch1_bed',        x: 14, y: 2,  type: 'examine', glow: false, sprite: 'item-bed-k' },  // 2-tile wide bed with K sleeping
+    { id: 'ch1_setup',      x: 16, y: 2,  type: 'examine', glow: false, sprite: 'item-tablet' },
+    { id: 'ch1_computer',   x: 21, y: 3,  type: 'examine', glow: false, sprite: 'item-desk' },
+    { id: 'ch1_weed2',      x: 19, y: 6,  type: 'examine', glow: true, sprite: 'item-weed-bag' },
+    { id: 'ch1_closet',     x: 22, y: 1,  type: 'examine', glow: false, sprite: 'item-nightstand' },
+    { id: 'ch1_poster',     x: 18, y: 1,  type: 'examine', glow: false, sprite: 'item-poster' },
+    { id: 'ch1_clothes',    x: 20, y: 9,  type: 'examine', glow: false, sprite: 'item-laundry-basket' },
 
-    // --- Kitchen (cols 17-21, rows 1-7) ---
-    { id: 'ch1_fridge',     x: 17, y: 1,  type: 'examine', glow: false, sprite: 'item-fridge' },
-    { id: 'ch1_counter',    x: 19, y: 2,  type: 'examine', glow: false, sprite: 'item-bottle' },
-    { id: 'ch1_bong',       x: 20, y: 1,  type: 'examine', glow: true, sprite: 'item-bong' },
-    { id: 'ch1_food',       x: 21, y: 3,  type: 'examine', glow: false, sprite: 'item-food' },
-    { id: 'ch1_weed3',      x: 18, y: 5,  type: 'examine', glow: true, sprite: 'item-weed-bag' },
+    // --- Kitchen (cols 24-31, rows 1-9) — open plan, dirty ---
+    { id: 'ch1_fridge',     x: 24, y: 1,  type: 'examine', glow: false, sprite: 'item-fridge' },
+    { id: 'ch1_counter',    x: 27, y: 2,  type: 'examine', glow: false, sprite: 'item-bottle' },
+    { id: 'ch1_bong',       x: 26, y: 1,  type: 'examine', glow: true, sprite: 'item-bong' },
+    { id: 'ch1_food',       x: 30, y: 3,  type: 'examine', glow: false, sprite: 'item-food' },
+    { id: 'ch1_weed3',      x: 25, y: 6,  type: 'examine', glow: true, sprite: 'item-weed-bag' },
+    { id: 'ch1_nolan_speaker', x: 31, y: 1, type: 'examine', glow: false, sprite: 'item-speaker' },
+    { id: 'ch1_nolan_poster', x: 29, y: 1, type: 'examine', glow: false, sprite: 'item-poster' },
+    { id: 'ch1_blunt',      x: 28, y: 8,  type: 'examine', glow: true, sprite: 'item-joint' },
 
-    // --- Nolan's Room (cols 23-27, rows 1-7) ---
-    { id: 'ch1_nolan_bed',  x: 23, y: 1,  type: 'examine', glow: false, sprite: 'item-bed' },
-    { id: 'ch1_surfboard',  x: 27, y: 2,  type: 'examine', glow: false, sprite: 'item-surfboard' },    // surfboard leaning on wall
-    { id: 'ch1_nolan_speaker', x: 25, y: 1, type: 'examine', glow: false, sprite: 'item-speaker' },    // JBL speaker
-    { id: 'ch1_nolan_poster', x: 24, y: 1, type: 'examine', glow: false, sprite: 'item-poster' },
-    { id: 'ch1_blunt',      x: 26, y: 5,  type: 'examine', glow: true, sprite: 'item-joint' },
+    // --- Hot Tub Patio (outside, cols 34-38, rows 2-6) ---
+    { id: 'ch1_hottub',     x: 36, y: 3,  type: 'examine', glow: false, sprite: 'item-hottub' },
+    { id: 'ch1_shower',     x: 34, y: 2,  type: 'examine', glow: true, sprite: 'item-shower' },
 
-    // --- Hot Tub Patio (outside, cols 30-36) ---
-    { id: 'ch1_hottub',     x: 30, y: 5,  type: 'examine', glow: false, sprite: 'item-hottub' },      // hot tub
-    { id: 'ch1_shower',     x: 29, y: 1,  type: 'examine', glow: true, sprite: 'item-shower' },
+    // --- Yard (rows 11-14) ---
+    { id: 'ch1_smoke',      x: 10, y: 13, type: 'examine', glow: true, sprite: 'item-joint' },
+    { id: 'ch1_beerpong',   x: 34, y: 13, type: 'examine', glow: true, sprite: 'item-desk' },
+    { id: 'ch1_surfboard',  x: 2,  y: 13, type: 'examine', glow: false, sprite: 'item-surfboard' },
 
-    // --- Yard (rows 9-11) ---
-    { id: 'ch1_smoke',      x: 8,  y: 11, type: 'examine', glow: true, sprite: 'item-joint' },
-    { id: 'ch1_beerpong',   x: 34, y: 10, type: 'examine', glow: true, sprite: 'item-desk' },          // beer pong table
-
-    // --- Beach (rows 16-26) ---
-    { id: 'ch1_view',       x: 20, y: 21, type: 'examine', glow: false, sprite: 'item-photo' },         // ocean view
-    { id: 'ch1_volleyball1', x: 15, y: 20, type: 'examine', glow: true, sprite: 'item-ball' },
-    { id: 'ch1_towels',     x: 8,  y: 18, type: 'examine', glow: false, sprite: 'item-rug' },
-    { id: 'ch1_cooler',     x: 10, y: 18, type: 'examine', glow: false, sprite: 'item-storage-box' },
-    { id: 'ch1_bonfire',    x: 28, y: 22, type: 'examine', glow: false, sprite: 'item-bbq' },
-    { id: 'ch1_surfboards', x: 5,  y: 17, type: 'examine', glow: false, sprite: 'item-surfboard' },   // surfboards in sand
-    { id: 'ch1_shells',     x: 30, y: 25, type: 'examine', glow: false, sprite: 'item-ball' },
-    { id: 'ch1_sunset',     x: 35, y: 20, type: 'examine', glow: false, sprite: 'item-photo' },
+    // --- Beach (rows 19-28) — bonfire, volleyball, towels, surfboards ---
+    { id: 'ch1_view',       x: 20, y: 25, type: 'examine', glow: false, sprite: 'item-photo' },
+    { id: 'ch1_volleyball1', x: 17, y: 22, type: 'examine', glow: true, sprite: 'item-ball' },
+    { id: 'ch1_towels',     x: 8,  y: 21, type: 'examine', glow: false, sprite: 'item-rug' },
+    { id: 'ch1_cooler',     x: 10, y: 21, type: 'examine', glow: false, sprite: 'item-storage-box' },
+    { id: 'ch1_bonfire',    x: 30, y: 25, type: 'examine', glow: false, sprite: 'item-bbq' },
+    { id: 'ch1_surfboards', x: 5,  y: 20, type: 'examine', glow: false, sprite: 'item-surfboard' },
+    { id: 'ch1_shells',     x: 34, y: 27, type: 'examine', glow: false, sprite: 'item-ball' },
+    { id: 'ch1_sunset',     x: 36, y: 23, type: 'examine', glow: false, sprite: 'item-photo' },
   ],
 };
 
@@ -648,9 +658,9 @@ export const tractorMap: MapData = {
     [ G, G, G, B, B, B, B, O, B, B, B, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 7  farmhouse door
     [ G, G, G, G, G, G, G, P, G, G, G, G, I, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 8  path from farmhouse
 
-    // --- PATH connecting farmhouse to vineyards (rows 9-10) ---
+    // --- WORK AREA + PATH connecting farmhouse to vineyards (rows 9-10) ---
     [ G, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, G ], // 9  main horizontal path
-    [ G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 10 path south
+    [ G, G, I, I, G, G, G, P, G, G, I, G, G, G, G, G, I, G, G, G, P, G, G, G, I, I, G, G, G, G, I, G, G, G, G, I, G, G, G, G ], // 10 dirt patches — crates, barrels, work gear scattered
 
     // --- VINEYARD BLOCK 1 (rows 11-17): left side, big ---
     [ G, G, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, G, G, G, P, G, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, G, G ], // 11 fence top (2 vineyard blocks)
@@ -662,11 +672,11 @@ export const tractorMap: MapData = {
     [ G, G, E, I, P, I, P, I, P, I, P, I, P, I, P, I, E, G, G, G, P, G, E, I, P, I, P, I, P, I, P, I, P, I, P, I, P, E, G, G ], // 17 tractor tracks through vineyard
     [ G, G, E, E, E, E, E, E, E, P, E, E, E, E, E, E, E, G, G, G, P, G, E, E, E, E, E, P, E, E, E, E, E, E, E, E, E, E, G, G ], // 18 fence bottom (gaps for paths)
 
-    // --- VINEYARD ROW 2 bottom + connecting paths (rows 19-22) ---
-    [ G, G, G, G, G, G, G, G, G, P, G, G, I, G, G, G, G, G, G, G, P, G, G, G, G, G, G, P, G, G, G, G, G, I, G, G, G, G, G, G ], // 19 paths connecting blocks
-    [ G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, W, G, G, G, G, P, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G ], // 20 irrigation puddle
-    [ G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, P, G, G, G, G, G, G, G, G, G, G, G, G ], // 21
-    [ G, G, G, G, G, T, G, G, G, P, G, G, G, G, G, G, G, G, G, G, P, G, G, G, G, G, G, P, G, G, T, G, G, G, G, G, G, G, G, G ], // 22 scattered trees
+    // --- VINEYARD ROW 2 bottom + work area (rows 19-22) ---
+    [ G, G, I, G, G, G, G, G, G, P, G, G, I, G, G, G, G, G, I, G, P, G, G, G, I, G, G, P, G, G, G, G, G, I, G, G, G, G, G, G ], // 19 dirt patches, grape crate spots
+    [ G, G, G, I, G, G, G, G, G, P, G, G, G, G, G, W, G, G, G, G, P, G, G, G, G, G, G, P, G, G, G, I, W, G, G, G, G, G, G, G ], // 20 irrigation puddles + dirt
+    [ G, G, G, G, G, I, G, G, G, P, G, G, G, I, G, G, G, G, G, G, P, G, G, I, G, G, G, P, G, G, G, G, G, G, I, G, G, G, G, G ], // 21 scattered work patches
+    [ G, G, G, G, G, T, G, G, G, P, G, G, G, G, G, G, I, G, G, G, P, G, G, G, G, G, G, P, G, G, T, G, G, G, G, I, G, G, G, G ], // 22 shade trees + dirt
 
     // --- OPEN GRASSLAND + DIRT PATHS (rows 23-25) ---
     [ G, G, G, G, G, G, G, G, G, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, G, G, G, G, G, T, G, G, G, G, G, G ], // 23 main path south
@@ -714,6 +724,19 @@ export const tractorMap: MapData = {
     { id: 'ch4_dust',         x: 35, y: 10, type: 'examine', glow: false, sprite: 'item-photo' },
     { id: 'ch4_hat',          x: 10, y: 7,  type: 'examine', glow: false, sprite: 'item-poster' },
     { id: 'ch4_spanish_radio', x: 22, y: 4, type: 'examine', glow: false, sprite: 'item-phone' },
+    // Work area between farmhouse and vineyards
+    { id: 'ch4_grape_crate1', x: 3,  y: 10, type: 'examine', glow: false, sprite: 'item-storage-box' },
+    { id: 'ch4_grape_crate2', x: 24, y: 10, type: 'examine', glow: false, sprite: 'item-storage-box' },
+    { id: 'ch4_water_barrel', x: 10, y: 10, type: 'examine', glow: false, sprite: 'item-bottle' },
+    { id: 'ch4_wheelbarrow',  x: 35, y: 10, type: 'examine', glow: false, sprite: 'item-car' },
+    { id: 'ch4_hose',         x: 16, y: 10, type: 'examine', glow: false, sprite: 'item-plant' },
+    // Between vineyard blocks
+    { id: 'ch4_grape_bucket', x: 3,  y: 19, type: 'examine', glow: false, sprite: 'item-storage-box' },
+    { id: 'ch4_pruning',      x: 13, y: 19, type: 'examine', glow: false, sprite: 'item-weights' },
+    { id: 'ch4_water_jug',    x: 24, y: 19, type: 'examine', glow: false, sprite: 'item-bottle' },
+    { id: 'ch4_crate_stack',  x: 33, y: 19, type: 'examine', glow: false, sprite: 'item-storage-box' },
+    { id: 'ch4_shade_bench',  x: 6,  y: 22, type: 'examine', glow: false, sprite: 'item-couch' },
+    { id: 'ch4_irrigation',   x: 32, y: 20, type: 'examine', glow: false, sprite: 'item-bottle' },
   ],
 };
 
@@ -726,96 +749,100 @@ export const tractorMap: MapData = {
 export const comeUpMap: MapData = {
   tiles: [
     //0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39
-    // --- JP'S HOME OFFICE AREA (rows 0-6): bigger office (12 wide, 10 interior) ---
-    [ G, G, T, G, G, G, G, G, G, G, G, G, G, G, T, G, G, G, T, G, G, G, G, G, G, G, G, G, G, G, G, G, G, T, G, G, G, G, G, G ], // 0  open feel - trees + grass
-    [ G, G, G, B, B, B, B, B, B, B, B, B, B, B, B, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 1  office walls (12 wide)
-    [ G, G, G, B, J, J, J, J, J, J, J, J, J, J, B, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 2  HARDWOOD floor (10 interior)
-    [ G, G, G, B, J, J, J, J, J, J, J, J, J, J, B, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 3
-    [ G, G, G, B, J, J, J, J, J, J, J, J, J, J, B, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 4
-    [ G, G, G, B, B, B, B, B, B, O, B, B, B, B, B, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 5  office door
-    [ G, G, T, G, G, I, G, G, G, C, G, G, G, G, G, T, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 6  yard + driveway
+    // --- JP'S HOME OFFICE AREA (rows 0-8): bigger office (18 wide, 16 interior, 5 rows deep) ---
+    [ G, G, T, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, T, G, G, G, G, G, G, G, G, G, G, G, G, T, G, G, G, G, G, G ], // 0  trees + grass
+    [ G, G, G, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 1  office walls (18 wide)
+    [ G, G, G, B, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, B, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 2  HARDWOOD floor (16 interior)
+    [ G, G, G, B, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, B, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 3
+    [ G, G, G, B, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, B, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 4
+    [ G, G, G, B, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, B, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 5
+    [ G, G, G, B, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, J, B, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 6
+    [ G, G, G, B, B, B, B, B, B, B, O, B, B, B, B, B, B, B, B, B, B, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 7  office door
+    [ G, G, T, G, G, I, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, T, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 8  yard + driveway
 
-    // --- STREET (rows 7-8) ---
-    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 7  street
-    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 8  street (solid concrete)
+    // --- STREET (rows 9-10) ---
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 9  street
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 10 street
 
-    // --- CLIENT DISTRICT 1 (rows 9-15): 3 buildings with 3 interior rows each ---
-    [ G, G, G, I, G, G, G, G, G, C, G, G, T, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 9  near building
-    [ G, G, B, B, B, B, B, B, G, C, G, G, G, B, B, B, B, B, B, B, B, G, G, G, G, B, B, B, B, B, B, B, B, B, G, G, G, G, G, G ], // 10 3 client buildings
-    [ G, G, B, F, F, F, F, B, G, C, G, G, G, B, F, F, F, F, F, F, B, G, G, G, G, B, F, F, N, N, F, F, F, B, G, G, G, G, G, G ], // 11 interior row 1 (print counter)
-    [ G, G, B, F, N, F, F, B, G, C, G, G, G, B, F, F, F, F, F, F, B, G, G, G, G, B, F, F, F, F, F, F, F, B, G, G, G, G, G, G ], // 12 interior row 2 (N=counter)
-    [ G, G, B, F, F, F, F, B, G, C, G, G, G, B, F, F, F, F, F, F, B, G, G, G, G, B, F, N, N, F, F, N, N, B, G, G, G, G, G, G ], // 13 interior row 3 (sticker display tables)
-    [ G, G, B, B, B, O, B, B, G, C, G, G, G, B, B, B, B, O, B, B, B, G, G, G, G, B, B, B, B, O, B, B, B, B, G, G, G, G, G, G ], // 14 doors
-    [ G, G, I, G, G, C, G, G, G, C, G, G, I, G, G, G, G, C, G, G, G, G, G, G, I, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G ], // 15 worn dirt near walks
+    // --- CLIENT DISTRICT 1 (rows 11-19): 3 BIGGER buildings (8-10 wide, 4 interior rows) ---
+    [ G, G, G, I, G, G, G, G, G, G, C, G, G, T, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 11 yard
+    [ G, B, B, B, B, B, B, B, B, G, C, G, G, B, B, B, B, B, B, B, B, B, B, G, G, B, B, B, B, B, B, B, B, B, B, B, G, G, G, G ], // 12 3 client buildings (wider)
+    [ G, B, F, F, F, F, F, F, B, G, C, G, G, B, F, F, F, F, F, F, F, F, B, G, G, B, F, F, F, N, N, F, F, F, F, B, G, G, G, G ], // 13 interior row 1
+    [ G, B, F, F, N, F, F, F, B, G, C, G, G, B, F, F, F, F, F, F, F, F, B, G, G, B, F, F, F, F, F, F, F, F, F, B, G, G, G, G ], // 14 interior row 2
+    [ G, B, F, F, F, F, F, F, B, G, C, G, G, B, F, F, F, F, F, F, F, F, B, G, G, B, F, F, N, N, F, F, N, N, F, B, G, G, G, G ], // 15 interior row 3
+    [ G, B, F, F, F, F, F, F, B, G, C, G, G, B, F, F, F, F, F, F, F, F, B, G, G, B, F, F, F, F, F, F, F, F, F, B, G, G, G, G ], // 16 interior row 4
+    [ G, B, B, B, B, O, B, B, B, G, C, G, G, B, B, B, B, B, O, B, B, B, B, G, G, B, B, B, B, B, O, B, B, B, B, B, G, G, G, G ], // 17 doors
+    [ G, I, G, G, G, C, G, G, G, G, C, G, G, I, G, G, G, G, C, G, G, G, G, G, G, I, G, G, G, G, C, G, G, G, G, G, G, G, G, G ], // 18 walkways
+    [ G, G, G, G, G, C, G, G, G, G, C, G, G, G, G, G, G, G, C, G, G, G, T, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G ], // 19 yard
 
-    // --- SECOND STREET (rows 16-17) ---
-    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 16 main street
-    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 17
+    // --- SECOND STREET (rows 20-21) ---
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 20 street
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 21
 
-    // --- CLIENT DISTRICT 2 (rows 18-24): WCT store + DHL warehouse with 3 interior rows ---
-    [ G, G, G, G, G, G, G, G, C, G, G, B, B, B, B, B, B, G, G, G, G, G, G, G, E, B, B, B, B, B, B, B, B, B, B, B, G, G, G, G ], // 18 WCT + DHL roofline
-    [ G, G, G, G, G, G, G, G, C, G, G, B, F, F, F, F, B, G, G, G, G, G, G, G, B, D, D, D, D, D, D, D, D, D, D, B, G, G, G, G ], // 19 interior row 1
-    [ G, G, G, G, G, G, G, G, C, G, G, B, F, F, F, F, B, G, G, G, G, G, G, G, B, D, D, D, D, D, D, D, D, D, D, B, G, G, G, G ], // 20 interior row 2
-    [ G, G, G, G, G, G, G, G, C, G, G, B, F, F, F, F, B, G, G, G, G, G, G, G, B, D, D, D, D, D, D, D, D, D, D, B, G, G, G, G ], // 21 interior row 3 (new)
-    [ G, G, G, G, G, G, G, G, C, G, G, B, B, B, O, B, B, G, G, G, G, G, G, G, B, B, B, B, O, B, B, B, B, B, B, B, G, G, G, G ], // 22 doors
-    [ G, G, G, G, G, G, G, G, C, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G ], // 23 walks from doors
-    [ G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G ], // 24 bottom street
+    // --- CLIENT DISTRICT 2 (rows 22-29): WCT store (8 wide) + DHL warehouse (12 wide), 4 interior rows ---
+    [ G, G, G, G, G, G, G, G, C, G, B, B, B, B, B, B, B, B, B, G, G, G, G, G, B, B, B, B, B, B, B, B, B, B, B, B, B, G, G, G ], // 22 WCT + DHL roofline
+    [ G, G, G, G, G, G, G, G, C, G, B, F, F, F, F, F, F, F, B, G, G, G, G, G, B, D, D, D, D, D, D, D, D, D, D, D, B, G, G, G ], // 23
+    [ G, G, G, G, G, G, G, G, C, G, B, F, F, F, F, F, F, F, B, G, G, G, G, G, B, D, D, D, D, D, D, D, D, D, D, D, B, G, G, G ], // 24
+    [ G, G, G, G, G, G, G, G, C, G, B, F, F, F, F, F, F, F, B, G, G, G, G, G, B, D, D, D, D, D, D, D, D, D, D, D, B, G, G, G ], // 25
+    [ G, G, G, G, G, G, G, G, C, G, B, F, F, F, F, F, F, F, B, G, G, G, G, G, B, D, D, D, D, D, D, D, D, D, D, D, B, G, G, G ], // 26
+    [ G, G, G, G, G, G, G, G, C, G, B, B, B, B, B, O, B, B, B, G, G, G, G, G, B, B, B, B, B, B, O, B, B, B, B, B, B, G, G, G ], // 27 doors
+    [ G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G ], // 28 walks
+    [ G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G ], // 29 bottom street
 
-    // --- PARK / EXIT AREA (rows 25-29): park with pond, bench, pathway ---
-    [ G, G, G, G, G, G, G, G, G, G, T, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, T, G, G, G, G, G, G, G, G ], // 25 park entrance + pathway
-    [ G, G, G, T, G, G, G, G, B, C, C, B, G, G, G, W, W, G, G, G, C, G, G, G, G, G, G, T, G, G, G, G, G, G, G, G, G, G, G, G ], // 26 bench (B,C,C,B) + pond start
-    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, W, W, W, G, G, G, C, G, G, G, G, T, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 27 pond continues + pathway
-    [ G, G, G, G, G, G, G, G, G, G, G, G, T, G, G, G, G, G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G ], // 28 walk to exit
-    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, G ], // 29 exit at bottom-right
+    // --- PARK / EXIT AREA (rows 30-35): bigger park ---
+    [ G, G, G, G, G, G, G, G, G, G, T, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, T, G, G, G, G, G, G, G, G ], // 30 park entrance
+    [ G, G, G, T, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, T, G, G, G, G, G, G, G, G, G, G, G, G ], // 31
+    [ G, G, G, G, G, G, G, G, B, C, C, B, G, G, G, W, W, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 32 bench + pond
+    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, W, W, W, G, G, G, C, G, G, G, G, T, G, G, G, G, G, G, G, G, G, G, G, G, G, G ], // 33 pond + pathway
+    [ G, G, G, G, G, G, G, G, G, G, G, G, T, G, G, G, G, G, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, G ], // 34 walk to exit
+    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, G ], // 35 exit
   ],
   collisions: STANDARD_COLLISIONS,
   spawns: {
-    player: { x: 9, y: 3 },
+    player: { x: 10, y: 4 },
     npcs: [
-      { id: 'ch5_first_client', x: 5,  y: 15, sprite: 'npc_client' },
-      { id: 'ch5_sticker',      x: 30, y: 15, sprite: 'npc_sticker_smith' },
-      { id: 'ch5_ghost',        x: 14, y: 23, sprite: 'npc_generic' },
-      { id: 'ch5_rejected',     x: 20, y: 8,  sprite: 'npc_generic' },
-      { id: 'ch5_wct',          x: 14, y: 17, sprite: 'npc_client' },
-      { id: 'ch5_vacaville',    x: 10, y: 8,  sprite: 'npc_generic' },
-      { id: 'ch5_manza',        x: 30, y: 8,  sprite: 'npc_manza' },
+      { id: 'ch5_first_client', x: 5,  y: 18, sprite: 'npc_client' },
+      { id: 'ch5_sticker',      x: 30, y: 18, sprite: 'npc_sticker_smith' },
+      { id: 'ch5_ghost',        x: 15, y: 28, sprite: 'npc_generic' },
+      { id: 'ch5_rejected',     x: 20, y: 10, sprite: 'npc_generic' },
+      { id: 'ch5_wct',          x: 15, y: 21, sprite: 'npc_client' },
+      { id: 'ch5_vacaville',    x: 10, y: 10, sprite: 'npc_generic' },
+      { id: 'ch5_manza',        x: 30, y: 10, sprite: 'npc_manza' },
     ],
   },
   triggers: [
-    { x: 38, y: 29, action: 'scene', target: 'LAScene' },
+    { x: 38, y: 35, action: 'scene', target: 'LAScene' },
   ],
   interactables: [
     // Showcases near client building doors
-    { id: 'ch5_wct_showcase', x: 5, y: 14, type: 'showcase', glow: true, sprite: 'item-money' },
-    { id: 'ch5_sticker_showcase', x: 29, y: 15, type: 'showcase', glow: true, sprite: 'item-money' },
-    { id: 'ch5_dhl_showcase', x: 28, y: 23, type: 'showcase', glow: true, sprite: 'item-tablet' },
-    // JP's office — spread out, no overlapping positions, max 4 items
-    { id: 'ch5_first_dollar', x: 5, y: 3, type: 'examine', glow: true, sprite: 'item-money' },
-    { id: 'ch5_first_site', x: 8, y: 2, type: 'examine', glow: true, sprite: 'item-tablet' },
-    { id: 'ch5_late_night', x: 11, y: 3, type: 'examine', glow: false, sprite: 'item-tablet' },
-    { id: 'ch5_github', x: 12, y: 4, type: 'examine', glow: false, sprite: 'item-tablet' },
-    // Street — minimal items, no unnecessary sprites
-    { id: 'ch5_review', x: 35, y: 9, type: 'examine', glow: false, sprite: 'item-poster' },
-    { id: 'ch5_sticker_wall', x: 27, y: 11, type: 'examine', glow: false, sprite: 'item-poster' },
-    { id: 'ch5_print_shop', x: 5, y: 16, type: 'examine', glow: false, sprite: 'item-poster' },
-    { id: 'ch5_dhl_building', x: 28, y: 24, type: 'examine', glow: false, sprite: 'item-tablet' },
-    // Invisible "!" markers — no sprites
-    { id: 'ch5_3am', x: 7, y: 4, type: 'examine', glow: false, sprite: 'item-phone' },
-    { id: 'ch5_pricing', x: 9, y: 2, type: 'examine', glow: false, sprite: 'item-money' },
-    { id: 'ch5_stack', x: 6, y: 2, type: 'examine', glow: true, sprite: 'item-tablet' },
-    { id: 'ch5_doubt', x: 10, y: 4, type: 'examine', glow: false, sprite: 'item-book' },
-    // Expanded Ch6 interactables — hustle details
-    { id: 'ch5_fiverr',       x: 12, y: 3,  type: 'examine', glow: true, sprite: 'item-tablet' },
-    { id: 'ch5_cold_email',   x: 9,  y: 4,  type: 'examine', glow: true, sprite: 'item-letter' },
-    { id: 'ch5_portfolio',    x: 7,  y: 2,  type: 'examine', glow: false, sprite: 'item-tablet' },
-    { id: 'ch5_coffee',       x: 4,  y: 3,  type: 'examine', glow: false, sprite: 'item-food' },
-    { id: 'ch5_whiteboard',   x: 6,  y: 1,  type: 'examine', glow: false, sprite: 'item-poster' },
-    { id: 'ch5_invoice',      x: 11, y: 2,  type: 'examine', glow: true, sprite: 'item-money' },
-    { id: 'ch5_rejection',    x: 20, y: 14, type: 'examine', glow: true, sprite: 'item-phone' },
-    { id: 'ch5_testimonial',  x: 30, y: 12, type: 'examine', glow: true, sprite: 'item-letter' },
-    { id: 'ch5_youtube',      x: 10, y: 5,  type: 'examine', glow: false, sprite: 'item-tv' },
-    { id: 'ch5_ramen',        x: 3,  y: 4,  type: 'examine', glow: false, sprite: 'item-food' },
-    { id: 'ch5_bank_app',     x: 8,  y: 3,  type: 'examine', glow: true, sprite: 'item-phone' },
+    { id: 'ch5_wct_showcase', x: 5, y: 17, type: 'showcase', glow: true, sprite: 'item-money' },
+    { id: 'ch5_sticker_showcase', x: 30, y: 18, type: 'showcase', glow: true, sprite: 'item-money' },
+    { id: 'ch5_dhl_showcase', x: 30, y: 28, type: 'showcase', glow: true, sprite: 'item-tablet' },
+    // JP's office — NOW SPREAD OUT in bigger 16-wide, 5-row space
+    { id: 'ch5_first_dollar', x: 5,  y: 3,  type: 'examine', glow: true, sprite: 'item-money' },
+    { id: 'ch5_first_site',   x: 10, y: 2,  type: 'examine', glow: true, sprite: 'item-tablet' },
+    { id: 'ch5_late_night',    x: 15, y: 4,  type: 'examine', glow: false, sprite: 'item-tablet' },
+    { id: 'ch5_github',        x: 18, y: 3,  type: 'examine', glow: false, sprite: 'item-tablet' },
+    { id: 'ch5_3am',           x: 8,  y: 5,  type: 'examine', glow: false, sprite: 'item-phone' },
+    { id: 'ch5_pricing',       x: 13, y: 2,  type: 'examine', glow: false, sprite: 'item-money' },
+    { id: 'ch5_stack',         x: 7,  y: 2,  type: 'examine', glow: true, sprite: 'item-tablet' },
+    { id: 'ch5_doubt',         x: 16, y: 6,  type: 'examine', glow: false, sprite: 'item-book' },
+    { id: 'ch5_fiverr',        x: 19, y: 5,  type: 'examine', glow: true, sprite: 'item-tablet' },
+    { id: 'ch5_cold_email',    x: 12, y: 6,  type: 'examine', glow: true, sprite: 'item-letter' },
+    { id: 'ch5_portfolio',     x: 9,  y: 3,  type: 'examine', glow: false, sprite: 'item-tablet' },
+    { id: 'ch5_coffee',        x: 5,  y: 5,  type: 'examine', glow: false, sprite: 'item-food' },
+    { id: 'ch5_whiteboard',    x: 8,  y: 1,  type: 'examine', glow: false, sprite: 'item-poster' },
+    { id: 'ch5_invoice',       x: 17, y: 2,  type: 'examine', glow: true, sprite: 'item-money' },
+    { id: 'ch5_youtube',       x: 14, y: 5,  type: 'examine', glow: false, sprite: 'item-tv' },
+    { id: 'ch5_ramen',         x: 4,  y: 4,  type: 'examine', glow: false, sprite: 'item-food' },
+    { id: 'ch5_bank_app',      x: 11, y: 4,  type: 'examine', glow: true, sprite: 'item-phone' },
+    // Street + client district items
+    { id: 'ch5_review',        x: 35, y: 13, type: 'examine', glow: false, sprite: 'item-poster' },
+    { id: 'ch5_sticker_wall',  x: 28, y: 14, type: 'examine', glow: false, sprite: 'item-poster' },
+    { id: 'ch5_print_shop',    x: 5,  y: 20, type: 'examine', glow: false, sprite: 'item-poster' },
+    { id: 'ch5_dhl_building',  x: 30, y: 29, type: 'examine', glow: false, sprite: 'item-tablet' },
+    { id: 'ch5_rejection',     x: 20, y: 17, type: 'examine', glow: true, sprite: 'item-phone' },
+    { id: 'ch5_testimonial',   x: 32, y: 15, type: 'examine', glow: true, sprite: 'item-letter' },
   ],
 };
 
@@ -989,7 +1016,7 @@ export const operatorMap: MapData = {
     { id: 'ch6_coffee', x: 16, y: 38, type: 'examine', glow: false, sprite: 'item-food' },
     { id: 'ch6_lobby_desk', x: 29, y: 40, type: 'examine', glow: false, sprite: 'item-tablet' },
     // Block 4 — JP's World
-    { id: 'ch6_corvette', x: 20, y: 51, type: 'examine', glow: true, sprite: 'item-car' },
+    { id: 'ch6_corvette', x: 19, y: 52, type: 'examine', glow: false, sprite: 'item-tablet' },  // below car — no visible sprite, real car placed by scene
     { id: 'ch6_food_truck_menu', x: 24, y: 48, type: 'examine', glow: true, sprite: 'item-food' },
     { id: 'ch6_mural', x: 33, y: 48, type: 'examine', glow: false, sprite: 'item-poster' },
     { id: 'ch6_rooftop', x: 9, y: 48, type: 'examine', glow: false, sprite: 'item-photo' },
@@ -1004,7 +1031,7 @@ export const operatorMap: MapData = {
     { id: 'ch6_restaurant_menu', x: 8,  y: 23, type: 'examine', glow: false, sprite: 'item-letter' },     // restaurant menu
     { id: 'ch6_fountain',        x: 20, y: 28, type: 'examine', glow: false, sprite: 'item-plant' },      // plaza fountain
     { id: 'ch6_street_art',      x: 15, y: 32, type: 'examine', glow: false, sprite: 'item-poster' },     // street art
-    { id: 'ch6_lambo',           x: 22, y: 51, type: 'examine', glow: true,  sprite: 'item-car' },        // SVJ parked
+    { id: 'ch6_lambo',           x: 23, y: 52, type: 'examine', glow: false,  sprite: 'item-tablet' },    // below car — no visible sprite, real car placed by scene
     { id: 'ch6_valet_stand',     x: 18, y: 50, type: 'examine', glow: false, sprite: 'item-keys' },       // valet stand
     { id: 'ch6_newspaper',       x: 25, y: 30, type: 'examine', glow: false, sprite: 'item-letter' },     // LA Times on a bench
     { id: 'ch6_homeless',        x: 5,  y: 35, type: 'examine', glow: true,  sprite: 'item-food' },       // homeless person (reality check)
