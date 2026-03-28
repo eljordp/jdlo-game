@@ -7,6 +7,7 @@ import { SCALED_TILE, SCALE, GAME_WIDTH, GAME_HEIGHT, TILE_IDS } from '../config
 import { Analytics } from '../systems/Analytics';
 import { MoodSystem } from '../systems/MoodSystem';
 import { InventorySystem } from '../systems/InventorySystem';
+import { GameSettings } from '../systems/GameSettings';
 
 export class BeachScene extends BaseChapterScene {
   private inHotTub = false;
@@ -303,9 +304,44 @@ export class BeachScene extends BaseChapterScene {
       this.tweens.add({ targets: kNpc.sprite, alpha: 1, duration: 500 });
     }
 
-    // Show the wake-up dialogue
-    const chapterDialogue = this.getChapterDialogue();
-    const lines = chapterDialogue.npcs['ch1_gf_k'];
+    // Show the wake-up dialogue — rated R version has an intimate moment before she leaves
+    const ratedRLines: DialogueLine[] = [
+      { speaker: 'Narrator', text: 'K stirs. Rolls over. Her hair falls across the pillow.' },
+      { speaker: 'K', text: 'Mmm... hey baby.' },
+      { speaker: 'Narrator', text: 'She pulls him closer under the covers.' },
+      { speaker: 'K', text: 'Don\'t get up yet.' },
+      { speaker: 'JP', text: 'I wasn\'t planning on it.' },
+      { speaker: 'Narrator', text: 'The room goes quiet for a while. Just them.' },
+      { speaker: 'Narrator', text: '...' },
+      { speaker: 'Narrator', text: 'Some moments you don\'t narrate.' },
+      { speaker: 'Narrator', text: 'Time passes. The light shifts in the room.' },
+      { speaker: 'K', text: 'Okay NOW I really gotta go. UCLA orientation.' },
+      { speaker: 'JP', text: 'Five more minutes.' },
+      { speaker: 'K', text: 'That\'s what you said 30 minutes ago.' },
+      { speaker: 'Narrator', text: 'She gets up. Steals his t-shirt. Fixes her hair in the mirror.' },
+      { speaker: 'K', text: 'Don\'t just smoke all day okay? Actually do something.' },
+      { speaker: 'JP', text: 'I will. Promise.' },
+      { speaker: 'K', text: 'I\'m serious JP.' },
+      { speaker: 'Narrator', text: 'She leans down. Kisses him one more time.' },
+      { speaker: 'K', text: 'Be safe. I love you.' },
+      { speaker: 'JP', text: 'Love you too.' },
+      { speaker: 'Narrator', text: 'The door closes. His shirt is gone. The room smells like her perfume.' },
+      { speaker: 'JP\'s Mind', text: 'She\'s the only person who actually cares if I make it.' },
+    ];
+
+    const kidsLines: DialogueLine[] = [
+      { speaker: 'Narrator', text: 'K wakes up! She had a great nap!' },
+      { speaker: 'K', text: 'Good morning! Time for school!' },
+      { speaker: 'JP', text: 'Morning! Want some juice?' },
+      { speaker: 'K', text: 'No time! I have UCLA orientation!' },
+      { speaker: 'Narrator', text: 'She gives him a high five and grabs her backpack.' },
+      { speaker: 'K', text: 'Study hard today okay? No video games all day.' },
+      { speaker: 'JP', text: 'I won\'t! Promise!' },
+      { speaker: 'K', text: 'Bye! Have a great day!' },
+      { speaker: 'JP\'s Mind', text: 'She\'s a really good friend.' },
+    ];
+
+    const lines = GameSettings.kidsMode ? kidsLines : ratedRLines;
     if (lines) {
       this.dialogue.show(lines, () => {
         const k = this.npcs.find(n => n.id === 'ch1_gf_k');
@@ -1131,14 +1167,26 @@ export class BeachScene extends BaseChapterScene {
     // Camera shake — someone taps JP's shoulder
     this.cameras.main.shake(100, 0.002);
 
-    this.dialogue.show([
+    const isKids = GameSettings.kidsMode;
+
+    this.dialogue.show(isKids ? [
+      { speaker: 'Narrator', text: 'Someone offers JP some candy.' },
+      { speaker: '???', text: 'Hey! Want some Pixy Stix?' },
+    ] : [
       { speaker: 'Narrator', text: 'Someone JP doesn\'t recognize pulls him aside.' },
       { speaker: '???', text: 'Aye. You want a bump?' },
     ], () => {
-      this.showYesNoChoice('Do a line?', 'Fuck it', 'Nah I\'m good', () => {
+      const prompt = isKids ? 'Eat the Pixy Stix?' : 'Do a line?';
+      const yes = isKids ? 'Yummy!' : 'Fuck it';
+      const no = isKids ? 'No thanks!' : 'Nah I\'m good';
+      this.showYesNoChoice(prompt, yes, no, () => {
         // YES — escalates to blackout
         this.partyLevel = 3;
-        this.dialogue.show([
+        this.dialogue.show(isKids ? [
+          { speaker: 'Narrator', text: 'JP pours the ENTIRE Pixy Stix in his mouth.' },
+          { speaker: 'Narrator', text: 'SUGAR RUSH! Everything is BRIGHT and FAST!' },
+          { speaker: 'JP\'s Mind', text: 'WOOOOOO!' },
+        ] : [
           { speaker: 'Narrator', text: 'JP leans over the counter.' },
           { speaker: 'Narrator', text: 'Everything gets LOUD. The music. The people. His own heartbeat.' },
           { speaker: 'JP\'s Mind', text: 'Oh shit.' },

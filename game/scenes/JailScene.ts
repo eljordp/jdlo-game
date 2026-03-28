@@ -7,6 +7,7 @@ import type { DialogueLine } from '../systems/DialogueSystem';
 import { MoodSystem } from '../systems/MoodSystem';
 import { InventorySystem } from '../systems/InventorySystem';
 import { Analytics } from '../systems/Analytics';
+import { GameSettings } from '../systems/GameSettings';
 
 export class JailScene extends BaseChapterScene {
   private currentDay = 1;
@@ -1618,13 +1619,17 @@ export class JailScene extends BaseChapterScene {
       target.setTint(0xffffff);
       this.time.delayedCall(100, () => target.clearTint());
 
-      // Impact particles — 5 small circles burst from the hit point
+      // Impact particles — blood splatters (or stars in kids mode)
       const hitX = target.x;
       const hitY = target.y;
-      for (let i = 0; i < 5; i++) {
-        const angle = (Math.PI * 2 / 5) * i + Math.random() * 0.5;
+      const isKids = GameSettings.kidsMode;
+      const particleCount = isKids ? 5 : 8;
+      for (let i = 0; i < particleCount; i++) {
+        const angle = (Math.PI * 2 / particleCount) * i + Math.random() * 0.5;
         const speed = 60 + Math.random() * 40;
-        const particle = this.add.circle(hitX, hitY, 4 + Math.random() * 3, 0xffffff)
+        const color = isKids ? 0xf0c040 : 0xcc2020; // yellow stars vs blood red
+        const size = isKids ? (4 + Math.random() * 3) : (3 + Math.random() * 5);
+        const particle = this.add.circle(hitX, hitY, size, color)
           .setScrollFactor(0).setDepth(DEPTH + 20).setAlpha(0.9);
         objects.push(particle);
         this.tweens.add({
@@ -1636,6 +1641,20 @@ export class JailScene extends BaseChapterScene {
           duration: 300 + Math.random() * 200,
           ease: 'Quad.easeOut',
           onComplete: () => particle.destroy(),
+        });
+      }
+
+      // Blood drip that lingers (rated R only)
+      if (!isKids && Math.random() > 0.4) {
+        const drip = this.add.circle(hitX + (Math.random() - 0.5) * 20, hitY, 2, 0x990000, 0.7)
+          .setScrollFactor(0).setDepth(DEPTH + 15);
+        objects.push(drip);
+        this.tweens.add({
+          targets: drip,
+          y: hitY + 30 + Math.random() * 20,
+          alpha: 0.3,
+          duration: 800,
+          ease: 'Quad.easeIn',
         });
       }
     };

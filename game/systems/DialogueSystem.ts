@@ -1,5 +1,6 @@
 import { GAME_WIDTH, GAME_HEIGHT, FONT_STYLE, SPEAKER_FONT_STYLE } from '../config';
 import { SoundEffects } from './SoundEffects';
+import { GameSettings } from './GameSettings';
 
 export interface DialogueChoice {
   text: string;
@@ -101,7 +102,7 @@ export class DialogueSystem {
     const line = this.lines[index];
     if (!line) return;
 
-    this.fullCurrentText = line.text;
+    this.fullCurrentText = GameSettings.censor(line.text);
     this.displayedText = '';
     this.currentCharIndex = 0;
     this.charTimer = 0;

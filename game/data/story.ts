@@ -1432,6 +1432,7 @@ const ch1Extras: Record<string, DialogueLine[]> = {
   ],
   ch1_hottub: [
     { speaker: 'JP\'s Mind', text: 'Hot tub bubbling at 2 PM on a Wednesday. Three girls in bikinis. Nobody has a job.' },
+    { speaker: 'JP\'s Mind', text: 'One of them keeps looking at me. Her friend is whispering something.' },
     { speaker: 'JP\'s Mind', text: 'This is what the good life looks like when you\'re 20 and selling weed in Santa Barbara.' },
     { speaker: 'JP\'s Mind', text: 'Ask me in a year if it was worth it.' },
   ],
