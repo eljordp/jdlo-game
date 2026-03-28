@@ -50,17 +50,54 @@ export class BeachScene extends BaseChapterScene {
   create() {
     super.create();
     // Exit triggers at south beach
-    this.addNavArrow(18, 28, 'Next chapter');
+    this.addNavArrow(18, 26, 'Next chapter');
 
-    // Place the BMW 335i in the yard (row 13)
+    // Place the BMW 335i in the yard (row 17)
     const carX = 4 * SCALED_TILE + SCALED_TILE / 2;
-    const carY = 13 * SCALED_TILE + SCALED_TILE / 2;
+    const carY = 17 * SCALED_TILE + SCALED_TILE / 2;
     const bmw = this.add.sprite(carX, carY, 'car-bmw335i');
     bmw.setScale(SCALE);
     bmw.setDepth(5);
-    this.collisionTiles.add('3,13');
-    this.collisionTiles.add('4,13');
-    this.collisionTiles.add('5,13');
+    this.collisionTiles.add('3,17');
+    this.collisionTiles.add('4,17');
+    this.collisionTiles.add('5,17');
+
+    // === NOLAN'S MASTER BEDROOM — LED lights + gaming vibes ===
+    // LED strip behind TV (cycling colors)
+    const ledColors = [0xff2060, 0x6020ff, 0x2060ff, 0x20ff60, 0xff6020];
+    let ledIdx = 0;
+    const ledStrip = this.add.rectangle(
+      27 * SCALED_TILE + SCALED_TILE / 2, 12 * SCALED_TILE + 4,
+      11 * SCALED_TILE - 8, 4, ledColors[0], 0.3
+    ).setDepth(3);
+    // LED color cycle
+    this.time.addEvent({
+      delay: 2000,
+      loop: true,
+      callback: () => {
+        ledIdx = (ledIdx + 1) % ledColors.length;
+        this.tweens.add({
+          targets: ledStrip,
+          fillColor: { from: ledStrip.fillColor, to: ledColors[ledIdx] },
+          duration: 1000,
+        });
+        // Can't tween fillColor directly — just set it
+        ledStrip.setFillStyle(ledColors[ledIdx], 0.3);
+      },
+    });
+    // LED glow on floor
+    const ledGlow = this.add.rectangle(
+      27 * SCALED_TILE + SCALED_TILE / 2, 13 * SCALED_TILE + SCALED_TILE / 2,
+      11 * SCALED_TILE, 3 * SCALED_TILE, 0x4020a0, 0.06
+    ).setDepth(2);
+    this.tweens.add({
+      targets: ledGlow,
+      alpha: 0.03,
+      duration: 2000,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
+    });
 
     // Hot tub bubble jets — active bubbles rising from the water
     this.createHotTubBubbles();
@@ -118,8 +155,8 @@ export class BeachScene extends BaseChapterScene {
   }
 
   private createHotTubSteam() {
-    // Hot tub is at cols 35-37, rows 3-5 (outdoor patio)
-    const tubCenterX = 36 * SCALED_TILE;
+    // Hot tub is at cols 37, rows 3-5 (outdoor patio — smaller)
+    const tubCenterX = 37 * SCALED_TILE;
     const tubTopY = 3 * SCALED_TILE;
 
     // 4 steam columns that rise and fade infinitely
@@ -157,8 +194,8 @@ export class BeachScene extends BaseChapterScene {
   }
 
   private createHotTubBubbles() {
-    // Hot tub is at cols 35-37, rows 3-5 (outdoor patio)
-    const tubCenterX = 36 * SCALED_TILE;
+    // Hot tub is at col 37, rows 3-5 (outdoor patio — smaller)
+    const tubCenterX = 37 * SCALED_TILE;
     const tubCenterY = 4 * SCALED_TILE;
     const tubWidth = 3 * SCALED_TILE;
     const tubHeight = 3 * SCALED_TILE;
@@ -338,7 +375,7 @@ export class BeachScene extends BaseChapterScene {
       { speaker: 'K', text: 'You\'re not gonna say anything?' },
       { speaker: 'JP', text: 'I\'m trying to breathe.' },
       { speaker: 'Narrator', text: 'They lay there for a while. Not talking. Just existing.' },
-      { speaker: 'K', text: 'Okay NOW I really gotta go. UCLA orientation.' },
+      { speaker: 'K', text: 'Okay NOW I really gotta go. I have class.' },
       { speaker: 'JP', text: 'Five more minutes.' },
       { speaker: 'K', text: 'That\'s what you said 40 minutes ago.' },
       { speaker: 'Narrator', text: 'She gets up. Steals his t-shirt. Fixes her hair in the mirror.' },
@@ -369,17 +406,24 @@ export class BeachScene extends BaseChapterScene {
       this.dialogue.show(lines, () => {
         const k = this.npcs.find(n => n.id === 'ch1_gf_k');
         if (k) {
-          // K walks to the door and disappears
+          // K runs to the front door (row 9, col 18) then out
+          const doorX = 18 * SCALED_TILE + SCALED_TILE / 2;
+          const doorY = 9 * SCALED_TILE + SCALED_TILE / 2;
+
+          // Walk to the door first
           this.tweens.add({
             targets: k.sprite,
-            x: 13 * SCALED_TILE + SCALED_TILE / 2,
-            duration: 1200,
+            x: doorX,
+            y: doorY,
+            duration: 1500,
             ease: 'Linear',
             onComplete: () => {
+              // Run out the door (move south past the wall)
               this.tweens.add({
                 targets: k.sprite,
-                alpha: 0,
-                duration: 400,
+                y: doorY + 4 * SCALED_TILE,
+                duration: 600,
+                ease: 'Quad.easeIn',
                 onComplete: () => {
                   k.sprite.setVisible(false);
                 },

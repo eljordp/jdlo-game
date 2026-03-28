@@ -916,45 +916,72 @@ function generateAllNPCs(scene: Phaser.Scene) {
     }
   );
 
-  // K (GF) — Hawaiian, tan, petite, prettiest character — 32x32
-  generateNPC32(
-    scene,
-    'npc_k',
-    0x1a1010, // dark brown/black hair (long, wavy)
-    'long',
-    0xf0e8e0, // white crop top
-    0xe0d8d0,
-    0x506878, // light wash jean shorts
-    0xc8a080, // tan/golden Hawaiian skin
-    0xb08860, // warm shadow
-    (g) => {
-      // Wavy hair texture — flows past shoulders
-      px(g, 5, 4, 0x221812, 2, 8);   // left hair strand
-      px(g, 25, 4, 0x221812, 2, 8);  // right hair strand
-      px(g, 6, 11, 0x1a1010, 1, 4);  // inner left strand
-      px(g, 25, 11, 0x1a1010, 1, 4); // inner right strand
-      // Big pretty eyes — longer lashes
-      px(g, 9, 7, 0x201010, 4, 2);   // left eye (bigger)
-      px(g, 19, 7, 0x201010, 4, 2);  // right eye (bigger)
-      px(g, 10, 7, 0x402820, 2, 1);  // left iris (warm brown)
-      px(g, 20, 7, 0x402820, 2, 1);  // right iris (warm brown)
-      px(g, 9, 6, 0x1a1010, 4, 1);   // left lashes
-      px(g, 19, 6, 0x1a1010, 4, 1);  // right lashes
-      // Soft lips — pink/coral
-      px(g, 13, 10, 0xd08080, 6, 1);
-      // Small nose
-      px(g, 15, 9, 0xb89070, 2, 1);
-      // Flower in hair (plumeria — Hawaiian)
-      px(g, 5, 2, 0xf0e0e0, 3, 3);   // white petals
-      px(g, 6, 3, 0xf0d040, 1, 1);   // yellow center
-      // Skinnier frame — narrow shoulders
-      px(g, 8, 14, 0xc8a080, 1, 4);  // exposed left arm (crop top)
-      px(g, 23, 14, 0xc8a080, 1, 4); // exposed right arm
-      // Small earrings (shell-like)
-      px(g, 7, 8, 0xf0e8d0, 1, 2);
-      px(g, 24, 8, 0xf0e8d0, 1, 2);
-    }
-  );
+  // K (GF) — Hawaiian, tan, petite, prettiest character — CUSTOM DRAW 32x32
+  makeTexture(scene, 'npc_k', CHAR_SIZE, CHAR_SIZE, (g) => {
+    // === HAIR — long, dark, wavy, flows past shoulders ===
+    px(g, 8, 1, 0x1a1010, 16, 3);    // hair top
+    px(g, 7, 2, 0x1a1010, 18, 3);    // hair sides wider
+    px(g, 6, 4, 0x1a1010, 20, 4);    // hair around face
+    px(g, 5, 5, 0x151010, 3, 10);    // left hair flowing down
+    px(g, 24, 5, 0x151010, 3, 10);   // right hair flowing down
+    px(g, 6, 14, 0x1a1010, 2, 6);    // left strand past shoulder
+    px(g, 24, 14, 0x1a1010, 2, 6);   // right strand past shoulder
+
+    // === FACE — tan Hawaiian skin, rounder/softer than male NPCs ===
+    px(g, 9, 4, 0xc8a080, 14, 8);    // face (wider, rounder)
+    px(g, 10, 3, 0xc8a080, 12, 1);   // forehead
+    px(g, 10, 12, 0xb89070, 12, 1);  // chin shadow
+
+    // === EYES — big, pretty, with lashes ===
+    px(g, 11, 6, 0xffffff, 4, 3);    // left eye white
+    px(g, 19, 6, 0xffffff, 4, 3);    // right eye white
+    px(g, 12, 7, 0x402820, 3, 2);    // left iris (warm brown)
+    px(g, 20, 7, 0x402820, 3, 2);    // right iris
+    px(g, 13, 7, 0x1a1010, 1, 1);    // left pupil
+    px(g, 21, 7, 0x1a1010, 1, 1);    // right pupil
+    // Eyelashes
+    px(g, 10, 6, 0x1a1010, 5, 1);    // left top lash
+    px(g, 18, 6, 0x1a1010, 5, 1);    // right top lash
+    px(g, 10, 5, 0x1a1010, 1, 1);    // left outer lash flick
+    px(g, 23, 5, 0x1a1010, 1, 1);    // right outer lash flick
+
+    // === NOSE + LIPS ===
+    px(g, 15, 9, 0xb89070, 2, 1);    // small nose
+    px(g, 13, 11, 0xd08080, 6, 1);   // lips — soft pink/coral
+    px(g, 14, 11, 0xe09090, 4, 1);   // lip highlight
+
+    // === FLOWER in hair (plumeria) ===
+    px(g, 4, 2, 0xf0e8e0, 4, 4);     // white petals
+    px(g, 5, 3, 0xf0d040, 2, 2);     // yellow center
+
+    // === BODY — petite, narrow shoulders, crop top ===
+    // Neck
+    px(g, 14, 12, 0xc8a080, 4, 2);   // neck (skin)
+    // Crop top (white, fitted)
+    px(g, 10, 14, 0xf0e8e0, 12, 5);  // crop top torso (narrow)
+    px(g, 11, 14, 0xfaf4f0, 10, 1);  // top highlight
+    // Exposed midriff (skin showing below crop top)
+    px(g, 11, 19, 0xc8a080, 10, 2);  // belly skin
+    // Arms (skinny, skin tone)
+    px(g, 8, 14, 0xc8a080, 2, 6);    // left arm
+    px(g, 22, 14, 0xc8a080, 2, 6);   // right arm
+
+    // === SHORTS — light wash jean cutoffs ===
+    px(g, 11, 21, 0x7090a8, 10, 3);  // shorts
+    px(g, 11, 21, 0x80a0b8, 10, 1);  // waistband highlight
+
+    // === LEGS — skinny, tan ===
+    px(g, 11, 24, 0xc8a080, 4, 5);   // left leg
+    px(g, 17, 24, 0xc8a080, 4, 5);   // right leg
+
+    // === FEET — small white sneakers ===
+    px(g, 11, 29, 0xf0f0f0, 4, 2);   // left shoe
+    px(g, 17, 29, 0xf0f0f0, 4, 2);   // right shoe
+
+    // === EARRINGS (shell) ===
+    px(g, 7, 8, 0xf0e8d0, 2, 2);     // left earring
+    px(g, 23, 8, 0xf0e8d0, 2, 2);    // right earring
+  });
 
   // Pops — Mexican, older, warm, strong, grey goatee — 32x32
   generateNPC32(
@@ -4882,69 +4909,71 @@ function generateMoreItems(scene: Phaser.Scene) {
 
   // --- item-bed-k --- JP's bed with K sleeping in it (2x1 tile, 64x32)
   makeTexture(scene, 'item-bed-k', TILE_SIZE * 2, TILE_SIZE, (g) => {
-    // Wide bed frame (dark wood)
-    px(g, 2, 5, 0x503010, 60, 2);   // headboard
-    px(g, 2, 5, 0x604020, 60, 1);   // headboard highlight
-    px(g, 2, 7, 0x6a4020, 60, 22);  // bed frame body
-    px(g, 2, 7, 0x7a5030, 60, 1);   // top highlight
-    px(g, 2, 28, 0x5a3018, 60, 1);  // bottom shadow
-    px(g, 2, 7, 0x5a3018, 1, 22);   // left frame edge
-    px(g, 61, 7, 0x5a3018, 1, 22);  // right frame edge
-    // Mattress
-    px(g, 3, 8, 0xe8e0d8, 58, 20);
-    // Two pillows
-    px(g, 5, 8, 0xf0ece8, 10, 5);   // left pillow
-    px(g, 6, 9, 0xf8f4f0, 8, 3);    // left pillow highlight
-    px(g, 38, 8, 0xf0ece8, 10, 5);  // right pillow (K's)
-    px(g, 39, 9, 0xf8f4f0, 8, 3);   // right pillow highlight
-    // K's dark hair spilling across right pillow
-    px(g, 36, 8, 0x1a1010, 14, 4);  // hair spread on pillow
-    px(g, 34, 10, 0x1a1010, 4, 3);  // hair strand left
-    px(g, 50, 9, 0x1a1010, 3, 3);   // hair strand right
-    // K's face peeking out (small, tan skin)
-    px(g, 41, 10, 0xc8a080, 6, 3);  // face
-    px(g, 42, 11, 0xd08080, 3, 1);  // lips
-    // Blanket (messy white/cream covers)
-    px(g, 3, 14, 0xe0e8f0, 58, 14); // main blanket
-    px(g, 3, 14, 0xf0f4f8, 58, 1);  // top fold highlight
-    px(g, 3, 20, 0xd0d8e0, 58, 1);  // mid fold
-    px(g, 3, 25, 0xc8d0d8, 58, 1);  // wrinkle
-    // Blanket bunched up slightly on K's side (she's wrapped up)
-    px(g, 35, 13, 0xf0f4f8, 20, 2); // bunched top
-    // K's shoulder barely visible
-    px(g, 40, 13, 0xc8a080, 4, 2);  // shoulder peeking
-    // Plumeria flower fell on pillow
-    px(g, 48, 9, 0xf0e0e0, 3, 3);
-    px(g, 49, 10, 0xf0d040, 1, 1);
+    // Bed frame — dark wood, thick and visible
+    px(g, 1, 3, 0x402010, 62, 4);    // headboard (thick dark wood)
+    px(g, 1, 3, 0x503018, 62, 2);    // headboard top highlight
+    px(g, 1, 7, 0x5a3018, 62, 24);   // frame body
+    px(g, 1, 7, 0x6a4020, 62, 2);    // frame top edge
+    px(g, 1, 29, 0x3a2010, 62, 2);   // frame bottom shadow
+    px(g, 1, 7, 0x3a2010, 2, 24);    // left frame
+    px(g, 61, 7, 0x3a2010, 2, 24);   // right frame
+    // Mattress — cream colored
+    px(g, 3, 9, 0xe8e0d0, 58, 20);
+    // Pillows — fluffy, visible
+    px(g, 5, 9, 0xf8f4f0, 14, 6);    // left pillow (JP's)
+    px(g, 7, 10, 0xffffff, 10, 4);    // pillow highlight
+    px(g, 36, 9, 0xf8f4f0, 14, 6);   // right pillow (K's)
+    px(g, 38, 10, 0xffffff, 10, 4);   // pillow highlight
+    // K's hair across her pillow — dark, flowing
+    px(g, 34, 9, 0x1a1010, 18, 5);   // hair spread wide
+    px(g, 32, 11, 0x151010, 5, 4);   // left strand flowing
+    px(g, 52, 10, 0x151010, 4, 4);   // right strand flowing
+    // K's face peeking out — tan skin
+    px(g, 40, 11, 0xc8a080, 8, 4);   // face
+    px(g, 42, 13, 0xd08080, 4, 1);   // lips
+    px(g, 42, 12, 0x1a1010, 2, 1);   // closed eye
+    px(g, 46, 12, 0x1a1010, 2, 1);   // closed eye
+    // Blanket — dark blue comforter, cozy looking
+    px(g, 3, 16, 0x3050a0, 58, 13);  // main blanket (dark blue)
+    px(g, 3, 16, 0x4060b0, 58, 2);   // top fold highlight
+    px(g, 3, 22, 0x2a4090, 58, 1);   // mid fold shadow
+    px(g, 3, 26, 0x203880, 58, 1);   // wrinkle
+    // Blanket bunched on K's side
+    px(g, 34, 15, 0x4868c0, 22, 2);  // bunched top
+    // K's bare shoulder peeking from blanket
+    px(g, 39, 15, 0xc8a080, 5, 2);   // shoulder
+    // Plumeria flower on pillow
+    px(g, 50, 10, 0xf0e0e0, 4, 4);   // white petals
+    px(g, 51, 11, 0xf0d040, 2, 2);   // yellow center
   });
 
   // --- item-bed-k-open --- Same bed but covers thrown open (after K wakes up)
   makeTexture(scene, 'item-bed-k-open', TILE_SIZE * 2, TILE_SIZE, (g) => {
-    // Same frame
-    px(g, 2, 5, 0x503010, 60, 2);
-    px(g, 2, 5, 0x604020, 60, 1);
-    px(g, 2, 7, 0x6a4020, 60, 22);
-    px(g, 2, 7, 0x7a5030, 60, 1);
-    px(g, 2, 28, 0x5a3018, 60, 1);
-    px(g, 2, 7, 0x5a3018, 1, 22);
-    px(g, 61, 7, 0x5a3018, 1, 22);
-    // Mattress fully visible
-    px(g, 3, 8, 0xe8e0d8, 58, 20);
-    // Two pillows (with hair indent on K's)
-    px(g, 5, 8, 0xf0ece8, 10, 5);
-    px(g, 6, 9, 0xf8f4f0, 8, 3);
-    px(g, 38, 8, 0xf0ece8, 10, 5);
-    px(g, 39, 9, 0xf0e8e0, 8, 3);  // slightly darker — head indent
-    // Hair strands left on pillow
-    px(g, 40, 9, 0x1a1010, 6, 1);
-    px(g, 37, 10, 0x1a1010, 3, 1);
-    // Blanket thrown to one side (messy, folded over)
-    px(g, 3, 20, 0xe0e8f0, 30, 8);  // blanket bunched to left side
-    px(g, 3, 20, 0xf0f4f8, 30, 1);  // fold highlight
-    px(g, 10, 22, 0xd0d8e0, 20, 1); // wrinkle
-    // Plumeria flower still on pillow
-    px(g, 48, 9, 0xf0e0e0, 3, 3);
-    px(g, 49, 10, 0xf0d040, 1, 1);
+    // Frame (same as closed)
+    px(g, 1, 3, 0x402010, 62, 4);
+    px(g, 1, 3, 0x503018, 62, 2);
+    px(g, 1, 7, 0x5a3018, 62, 24);
+    px(g, 1, 7, 0x6a4020, 62, 2);
+    px(g, 1, 29, 0x3a2010, 62, 2);
+    px(g, 1, 7, 0x3a2010, 2, 24);
+    px(g, 61, 7, 0x3a2010, 2, 24);
+    // Mattress fully exposed
+    px(g, 3, 9, 0xe8e0d0, 58, 20);
+    // Pillows
+    px(g, 5, 9, 0xf8f4f0, 14, 6);
+    px(g, 7, 10, 0xffffff, 10, 4);
+    px(g, 36, 9, 0xf0ece0, 14, 6);   // K's pillow (slightly indented color)
+    px(g, 38, 10, 0xf8f4e8, 10, 4);
+    // Hair strands left on K's pillow
+    px(g, 38, 10, 0x1a1010, 8, 2);
+    px(g, 36, 12, 0x1a1010, 4, 1);
+    // Blanket thrown to left side (dark blue, messy)
+    px(g, 3, 18, 0x3050a0, 28, 10);  // blanket bunched left
+    px(g, 3, 18, 0x4060b0, 28, 2);   // fold highlight
+    px(g, 8, 22, 0x2a4090, 18, 1);   // wrinkle
+    // Flower still on pillow
+    px(g, 50, 10, 0xf0e0e0, 4, 4);
+    px(g, 51, 11, 0xf0d040, 2, 2);
   });
 
   // --- item-bed-pink --- (sister's room)

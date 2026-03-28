@@ -264,126 +264,129 @@ export const homeMap: MapData = {
 export const beachMap: MapData = {
   tiles: [
     //0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39
-    // === FRAT HOUSE — 3 big rooms + open kitchen + hot tub patio ===
-    [ B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, G, G, G, G, G, G, G ], // 0  house top wall
-    [ B, F, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, B, G, G, G, G, G, G, G ], // 1  living rm (1-11) | JP rm (13-22) | kitchen (24-31)
-    [ B, F, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, B, G, C, C, C, C, C, G ], // 2
-    [ B, F, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, B, G, C, H, H, H, C, G ], // 3  hot tub
-    [ B, F, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, B, G, C, H, H, H, C, G ], // 4
-    [ B, F, F, F, F, F, F, F, F, F, F, F, O, F, F, F, F, F, F, F, F, F, F, O, F, F, F, F, F, F, F, F, O, G, C, H, H, H, C, G ], // 5  doors between rooms (12, 23, 32)
-    [ B, F, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, B, G, C, C, C, C, C, G ], // 6
-    [ B, F, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, N, N, F, F, B, G, G, G, G, G, G, G ], // 7  kitchen counter
-    [ B, F, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, B, G, G, G, G, G, G, G ], // 8
-    [ B, F, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, B, G, G, G, G, G, G, G ], // 9
-    [ B, B, B, B, B, B, O, B, B, B, B, B, B, B, B, B, B, B, O, B, B, B, B, B, B, B, B, B, O, B, B, B, B, G, G, G, G, G, G, G ], // 10 bottom wall, doors at 6, 18, 28
-    [ G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G ], // 11 concrete walks
-    [ G, G, L, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, L, G, G ], // 12 palms + walks
-    [ G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G ], // 13 yard
-    [ G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G ], // 14 yard
-    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 15 street
-    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 16 street
-    [ G, G, T, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, T, G, G ], // 17 trees
-    [ G, G, G, G, G, L, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, L, G, G, G, G, G, G ], // 18 palms
-    // === BEACH ===
-    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 19 sand starts
-    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 20
-    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, L, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 21 palm
-    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 22 volleyball area
-    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 23
-    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 24
-    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 25
-    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 26
-    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 27
-    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 28
-    [ S, S, S, S, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, S, S, S, S ], // 29 shore
+    // === FRAT HOUSE — living rm + JP rm + kitchen + NOLAN'S MASTER down the hall + hot tub ===
+    [ B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, G, G, G, G, G ], // 0  house top wall (wider — cols 0-34)
+    [ B, F, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, G, G, G, G, G ], // 1  living rm (1-11) | JP rm (13-22) | kitchen (24-33)
+    [ B, F, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, G, C, C, C, G ], // 2
+    [ B, F, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, G, C, H, C, G ], // 3  hot tub
+    [ B, F, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, N, N, F, F, F, B, G, C, H, C, G ], // 4  kitchen counter
+    [ B, F, F, F, F, F, F, F, F, F, F, F, O, F, F, F, F, F, F, F, F, F, F, O, F, F, F, F, F, F, F, F, F, F, O, G, C, H, C, G ], // 5  doors between rooms (12, 23, 34)
+    [ B, F, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, G, C, C, C, G ], // 6
+    [ B, F, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, G, G, G, G, G ], // 7
+    [ B, F, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, G, G, G, G, G ], // 8
+    [ B, B, B, B, B, B, O, B, B, B, B, B, B, B, B, B, B, B, O, B, B, B, B, B, B, B, B, B, B, O, B, B, B, B, B, G, G, G, G, G ], // 9  bottom wall, doors at 6, 18, 29
+    // === HALLWAY + NOLAN'S MASTER BEDROOM (rows 10-16) ===
+    [ G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G ], // 10 walks from doors
+    [ G, G, G, G, G, G, C, C, C, C, C, C, C, C, C, C, C, C, C, G, G, B, B, B, B, B, B, B, B, B, B, B, B, B, G, G, G, G, G, G ], // 11 hallway to Nolan's + his room top wall
+    [ G, G, L, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, G, G, B, J, J, J, J, J, J, J, J, J, J, J, B, G, G, G, G, L, G ], // 12 Nolan's room (hardwood, 11 wide) — THE room
+    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, G, G, B, J, J, J, J, J, J, J, J, J, J, J, B, G, G, G, G, G, G ], // 13
+    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, G, G, B, J, J, J, J, J, J, J, J, J, J, J, B, G, G, G, G, G, G ], // 14
+    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, G, G, B, J, J, J, J, J, J, J, J, J, J, J, B, G, G, G, G, G, G ], // 15
+    [ G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, C, G, G, B, B, B, B, B, B, O, B, B, B, B, B, B, G, G, G, G, G, G ], // 16 Nolan's door (col 27)
+    // === YARD (rows 17-19) — beer pong, smoke spot, space for the party ===
+    [ G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G ], // 17 walks
+    [ G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G ], // 18 yard
+    [ G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, G ], // 19 yard
+    // === STREET (rows 20-21) ===
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 20 street
+    [ C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C ], // 21 street
+    [ G, G, T, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, T, G, G ], // 22 trees
+    [ G, G, G, G, G, L, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, L, G, G, G, G, G, G ], // 23 palms
+    // === BEACH (compact — 5 rows + shore + ocean) ===
+    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 24 sand
+    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, L, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 25 palm + volleyball
+    [ S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S ], // 26 bonfire
+    [ S, S, S, S, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, S, S, S, S ], // 27 shore
+    [ W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W ], // 28 ocean
+    [ W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W ], // 29 ocean
     [ W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W ], // 30 ocean
-    [ W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W ], // 31 ocean
-    [ W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W ], // 32 ocean
-    [ W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W ], // 33 ocean
-    [ W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W ], // 34 ocean
-    [ W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W ], // 35 ocean
   ],
   collisions: STANDARD_COLLISIONS,
   spawns: {
-    player: { x: 18, y: 13 },
+    player: { x: 18, y: 17 },
     npcs: [
       // Living room
-      { id: 'ch1_homie2',       x: 5,  y: 4,  sprite: 'npc_david' },      // David in living room
-      { id: 'ch1_cooper',       x: 9,  y: 8,  sprite: 'npc_cooper' },      // Cooper in living room
-      { id: 'ch1_girl_couch',   x: 4,  y: 6,  sprite: 'npc_bikini2' },    // Girl sleeping on couch
-      // JP's room — just JP and K
-      { id: 'ch1_gf_k',         x: 15, y: 2,  sprite: 'npc_k' },          // K sleeping in JP's bed
+      { id: 'ch1_homie2',       x: 5,  y: 4,  sprite: 'npc_david' },
+      { id: 'ch1_cooper',       x: 9,  y: 7,  sprite: 'npc_cooper' },
+      { id: 'ch1_girl_couch',   x: 4,  y: 6,  sprite: 'npc_bikini2' },
+      // JP's room
+      { id: 'ch1_gf_k',         x: 15, y: 2,  sprite: 'npc_k' },
       // Kitchen
-      { id: 'ch1_bigbart',      x: 27, y: 4,  sprite: 'npc_bigbart' },     // Big Bart raiding the fridge
-      { id: 'ch1_homie1',       x: 30, y: 8,  sprite: 'npc_nolan' },      // Nolan hanging in kitchen
+      { id: 'ch1_bigbart',      x: 28, y: 4,  sprite: 'npc_bigbart' },
+      { id: 'ch1_homie1',       x: 25, y: 14, sprite: 'npc_nolan' },     // Nolan near his room
       // Hot tub patio
-      { id: 'ch1_girl1',        x: 36, y: 4,  sprite: 'npc_bikini1' },     // In hot tub
-      { id: 'ch1_girl2',        x: 37, y: 5,  sprite: 'npc_bikini2' },     // By hot tub
-      { id: 'ch1_girl3',        x: 35, y: 5,  sprite: 'npc_bikini1' },     // In hot tub
+      { id: 'ch1_girl1',        x: 37, y: 4,  sprite: 'npc_bikini1' },
+      { id: 'ch1_girl2',        x: 38, y: 5,  sprite: 'npc_bikini2' },
+      { id: 'ch1_girl3',        x: 37, y: 5,  sprite: 'npc_bikini1' },
       // Yard
-      { id: 'ch1_terrell',      x: 34, y: 12, sprite: 'npc_terrell' },     // In the yard
+      { id: 'ch1_terrell',      x: 34, y: 17, sprite: 'npc_terrell' },
       // Beach
-      { id: 'ch1_volleyball1',  x: 16, y: 22, sprite: 'npc_surfer' },
-      { id: 'ch1_volleyball2',  x: 18, y: 22, sprite: 'npc_kid' },
-      { id: 'ch1_sunbather',    x: 28, y: 24, sprite: 'npc_bikini1' },
+      { id: 'ch1_volleyball1',  x: 16, y: 25, sprite: 'npc_surfer' },
+      { id: 'ch1_volleyball2',  x: 18, y: 25, sprite: 'npc_kid' },
+      { id: 'ch1_sunbather',    x: 28, y: 26, sprite: 'npc_bikini1' },
     ],
   },
   triggers: [
-    { x: 15, y: 29, action: 'scene', target: 'WrongCrowdScene' },
-    { x: 16, y: 29, action: 'scene', target: 'WrongCrowdScene' },
-    { x: 17, y: 29, action: 'scene', target: 'WrongCrowdScene' },
-    { x: 18, y: 29, action: 'scene', target: 'WrongCrowdScene' },
-    { x: 19, y: 29, action: 'scene', target: 'WrongCrowdScene' },
-    { x: 20, y: 29, action: 'scene', target: 'WrongCrowdScene' },
-    { x: 21, y: 29, action: 'scene', target: 'WrongCrowdScene' },
-    { x: 22, y: 29, action: 'scene', target: 'WrongCrowdScene' },
+    { x: 15, y: 27, action: 'scene', target: 'WrongCrowdScene' },
+    { x: 16, y: 27, action: 'scene', target: 'WrongCrowdScene' },
+    { x: 17, y: 27, action: 'scene', target: 'WrongCrowdScene' },
+    { x: 18, y: 27, action: 'scene', target: 'WrongCrowdScene' },
+    { x: 19, y: 27, action: 'scene', target: 'WrongCrowdScene' },
+    { x: 20, y: 27, action: 'scene', target: 'WrongCrowdScene' },
+    { x: 21, y: 27, action: 'scene', target: 'WrongCrowdScene' },
+    { x: 22, y: 27, action: 'scene', target: 'WrongCrowdScene' },
   ],
   interactables: [
-    // --- Living Room (cols 1-11, rows 1-9) — BIG open space ---
+    // --- Living Room (cols 1-11, rows 1-8) ---
     { id: 'ch1_couch',      x: 4,  y: 3,  type: 'examine', glow: false, sprite: 'item-couch' },
     { id: 'ch1_tv',         x: 1,  y: 5,  type: 'examine', glow: false, sprite: 'item-tv' },
-    { id: 'ch1_mess',       x: 3,  y: 9,  type: 'examine', glow: false, sprite: 'item-bottle' },
+    { id: 'ch1_mess',       x: 3,  y: 8,  type: 'examine', glow: false, sprite: 'item-bottle' },
     { id: 'ch1_bottles',    x: 8,  y: 2,  type: 'examine', glow: false, sprite: 'item-bottle' },
     { id: 'ch1_speaker',    x: 11, y: 1,  type: 'examine', glow: false, sprite: 'item-speaker' },
     { id: 'ch1_weed1',      x: 7,  y: 3,  type: 'examine', glow: true, sprite: 'item-weed-bag' },
 
-    // --- JP's Room (cols 13-22, rows 1-9) — spacious ---
-    { id: 'ch1_bed',        x: 14, y: 2,  type: 'examine', glow: false, sprite: 'item-bed-k' },  // 2-tile wide bed with K sleeping
+    // --- JP's Room (cols 13-22, rows 1-8) ---
+    { id: 'ch1_bed',        x: 14, y: 2,  type: 'examine', glow: false, sprite: 'item-bed-k' },
     { id: 'ch1_setup',      x: 16, y: 2,  type: 'examine', glow: false, sprite: 'item-tablet' },
     { id: 'ch1_computer',   x: 21, y: 3,  type: 'examine', glow: false, sprite: 'item-desk' },
     { id: 'ch1_weed2',      x: 19, y: 6,  type: 'examine', glow: true, sprite: 'item-weed-bag' },
     { id: 'ch1_closet',     x: 22, y: 1,  type: 'examine', glow: false, sprite: 'item-nightstand' },
     { id: 'ch1_poster',     x: 18, y: 1,  type: 'examine', glow: false, sprite: 'item-poster' },
-    { id: 'ch1_clothes',    x: 20, y: 9,  type: 'examine', glow: false, sprite: 'item-laundry-basket' },
+    { id: 'ch1_clothes',    x: 20, y: 8,  type: 'examine', glow: false, sprite: 'item-laundry-basket' },
 
-    // --- Kitchen (cols 24-31, rows 1-9) — open plan, dirty ---
+    // --- Kitchen (cols 24-33, rows 1-8) ---
     { id: 'ch1_fridge',     x: 24, y: 1,  type: 'examine', glow: false, sprite: 'item-fridge' },
     { id: 'ch1_counter',    x: 27, y: 2,  type: 'examine', glow: false, sprite: 'item-bottle' },
     { id: 'ch1_bong',       x: 26, y: 1,  type: 'examine', glow: true, sprite: 'item-bong' },
-    { id: 'ch1_food',       x: 30, y: 3,  type: 'examine', glow: false, sprite: 'item-food' },
+    { id: 'ch1_food',       x: 31, y: 3,  type: 'examine', glow: false, sprite: 'item-food' },
     { id: 'ch1_weed3',      x: 25, y: 6,  type: 'examine', glow: true, sprite: 'item-weed-bag' },
-    { id: 'ch1_nolan_speaker', x: 31, y: 1, type: 'examine', glow: false, sprite: 'item-speaker' },
-    { id: 'ch1_nolan_poster', x: 29, y: 1, type: 'examine', glow: false, sprite: 'item-poster' },
-    { id: 'ch1_blunt',      x: 28, y: 8,  type: 'examine', glow: true, sprite: 'item-joint' },
+    { id: 'ch1_blunt',      x: 30, y: 7,  type: 'examine', glow: true, sprite: 'item-joint' },
 
-    // --- Hot Tub Patio (outside, cols 34-38, rows 2-6) ---
-    { id: 'ch1_hottub',     x: 36, y: 3,  type: 'examine', glow: false, sprite: 'item-hottub' },
-    { id: 'ch1_shower',     x: 34, y: 2,  type: 'examine', glow: true, sprite: 'item-shower' },
+    // --- Hot Tub Patio (outside, cols 36-38, rows 3-5) ---
+    { id: 'ch1_hottub',     x: 37, y: 4,  type: 'examine', glow: false, sprite: 'item-hottub' },
+    { id: 'ch1_shower',     x: 36, y: 2,  type: 'examine', glow: true, sprite: 'item-shower' },
 
-    // --- Yard (rows 11-14) ---
-    { id: 'ch1_smoke',      x: 10, y: 13, type: 'examine', glow: true, sprite: 'item-joint' },
-    { id: 'ch1_beerpong',   x: 34, y: 13, type: 'examine', glow: true, sprite: 'item-desk' },
-    { id: 'ch1_surfboard',  x: 2,  y: 13, type: 'examine', glow: false, sprite: 'item-surfboard' },
+    // --- NOLAN'S MASTER BEDROOM (cols 22-32, rows 12-15) — THE room ---
+    { id: 'ch1_nolan_bed',   x: 23, y: 12, type: 'examine', glow: false, sprite: 'item-bed' },         // king size bed
+    { id: 'ch1_nolan_tv',    x: 32, y: 12, type: 'examine', glow: false, sprite: 'item-tv' },          // big TV on wall
+    { id: 'ch1_nolan_setup', x: 30, y: 14, type: 'examine', glow: false, sprite: 'item-desk' },        // gaming setup
+    { id: 'ch1_nolan_speaker', x: 25, y: 12, type: 'examine', glow: false, sprite: 'item-speaker' },   // big speaker
+    { id: 'ch1_nolan_poster', x: 27, y: 12, type: 'examine', glow: false, sprite: 'item-poster' },     // poster on wall
+    { id: 'ch1_nolan_weed',  x: 28, y: 15, type: 'examine', glow: true, sprite: 'item-weed-bag' },     // weed on nightstand
+    { id: 'ch1_surfboard',   x: 32, y: 15, type: 'examine', glow: false, sprite: 'item-surfboard' },   // surfboard leaning
 
-    // --- Beach (rows 19-28) — bonfire, volleyball, towels, surfboards ---
-    { id: 'ch1_view',       x: 20, y: 25, type: 'examine', glow: false, sprite: 'item-photo' },
-    { id: 'ch1_volleyball1', x: 17, y: 22, type: 'examine', glow: true, sprite: 'item-ball' },
-    { id: 'ch1_towels',     x: 8,  y: 21, type: 'examine', glow: false, sprite: 'item-rug' },
-    { id: 'ch1_cooler',     x: 10, y: 21, type: 'examine', glow: false, sprite: 'item-storage-box' },
-    { id: 'ch1_bonfire',    x: 30, y: 25, type: 'examine', glow: false, sprite: 'item-bbq' },
-    { id: 'ch1_surfboards', x: 5,  y: 20, type: 'examine', glow: false, sprite: 'item-surfboard' },
-    { id: 'ch1_shells',     x: 34, y: 27, type: 'examine', glow: false, sprite: 'item-ball' },
-    { id: 'ch1_sunset',     x: 36, y: 23, type: 'examine', glow: false, sprite: 'item-photo' },
+    // --- Yard (rows 17-19) ---
+    { id: 'ch1_smoke',      x: 10, y: 18, type: 'examine', glow: true, sprite: 'item-joint' },
+    { id: 'ch1_beerpong',   x: 34, y: 18, type: 'examine', glow: true, sprite: 'item-desk' },
+
+    // --- Beach (rows 24-26) ---
+    { id: 'ch1_view',       x: 20, y: 26, type: 'examine', glow: false, sprite: 'item-photo' },
+    { id: 'ch1_volleyball1', x: 17, y: 25, type: 'examine', glow: true, sprite: 'item-ball' },
+    { id: 'ch1_towels',     x: 8,  y: 24, type: 'examine', glow: false, sprite: 'item-rug' },
+    { id: 'ch1_cooler',     x: 10, y: 24, type: 'examine', glow: false, sprite: 'item-storage-box' },
+    { id: 'ch1_bonfire',    x: 30, y: 26, type: 'examine', glow: false, sprite: 'item-bbq' },
+    { id: 'ch1_surfboards', x: 5,  y: 24, type: 'examine', glow: false, sprite: 'item-surfboard' },
+    { id: 'ch1_sunset',     x: 36, y: 25, type: 'examine', glow: false, sprite: 'item-photo' },
   ],
 };
 

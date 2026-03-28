@@ -1557,8 +1557,19 @@ const ch1Extras: Record<string, DialogueLine[]> = {
   ],
   // --- Nolan's Room ---
   ch1_nolan_bed: [
-    { speaker: 'Narrator', text: 'Nolan\'s bed. Unmade since move-in day.' },
-    { speaker: 'Narrator', text: 'Surfboard leaning against the wall. Board shorts on the floor.' },
+    { speaker: 'Narrator', text: 'King size bed. Sheets half on the floor. This bed has SEEN things.' },
+    { speaker: 'JP\'s Mind', text: 'Nolan\'s room is nicer than any room I\'ve ever had.' },
+  ],
+  ch1_nolan_tv: [
+    { speaker: 'Narrator', text: '65 inch TV mounted on the wall. PS5 underneath. LED strip glowing behind it.' },
+    { speaker: 'JP\'s Mind', text: 'This man has a whole theater in his bedroom.' },
+  ],
+  ch1_nolan_setup: [
+    { speaker: 'Narrator', text: 'Gaming setup. RGB keyboard, dual monitors, headset hanging off the chair.' },
+    { speaker: 'Narrator', text: 'Nolan doesn\'t even game that much. He just likes how it looks.' },
+  ],
+  ch1_nolan_weed: [
+    { speaker: 'Narrator', text: 'A jar of top shelf on Nolan\'s nightstand. This isn\'t the mid they sell — this is personal.' },
   ],
   ch1_surfboard: [
     { speaker: 'Narrator', text: 'Nolan\'s surfboard. He goes out every morning before anyone\'s awake.' },
@@ -1566,7 +1577,7 @@ const ch1Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'I\'m still looking.' },
   ],
   ch1_nolan_speaker: [
-    { speaker: 'Narrator', text: 'JBL speaker. Always playing something. Right now it\'s Travis Scott.' },
+    { speaker: 'Narrator', text: 'JBL Boombox. Bass shakes the whole room. Right now it\'s Travis Scott on low.' },
   ],
   ch1_nolan_poster: [
     { speaker: 'Narrator', text: 'Poster of some surf competition in Hawaii. Nolan circled a date on it.' },

@@ -139,11 +139,15 @@ export class InteractionSystem {
       this.glowTweens.delete(id);
     }
 
-    // Hide the sprite ONLY if it's a pickup item, not decoration
+    // Hide the sprite ONLY if it's an actual pickup item (weed, money, joints, letters)
+    const PICKUP_SPRITES = new Set([
+      'item-weed-bag', 'item-money', 'item-joint', 'item-letter',
+      'item-ball', 'item-key',
+    ]);
     const sprite = this.sprites.get(id);
     if (sprite) {
-      const isDecoration = obj?.sprite && InteractionSystem.DECORATION_SPRITES.has(obj.sprite);
-      if (!isDecoration) {
+      const isPickup = obj?.sprite && PICKUP_SPRITES.has(obj.sprite);
+      if (isPickup) {
         sprite.setVisible(false);
       }
     }
