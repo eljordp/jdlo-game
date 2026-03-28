@@ -5558,6 +5558,86 @@ function generateMoreItems(scene: Phaser.Scene) {
     px(g, 11, 13, 0xc0a040, 1, 1);
     px(g, 13, 13, 0xc0a040, 1, 1);
   });
+
+  // --- item-hottub ---
+  makeTexture(scene, 'item-hottub', TILE_SIZE, TILE_SIZE, (g) => {
+    // Round tub shape
+    px(g, 3, 5, 0x4080c0, 10, 8);   // water
+    px(g, 2, 4, 0x6a5030, 12, 1);   // top rim (wood)
+    px(g, 2, 13, 0x6a5030, 12, 1);  // bottom rim
+    px(g, 2, 4, 0x6a5030, 1, 10);   // left rim
+    px(g, 13, 4, 0x6a5030, 1, 10);  // right rim
+    // Bubbles
+    px(g, 5, 7, 0x80c0e0, 2, 2);
+    px(g, 9, 9, 0x80c0e0, 2, 1);
+    px(g, 7, 6, 0x90d0f0, 1, 1);
+    // Steam wisps
+    px(g, 6, 3, 0xffffff, 1, 2);
+    px(g, 10, 2, 0xffffff, 1, 2);
+  });
+
+  // --- item-surfboard ---
+  makeTexture(scene, 'item-surfboard', TILE_SIZE, TILE_SIZE, (g) => {
+    // Tall surfboard leaning diagonally
+    px(g, 6, 1, 0xf0e8d0, 3, 14);   // board body (cream)
+    px(g, 7, 0, 0xf0e8d0, 1, 1);    // nose tip
+    px(g, 7, 15, 0xf0e8d0, 2, 1);   // tail wider
+    // Stripe
+    px(g, 7, 3, 0x2080c0, 1, 10);   // blue racing stripe
+    // Fin
+    px(g, 8, 13, 0x404040, 1, 2);
+  });
+
+  // --- item-speaker ---
+  makeTexture(scene, 'item-speaker', TILE_SIZE, TILE_SIZE, (g) => {
+    // Bluetooth speaker rectangle
+    px(g, 2, 5, 0x1a1a1a, 12, 7);   // body (black)
+    px(g, 3, 6, 0x303030, 10, 5);   // grille
+    // Driver circles
+    px(g, 4, 7, 0x404040, 3, 3);
+    px(g, 9, 7, 0x404040, 3, 3);
+    // LED indicator
+    px(g, 7, 5, 0x30c060, 2, 1);
+  });
+
+  // --- item-streetlight ---
+  makeTexture(scene, 'item-streetlight', TILE_SIZE, TILE_SIZE, (g) => {
+    // Tall pole with lamp
+    px(g, 7, 4, 0x606060, 2, 12);   // pole
+    px(g, 5, 3, 0x808080, 6, 2);    // lamp housing
+    px(g, 6, 2, 0xf0e080, 4, 1);    // light glow
+    px(g, 6, 5, 0xf0e080, 4, 2);    // light cone
+    // Base
+    px(g, 5, 15, 0x505050, 6, 1);
+  });
+
+  // --- item-door ---
+  makeTexture(scene, 'item-door', TILE_SIZE, TILE_SIZE, (g) => {
+    // Simple door
+    px(g, 4, 2, 0x6a4020, 8, 13);   // door panel (brown wood)
+    px(g, 3, 1, 0x504030, 10, 1);   // frame top
+    px(g, 3, 15, 0x504030, 10, 1);  // frame bottom
+    px(g, 3, 1, 0x504030, 1, 15);   // frame left
+    px(g, 12, 1, 0x504030, 1, 15);  // frame right
+    // Doorknob
+    px(g, 10, 8, 0xc0a040, 2, 2);   // gold knob
+  });
+
+  // --- item-convenience ---
+  makeTexture(scene, 'item-convenience', TILE_SIZE, TILE_SIZE, (g) => {
+    // Mini store shelves with items
+    px(g, 2, 3, 0x808080, 12, 1);   // shelf 1
+    px(g, 2, 7, 0x808080, 12, 1);   // shelf 2
+    px(g, 2, 11, 0x808080, 12, 1);  // shelf 3
+    // Items on shelves
+    px(g, 3, 1, 0xe03030, 2, 2);    // red can
+    px(g, 6, 1, 0x2060c0, 2, 2);    // blue bottle
+    px(g, 10, 1, 0xf0c040, 2, 2);   // yellow box
+    px(g, 4, 5, 0x40a040, 2, 2);    // green item
+    px(g, 8, 5, 0xf08030, 2, 2);    // orange snack
+    px(g, 3, 9, 0xd04080, 3, 2);    // pink box
+    px(g, 9, 9, 0x303030, 2, 2);    // dark item
+  });
 }
 
 export function generateAllSprites(scene: Phaser.Scene): void {

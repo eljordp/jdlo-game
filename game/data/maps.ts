@@ -331,7 +331,7 @@ export const beachMap: MapData = {
     { id: 'ch1_tv',         x: 1,  y: 4,  type: 'examine', glow: false, sprite: 'item-tv' },
     { id: 'ch1_mess',       x: 2,  y: 7,  type: 'examine', glow: false, sprite: 'item-bottle' },
     { id: 'ch1_bottles',    x: 6,  y: 2,  type: 'examine', glow: false, sprite: 'item-bottle' },
-    { id: 'ch1_speaker',    x: 8,  y: 1,  type: 'examine', glow: false, sprite: 'item-tv' },          // bluetooth speaker
+    { id: 'ch1_speaker',    x: 8,  y: 1,  type: 'examine', glow: false, sprite: 'item-speaker' },     // bluetooth speaker
     { id: 'ch1_weed1',      x: 5,  y: 2,  type: 'examine', glow: true, sprite: 'item-weed-bag' },
 
     // --- JP's Room (cols 10-15, rows 1-7) ---
@@ -352,13 +352,13 @@ export const beachMap: MapData = {
 
     // --- Nolan's Room (cols 23-27, rows 1-7) ---
     { id: 'ch1_nolan_bed',  x: 23, y: 1,  type: 'examine', glow: false, sprite: 'item-bed' },
-    { id: 'ch1_surfboard',  x: 27, y: 2,  type: 'examine', glow: false, sprite: 'item-car' },          // surfboard leaning on wall
-    { id: 'ch1_nolan_speaker', x: 25, y: 1, type: 'examine', glow: false, sprite: 'item-tv' },          // JBL speaker
+    { id: 'ch1_surfboard',  x: 27, y: 2,  type: 'examine', glow: false, sprite: 'item-surfboard' },    // surfboard leaning on wall
+    { id: 'ch1_nolan_speaker', x: 25, y: 1, type: 'examine', glow: false, sprite: 'item-speaker' },    // JBL speaker
     { id: 'ch1_nolan_poster', x: 24, y: 1, type: 'examine', glow: false, sprite: 'item-poster' },
     { id: 'ch1_blunt',      x: 26, y: 5,  type: 'examine', glow: true, sprite: 'item-joint' },
 
     // --- Hot Tub Patio (outside, cols 30-36) ---
-    { id: 'ch1_hottub',     x: 30, y: 5,  type: 'examine', glow: false, sprite: 'item-bbq' },         // hot tub controls
+    { id: 'ch1_hottub',     x: 30, y: 5,  type: 'examine', glow: false, sprite: 'item-hottub' },      // hot tub
     { id: 'ch1_shower',     x: 29, y: 1,  type: 'examine', glow: true, sprite: 'item-shower' },
 
     // --- Yard (rows 9-11) ---
@@ -371,7 +371,7 @@ export const beachMap: MapData = {
     { id: 'ch1_towels',     x: 8,  y: 18, type: 'examine', glow: false, sprite: 'item-rug' },
     { id: 'ch1_cooler',     x: 10, y: 18, type: 'examine', glow: false, sprite: 'item-storage-box' },
     { id: 'ch1_bonfire',    x: 28, y: 22, type: 'examine', glow: false, sprite: 'item-bbq' },
-    { id: 'ch1_surfboards', x: 5,  y: 17, type: 'examine', glow: false, sprite: 'item-car' },          // surfboards in sand
+    { id: 'ch1_surfboards', x: 5,  y: 17, type: 'examine', glow: false, sprite: 'item-surfboard' },   // surfboards in sand
     { id: 'ch1_shells',     x: 30, y: 25, type: 'examine', glow: false, sprite: 'item-ball' },
     { id: 'ch1_sunset',     x: 35, y: 20, type: 'examine', glow: false, sprite: 'item-photo' },
   ],
@@ -468,7 +468,7 @@ export const wrongCrowdMap: MapData = {
     { id: 'ch2_bed_pile_R2', x: 16, y: 2, type: 'examine', glow: false, sprite: 'item-weed-bag' }, // stacked on same tile
     { id: 'ch2_bed_under',  x: 15, y: 1, type: 'examine', glow: false, sprite: 'item-weed-bag' }, // bag poking out from UNDER the bed
     { id: 'ch2_grab_weed', x: 19, y: 3, type: 'examine', glow: true, sprite: 'item-weed-bag' },  // main grab bag on desk
-    { id: 'ch2_closet',    x: 20, y: 1, type: 'examine', glow: false, sprite: 'item-nightstand' },  // CLOSET — bags fall out
+    { id: 'ch2_closet',    x: 20, y: 1, type: 'examine', glow: false, sprite: 'item-bookshelf' },   // CLOSET — bags fall out
     { id: 'ch2_gun',       x: 16, y: 1, type: 'examine', glow: true, sprite: 'item-gun' },       // gun
     { id: 'ch2_computer',  x: 19, y: 1, type: 'examine', glow: false, sprite: 'item-desk' },        // computer/desk
     { id: 'ch2_phone',     x: 16, y: 3, type: 'examine', glow: true, sprite: 'item-phone' },     // phone
@@ -479,27 +479,26 @@ export const wrongCrowdMap: MapData = {
     { id: 'ch2_light1',    x: 10, y: 3, type: 'examine', glow: false, sprite: 'item-lamp' },       // light switch
     { id: 'ch2_light2',    x: 24, y: 3, type: 'examine', glow: false, sprite: 'item-lamp' },       // light switch
     { id: 'ch2_fridge',    x: 26, y: 1, type: 'examine', glow: false, sprite: 'item-fridge' },    // appliance
-    { id: 'ch2_hottub_night', x: 31, y: 4, type: 'examine', glow: false, sprite: 'item-shower' },  // empty at night
-    { id: 'ch2_front_door', x: 18, y: 8, type: 'examine', glow: false, sprite: 'item-nightstand' }, // door
+    { id: 'ch2_hottub_night', x: 31, y: 4, type: 'examine', glow: false, sprite: 'item-hottub' },    // hot tub at night
+    { id: 'ch2_front_door', x: 18, y: 8, type: 'examine', glow: false },                            // front door — visible from map tile
 
     // --- Street & driving ---
     { id: 'ch2_car',       x: 18, y: 13, type: 'examine', glow: true, sprite: 'item-keys' },     // BMW parked on street
-    { id: 'ch2_streetlight', x: 25, y: 16, type: 'examine', glow: false, sprite: 'item-lamp' },    // streetlight — scenery
-    { id: 'ch2_street_walk', x: 14, y: 14, type: 'examine', glow: false, sprite: 'item-letter' },   // walking the dark street
-    { id: 'ch2_nervous',   x: 12, y: 30, type: 'examine', glow: false, sprite: 'item-letter' },     // nervous on second street
+    { id: 'ch2_streetlight', x: 25, y: 16, type: 'examine', glow: false, sprite: 'item-streetlight' }, // streetlight
+    { id: 'ch2_street_walk', x: 14, y: 14, type: 'examine', glow: false },                          // HIDDEN — JP's thoughts while walking dark street
+    { id: 'ch2_nervous',   x: 12, y: 30, type: 'examine', glow: false },                            // HIDDEN — internal monologue, nervous feeling
 
     // --- Convenience store area ---
-    { id: 'ch2_graffiti',  x: 4,  y: 17, type: 'examine', glow: false, sprite: 'item-poster' },     // graffiti visible on store wall
-    { id: 'ch2_store',     x: 7,  y: 18, type: 'examine', glow: false, sprite: 'item-nightstand' }, // inside the store
+    { id: 'ch2_graffiti',  x: 4,  y: 17, type: 'examine', glow: false, sprite: 'item-poster' },     // graffiti — visible on wall
+    { id: 'ch2_store',     x: 7,  y: 18, type: 'examine', glow: false, sprite: 'item-convenience' },  // convenience store shelves
+
+    // --- Atmospheric triggers (no sprites — discovered by pressing Space) ---
+    { id: 'ch2_residential', x: 15, y: 24, type: 'examine', glow: false },                          // HIDDEN — looking at houses where normal people sleep
+    { id: 'ch2_flashback_spot', x: 10, y: 26, type: 'examine', glow: false },                       // HIDDEN — where Jose and JP used to hang
+    { id: 'ch2_alley',      x: 35, y: 26, type: 'examine', glow: false },                           // HIDDEN — dark alley, JP's thoughts
 
     // --- Buyer's house area ---
-    // --- Expansion area ---
-    { id: 'ch2_residential', x: 15, y: 24, type: 'examine', glow: false, sprite: 'item-photo' },    // looking at houses where normal people sleep
-    { id: 'ch2_flashback_spot', x: 10, y: 26, type: 'examine', glow: false, sprite: 'item-photo' }, // where Jose and JP used to hang
-    { id: 'ch2_alley',      x: 35, y: 26, type: 'examine', glow: false, sprite: 'item-letter' },    // dark alley
-
-    // --- Buyer's house area ---
-    { id: 'ch2_parking_lot', x: 20, y: 35, type: 'examine', glow: false, sprite: 'item-car' },     // driveway near buyer's house
+    { id: 'ch2_parking_lot', x: 20, y: 35, type: 'examine', glow: false, sprite: 'item-car' },      // car in driveway
     { id: 'ch2_sale',      x: 25, y: 37, type: 'examine', glow: true, sprite: 'item-weed-bag' }, // THE TRIGGER — sale spot inside buyer's house
   ],
 };
@@ -602,7 +601,7 @@ export const jailMap: MapData = {
 
     // --- Hallway / common ---
     { id: 'ch3_phone',       x: 10, y: 13, type: 'examine', glow: true, sprite: 'item-phone' },    // hallway phone
-    { id: 'ch3_window',      x: 14, y: 16, type: 'examine', glow: false, sprite: 'item-photo' },    // window — no floating sprite
+    { id: 'ch3_window',      x: 14, y: 16, type: 'examine', glow: false, sprite: 'item-window' },   // jail window
     { id: 'ch3_transformation', x: 13, y: 16, type: 'examine', glow: false, sprite: 'item-mirror' },  // hallway mirror
 
     // --- Common area ---
