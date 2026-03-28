@@ -9,6 +9,7 @@ import { MoodSystem } from '../systems/MoodSystem';
 import { InventorySystem } from '../systems/InventorySystem';
 import { GameSettings } from '../systems/GameSettings';
 import { SubstanceSystem } from '../systems/SubstanceSystem';
+import { PartyAI } from '../systems/PartyAI';
 
 export class BeachScene extends BaseChapterScene {
   private inHotTub = false;
@@ -51,6 +52,7 @@ export class BeachScene extends BaseChapterScene {
   create() {
     super.create();
     SubstanceSystem.reset();
+    this.events.on('shutdown', () => { PartyAI.destroy(); });
     // Exit triggers at south beach
     this.addNavArrow(18, 26, 'Next chapter');
 
@@ -1233,42 +1235,8 @@ export class BeachScene extends BaseChapterScene {
       ease: 'Sine.easeInOut',
     });
 
-    // ── PARTY PEOPLE (spawn extra NPCs in the yard/house) ──
-    const partyPositions = [
-      { x: 8, y: 10, sprite: 'npc_bikini1' },   // girl in yard
-      { x: 15, y: 10, sprite: 'npc_generic' },   // random dude
-      { x: 25, y: 9, sprite: 'npc_bikini2' },    // girl near patio
-      { x: 30, y: 10, sprite: 'npc_bikini1' },   // girl by DJ
-      { x: 3, y: 3, sprite: 'npc_generic' },     // dude in living room
-      { x: 18, y: 3, sprite: 'npc_bikini2' },    // girl in kitchen
-      { x: 24, y: 3, sprite: 'npc_generic' },    // dude in bedroom
-      { x: 12, y: 10, sprite: 'npc_bikini1' },   // girl on walkway
-      { x: 28, y: 10, sprite: 'npc_generic' },   // dude near hot tub
-      { x: 6, y: 6, sprite: 'npc_bikini2' },     // girl in living room
-    ];
-
-    for (const pos of partyPositions) {
-      const px = pos.x * SCALED_TILE + SCALED_TILE / 2;
-      const py = pos.y * SCALED_TILE + SCALED_TILE / 2;
-      const partyNpc = this.add.sprite(px, py, pos.sprite, 0)
-        .setScale(CHAR_SCALE).setDepth(9);
-
-      // Random dance animation — sway side to side
-      const swayAmount = 2 + Math.random() * 3;
-      const swaySpeed = 300 + Math.random() * 400;
-      this.tweens.add({
-        targets: partyNpc,
-        x: px + swayAmount,
-        angle: swayAmount,
-        duration: swaySpeed,
-        yoyo: true,
-        repeat: -1,
-        ease: 'Sine.easeInOut',
-        delay: Math.random() * 500,
-      });
-
-      this.collisionTiles.add(`${pos.x},${pos.y}`);
-    }
+    // ── PARTY PEOPLE (AI-driven) ──
+    PartyAI.init(this);
 
     // ── DANCE FLOOR LIGHTS (on the ground near DJ) ──
     const floorColors = [0xff2080, 0x20c0ff, 0xf0c040, 0x40ff60, 0xc040ff, 0xff6030];
@@ -2382,5 +2350,14 @@ export class BeachScene extends BaseChapterScene {
     };
 
     this.events.on('update', updateHandler);
+  }
+
+  update(time: number, delta: number) {
+    super.update(time, delta);
+
+    // Party AI — autonomous NPC behavior during party
+    if (this.currentDay === 2 && PartyAI.isActive()) {
+      PartyAI.update(delta);
+    }
   }
 }
