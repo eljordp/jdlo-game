@@ -4,6 +4,7 @@ import { SaveSystem } from '../systems/SaveSystem';
 import { MusicSystem } from '../systems/MusicSystem';
 import { SoundEffects } from '../systems/SoundEffects';
 import { GameSettings } from '../systems/GameSettings';
+import { InventorySystem } from '../systems/InventorySystem';
 import { virtualInput } from '../../components/GameCanvas';
 
 type MenuState = 'main' | 'chapters' | 'settings';
@@ -40,6 +41,7 @@ export class MenuScene extends Phaser.Scene {
   private playerSprite!: Phaser.GameObjects.Sprite;
   private titleText!: Phaser.GameObjects.Text;
   private subtitleText!: Phaser.GameObjects.Text;
+  private taglineText: Phaser.GameObjects.Text | null = null;
 
   // Settings state
   private musicOn = true;
@@ -155,14 +157,16 @@ export class MenuScene extends Phaser.Scene {
       'Not a game about a coder. A game about a person.',
     ];
     let tagIdx = 0;
-    const tagline = this.add.text(GAME_WIDTH / 2, 450, '', {
+    this.taglineText = this.add.text(GAME_WIDTH / 2, 450, '', {
       fontFamily: '"Press Start 2P", monospace',
       fontSize: '7px',
       color: '#555577',
     }).setOrigin(0.5).setDepth(1).setAlpha(0);
+    const tagline = this.taglineText;
 
     // Cycle taglines every 4 seconds
     const showTag = () => {
+      if (!tagline || !tagline.active) return;
       tagline.setText(taglines[tagIdx % taglines.length]);
       tagIdx++;
       this.tweens.add({ targets: tagline, alpha: 0.6, duration: 600 });
@@ -210,6 +214,7 @@ export class MenuScene extends Phaser.Scene {
     this.playerSprite.setVisible(true);
     this.titleText.setVisible(true);
     this.subtitleText.setVisible(true);
+    if (this.taglineText) this.taglineText.setVisible(true);
 
     const hasSave = SaveSystem.hasSave();
 
@@ -283,6 +288,7 @@ export class MenuScene extends Phaser.Scene {
     this.playerSprite.setVisible(false);
     this.titleText.setVisible(false);
     this.subtitleText.setVisible(false);
+    if (this.taglineText) this.taglineText.setVisible(false);
 
     // Header
     const header = this.add.text(GAME_WIDTH / 2, 160, 'SETTINGS', {
@@ -452,6 +458,10 @@ export class MenuScene extends Phaser.Scene {
   }
 
   private startPlay() {
+    // New game — clear old save data
+    InventorySystem.clearAll();
+    SaveSystem.clearSave();
+
     this.cameras.main.fadeOut(500, 0, 0, 0);
     this.cameras.main.once('camerafadeoutcomplete', () => {
       this.scene.start('IntroScene');

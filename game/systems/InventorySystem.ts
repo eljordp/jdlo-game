@@ -318,6 +318,16 @@ export class InventorySystem {
     this.notify();
   }
 
+  // ── Reset (new game) ──
+
+  static clearAll(): void {
+    this.items.clear();
+    this.initialized = false;
+    try { localStorage.removeItem(STORAGE_KEY); } catch { /* silent */ }
+    this.ensureInit(); // re-initialize with defaults only
+    for (const fn of this.listeners) fn();
+  }
+
   // ── Persistence ──
 
   private static persist(): void {
