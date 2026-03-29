@@ -1574,39 +1574,23 @@ function generateAllNPCs(scene: Phaser.Scene) {
     }
   );
 
-  // Malachi — business partner, man bun + glasses + charcoal suit — 32x32
+  // Malachi — CEO, dark skin, short hair, sharp dress shirt (dark blue), nice pants — 32x32
   generateNPC32(
     scene,
     'npc_malachi',
-    0x201818,
+    0x1a1010,   // dark short hair
     'short',
-    0x2a2a35,
-    0x3a3a45,
-    0x222230,
-    0xc09060,
-    0xa07848,
+    0x1a2040,   // dark blue dress shirt
+    0x243058,   // shirt accent
+    0x1a1a28,   // dark dress pants
+    0x6b3a1a,   // dark skin
+    0x502a10,   // skin shadow
     (g) => {
-      // Man bun — prominent on top of head
-      px(g, 12, -2, 0x201818, 8, 1);
-      px(g, 13, -3, 0x201818, 6, 1);
-      px(g, 14, -4, 0x201818, 4, 1);
-      // Hair tie
-      px(g, 12, -1, 0x404040, 8, 1);
-      // Glasses frames — full rectangle frames, visible
-      px(g, 9, 6, 0xc0c0d0, 6, 1);   // left lens top
-      px(g, 9, 8, 0xc0c0d0, 6, 1);   // left lens bottom
-      px(g, 9, 7, 0xc0c0d0, 1, 1);   // left frame left
-      px(g, 14, 7, 0xc0c0d0, 1, 1);  // left frame right
-      px(g, 17, 6, 0xc0c0d0, 6, 1);  // right lens top
-      px(g, 17, 8, 0xc0c0d0, 6, 1);  // right lens bottom
-      px(g, 17, 7, 0xc0c0d0, 1, 1);  // right frame left
-      px(g, 22, 7, 0xc0c0d0, 1, 1);  // right frame right
-      px(g, 15, 7, 0xc0c0d0, 2, 1);  // bridge
-      // Lens tint (subtle)
-      px(g, 10, 7, 0xd0d8e0, 4, 1);
-      px(g, 18, 7, 0xd0d8e0, 4, 1);
-      // White collar detail
+      // Clean collar detail — white undershirt showing
       px(g, 12, 13, 0xf0f0f0, 8, 1);
+      // Shirt buttons
+      px(g, 15, 15, 0xf0f0f0, 2, 1);
+      px(g, 15, 17, 0xf0f0f0, 2, 1);
     }
   );
 

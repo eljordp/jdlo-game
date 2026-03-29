@@ -355,7 +355,10 @@ export class OperatorScene extends BaseChapterScene {
   }
 
   protected getObjectiveHint(): string {
-    return 'Run the LA operation. Talk to everyone, then head south to Vegas.';
+    if (this.requiredDone) return 'Head south. Vegas is calling.';
+    if (this.npcsTalkedTo.size >= 5) return 'Close the deal. Show the dashboard.';
+    if (this.npcsTalkedTo.size >= 2) return 'Keep talking. Build the network.';
+    return 'This is LA. Make it count.';
   }
 
   getMapData(): MapData {

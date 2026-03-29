@@ -38,7 +38,8 @@ export class TractorScene extends BaseChapterScene {
   }
 
   protected getObjectiveHint(): string {
-    return 'Work the field. Find the computer.';
+    if (this.tractorPlayed) return 'Something changed. Check the computer.';
+    return 'Ernesto needs you on the tractor.';
   }
 
   getMapData(): MapData {

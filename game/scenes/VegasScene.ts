@@ -455,7 +455,7 @@ export class VegasScene extends Phaser.Scene {
           this.add.sprite(200, jpY, 'player-ch6', 6).setScale(CHAR_SCALE * 1.3)
         );
         const malachi = this.addObj(
-          this.add.sprite(120, jpY, 'npc_malachi', 6).setScale(SCALE * 1.3)
+          this.add.sprite(120, jpY, 'npc_malachi', 0).setScale(SCALE * 1.3)
         );
 
         // Walking animation — move them right slowly
@@ -517,7 +517,7 @@ export class VegasScene extends Phaser.Scene {
             this.add.sprite(tableX - 180, tableY + 100, 'player-ch6', 6).setScale(CHAR_SCALE * 1.3)
           );
           this.addObj(
-            this.add.sprite(tableX - 240, tableY + 100, 'npc_malachi', 6).setScale(SCALE * 1.3)
+            this.add.sprite(tableX - 240, tableY + 100, 'npc_malachi', 0).setScale(SCALE * 1.3)
           );
 
           this.cameras.main.fadeIn(600, 0, 0, 0);
@@ -561,7 +561,7 @@ export class VegasScene extends Phaser.Scene {
             this.add.sprite(cx - 60, tableY + 80, 'player-ch6', 2).setScale(CHAR_SCALE * 1.3)
           );
           this.addObj(
-            this.add.sprite(cx + 60, tableY + 80, 'npc_malachi', 2).setScale(SCALE * 1.3)
+            this.add.sprite(cx + 60, tableY + 80, 'npc_malachi', 0).setScale(SCALE * 1.3)
           );
 
           this.cameras.main.fadeIn(600, 0, 0, 0);
@@ -776,7 +776,7 @@ export class VegasScene extends Phaser.Scene {
             this.add.sprite(300, walkY, 'player-ch6', 6).setScale(CHAR_SCALE * 1.3)
           ) as Phaser.GameObjects.Sprite;
           const malachi = this.addObj(
-            this.add.sprite(220, walkY, 'npc_malachi', 6).setScale(SCALE * 1.3)
+            this.add.sprite(220, walkY, 'npc_malachi', 0).setScale(SCALE * 1.3)
           );
 
           // Walk slowly — then JP pauses and looks back

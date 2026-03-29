@@ -877,12 +877,30 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     const playerTileX = Math.round((this.player.x - SCALED_TILE / 2) / SCALED_TILE);
     const playerTileY = Math.round((this.player.y - SCALED_TILE / 2) / SCALED_TILE);
 
-    let facingX = playerTileX;
-    let facingY = playerTileY;
-    if (this.facing === 'up') facingY--;
-    if (this.facing === 'down') facingY++;
-    if (this.facing === 'left') facingX--;
-    if (this.facing === 'right') facingX++;
+    // Direction deltas based on facing
+    let dx = 0;
+    let dy = 0;
+    if (this.facing === 'up') dy = -1;
+    if (this.facing === 'down') dy = 1;
+    if (this.facing === 'left') dx = -1;
+    if (this.facing === 'right') dx = 1;
+
+    const facingX = playerTileX + dx;
+    const facingY = playerTileY + dy;
+
+    // Tiles to check for interactions (ordered by priority):
+    // 1. Facing tile (original behavior)
+    // 2. Standing tile (for walk-onto items)
+    // 3. Left of facing tile (45-degree forgiveness)
+    // 4. Right of facing tile (45-degree forgiveness)
+    // 5. Two tiles ahead (for NPCs at range)
+    const checkTiles: { x: number; y: number; npcOnly?: boolean }[] = [
+      { x: facingX, y: facingY },
+      { x: playerTileX, y: playerTileY },
+      { x: facingX + dy, y: facingY + dx },   // perpendicular left
+      { x: facingX - dy, y: facingY - dx },   // perpendicular right
+      { x: playerTileX + dx * 2, y: playerTileY + dy * 2, npcOnly: true }, // 2 tiles ahead (NPCs only)
+    ];
 
     // Clear all speech bubbles when interacting
     for (const [key, bubble] of this.speechBubbles) {
@@ -890,23 +908,29 @@ export abstract class BaseChapterScene extends Phaser.Scene {
       this.speechBubbles.delete(key);
     }
 
-    // Check NPCs first
-    for (const npc of this.npcs) {
-      const npcTileX = Math.round((npc.sprite.x - SCALED_TILE / 2) / SCALED_TILE);
-      const npcTileY = Math.round((npc.sprite.y - SCALED_TILE / 2) / SCALED_TILE);
+    // Check NPCs first — try all tiles in priority order
+    for (const tile of checkTiles) {
+      for (const npc of this.npcs) {
+        const npcTileX = Math.round((npc.sprite.x - SCALED_TILE / 2) / SCALED_TILE);
+        const npcTileY = Math.round((npc.sprite.y - SCALED_TILE / 2) / SCALED_TILE);
 
-      if (npcTileX === facingX && npcTileY === facingY) {
-        // Skip invisible/inactive NPCs — they shouldn't be interactable
-        if (!npc.sprite.visible || !npc.sprite.active) continue;
-        SoundEffects.playBlip();
-        this.handleNPCDialogue(npc.id, npc.dialogue);
-        return;
+        if (npcTileX === tile.x && npcTileY === tile.y) {
+          // Skip invisible/inactive NPCs — they shouldn't be interactable
+          if (!npc.sprite.visible || !npc.sprite.active) continue;
+          SoundEffects.playBlip();
+          this.handleNPCDialogue(npc.id, npc.dialogue);
+          return;
+        }
       }
     }
 
-    // Check interactables (at facing tile AND current tile)
-    const interactable = this.interactions.checkInteraction(facingX, facingY)
-      || this.interactions.checkInteraction(playerTileX, playerTileY);
+    // Check interactables — try all non-NPC-only tiles in priority order
+    let interactable = null;
+    for (const tile of checkTiles) {
+      if (tile.npcOnly) continue;
+      interactable = this.interactions.checkInteraction(tile.x, tile.y);
+      if (interactable) break;
+    }
 
     if (interactable) {
       this.handleInteractable(interactable);

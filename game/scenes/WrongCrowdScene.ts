@@ -317,6 +317,9 @@ export class WrongCrowdScene extends BaseChapterScene {
   }
 
   protected getObjectiveHint(): string {
+    if (this.raidTriggered) return 'Run.';
+    if (this.joseGrabbed) return 'Make the drop. Get out.';
+    if (this.interactionCount >= 4) return "It's 3 AM. Something's not right.";
     return 'Grab the weed. Get in the 335i. Make the drop.';
   }
 

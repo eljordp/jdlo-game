@@ -168,6 +168,75 @@ function waypointsByType(type: Waypoint['type']): Waypoint[] {
   return WAYPOINTS.filter(w => w.type === type);
 }
 
+// ── Door-aware routing ──────────────────────────────────────────
+// Zone checks: inside the house (rows 0-9) vs outside (rows 10+)
+const isInside = (y: number) => y <= 9;
+const DOORS_ROW9 = [6, 18, 29];   // exits from house to yard
+const DOORS_ROW5 = [12, 23, 34];  // between rooms inside house
+
+function nearestDoor(doorCols: number[], fromX: number): number {
+  let best = doorCols[0];
+  let bestDist = Math.abs(fromX - best);
+  for (const col of doorCols) {
+    const dist = Math.abs(fromX - col);
+    if (dist < bestDist) {
+      best = col;
+      bestDist = dist;
+    }
+  }
+  return best;
+}
+
+/** Returns the next tile {x, y} an NPC should move to, routing through doors when crossing zones. */
+function getNextMoveToward(fromX: number, fromY: number, toX: number, toY: number): { x: number; y: number } {
+  const fromIn = isInside(fromY);
+  const toIn = isInside(toY);
+
+  if (fromIn !== toIn) {
+    // Crossing inside <-> outside: route through nearest row-9 door
+    const doorCol = nearestDoor(DOORS_ROW9, fromX);
+    if (fromX !== doorCol) {
+      // Step 1: move toward the door column on current row
+      return { x: fromX + (doorCol > fromX ? 1 : -1), y: fromY };
+    }
+    // Step 2: cross through the door row
+    if (fromIn) {
+      // Inside → outside: move down through row 9
+      return { x: fromX, y: fromY + 1 };
+    } else {
+      // Outside → inside: move up through row 9
+      return { x: fromX, y: fromY - 1 };
+    }
+  }
+
+  // Same zone: check if we need to cross between rooms (rows 1-8, different "columns" separated by walls at row 5)
+  if (fromIn && toIn && fromY <= 8 && toY <= 8) {
+    // If there's a large horizontal gap, might need a row-5 door
+    // Simple heuristic: if X distance > 8, route through nearest row-5 door
+    const xDist = Math.abs(toX - fromX);
+    if (xDist > 8) {
+      const doorCol = nearestDoor(DOORS_ROW5, fromX);
+      // Route through door row 5 if not already there
+      if (fromY !== 5) {
+        return { x: fromX, y: fromY + (5 > fromY ? 1 : -1) };
+      }
+      if (fromX !== doorCol) {
+        return { x: fromX + (doorCol > fromX ? 1 : -1), y: fromY };
+      }
+    }
+  }
+
+  // Default: move toward target directly (larger axis first)
+  const dx = toX - fromX;
+  const dy = toY - fromY;
+
+  if (Math.abs(dx) >= Math.abs(dy)) {
+    return { x: fromX + (dx > 0 ? 1 : -1), y: fromY };
+  } else {
+    return { x: fromX, y: fromY + (dy > 0 ? 1 : -1) };
+  }
+}
+
 // ── Bubble font config ──────────────────────────────────────────
 
 const BUBBLE_FONT = {
@@ -493,15 +562,10 @@ export class PartyAI {
       return;
     }
 
-    // Move along the axis with larger distance first
-    let nextTileX = npc.tileX;
-    let nextTileY = npc.tileY;
-
-    if (Math.abs(dx) >= Math.abs(dy)) {
-      nextTileX += dx > 0 ? 1 : -1;
-    } else {
-      nextTileY += dy > 0 ? 1 : -1;
-    }
+    // Use door-aware routing to pick the next tile
+    const next = getNextMoveToward(npc.tileX, npc.tileY, npc.targetWaypoint.x, npc.targetWaypoint.y);
+    let nextTileX = next.x;
+    let nextTileY = next.y;
 
     npc.moveStartX = npc.sprite.x;
     npc.moveStartY = npc.sprite.y;

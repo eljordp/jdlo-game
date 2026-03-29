@@ -224,7 +224,10 @@ export class JailScene extends BaseChapterScene {
   }
 
   protected getObjectiveHint(): string {
-    return 'Survive. Study. Find the exit.';
+    if (this.currentDay === 1) return 'First day. Meet your cellmates.';
+    if (this.currentDay === 2) return 'Work out. Survive.';
+    if (this.currentDay === 3) return 'Read. Learn. Find your way out.';
+    return 'Hit the bed. Time to go.';
   }
 
   getMapData(): MapData {

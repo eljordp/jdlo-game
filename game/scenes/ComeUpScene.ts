@@ -44,7 +44,9 @@ export class ComeUpScene extends BaseChapterScene {
   }
 
   protected getObjectiveHint(): string {
-    return 'Visit clients. Build your portfolio.';
+    if (this.clientReturned) return "You're building something real. Keep going.";
+    if (this.stickerTalked) return 'Keep going. More clients out there.';
+    return 'No clients. No portfolio. Start building.';
   }
 
   getMapData(): MapData {
