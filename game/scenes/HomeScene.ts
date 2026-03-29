@@ -153,9 +153,10 @@ export class HomeScene extends BaseChapterScene {
     if (this.phoneTriggered && this.requiredDone) return 'Head outside. Walk to the street.';
     if (this.phoneTriggered) return 'Answer the phone.';
     if (this.interactionCount >= 5) return 'Keep exploring. Something\'s about to happen.';
-    if (this.interactionCount >= 2) return 'Talk to family. Check your room.';
+    if (this.interactionCount >= 2 && this.currentFloor === 'up') return 'Talk to family. Head downstairs.';
+    if (this.interactionCount >= 2) return 'Talk to Pops. Explore the yard.';
     if (this.currentFloor === 'up') return 'Look around your room. Interact with everything.';
-    return 'Explore the house. Talk to family.';
+    return 'Talk to family. Check everything out.';
   }
 
   // ─── NPC MOVEMENT SYSTEM ──────────────────────────────────────────
