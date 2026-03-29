@@ -643,12 +643,6 @@ export class BeachScene extends BaseChapterScene {
 
   // Override to add volleyball mini-game, BMW, and bed wake-up
   protected handleInteractable(interactable: { id: string; type: string; consumed?: boolean }) {
-    // Bed — K wakes up
-    if (interactable.id === 'ch1_bed' && !this.kGoodbyeDone && this.currentDay === 1) {
-      this.wakeUpK();
-      return;
-    }
-
     if (interactable.id === 'ch1_volleyball1') {
       Analytics.trackInteraction(interactable.id);
       this.playVolleyballMinigame();
@@ -835,13 +829,17 @@ export class BeachScene extends BaseChapterScene {
       return;
     }
 
-    // Bedroom — Day 1: JP lies down, eyes blink, wakes up to party. Day 2: no sleeping
+    // Bedroom — Day 1: JP lies down, eyes blink, wakes up to party. Day 2: K scene or no sleeping
     if (interactable.id === 'ch1_bed') {
       Analytics.trackInteraction(interactable.id);
+      // K wake-up takes priority (any day, if not done yet)
+      if (!this.kGoodbyeDone) {
+        this.wakeUpK();
+        return;
+      }
       if (this.currentDay === 1 && !this.bedroomStayed) {
         this.bedroomStayed = true;
         this.frozen = true;
-        // JP lies down
         this.dialogue.show([
           { speaker: 'JP\'s Mind', text: 'Just a quick nap...' },
         ], () => {
