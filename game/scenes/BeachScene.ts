@@ -775,6 +775,16 @@ export class BeachScene extends BaseChapterScene {
       return;
     }
 
+    // Smoke spot hint — Day 2 but haven't drank yet
+    if (interactable.id === 'ch1_smoke' && this.currentDay === 2 && !this.smokeSeshDone && this.partyLevel < 1) {
+      this.frozen = true;
+      this.dialogue.show([
+        { speaker: 'JP\'s Mind', text: 'The crew wants to smoke but nobody\'s loose enough yet.' },
+        { speaker: 'JP\'s Mind', text: 'Should probably grab a drink first. Bottles are in the kitchen.' },
+      ], () => { this.frozen = false; });
+      return;
+    }
+
     // Group smoke sesh — Day 2 after drinking
     if (interactable.id === 'ch1_smoke' && this.currentDay === 2 && !this.smokeSeshDone && this.partyLevel >= 1) {
       Analytics.trackInteraction(interactable.id);
@@ -1137,6 +1147,14 @@ export class BeachScene extends BaseChapterScene {
   // ─── SPAWN PARTY SCENE ─────────────────────────────────────────
   private spawnPartyScene() {
     const CHAR_SCALE = SCALE;
+
+    // Night overlay — purple party tint (ensure it exists even if called directly)
+    if (!this.partyOverlay) {
+      this.partyOverlay = this.add.rectangle(
+        GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH * 3, GAME_HEIGHT * 3,
+        0x1a0840, 0.25
+      ).setScrollFactor(0).setDepth(8);
+    }
 
     // Show the girls — they arrive for the party
     for (const npc of this.npcs) {
