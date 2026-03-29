@@ -150,7 +150,12 @@ export class HomeScene extends BaseChapterScene {
   }
 
   protected getObjectiveHint(): string {
-    return 'Explore your house. Talk to family. Leave when ready.';
+    if (this.phoneTriggered && this.requiredDone) return 'Head outside. Walk to the street.';
+    if (this.phoneTriggered) return 'Answer the phone.';
+    if (this.interactionCount >= 5) return 'Keep exploring. Something\'s about to happen.';
+    if (this.interactionCount >= 2) return 'Talk to family. Check your room.';
+    if (this.currentFloor === 'up') return 'Look around your room. Interact with everything.';
+    return 'Explore the house. Talk to family.';
   }
 
   // ─── NPC MOVEMENT SYSTEM ──────────────────────────────────────────

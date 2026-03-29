@@ -55,6 +55,39 @@ if (typeof window !== 'undefined') {
     virtualInput.actionJustPressed = true;
     setTimeout(() => { virtualInput.actionJustPressed = false; virtualInput.action = false; }, 150);
   };
+  // walk(steps) — queue tile-by-tile moves for Playwright. Example: walk('rrrdddd') = right 3, down 4
+  (window as unknown as Record<string, unknown>).walk = (steps: string): Promise<void> => {
+    const dirMap: Record<string, string> = { u: 'up', d: 'down', l: 'left', r: 'right' };
+    return new Promise((resolve) => {
+      let i = 0;
+      const next = () => {
+        if (i >= steps.length) { resolve(); return; }
+        const dir = dirMap[steps[i]] || steps[i];
+        i++;
+        virtualInput[dir as 'up' | 'down' | 'left' | 'right'] = true;
+        setTimeout(() => {
+          virtualInput[dir as 'up' | 'down' | 'left' | 'right'] = false;
+          setTimeout(next, 100); // small gap between moves
+        }, 250);
+      };
+      next();
+    });
+  };
+  // dismiss(n) — press act n times with delays to clear dialogue
+  (window as unknown as Record<string, unknown>).dismiss = (n = 15): Promise<void> => {
+    return new Promise((resolve) => {
+      let i = 0;
+      const go = () => {
+        if (i >= n) { resolve(); return; }
+        i++;
+        virtualInput.action = true;
+        virtualInput.actionJustPressed = true;
+        setTimeout(() => { virtualInput.actionJustPressed = false; virtualInput.action = false; }, 100);
+        setTimeout(go, 250);
+      };
+      go();
+    });
+  };
   // Dev helpers for Playwright/console testing
   // Usage: scene() — get active scene, tp(x,y) — teleport player, day2() — skip to day 2
   (window as unknown as Record<string, unknown>).getScene = () => {
