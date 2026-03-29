@@ -621,7 +621,16 @@ export class BeachScene extends BaseChapterScene {
   }
 
   protected getObjectiveHint(): string {
-    return 'Check out the townhouse. Head south to leave.';
+    if (this.currentDay === 1) {
+      if (!this.bedroomStayed) return 'Explore the house. Hit the bed when you\'re ready.';
+      return 'Head to bed. It\'s getting late.';
+    }
+    // Day 2 — smoke → drink → blow → exit
+    if (!this.smokeSeshDone) return 'Party\'s going. Hit the smoke spot in the yard.';
+    if (!this.drinksDone) return 'Grab a drink. Bottles are in the kitchen.';
+    if (!this.blowOffered) return 'Keep vibing. Something\'s coming...';
+    if (!this.blackedOut) return 'Things are getting out of hand.';
+    return 'Head to the beach.';
   }
 
   getMapData(): MapData {
@@ -769,24 +778,21 @@ export class BeachScene extends BaseChapterScene {
               }
             }
             this.frozen = false;
+
+            // After drinking + girls arrive, blow gets offered (delayed)
+            this.time.delayedCall(20000, () => {
+              if (this.scene.isActive() && !this.blowOffered && this.currentDay === 2) {
+                this.triggerBlowOffer();
+              }
+            });
           });
         });
       });
       return;
     }
 
-    // Smoke spot hint — Day 2 but haven't drank yet
-    if (interactable.id === 'ch1_smoke' && this.currentDay === 2 && !this.smokeSeshDone && this.partyLevel < 1) {
-      this.frozen = true;
-      this.dialogue.show([
-        { speaker: 'JP\'s Mind', text: 'The crew wants to smoke but nobody\'s loose enough yet.' },
-        { speaker: 'JP\'s Mind', text: 'Should probably grab a drink first. Bottles are in the kitchen.' },
-      ], () => { this.frozen = false; });
-      return;
-    }
-
-    // Group smoke sesh — Day 2 after drinking
-    if (interactable.id === 'ch1_smoke' && this.currentDay === 2 && !this.smokeSeshDone && this.partyLevel >= 1) {
+    // Group smoke sesh — Day 2 (smoke comes FIRST, no drink gate)
+    if (interactable.id === 'ch1_smoke' && this.currentDay === 2 && !this.smokeSeshDone) {
       Analytics.trackInteraction(interactable.id);
       this.smokeSeshDone = true;
       this.frozen = true;
@@ -823,12 +829,8 @@ export class BeachScene extends BaseChapterScene {
         this.tweens.add({ targets: greenHaze, alpha: 0.1, duration: 2000 });
         this.frozen = false;
 
-        // After smoke sesh, someone offers blow (delayed)
-        this.time.delayedCall(15000, () => {
-          if (this.scene.isActive() && !this.blowOffered && this.currentDay === 2) {
-            this.triggerBlowOffer();
-          }
-        });
+        // Blow comes after drinking, not smoking — hint to grab drinks
+        // (triggerBlowOffer is called from the drink interaction now)
       });
       return;
     }
@@ -1013,7 +1015,7 @@ export class BeachScene extends BaseChapterScene {
             // Night overlay — purple party tint (not too dark)
             this.partyOverlay = this.add.rectangle(
               GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH * 3, GAME_HEIGHT * 3,
-              0x1a0840, 0.25
+              0x0a0020, 0.55
             ).setScrollFactor(0).setDepth(8);
 
             // Spawn party vibes — floating music notes
@@ -1152,7 +1154,7 @@ export class BeachScene extends BaseChapterScene {
     if (!this.partyOverlay) {
       this.partyOverlay = this.add.rectangle(
         GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH * 3, GAME_HEIGHT * 3,
-        0x1a0840, 0.25
+        0x0a0020, 0.55
       ).setScrollFactor(0).setDepth(8);
     }
 

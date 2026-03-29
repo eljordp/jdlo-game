@@ -295,32 +295,46 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     return 'Explore and interact with everything';
   }
 
+  private objectiveHintBg: Phaser.GameObjects.Rectangle | null = null;
+  private objectiveHintText: Phaser.GameObjects.Text | null = null;
+  private lastHintString: string = '';
+
   private showObjectiveHint() {
     const hint = this.getObjectiveHint();
     if (!hint) return;
 
-    const bg = this.add.rectangle(GAME_WIDTH / 2, 30, GAME_WIDTH - 80, 28, 0x000000, 0.55)
+    // Create persistent hint bar at top
+    this.objectiveHintBg = this.add.rectangle(GAME_WIDTH / 2, 16, GAME_WIDTH, 24, 0x000000, 0.5)
       .setScrollFactor(0).setDepth(90).setAlpha(0);
 
-    const text = this.add.text(GAME_WIDTH / 2, 30, hint, {
+    this.objectiveHintText = this.add.text(GAME_WIDTH / 2, 16, hint, {
       fontFamily: '"Press Start 2P", monospace',
       fontSize: '9px',
-      color: '#ffffff',
+      color: '#cccccc',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(91).setAlpha(0);
 
-    // Fade in
+    this.lastHintString = hint;
+
+    // Fade in after chapter title
     this.tweens.add({
-      targets: [bg, text],
-      alpha: (target: Phaser.GameObjects.GameObject) => target === bg ? 0.55 : 0.85,
+      targets: [this.objectiveHintBg, this.objectiveHintText],
+      alpha: (target: Phaser.GameObjects.GameObject) => target === this.objectiveHintBg ? 0.5 : 0.8,
       duration: 600,
-      delay: 3500, // show after chapter title finishes
-      hold: 8000,
-      yoyo: true,
-      onComplete: () => {
-        bg.destroy();
-        text.destroy();
-      },
+      delay: 3500,
     });
+  }
+
+  /** Call to refresh the objective hint text (e.g. after state changes) */
+  protected refreshObjectiveHint() {
+    if (!this.objectiveHintText || !this.objectiveHintText.active) return;
+    const hint = this.getObjectiveHint();
+    if (hint !== this.lastHintString) {
+      this.lastHintString = hint;
+      // Brief flash to draw attention
+      this.objectiveHintText.setAlpha(0);
+      this.objectiveHintText.setText(hint);
+      this.tweens.add({ targets: this.objectiveHintText, alpha: 0.8, duration: 400 });
+    }
   }
 
   private animateNPC(sprite: Phaser.GameObjects.Sprite, id: string) {
@@ -1273,6 +1287,9 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     // Update mood system every frame (particles, effects, timer)
     MoodSystem.update(this, this.player);
     SubstanceSystem.update(_delta);
+
+    // Refresh objective hint if state changed
+    this.refreshObjectiveHint();
 
     // Update NPC indicator positions (NPCs may animate/move)
     for (const npc of this.npcs) {
