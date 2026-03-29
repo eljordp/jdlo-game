@@ -579,7 +579,7 @@ export class HomeScene extends BaseChapterScene {
     }
 
     // Ivy surprise follow — after 5+ interactions, Ivy silently follows for 3 tiles then sits
-    if (!this.ivySurpriseTriggered && !this.ivyFollowing && this.interactionCount >= 5) {
+    if (!this.ivySurpriseTriggered && !this.ivyFollowing && this.requiredDone) {
       const ivy = this.findNPC('ch0_frenchie');
       if (ivy && ivy.sprite.visible) {
         const ivyTX = Math.round((ivy.sprite.x - SCALED_TILE / 2) / SCALED_TILE);
