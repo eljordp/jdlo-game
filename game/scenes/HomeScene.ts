@@ -370,7 +370,7 @@ export class HomeScene extends BaseChapterScene {
 
   private playNarratorLines(overlay: Phaser.GameObjects.Rectangle) {
     const lines = [
-      { text: 'Vacaville, California.', hold: 1500 },
+      { text: 'Napa, California.', hold: 1500 },
       { text: 'Same room. Same walls. Same ceiling.', hold: 2000 },
       { text: 'Jordan had everything going for him.', hold: 2000 },
       { text: 'Then he left.', hold: 1500 },
