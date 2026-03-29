@@ -20,6 +20,9 @@ export class HomeScene extends BaseChapterScene {
   private isNightMode = false;
   private ivyFollowing = false;
   private ivyGiftGiven = false;
+  private popsTalkedTo = false;
+  private ivySurpriseTriggered = false;
+  private ivySurpriseFollowSteps = 0;
   private momFoodSpawned = false;
   private sisterDrawingSpawned = false;
   private popsRecordPlayed = false;
@@ -28,6 +31,10 @@ export class HomeScene extends BaseChapterScene {
   private nightOverlay: Phaser.GameObjects.Rectangle | null = null;
   private ivyFollowHistory: { x: number; y: number }[] = [];
   private currentFloor: 'up' | 'down' = 'up'; // Player starts upstairs
+  private exitTriggered = false;
+  private openingCutsceneDone = false;
+  private firstInteractableGlow: Phaser.GameObjects.Arc | null = null;
+  private morningTint: Phaser.GameObjects.Rectangle | null = null;
 
   constructor() {
     super({ key: 'HomeScene' });
@@ -45,8 +52,13 @@ export class HomeScene extends BaseChapterScene {
   }
 
   create() {
+    // Skip default chapter title — opening cutscene handles it
+    this.chapterTitle = '';
     super.create();
     this.addNavArrow(14, 42, 'Leave home');
+
+    // Play cinematic opening cutscene
+    this.playOpeningCutscene();
 
     // Player starts upstairs — hide everything below row 12 (Pokemon-style)
     const upRows = Array.from({ length: 12 }, (_, i) => i); // rows 0-11
@@ -147,6 +159,59 @@ export class HomeScene extends BaseChapterScene {
 
     // Start family NPC ambient movement
     this.startFamilyMovement();
+
+    // ── VISUAL POLISH ─────────────────────────────────────────────────
+
+    // Floor indicator — show initial floor
+    this.showFloorIndicator('Upstairs');
+
+    // Highlight first interactable (computer in JP's room)
+    this.firstInteractableGlow = this.add.circle(
+      10 * SCALED_TILE + SCALED_TILE / 2, 5 * SCALED_TILE + SCALED_TILE / 2,
+      24, 0xf0c040, 0.15
+    ).setDepth(3);
+    this.tweens.add({
+      targets: this.firstInteractableGlow,
+      alpha: 0.05,
+      scaleX: 1.3,
+      scaleY: 1.3,
+      duration: 800,
+      yoyo: true,
+      repeat: -1,
+    });
+
+    // Morning light — warm golden tint that fades over time
+    this.morningTint = this.add.rectangle(
+      GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT,
+      0xf8e0a0, 0.06
+    ).setScrollFactor(0).setDepth(7).setBlendMode(Phaser.BlendModes.ADD);
+
+    // Ambient atmosphere — subtle text hints
+    const ambientTexts = ['*tick... tick...*', '*birds chirping*', '*fridge humming*', '*distant TV*'];
+    let ambientIdx = 0;
+    this.time.addEvent({
+      delay: 12000,
+      loop: true,
+      callback: () => {
+        if (!this.scene.isActive() || this.frozen) return;
+        const text = ambientTexts[ambientIdx % ambientTexts.length];
+        ambientIdx++;
+        const ambientLabel = this.add.text(
+          GAME_WIDTH / 2 + Phaser.Math.Between(-100, 100),
+          60,
+          text,
+          { fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#555555' }
+        ).setOrigin(0.5).setScrollFactor(0).setDepth(89).setAlpha(0);
+        this.tweens.add({
+          targets: ambientLabel,
+          alpha: 0.5,
+          duration: 1000,
+          hold: 3000,
+          yoyo: true,
+          onComplete: () => ambientLabel.destroy(),
+        });
+      },
+    });
   }
 
   protected getObjectiveHint(): string {
@@ -211,11 +276,9 @@ export class HomeScene extends BaseChapterScene {
       loop: true,
       callback: () => {
         if (!this.scene.isActive() || this.frozen) return;
+        if (!this.popsTalkedTo) return; // Pops stays put until player talks to him
         const pops = this.findNPC('ch0_pops');
         if (!pops || !pops.sprite.visible) return;
-
-        // Don't move if player is in dialogue or pops is being used in a scripted sequence
-        if (this.frozen) return;
 
         const targetX = this.popsForward ? 24 : 18;
         const targetY = 18;
@@ -272,6 +335,120 @@ export class HomeScene extends BaseChapterScene {
           repeat: 4,
         });
       },
+    });
+  }
+
+  // ─── OPENING CUTSCENE ──────────────────────────────────────────────
+  private playOpeningCutscene() {
+    this.frozen = true;
+
+    // Dark overlay covering the full screen
+    const overlay = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 1)
+      .setScrollFactor(0).setDepth(600);
+
+    // Chapter title card — "Chapter 1: Home"
+    const titleText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'Chapter 1: Home', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '20px',
+      color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(601).setAlpha(0);
+
+    // Fade in title
+    this.tweens.add({
+      targets: titleText,
+      alpha: 1,
+      duration: 800,
+      hold: 1500,
+      yoyo: true,
+      onComplete: () => {
+        titleText.destroy();
+        // Now play narrator lines
+        this.playNarratorLines(overlay);
+      },
+    });
+  }
+
+  private playNarratorLines(overlay: Phaser.GameObjects.Rectangle) {
+    const lines = [
+      { text: 'Vacaville, California.', hold: 1500 },
+      { text: 'Same room. Same walls. Same ceiling.', hold: 2000 },
+      { text: 'Jordan had everything going for him.', hold: 2000 },
+      { text: 'Then he left.', hold: 1500 },
+    ];
+
+    let delay = 200; // small initial pause after title fades
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const fadeIn = 400;
+      const fadeOut = 400;
+
+      this.time.delayedCall(delay, () => {
+        const txt = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2, line.text, {
+          fontFamily: '"Press Start 2P", monospace',
+          fontSize: '14px',
+          color: '#ffffff',
+          wordWrap: { width: GAME_WIDTH - 80 },
+          align: 'center',
+        }).setOrigin(0.5).setScrollFactor(0).setDepth(601).setAlpha(0);
+
+        this.tweens.add({
+          targets: txt,
+          alpha: 1,
+          duration: fadeIn,
+          hold: line.hold,
+          yoyo: true,
+          onComplete: () => {
+            txt.destroy();
+          },
+        });
+      });
+
+      delay += fadeIn + line.hold + fadeOut + 200; // 200ms gap between lines
+    }
+
+    // After all lines finish, fade overlay and unfreeze
+    this.time.delayedCall(delay, () => {
+      this.tweens.add({
+        targets: overlay,
+        alpha: 0,
+        duration: 1000,
+        onComplete: () => {
+          overlay.destroy();
+          this.frozen = false;
+          this.openingCutsceneDone = true;
+
+          // Show intro dialogue after cutscene
+          this.dialogue.show([
+            { speaker: 'Narrator', text: 'Good neighborhood. Good family. Good life.' },
+            { speaker: 'Narrator', text: 'But the ceiling looks the same every morning.' },
+            { speaker: 'JP\'s Mind', text: 'I gotta do something different.' },
+          ]);
+        },
+      });
+    });
+  }
+
+  // ─── EXIT EMOTIONAL BEAT ──────────────────────────────────────────
+  protected transitionToScene(sceneKey: string, sceneData?: Record<string, string>) {
+    if (this.exitTriggered) return;
+    this.exitTriggered = true;
+    this.frozen = true;
+
+    // Dim screen slightly
+    const dimOverlay = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0)
+      .setScrollFactor(0).setDepth(500);
+    this.tweens.add({ targets: dimOverlay, alpha: 0.4, duration: 800 });
+
+    this.time.delayedCall(800, () => {
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'He didn\'t say goodbye.' },
+        { speaker: 'Narrator', text: 'He didn\'t have to. Pops already knew.' },
+      ], () => {
+        dimOverlay.destroy();
+        // Now actually transition via parent
+        super.transitionToScene(sceneKey, sceneData);
+      });
     });
   }
 
@@ -337,6 +514,7 @@ export class HomeScene extends BaseChapterScene {
         const downRows = Array.from({ length: this.mapHeight - 12 }, (_, i) => i + 12);
         this.setFloorVisibility(downRows, upRows);
         this.currentFloor = 'down';
+        this.showFloorIndicator('Downstairs');
         this.cameras.main.setBounds(0, 12 * SCALED_TILE, this.mapWidth * SCALED_TILE, (this.mapHeight - 12) * SCALED_TILE);
         this.cameras.main.fadeIn(300, 0, 0, 0);
         this.frozen = false;
@@ -351,6 +529,7 @@ export class HomeScene extends BaseChapterScene {
         const downRows = Array.from({ length: this.mapHeight - 12 }, (_, i) => i + 12);
         this.setFloorVisibility(upRows, downRows);
         this.currentFloor = 'up';
+        this.showFloorIndicator('Upstairs');
         this.cameras.main.setBounds(0, 0, this.mapWidth * SCALED_TILE, 12 * SCALED_TILE);
         this.cameras.main.fadeIn(300, 0, 0, 0);
         this.frozen = false;
@@ -379,6 +558,123 @@ export class HomeScene extends BaseChapterScene {
           this.triggerIvyGift();
         }
       }
+    }
+
+    // Mom avoidance — turns away when JP gets within 3 tiles
+    const mom = this.findNPC('ch0_mom');
+    if (mom && mom.sprite.visible) {
+      const momTX = Math.round((mom.sprite.x - SCALED_TILE / 2) / SCALED_TILE);
+      const momTY = Math.round((mom.sprite.y - SCALED_TILE / 2) / SCALED_TILE);
+      const momDist = Math.abs(momTX - tileX) + Math.abs(momTY - tileY);
+      if (momDist <= 3 && momDist > 0) {
+        // Face away from player
+        const dx = momTX - tileX;
+        const dy = momTY - tileY;
+        if (Math.abs(dx) > Math.abs(dy)) {
+          mom.sprite.setFrame(dx > 0 ? 6 : 4); // face away horizontally
+        } else {
+          mom.sprite.setFrame(dy > 0 ? 0 : 2); // face away vertically
+        }
+      }
+    }
+
+    // Ivy surprise follow — after 5+ interactions, Ivy silently follows for 3 tiles then sits
+    if (!this.ivySurpriseTriggered && !this.ivyFollowing && this.interactionCount >= 5) {
+      const ivy = this.findNPC('ch0_frenchie');
+      if (ivy && ivy.sprite.visible) {
+        const ivyTX = Math.round((ivy.sprite.x - SCALED_TILE / 2) / SCALED_TILE);
+        const ivyTY = Math.round((ivy.sprite.y - SCALED_TILE / 2) / SCALED_TILE);
+        const ivyDist = Math.abs(ivyTX - tileX) + Math.abs(ivyTY - tileY);
+        if (ivyDist <= 3 && ivyDist > 0) {
+          // Trigger the surprise follow
+          this.ivySurpriseTriggered = true;
+          this.ivySurpriseFollowSteps = 0;
+          this.triggerIvySurpriseFollow(tileX, tileY);
+        }
+      }
+    } else if (this.ivySurpriseTriggered && this.ivySurpriseFollowSteps > 0 && this.ivySurpriseFollowSteps < 3) {
+      // Continue the surprise follow — Ivy moves to where JP just was
+      this.triggerIvySurpriseFollow(tileX, tileY);
+    }
+  }
+
+  // ─── IVY SURPRISE FOLLOW (silent 3-tile follow then sits) ────────
+  private triggerIvySurpriseFollow(playerTileX: number, playerTileY: number): void {
+    const ivy = this.findNPC('ch0_frenchie');
+    if (!ivy) return;
+
+    // Move Ivy to where JP just was (1 tile behind)
+    const prevX = this.lastPlayerTileX;
+    const prevY = this.lastPlayerTileY;
+    if (prevX < 0) return;
+
+    const ivyTileX = Math.round((ivy.sprite.x - SCALED_TILE / 2) / SCALED_TILE);
+    const ivyTileY = Math.round((ivy.sprite.y - SCALED_TILE / 2) / SCALED_TILE);
+
+    if (prevX !== ivyTileX || prevY !== ivyTileY) {
+      this.collisionTiles.delete(`${ivyTileX},${ivyTileY}`);
+      const targetPixelX = prevX * SCALED_TILE + SCALED_TILE / 2;
+      const targetPixelY = prevY * SCALED_TILE + SCALED_TILE / 2;
+
+      this.tweens.killTweensOf(ivy.sprite);
+      this.tweens.add({
+        targets: ivy.sprite,
+        x: targetPixelX,
+        y: targetPixelY,
+        duration: 200,
+        ease: 'Linear',
+        onComplete: () => {
+          this.collisionTiles.add(`${prevX},${prevY}`);
+        },
+      });
+
+      // Tail wag while following
+      this.tweens.add({
+        targets: ivy.sprite,
+        angle: 4,
+        duration: 80,
+        yoyo: true,
+      });
+    }
+
+    this.ivySurpriseFollowSteps++;
+
+    // After 3 steps, Ivy sits and shows "..."
+    if (this.ivySurpriseFollowSteps >= 3) {
+      this.time.delayedCall(300, () => {
+        // Stop Ivy — she sits (frame 0 = front-facing idle)
+        this.tweens.killTweensOf(ivy.sprite);
+        ivy.sprite.setFrame(0);
+
+        // Floating "..." text above Ivy
+        const dotsText = this.add.text(
+          ivy.sprite.x, ivy.sprite.y - SCALED_TILE * 0.8,
+          '...', {
+            fontFamily: '"Press Start 2P", monospace',
+            fontSize: '8px',
+            color: '#ffffff',
+          }
+        ).setOrigin(0.5).setDepth(15).setAlpha(0);
+
+        // Fade in, float up, fade out
+        this.tweens.add({
+          targets: dotsText,
+          alpha: 1,
+          y: dotsText.y - 12,
+          duration: 600,
+          ease: 'Sine.easeOut',
+          onComplete: () => {
+            this.tweens.add({
+              targets: dotsText,
+              alpha: 0,
+              y: dotsText.y - 10,
+              duration: 1200,
+              delay: 800,
+              onComplete: () => dotsText.destroy(),
+            });
+          },
+        });
+      });
     }
   }
 
@@ -984,6 +1280,11 @@ export class HomeScene extends BaseChapterScene {
 
   // Override to add computer interface, fetch, goodbye, phone ring, + all surprise elements
   protected handleInteractable(interactable: { id: string; type: string; consumed?: boolean }) {
+    // Destroy first-interactable glow on any interaction
+    if (this.firstInteractableGlow) {
+      this.firstInteractableGlow.destroy();
+      this.firstInteractableGlow = null;
+    }
     if (interactable.id === 'ch0_journal') {
       Analytics.trackInteraction(interactable.id);
       this.showJournal();
@@ -1078,6 +1379,7 @@ export class HomeScene extends BaseChapterScene {
         const downRows = Array.from({ length: this.mapHeight - 12 }, (_, i) => i + 12);
         this.setFloorVisibility(upRows, downRows);
         this.currentFloor = 'up';
+        this.showFloorIndicator('Upstairs');
         // Camera only sees upstairs
         this.cameras.main.setBounds(0, 0, this.mapWidth * SCALED_TILE, 12 * SCALED_TILE);
         this.cameras.main.fadeIn(300, 0, 0, 0);
@@ -1094,6 +1396,7 @@ export class HomeScene extends BaseChapterScene {
         const downRows = Array.from({ length: this.mapHeight - 12 }, (_, i) => i + 12);
         this.setFloorVisibility(downRows, upRows);
         this.currentFloor = 'down';
+        this.showFloorIndicator('Downstairs');
         // Camera sees full downstairs + yard
         this.cameras.main.setBounds(0, 12 * SCALED_TILE, this.mapWidth * SCALED_TILE, (this.mapHeight - 12) * SCALED_TILE);
         this.cameras.main.fadeIn(300, 0, 0, 0);
@@ -1357,8 +1660,16 @@ export class HomeScene extends BaseChapterScene {
 
   // Override NPC dialogue to add reactive behaviors
   protected handleNPCDialogue(npcId: string, dialogue: DialogueLine[]) {
+    if (npcId === 'ch0_pops' && !this.popsTalkedTo) {
+      // First conversation with Pops — unlock his movement after
+      this.dialogue.show(dialogue, () => {
+        this.popsTalkedTo = true;
+      });
+      return;
+    }
+
     if (npcId === 'ch0_mom' && !this.momArgued) {
-      // Show normal dialogue, then trigger walkaway
+      // Show normal dialogue, then trigger walkaway + Mom turns cold
       this.dialogue.show(dialogue, () => {
         this.triggerMomWalkaway();
       });
@@ -1403,8 +1714,14 @@ export class HomeScene extends BaseChapterScene {
     this.trackedInteractions.add(id);
     this.interactionCount++;
 
-    // After 4 unique interactions, queue surprise phone call
-    if (this.interactionCount >= 7) {
+    // Time passes as you explore — morning light fades
+    if (this.morningTint && this.interactionCount > 3) {
+      const targetAlpha = Math.max(0, 0.06 - (this.interactionCount - 3) * 0.008);
+      this.tweens.add({ targets: this.morningTint, alpha: targetAlpha, duration: 2000 });
+    }
+
+    // After 4 unique interactions + talked to Pops, queue surprise phone call
+    if (this.interactionCount >= 4 && this.popsTalkedTo) {
       this.phoneTriggered = true;
       // Wait until player is TRULY free — check every 500ms, must be unfrozen for 2 consecutive checks
       let freeCount = 0;

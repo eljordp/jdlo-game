@@ -50,11 +50,7 @@ export const introDialogue: DialogueLine[] = [
 
 // ─── Chapter 0: Home ─────────────────────────────────────────────────
 
-export const chapter0IntroText: string[] = [
-  'Home',
-  'Good neighborhood. Good family. Good life.',
-  'But Jordan wanted more.',
-];
+export const chapter0IntroText: string[] = [];
 
 export const chapter0NPCs: NPCData[] = [
   {

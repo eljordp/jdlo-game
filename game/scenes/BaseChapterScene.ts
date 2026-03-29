@@ -52,6 +52,7 @@ export abstract class BaseChapterScene extends Phaser.Scene {
   private speechBubbles: Map<string, Phaser.GameObjects.Text> = new Map();
   private npcIndicators: Map<string, Phaser.GameObjects.Text> = new Map();
   private talkedToNpcs: Set<string> = new Set();
+  private floorIndicatorText: Phaser.GameObjects.Text | null = null;
 
   abstract getMapData(): MapData;
   abstract getChapterDialogue(): { intro: DialogueLine[]; npcs: Record<string, DialogueLine[]> };
@@ -255,6 +256,17 @@ export abstract class BaseChapterScene extends Phaser.Scene {
         });
       },
     });
+  }
+
+  protected showFloorIndicator(floor: string) {
+    if (!this.floorIndicatorText) {
+      this.floorIndicatorText = this.add.text(80, GAME_HEIGHT - 30, '', {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#ffffff',
+      }).setScrollFactor(0).setDepth(90).setAlpha(0);
+    }
+    this.floorIndicatorText.setText(floor);
+    this.floorIndicatorText.setAlpha(0);
+    this.tweens.add({ targets: this.floorIndicatorText, alpha: 0.4, duration: 400, hold: 2000, yoyo: true });
   }
 
   protected addNavArrow(tileX: number, tileY: number, label?: string) {
