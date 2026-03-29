@@ -180,9 +180,12 @@ export const homeMap: MapData = {
     { id: 'ch0_lounge_rug',    x: 16, y: 7,  type: 'examine', glow: false, sprite: 'item-rug' },
     // Sister's Room — UPSTAIRS (cols 23-28, rows 4-8)
     { id: 'ch0_sister_bed',    x: 24, y: 4,  type: 'examine', glow: false, sprite: 'item-bed-pink' },   // bed
-    { id: 'ch0_sister_toys',   x: 27, y: 6,  type: 'examine', glow: false, sprite: 'item-drawing' },     // sister's drawings (JP with a cape)
+    { id: 'ch0_sister_posters', x: 27, y: 6,  type: 'examine', glow: false, sprite: 'item-photo' },      // mood board / art prints
     { id: 'ch0_sister_mirror', x: 23, y: 4,  type: 'examine', glow: false, sprite: 'item-mirror' },     // mirror on wall
-    { id: 'ch0_sister_nightlight', x: 28, y: 8, type: 'examine', glow: false, sprite: 'item-lamp' },    // butterfly nightlight
+    { id: 'ch0_sister_nightlight', x: 28, y: 8, type: 'examine', glow: false, sprite: 'item-lamp' },    // LED lamp near door
+    { id: 'ch0_shoe_rack',     x: 28, y: 5,  type: 'examine', glow: false, sprite: 'item-shoe-rack' },   // shoe rack against wall
+    { id: 'ch0_makeup_stand',  x: 23, y: 6,  type: 'examine', glow: false, sprite: 'item-makeup-stand' }, // vanity / makeup stand
+    { id: 'ch0_led_lights',    x: 25, y: 3,  type: 'examine', glow: false, sprite: 'item-led-strip' },  // LED strip on back wall
     // Parents' Room — DOWNSTAIRS (rows 12-16, they keep the master)
     { id: 'ch0_parents_bed',   x: 5,  y: 12, type: 'examine', glow: false, sprite: 'item-bed' },
     { id: 'ch0_family_photo',  x: 8,  y: 12, type: 'examine', glow: true, sprite: 'item-photo' },
@@ -190,6 +193,7 @@ export const homeMap: MapData = {
     { id: 'ch0_parents_bookshelf', x: 10, y: 12, type: 'examine', glow: false, sprite: 'item-bookshelf' },
     { id: 'ch0_parents_closet', x: 13, y: 12, type: 'examine', glow: false, sprite: 'item-closet' },
     { id: 'ch0_parents_dresser', x: 6, y: 15, type: 'examine', glow: false, sprite: 'item-nightstand' },
+    { id: 'ch0_parents_desk',   x: 12, y: 13, type: 'examine', glow: false, sprite: 'item-desk' },       // small desk in parents' room
     { id: 'ch0_parents_safe',   x: 14, y: 15, type: 'examine', glow: true, sprite: 'item-storage-box' },
     // Downstairs living extension (cols 16-36, rows 12-16) — den / family room
     { id: 'ch0_den_couch',     x: 20, y: 14, type: 'examine', glow: false, sprite: 'item-couch' },     // big couch
@@ -204,8 +208,8 @@ export const homeMap: MapData = {
     { id: 'ch0_upstairs_couch',x: 16, y: 6,  type: 'examine', glow: false, sprite: 'item-couch' },     // couch
     { id: 'ch0_yoga_mat',      x: 19, y: 8,  type: 'examine', glow: false, sprite: 'item-yoga-mat' },   // yoga mat under weights
     { id: 'ch0_weights',       x: 19, y: 7,  type: 'examine', glow: false, sprite: 'item-weights' },    // dumbbells on mat
-    // Sister drawings — UPSTAIRS
-    { id: 'ch0_sister_drawing_wall', x: 26, y: 4, type: 'examine', glow: false, sprite: 'item-poster' },  // on wall, away from bed
+    // Sister art — UPSTAIRS
+    { id: 'ch0_sister_drawing_wall', x: 26, y: 4, type: 'examine', glow: false, sprite: 'item-poster' },  // art print on wall, away from bed
     // Kitchen (rows 20-22)
     { id: 'ch0_kitchen_knife',  x: 32, y: 22, type: 'examine', glow: false, sprite: 'item-knife' },     // knife block
     { id: 'ch0_cookie_jar',    x: 34, y: 22, type: 'examine', glow: false, sprite: 'item-food' },
@@ -218,6 +222,8 @@ export const homeMap: MapData = {
     { id: 'ch0_tv',            x: 4,  y: 20, type: 'examine', glow: false, sprite: 'item-tv' },         // TV against wall (row 20)
     { id: 'ch0_couch',         x: 6,  y: 21, type: 'examine', glow: false, sprite: 'item-couch' },      // furniture
     { id: 'ch0_window_view',   x: 3,  y: 21, type: 'examine', glow: false, sprite: 'item-window' },     // window on side wall
+    { id: 'ch0_living_plant',  x: 10, y: 20, type: 'examine', glow: false, sprite: 'item-plant' },      // potted plant in living room
+    { id: 'ch0_living_rug',    x: 8,  y: 21, type: 'examine', glow: false, sprite: 'item-rug' },        // rug under living area
     // Kitchen (right side, row 20-22)
     { id: 'ch0_fridge',        x: 35, y: 20, type: 'examine', glow: false, sprite: 'item-fridge' },     // appliance
     { id: 'ch0_food',          x: 33, y: 20, type: 'examine', glow: false, sprite: 'item-food' },       // scenery

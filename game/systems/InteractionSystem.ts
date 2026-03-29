@@ -116,6 +116,8 @@ export class InteractionSystem {
     'item-gun', 'item-bottle', 'item-food',
     'item-desk', 'item-nightstand', 'item-poster', 'item-toilet',
     'item-window', 'item-photo', 'item-bed-pink', 'item-bookshelf', 'item-yoga-mat',
+    'item-macbook', 'item-shoe-rack', 'item-makeup-stand', 'item-led-strip', 'item-closet',
+    'item-shower',
   ]);
 
   // Furniture sprites that should NOT glow/pulse — they're scenery, not pickups
@@ -124,6 +126,8 @@ export class InteractionSystem {
     'item-mirror', 'item-computer', 'item-food',
     'item-desk', 'item-nightstand', 'item-poster', 'item-toilet',
     'item-window', 'item-photo', 'item-bed-pink', 'item-bookshelf', 'item-yoga-mat',
+    'item-macbook', 'item-shoe-rack', 'item-makeup-stand', 'item-led-strip', 'item-closet',
+    'item-shower',
   ]);
 
   consume(id: string): void {

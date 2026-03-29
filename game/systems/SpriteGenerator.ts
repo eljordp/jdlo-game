@@ -4955,140 +4955,196 @@ function generateItems(scene: Phaser.Scene) {
 
 function generateMoreItems(scene: Phaser.Scene) {
 
-  // --- item-bed ---
-  makeTexture(scene, 'item-bed', TILE_SIZE, TILE_SIZE, (g) => {
-    // ~24x16 top-down bed, centered in 32x32 canvas
-    // Headboard (dark wood, top edge)
-    px(g, 4, 7, 0x503010, 24, 2);
-    px(g, 4, 7, 0x604020, 24, 1); // highlight
-    // Bed frame (brown wood)
-    px(g, 4, 9, 0x6a4020, 24, 16);
-    px(g, 4, 9, 0x7a5030, 24, 1); // top edge highlight
-    px(g, 4, 24, 0x5a3018, 24, 1); // bottom edge shadow
-    // Mattress (white/cream)
-    px(g, 5, 10, 0xe8e0d8, 22, 14);
-    // Pillow (at top, near headboard)
-    px(g, 6, 10, 0xf0ece8, 8, 4);
-    px(g, 7, 11, 0xf8f4f0, 6, 2); // pillow highlight
-    // Blanket (blue, covering lower 2/3)
-    px(g, 5, 15, 0x4060a0, 22, 9);
-    px(g, 5, 15, 0x5070b0, 22, 1); // blanket fold highlight
-    px(g, 5, 18, 0x3a5090, 22, 1); // blanket shadow fold
-    // Frame side edges
-    px(g, 4, 9, 0x5a3018, 1, 16); // left frame
-    px(g, 27, 9, 0x5a3018, 1, 16); // right frame
+  // --- item-bed --- (parents' bed, 2x2 tile = 64x64)
+  makeTexture(scene, 'item-bed', TILE_SIZE * 2, TILE_SIZE * 2, (g) => {
+    // Headboard (dark walnut wood, across top)
+    px(g, 2, 2, 0x3a2010, 60, 10);       // headboard body
+    px(g, 2, 2, 0x4a3018, 60, 2);        // top edge highlight
+    px(g, 4, 4, 0x503820, 56, 6);        // headboard panel
+    px(g, 6, 5, 0x5a4028, 20, 4);        // left panel detail
+    px(g, 38, 5, 0x5a4028, 20, 4);       // right panel detail
+    // Bed frame (wood sides)
+    px(g, 2, 12, 0x4a3018, 60, 48);      // frame body
+    px(g, 2, 12, 0x3a2010, 2, 48);       // left frame rail
+    px(g, 60, 12, 0x3a2010, 2, 48);      // right frame rail
+    px(g, 2, 58, 0x3a2010, 60, 4);       // footboard
+    px(g, 2, 58, 0x4a3020, 60, 2);       // footboard highlight
+    // Mattress (cream)
+    px(g, 4, 13, 0xece4d8, 56, 44);
+    // Left pillow
+    px(g, 8, 14, 0xf8f4f0, 18, 8);
+    px(g, 10, 15, 0xffffff, 14, 6);      // pillow puff highlight
+    px(g, 9, 16, 0xf0ece8, 16, 2);       // pillow crease
+    // Right pillow
+    px(g, 38, 14, 0xf8f4f0, 18, 8);
+    px(g, 40, 15, 0xffffff, 14, 6);
+    px(g, 39, 16, 0xf0ece8, 16, 2);
+    // Blanket/comforter (warm blue-grey)
+    px(g, 4, 26, 0x506888, 56, 30);      // main blanket
+    px(g, 4, 26, 0x607898, 56, 3);       // top fold highlight
+    px(g, 4, 29, 0x587090, 56, 1);       // fold line
+    px(g, 4, 36, 0x486080, 56, 1);       // mid wrinkle shadow
+    px(g, 4, 44, 0x486080, 56, 1);       // lower wrinkle shadow
+    px(g, 6, 32, 0x587090, 10, 2);       // bunched fold left
+    px(g, 48, 40, 0x587090, 10, 2);      // bunched fold right
+    // Blanket bottom tuck
+    px(g, 4, 54, 0x405870, 56, 2);       // bottom shadow
   });
 
-  // --- item-bed-k --- JP's bed with K sleeping in it (2x1 tile, 64x32)
-  makeTexture(scene, 'item-bed-k', TILE_SIZE * 2, TILE_SIZE, (g) => {
-    // Bed frame — dark wood, thick and visible
-    px(g, 1, 3, 0x402010, 62, 4);    // headboard (thick dark wood)
-    px(g, 1, 3, 0x503018, 62, 2);    // headboard top highlight
-    px(g, 1, 7, 0x5a3018, 62, 24);   // frame body
-    px(g, 1, 7, 0x6a4020, 62, 2);    // frame top edge
-    px(g, 1, 29, 0x3a2010, 62, 2);   // frame bottom shadow
-    px(g, 1, 7, 0x3a2010, 2, 24);    // left frame
-    px(g, 61, 7, 0x3a2010, 2, 24);   // right frame
-    // Mattress — cream colored
-    px(g, 3, 9, 0xe8e0d0, 58, 20);
-    // Pillows — fluffy, visible
-    px(g, 5, 9, 0xf8f4f0, 14, 6);    // left pillow (JP's)
-    px(g, 7, 10, 0xffffff, 10, 4);    // pillow highlight
-    px(g, 36, 9, 0xf8f4f0, 14, 6);   // right pillow (K's)
-    px(g, 38, 10, 0xffffff, 10, 4);   // pillow highlight
-    // K's hair across her pillow — dark, flowing
-    px(g, 34, 9, 0x1a1010, 18, 5);   // hair spread wide
-    px(g, 32, 11, 0x151010, 5, 4);   // left strand flowing
-    px(g, 52, 10, 0x151010, 4, 4);   // right strand flowing
-    // K's face peeking out — tan skin
-    px(g, 40, 11, 0xc8a080, 8, 4);   // face
-    px(g, 42, 13, 0xd08080, 4, 1);   // lips
-    px(g, 42, 12, 0x1a1010, 2, 1);   // closed eye
-    px(g, 46, 12, 0x1a1010, 2, 1);   // closed eye
-    // Blanket — dark blue comforter, cozy looking
-    px(g, 3, 16, 0x3050a0, 58, 13);  // main blanket (dark blue)
-    px(g, 3, 16, 0x4060b0, 58, 2);   // top fold highlight
-    px(g, 3, 22, 0x2a4090, 58, 1);   // mid fold shadow
-    px(g, 3, 26, 0x203880, 58, 1);   // wrinkle
-    // Blanket bunched on K's side
-    px(g, 34, 15, 0x4868c0, 22, 2);  // bunched top
-    // K's bare shoulder peeking from blanket
-    px(g, 39, 15, 0xc8a080, 5, 2);   // shoulder
-    // Plumeria flower on pillow
-    px(g, 50, 10, 0xf0e0e0, 4, 4);   // white petals
-    px(g, 51, 11, 0xf0d040, 2, 2);   // yellow center
-  });
-
-  // --- item-bed-k-open --- Same bed but covers thrown open (after K wakes up)
-  makeTexture(scene, 'item-bed-k-open', TILE_SIZE * 2, TILE_SIZE, (g) => {
-    // Frame (same as closed)
-    px(g, 1, 3, 0x402010, 62, 4);
-    px(g, 1, 3, 0x503018, 62, 2);
-    px(g, 1, 7, 0x5a3018, 62, 24);
-    px(g, 1, 7, 0x6a4020, 62, 2);
-    px(g, 1, 29, 0x3a2010, 62, 2);
-    px(g, 1, 7, 0x3a2010, 2, 24);
-    px(g, 61, 7, 0x3a2010, 2, 24);
-    // Mattress fully exposed
-    px(g, 3, 9, 0xe8e0d0, 58, 20);
-    // Pillows
-    px(g, 5, 9, 0xf8f4f0, 14, 6);
-    px(g, 7, 10, 0xffffff, 10, 4);
-    px(g, 36, 9, 0xf0ece0, 14, 6);   // K's pillow (slightly indented color)
-    px(g, 38, 10, 0xf8f4e8, 10, 4);
-    // Hair strands left on K's pillow
-    px(g, 38, 10, 0x1a1010, 8, 2);
-    px(g, 36, 12, 0x1a1010, 4, 1);
-    // Blanket thrown to left side (dark blue, messy)
-    px(g, 3, 18, 0x3050a0, 28, 10);  // blanket bunched left
-    px(g, 3, 18, 0x4060b0, 28, 2);   // fold highlight
-    px(g, 8, 22, 0x2a4090, 18, 1);   // wrinkle
-    // Flower still on pillow
-    px(g, 50, 10, 0xf0e0e0, 4, 4);
-    px(g, 51, 11, 0xf0d040, 2, 2);
-  });
-
-  // --- item-bed-pink --- (sister's room)
-  makeTexture(scene, 'item-bed-pink', TILE_SIZE, TILE_SIZE, (g) => {
-    // Headboard (white painted wood)
-    px(g, 4, 7, 0xe0d8d0, 24, 2);
-    px(g, 4, 7, 0xf0e8e0, 24, 1);
-    // Bed frame (white)
-    px(g, 4, 9, 0xe0d8d0, 24, 16);
-    px(g, 4, 9, 0xf0e8e0, 24, 1);
-    px(g, 4, 24, 0xc8c0b8, 24, 1);
+  // --- item-bed-k --- JP's bed with K sleeping in it (2x2 tile, 64x64)
+  makeTexture(scene, 'item-bed-k', TILE_SIZE * 2, TILE_SIZE * 2, (g) => {
+    // Headboard (dark wood, thick)
+    px(g, 2, 2, 0x402010, 60, 8);        // headboard body
+    px(g, 2, 2, 0x503018, 60, 2);        // top highlight
+    px(g, 4, 4, 0x4a2818, 56, 4);        // headboard inset panel
+    // Bed frame
+    px(g, 2, 10, 0x5a3018, 60, 50);      // frame body
+    px(g, 2, 10, 0x6a4020, 60, 2);       // top edge
+    px(g, 2, 58, 0x3a2010, 60, 4);       // footboard
+    px(g, 2, 10, 0x3a2010, 2, 52);       // left frame
+    px(g, 60, 10, 0x3a2010, 2, 52);      // right frame
     // Mattress
-    px(g, 5, 10, 0xf8f0e8, 22, 14);
-    // Pillow (pink)
-    px(g, 6, 10, 0xf0b0c0, 8, 4);
-    px(g, 7, 11, 0xf8c0d0, 6, 2);
-    // Pink comforter
-    px(g, 5, 15, 0xe87098, 22, 9);
-    px(g, 5, 15, 0xf080a8, 22, 1);
-    px(g, 5, 18, 0xd06088, 22, 1);
-    // Hearts/pattern on comforter
-    px(g, 12, 17, 0xf090b0, 2, 2);
-    px(g, 20, 19, 0xf090b0, 2, 2);
-    // Frame edges
-    px(g, 4, 9, 0xc8c0b8, 1, 16);
-    px(g, 27, 9, 0xc8c0b8, 1, 16);
+    px(g, 4, 12, 0xe8e0d0, 56, 44);
+    // Pillows — JP's (left)
+    px(g, 8, 13, 0xf8f4f0, 18, 8);
+    px(g, 10, 14, 0xffffff, 14, 6);      // highlight
+    // K's pillow (right)
+    px(g, 38, 13, 0xf8f4f0, 18, 8);
+    px(g, 40, 14, 0xffffff, 14, 6);
+    // K's hair across her pillow — dark, flowing
+    px(g, 36, 13, 0x1a1010, 22, 7);      // hair spread wide
+    px(g, 34, 16, 0x151010, 5, 5);       // left strand flowing
+    px(g, 56, 14, 0x151010, 4, 5);       // right strand flowing
+    // K's face peeking out — tan skin
+    px(g, 42, 15, 0xc8a080, 10, 5);      // face
+    px(g, 44, 18, 0xd08080, 5, 1);       // lips
+    px(g, 44, 17, 0x1a1010, 2, 1);       // closed eye
+    px(g, 49, 17, 0x1a1010, 2, 1);       // closed eye
+    // Blanket — dark blue comforter
+    px(g, 4, 24, 0x3050a0, 56, 32);      // main blanket
+    px(g, 4, 24, 0x4060b0, 56, 3);       // top fold highlight
+    px(g, 4, 27, 0x3858a8, 56, 1);       // fold crease
+    px(g, 4, 34, 0x2a4090, 56, 1);       // mid fold shadow
+    px(g, 4, 42, 0x203880, 56, 1);       // wrinkle
+    px(g, 4, 48, 0x2a4090, 56, 1);       // lower wrinkle
+    // Blanket bunched on K's side
+    px(g, 36, 23, 0x4868c0, 22, 3);      // bunched top
+    // K's bare shoulder peeking from blanket
+    px(g, 41, 22, 0xc8a080, 6, 3);       // shoulder
+    // Plumeria flower on pillow
+    px(g, 52, 14, 0xf0e0e0, 5, 5);       // white petals
+    px(g, 53, 15, 0xf0d040, 3, 3);       // yellow center
   });
 
-  // --- item-mirror ---
+  // --- item-bed-k-open --- Same bed but covers thrown open (2x2, 64x64)
+  makeTexture(scene, 'item-bed-k-open', TILE_SIZE * 2, TILE_SIZE * 2, (g) => {
+    // Headboard (same as closed)
+    px(g, 2, 2, 0x402010, 60, 8);
+    px(g, 2, 2, 0x503018, 60, 2);
+    px(g, 4, 4, 0x4a2818, 56, 4);
+    // Bed frame
+    px(g, 2, 10, 0x5a3018, 60, 50);
+    px(g, 2, 10, 0x6a4020, 60, 2);
+    px(g, 2, 58, 0x3a2010, 60, 4);
+    px(g, 2, 10, 0x3a2010, 2, 52);
+    px(g, 60, 10, 0x3a2010, 2, 52);
+    // Mattress fully exposed
+    px(g, 4, 12, 0xe8e0d0, 56, 44);
+    // JP's pillow (left)
+    px(g, 8, 13, 0xf8f4f0, 18, 8);
+    px(g, 10, 14, 0xffffff, 14, 6);
+    // K's pillow (right, slightly indented)
+    px(g, 38, 13, 0xf0ece0, 18, 8);
+    px(g, 40, 14, 0xf8f4e8, 14, 6);
+    // Hair strands left on K's pillow
+    px(g, 40, 14, 0x1a1010, 10, 3);
+    px(g, 38, 17, 0x1a1010, 5, 2);
+    // Blanket thrown to left side (dark blue, messy pile)
+    px(g, 4, 30, 0x3050a0, 30, 24);      // blanket bunched left
+    px(g, 4, 30, 0x4060b0, 30, 3);       // fold highlight
+    px(g, 10, 38, 0x2a4090, 20, 2);      // wrinkle
+    px(g, 6, 44, 0x3858a8, 16, 2);       // lower fold
+    px(g, 20, 34, 0x4868c0, 12, 2);      // bunched ridge
+    // Right side mattress exposed — sheet wrinkles
+    px(g, 38, 30, 0xe0d8cc, 20, 2);      // sheet fold
+    px(g, 44, 40, 0xe0d8cc, 14, 1);      // sheet crease
+    // Flower still on pillow
+    px(g, 52, 14, 0xf0e0e0, 5, 5);
+    px(g, 53, 15, 0xf0d040, 3, 3);
+  });
+
+  // --- item-bed-pink --- (sister's room, 2x2 tile = 64x64)
+  makeTexture(scene, 'item-bed-pink', TILE_SIZE * 2, TILE_SIZE * 2, (g) => {
+    // Headboard (white painted wood with curved top)
+    px(g, 2, 2, 0xe8e0d8, 60, 10);       // headboard body
+    px(g, 2, 2, 0xf0e8e0, 60, 2);        // top edge highlight
+    px(g, 4, 4, 0xf0e8e0, 56, 6);        // headboard panel (white)
+    px(g, 6, 5, 0xf8f0e8, 20, 4);        // left decorative panel
+    px(g, 38, 5, 0xf8f0e8, 20, 4);       // right decorative panel
+    // Bed frame (white/cream)
+    px(g, 2, 12, 0xe0d8d0, 60, 48);      // frame body
+    px(g, 2, 12, 0xd0c8c0, 2, 48);       // left frame
+    px(g, 60, 12, 0xd0c8c0, 2, 48);      // right frame
+    px(g, 2, 58, 0xd0c8c0, 60, 4);       // footboard
+    px(g, 2, 58, 0xe0d8d0, 60, 2);       // footboard highlight
+    // Mattress
+    px(g, 4, 13, 0xf8f0e8, 56, 44);
+    // Pillow (pink, fluffy)
+    px(g, 16, 14, 0xf0b0c0, 28, 8);
+    px(g, 18, 15, 0xf8c0d0, 24, 6);      // pillow puff
+    px(g, 20, 16, 0xffd0e0, 20, 4);      // pillow highlight
+    // Pink comforter
+    px(g, 4, 26, 0xe87098, 56, 30);      // main comforter
+    px(g, 4, 26, 0xf080a8, 56, 3);       // top fold highlight
+    px(g, 4, 29, 0xe06890, 56, 1);       // fold line
+    px(g, 4, 36, 0xd06088, 56, 1);       // mid wrinkle
+    px(g, 4, 44, 0xd06088, 56, 1);       // lower wrinkle
+    // Hearts/pattern on comforter
+    px(g, 14, 32, 0xf090b0, 3, 3);       // heart 1
+    px(g, 15, 31, 0xf090b0, 1, 1);
+    px(g, 40, 38, 0xf090b0, 3, 3);       // heart 2
+    px(g, 41, 37, 0xf090b0, 1, 1);
+    px(g, 26, 46, 0xf090b0, 3, 3);       // heart 3
+    px(g, 27, 45, 0xf090b0, 1, 1);
+    // Stuffed animal on bed (small teddy)
+    px(g, 48, 22, 0xc89060, 6, 6);       // teddy body
+    px(g, 49, 20, 0xc89060, 4, 3);       // teddy head
+    px(g, 50, 21, 0x201010, 1, 1);       // eye
+    px(g, 52, 21, 0x201010, 1, 1);       // eye
+    px(g, 51, 22, 0x804020, 1, 1);       // nose
+    // Blanket bottom tuck
+    px(g, 4, 54, 0xc85880, 56, 2);       // bottom shadow
+  });
+
+  // --- item-mirror --- (full-length vanity mirror with ornate frame)
   makeTexture(scene, 'item-mirror', TILE_SIZE, TILE_SIZE, (g) => {
-    // Frame (gold/bronze)
-    px(g, 4, 2, 0xa08040, 8, 12);
-    px(g, 4, 2, 0xb09050, 8, 1);
-    px(g, 4, 2, 0xb09050, 1, 12);
-    px(g, 11, 2, 0x806030, 1, 12);
-    px(g, 4, 13, 0x806030, 8, 1);
-    // Mirror surface (light blue/silver)
-    px(g, 5, 3, 0xc0d8e8, 6, 10);
-    // Reflection streak
-    px(g, 6, 4, 0xe0f0ff, 2, 6);
-    px(g, 7, 5, 0xf0f8ff, 1, 3);
-    // Shadow at bottom
-    px(g, 5, 11, 0xa0b8c8, 6, 2);
+    // Outer frame (ornate gold/bronze, tall oval-ish)
+    px(g, 5, 1, 0xa08040, 22, 28);       // full frame area
+    // Frame border details
+    px(g, 5, 1, 0xc09850, 22, 2);        // top frame highlight
+    px(g, 5, 27, 0x705828, 22, 2);       // bottom frame shadow
+    px(g, 5, 1, 0xc09850, 2, 28);        // left frame highlight
+    px(g, 25, 1, 0x705828, 2, 28);       // right frame shadow
+    // Inner frame bevel
+    px(g, 7, 3, 0xb09048, 18, 1);        // inner top
+    px(g, 7, 25, 0x806030, 18, 1);       // inner bottom
+    px(g, 7, 3, 0xb09048, 1, 23);        // inner left
+    px(g, 24, 3, 0x806030, 1, 23);       // inner right
+    // Mirror surface (silvery blue)
+    px(g, 8, 4, 0xc8dce8, 16, 21);
+    // Reflection — diagonal light streak
+    px(g, 10, 5, 0xe8f4ff, 3, 12);       // main reflection stripe
+    px(g, 13, 6, 0xdceaf4, 2, 8);        // secondary softer stripe
+    px(g, 11, 6, 0xf0f8ff, 1, 6);        // bright center of streak
+    // Darker edges of mirror (vignette effect)
+    px(g, 8, 4, 0xb0c8d8, 16, 2);        // top edge tint
+    px(g, 8, 22, 0xa8c0d0, 16, 3);       // bottom edge tint
+    // Decorative frame top finial
+    px(g, 14, 0, 0xc8a050, 4, 2);        // top ornament
+    px(g, 15, 0, 0xd0a858, 2, 1);        // ornament highlight
+    // Stand base (if wall-mounted, this is the bracket)
+    px(g, 12, 29, 0x806030, 8, 2);       // mounting bracket
+    px(g, 14, 29, 0x907040, 4, 2);       // bracket highlight
   });
 
   // --- item-tv ---
@@ -5452,35 +5508,75 @@ function generateMoreItems(scene: Phaser.Scene) {
     px(g, 4, 14, 0x808080, 9, 1);
   });
 
-  // Shower head + water
+  // Shower — realistic with glass panel, tile wall, chrome head + water
   makeTexture(scene, 'item-shower', TILE_SIZE, TILE_SIZE, (g) => {
-    // Glass shower panel (left side)
-    px(g, 2, 1, 0xc0d0e0, 2, 14);  // glass panel
-    px(g, 2, 1, 0xd0e0f0, 1, 14);  // glass highlight
-    // Shower wall tiles (back wall, subtle grid)
-    px(g, 4, 1, 0xe0e0e0, 10, 14); // tile wall
-    px(g, 4, 4, 0xd8d8d8, 10, 1);  // grout line
-    px(g, 4, 8, 0xd8d8d8, 10, 1);  // grout line
-    px(g, 4, 12, 0xd8d8d8, 10, 1); // grout line
-    px(g, 8, 1, 0xd8d8d8, 1, 14);  // vertical grout
-    px(g, 12, 1, 0xd8d8d8, 1, 14); // vertical grout
-    // Shower head (chrome, mounted high)
-    px(g, 10, 1, 0xb0b0b0, 3, 1);  // mounting bracket
-    px(g, 10, 2, 0xa0a0a0, 4, 2);  // head body
-    px(g, 11, 2, 0xc0c0c0, 2, 1);  // chrome highlight
-    // Water stream (falling droplets)
-    px(g, 10, 4, 0x70b0e0, 1, 2);
-    px(g, 12, 5, 0x70b0e0, 1, 3);
-    px(g, 9, 6, 0x60a0d0, 1, 2);
-    px(g, 11, 7, 0x60a0d0, 1, 3);
-    px(g, 10, 9, 0x5090c0, 1, 2);
-    px(g, 13, 6, 0x5090c0, 1, 2);
-    // Drain (floor)
-    px(g, 7, 14, 0x808088, 3, 1);
-    px(g, 8, 14, 0x909098, 1, 1);
-    // Faucet handle
-    px(g, 13, 3, 0xb0b0b0, 1, 2);  // handle
-    px(g, 13, 3, 0xc8c8c8, 1, 1);  // knob
+    // Tiled back wall (white subway tiles)
+    px(g, 0, 0, 0xe8e8e8, 32, 28);       // tile background
+    // Horizontal grout lines
+    px(g, 0, 5, 0xd0d0d0, 32, 1);
+    px(g, 0, 11, 0xd0d0d0, 32, 1);
+    px(g, 0, 17, 0xd0d0d0, 32, 1);
+    px(g, 0, 23, 0xd0d0d0, 32, 1);
+    // Vertical grout lines (offset brick pattern)
+    px(g, 7, 0, 0xd0d0d0, 1, 5);
+    px(g, 15, 0, 0xd0d0d0, 1, 5);
+    px(g, 23, 0, 0xd0d0d0, 1, 5);
+    px(g, 3, 6, 0xd0d0d0, 1, 5);
+    px(g, 11, 6, 0xd0d0d0, 1, 5);
+    px(g, 19, 6, 0xd0d0d0, 1, 5);
+    px(g, 27, 6, 0xd0d0d0, 1, 5);
+    px(g, 7, 12, 0xd0d0d0, 1, 5);
+    px(g, 15, 12, 0xd0d0d0, 1, 5);
+    px(g, 23, 12, 0xd0d0d0, 1, 5);
+    px(g, 3, 18, 0xd0d0d0, 1, 5);
+    px(g, 11, 18, 0xd0d0d0, 1, 5);
+    px(g, 19, 18, 0xd0d0d0, 1, 5);
+    px(g, 27, 18, 0xd0d0d0, 1, 5);
+    // Floor (dark tile)
+    px(g, 0, 28, 0x909098, 32, 4);
+    px(g, 0, 28, 0xa0a0a8, 32, 1);       // floor edge highlight
+    // Drain
+    px(g, 13, 29, 0x606068, 6, 2);
+    px(g, 14, 30, 0x707078, 4, 1);       // drain center
+    // Glass panel (left side, semi-transparent feel)
+    px(g, 0, 0, 0xc8dce8, 3, 28);        // glass panel
+    px(g, 1, 0, 0xd8e8f0, 1, 28);        // glass highlight streak
+    px(g, 3, 0, 0xa0b0c0, 1, 28);        // glass edge / frame
+    // Glass panel chrome frame top
+    px(g, 0, 0, 0xb0b0b8, 4, 1);
+    // Shower arm (chrome pipe from wall, horizontal then down)
+    px(g, 24, 1, 0xb8b8c0, 6, 2);        // horizontal pipe from wall
+    px(g, 25, 1, 0xd0d0d8, 4, 1);        // pipe highlight
+    // Shower head (wide rain head)
+    px(g, 22, 3, 0xa8a8b0, 10, 3);       // head body
+    px(g, 23, 3, 0xc0c0c8, 8, 1);        // chrome highlight top
+    px(g, 22, 5, 0x909098, 10, 1);       // head bottom (nozzles)
+    // Water streams (multiple droplets falling from head)
+    px(g, 23, 7, 0x80c0e8, 1, 3);
+    px(g, 25, 8, 0x70b0e0, 1, 4);
+    px(g, 27, 7, 0x80c0e8, 1, 2);
+    px(g, 29, 9, 0x70b0e0, 1, 3);
+    px(g, 24, 12, 0x60a0d8, 1, 3);
+    px(g, 26, 13, 0x60a0d8, 1, 4);
+    px(g, 28, 11, 0x70b0e0, 1, 2);
+    px(g, 23, 16, 0x5090c8, 1, 2);
+    px(g, 27, 17, 0x5090c8, 1, 3);
+    px(g, 25, 19, 0x5090c8, 1, 2);
+    px(g, 29, 15, 0x60a0d8, 1, 2);
+    // Splash at floor
+    px(g, 22, 27, 0x80c0e0, 2, 1);
+    px(g, 26, 27, 0x80c0e0, 2, 1);
+    // Chrome faucet handle (on wall, right side)
+    px(g, 29, 14, 0xc0c0c8, 2, 3);       // valve body
+    px(g, 29, 14, 0xd0d0d8, 2, 1);       // valve highlight
+    px(g, 30, 13, 0xb0b0b8, 1, 1);       // handle top
+    // Shampoo bottle on shelf
+    px(g, 6, 20, 0x40a0c0, 3, 6);        // bottle body
+    px(g, 6, 20, 0x50b0d0, 3, 1);        // bottle cap
+    px(g, 7, 21, 0x60c0e0, 1, 3);        // bottle highlight
+    // Soap bar
+    px(g, 11, 23, 0xe0d0b0, 4, 3);       // soap
+    px(g, 12, 23, 0xf0e0c0, 2, 1);       // soap highlight
   });
 
   // Car (top-down, small sedan)
@@ -5937,25 +6033,47 @@ function generateMoreItems(scene: Phaser.Scene) {
     px(g, 14, 8, 0xe03030, 1, 2);
   });
 
-  // --- item-closet ---
+  // --- item-closet --- (teen girl's closet with clothes peeking out)
   makeTexture(scene, 'item-closet', TILE_SIZE, TILE_SIZE, (g) => {
-    // Double door closet
-    px(g, 2, 1, 0x8a6840, 12, 14);   // closet body (wood)
-    px(g, 2, 0, 0x705530, 12, 1);    // top trim
-    px(g, 2, 15, 0x705530, 12, 1);   // bottom trim
-    // Two doors
-    px(g, 2, 1, 0x906e48, 5, 14);    // left door
-    px(g, 9, 1, 0x906e48, 5, 14);    // right door
-    // Center gap
-    px(g, 7, 1, 0x604020, 2, 14);    // gap between doors
-    // Door knobs
-    px(g, 6, 8, 0xc0a040, 1, 1);     // left knob
-    px(g, 9, 8, 0xc0a040, 1, 1);     // right knob
-    // Panel lines
-    px(g, 3, 4, 0x7a5830, 3, 1);
-    px(g, 3, 10, 0x7a5830, 3, 1);
-    px(g, 10, 4, 0x7a5830, 3, 1);
-    px(g, 10, 10, 0x7a5830, 3, 1);
+    // Closet body (white painted wood)
+    px(g, 1, 0, 0xf0e8e0, 30, 30);       // main body
+    // Top crown molding
+    px(g, 0, 0, 0xe0d8d0, 32, 2);
+    px(g, 0, 0, 0xf0e8e0, 32, 1);        // highlight
+    // Bottom baseboard
+    px(g, 0, 28, 0xd8d0c8, 32, 4);
+    px(g, 0, 28, 0xe8e0d8, 32, 1);       // highlight
+    // Left door
+    px(g, 1, 2, 0xe8e0d8, 13, 26);       // door face
+    px(g, 2, 3, 0xf0e8e0, 11, 10);       // upper panel
+    px(g, 2, 15, 0xf0e8e0, 11, 12);      // lower panel
+    px(g, 2, 3, 0xd8d0c8, 11, 1);        // upper panel shadow top
+    px(g, 2, 15, 0xd8d0c8, 11, 1);       // lower panel shadow top
+    // Right door (slightly ajar — clothes peeking out)
+    px(g, 18, 2, 0xe8e0d8, 13, 26);      // door face
+    px(g, 19, 3, 0xf0e8e0, 11, 10);      // upper panel
+    px(g, 19, 15, 0xf0e8e0, 11, 12);     // lower panel
+    px(g, 19, 3, 0xd8d0c8, 11, 1);
+    px(g, 19, 15, 0xd8d0c8, 11, 1);
+    // Center gap (dark, showing inside)
+    px(g, 14, 2, 0x3a2820, 4, 26);       // dark gap
+    // Clothes peeking from gap
+    px(g, 14, 5, 0xe06080, 3, 4);        // pink shirt peeking
+    px(g, 14, 10, 0x6080d0, 3, 3);       // blue top
+    px(g, 14, 14, 0xf0d040, 3, 3);       // yellow item
+    px(g, 14, 18, 0x40b060, 3, 2);       // green fabric
+    // Hanger hooks visible in gap
+    px(g, 15, 3, 0xc0c0c0, 1, 2);        // hanger wire 1
+    px(g, 15, 8, 0xc0c0c0, 1, 2);        // hanger wire 2
+    px(g, 15, 12, 0xc0c0c0, 1, 2);       // hanger wire 3
+    // Door knobs (crystal/silver)
+    px(g, 12, 14, 0xd0d0d8, 2, 2);       // left knob
+    px(g, 12, 14, 0xe8e8f0, 1, 1);       // knob highlight
+    px(g, 18, 14, 0xd0d0d8, 2, 2);       // right knob
+    px(g, 18, 14, 0xe8e8f0, 1, 1);       // knob highlight
+    // Sticker on door (star)
+    px(g, 5, 20, 0xf0c040, 3, 3);        // star sticker
+    px(g, 6, 19, 0xf0c040, 1, 1);        // star point top
   });
 
   // --- item-knife ---
@@ -5986,6 +6104,181 @@ function generateMoreItems(scene: Phaser.Scene) {
     px(g, 7, 9, 0xc0c0c0, 1, 1);     // reel handle
     // Handle grip
     px(g, 6, 3, 0x404040, 2, 3);     // cork grip
+  });
+
+  // --- item-macbook --- MacBook Pro laptop (space grey, 1 tile)
+  makeTexture(scene, 'item-macbook', TILE_SIZE, TILE_SIZE, (g) => {
+    // Laptop base (bottom half, aluminum body with keyboard)
+    px(g, 3, 16, 0x8a8a90, 26, 14);      // base body (space grey)
+    px(g, 3, 16, 0x989898, 26, 1);       // front edge highlight
+    px(g, 3, 29, 0x707078, 26, 1);       // bottom edge shadow
+    px(g, 3, 16, 0x7a7a80, 1, 14);       // left edge
+    px(g, 28, 16, 0x7a7a80, 1, 14);      // right edge
+    // Trackpad (centered, lighter rectangle)
+    px(g, 12, 24, 0xa0a0a8, 8, 5);
+    px(g, 12, 24, 0xb0b0b8, 8, 1);       // trackpad top edge
+    // Keyboard area (dark keys in rows)
+    px(g, 5, 17, 0x505058, 22, 6);       // keyboard area background
+    // Key rows
+    px(g, 6, 17, 0x404048, 2, 1); px(g, 9, 17, 0x404048, 2, 1); px(g, 12, 17, 0x404048, 2, 1);
+    px(g, 15, 17, 0x404048, 2, 1); px(g, 18, 17, 0x404048, 2, 1); px(g, 21, 17, 0x404048, 2, 1);
+    px(g, 24, 17, 0x404048, 2, 1);
+    px(g, 6, 19, 0x404048, 2, 1); px(g, 9, 19, 0x404048, 2, 1); px(g, 12, 19, 0x404048, 2, 1);
+    px(g, 15, 19, 0x404048, 2, 1); px(g, 18, 19, 0x404048, 2, 1); px(g, 21, 19, 0x404048, 2, 1);
+    px(g, 24, 19, 0x404048, 2, 1);
+    px(g, 7, 21, 0x404048, 2, 1); px(g, 10, 21, 0x404048, 2, 1); px(g, 13, 21, 0x404048, 2, 1);
+    px(g, 16, 21, 0x404048, 2, 1); px(g, 19, 21, 0x404048, 2, 1); px(g, 22, 21, 0x404048, 2, 1);
+    // Spacebar
+    px(g, 10, 22, 0x404048, 12, 1);
+    // Screen (top half, open lid)
+    px(g, 2, 1, 0x808088, 28, 15);       // lid body (space grey)
+    px(g, 2, 1, 0x909098, 28, 1);        // lid top edge
+    // Thin bezel
+    px(g, 3, 2, 0x1a1a1a, 26, 13);       // bezel (dark)
+    // Screen display
+    px(g, 4, 3, 0x2868b0, 24, 11);       // screen (blue desktop)
+    // Screen content (desktop icons/windows)
+    px(g, 6, 4, 0x50a0e0, 10, 7);        // window
+    px(g, 6, 4, 0x607090, 10, 1);        // title bar
+    px(g, 14, 4, 0xe04040, 2, 1);        // close button
+    px(g, 7, 6, 0x60c060, 6, 1);         // code line
+    px(g, 7, 8, 0x60c060, 8, 1);         // code line 2
+    px(g, 7, 10, 0x60c060, 4, 1);        // code line 3
+    // Dock at bottom of screen
+    px(g, 8, 12, 0x304060, 16, 1);       // dock bar
+    // Camera dot (top center of bezel)
+    px(g, 15, 2, 0x304030, 2, 1);        // camera
+    // Apple logo hint on back of lid (small lighter mark)
+    px(g, 14, 6, 0x9898a0, 4, 4);        // logo shape
+    px(g, 15, 5, 0x9898a0, 2, 1);        // logo top
+    px(g, 15, 10, 0x9898a0, 2, 1);       // logo bottom
+    // Hinge line between screen and base
+    px(g, 3, 15, 0x606068, 26, 1);       // hinge
+  });
+
+  // --- item-shoe-rack --- (sister's room, colorful shoes)
+  makeTexture(scene, 'item-shoe-rack', TILE_SIZE, TILE_SIZE, (g) => {
+    // Rack frame (light wood/white)
+    px(g, 3, 8, 0xe0d8d0, 26, 22);       // rack body
+    px(g, 3, 8, 0xd0c8c0, 1, 22);        // left side
+    px(g, 28, 8, 0xd0c8c0, 1, 22);       // right side
+    // Shelf dividers
+    px(g, 3, 8, 0xd0c8c0, 26, 1);        // top shelf
+    px(g, 3, 15, 0xd0c8c0, 26, 1);       // middle shelf
+    px(g, 3, 22, 0xd0c8c0, 26, 1);       // bottom shelf
+    px(g, 3, 29, 0xc8c0b8, 26, 1);       // base
+    // Top shelf shoes — pair 1 (white sneakers)
+    px(g, 5, 9, 0xf0f0f0, 5, 5);         // left shoe
+    px(g, 5, 9, 0xe8e0d8, 5, 1);         // sole
+    px(g, 11, 9, 0xf0f0f0, 5, 5);        // right shoe
+    px(g, 11, 9, 0xe8e0d8, 5, 1);
+    // Top shelf shoes — pair 2 (pink/coral sneakers)
+    px(g, 18, 9, 0xe87090, 5, 5);
+    px(g, 18, 13, 0xd06080, 5, 1);       // sole
+    px(g, 24, 9, 0xe87090, 5, 5);
+    px(g, 24, 13, 0xd06080, 5, 1);
+    // Middle shelf — pair 3 (blue vans/slip-ons)
+    px(g, 5, 16, 0x4060b0, 5, 5);
+    px(g, 5, 20, 0x303850, 5, 1);
+    px(g, 11, 16, 0x4060b0, 5, 5);
+    px(g, 11, 20, 0x303850, 5, 1);
+    // White sole detail on blue shoes
+    px(g, 5, 20, 0xe0e0e0, 5, 1);
+    px(g, 11, 20, 0xe0e0e0, 5, 1);
+    // Middle shelf — pair 4 (black boots)
+    px(g, 19, 16, 0x2a2a2a, 4, 5);
+    px(g, 24, 16, 0x2a2a2a, 4, 5);
+    px(g, 19, 16, 0x3a3a3a, 4, 1);       // boot top
+    px(g, 24, 16, 0x3a3a3a, 4, 1);
+    // Bottom shelf — pair 5 (sandals/flip flops)
+    px(g, 6, 23, 0xc0a070, 4, 5);        // sandal 1
+    px(g, 7, 24, 0xb09060, 2, 1);        // strap
+    px(g, 12, 23, 0xc0a070, 4, 5);       // sandal 2
+    px(g, 13, 24, 0xb09060, 2, 1);
+  });
+
+  // --- item-makeup-stand --- (vanity/makeup stand with bottles, brushes, mirror)
+  makeTexture(scene, 'item-makeup-stand', TILE_SIZE, TILE_SIZE, (g) => {
+    // Table surface (white/pink tinted)
+    px(g, 2, 18, 0xf0e0e0, 28, 12);      // table top
+    px(g, 2, 18, 0xf8e8e8, 28, 1);       // top edge highlight
+    px(g, 2, 29, 0xd8c8c8, 28, 1);       // bottom shadow
+    // Table legs
+    px(g, 3, 28, 0xd8c8c8, 2, 4);        // left leg
+    px(g, 27, 28, 0xd8c8c8, 2, 4);       // right leg
+    // Round vanity mirror (on stand, rising from table)
+    px(g, 10, 2, 0xd0b880, 12, 1);       // mirror frame top
+    px(g, 9, 3, 0xd0b880, 14, 14);       // mirror frame body (oval)
+    px(g, 10, 3, 0xc8d8e8, 12, 13);      // mirror glass
+    px(g, 12, 4, 0xe0f0ff, 4, 8);        // reflection streak
+    px(g, 13, 5, 0xf0f8ff, 2, 4);        // bright center
+    // Mirror stand pole
+    px(g, 15, 16, 0xc0a868, 2, 3);       // pole
+    px(g, 13, 17, 0xc0a868, 6, 1);       // base bracket
+    // Makeup bottles (left side of table)
+    px(g, 4, 14, 0xf06080, 3, 5);        // pink bottle (foundation)
+    px(g, 4, 14, 0xf878a0, 3, 1);        // cap
+    px(g, 5, 15, 0xf88098, 1, 3);        // bottle highlight
+    // Lipstick tube
+    px(g, 8, 15, 0xc02040, 2, 4);        // tube body
+    px(g, 8, 15, 0xd03050, 2, 1);        // cap
+    // Perfume bottle (right side)
+    px(g, 24, 13, 0xc0b0f0, 4, 6);       // bottle body (purple glass)
+    px(g, 25, 11, 0xe0d0f0, 2, 2);       // spray top
+    px(g, 25, 14, 0xd0c0f8, 2, 3);       // bottle highlight
+    // Brush holder
+    px(g, 19, 14, 0xf0e8e0, 3, 5);       // cup
+    px(g, 19, 12, 0x804020, 1, 3);       // brush 1 handle
+    px(g, 20, 11, 0x605050, 1, 4);       // brush 2 handle
+    px(g, 21, 13, 0xc08060, 1, 2);       // brush 3 handle
+    px(g, 19, 12, 0xe0a0b0, 1, 1);       // brush 1 tip (pink)
+    px(g, 20, 11, 0x404040, 1, 1);       // brush 2 tip
+    px(g, 21, 13, 0xf0c0a0, 1, 1);       // brush 3 tip
+    // Small palette on table
+    px(g, 12, 20, 0x202020, 8, 5);       // palette case
+    px(g, 13, 21, 0xf0a090, 2, 1);       // blush color
+    px(g, 15, 21, 0xc08040, 2, 1);       // bronzer color
+    px(g, 17, 21, 0xe8c0d0, 2, 1);       // highlight color
+    px(g, 13, 23, 0x8060a0, 2, 1);       // eyeshadow 1
+    px(g, 15, 23, 0xb09060, 2, 1);       // eyeshadow 2
+    px(g, 17, 23, 0xd0a880, 2, 1);       // eyeshadow 3
+  });
+
+  // --- item-led-strip --- (glowing purple/pink LED strip, 1 tile wide, thin)
+  makeTexture(scene, 'item-led-strip', TILE_SIZE, TILE_SIZE, (g) => {
+    // LED strip backing (thin dark strip along top)
+    px(g, 0, 12, 0x303030, 32, 4);       // strip backing
+    px(g, 0, 12, 0x404040, 32, 1);       // top edge
+    px(g, 0, 15, 0x202020, 32, 1);       // bottom edge
+    // Individual LED dots (alternating purple/pink/magenta)
+    px(g, 2, 13, 0xd040f0, 2, 2);        // LED 1 (purple)
+    px(g, 6, 13, 0xf050a0, 2, 2);        // LED 2 (pink)
+    px(g, 10, 13, 0xc030e0, 2, 2);       // LED 3 (magenta)
+    px(g, 14, 13, 0xf050a0, 2, 2);       // LED 4 (pink)
+    px(g, 18, 13, 0xd040f0, 2, 2);       // LED 5 (purple)
+    px(g, 22, 13, 0xf050a0, 2, 2);       // LED 6 (pink)
+    px(g, 26, 13, 0xc030e0, 2, 2);       // LED 7 (magenta)
+    px(g, 30, 13, 0xf050a0, 2, 2);       // LED 8 (pink)
+    // Glow effect (soft halo around LEDs)
+    px(g, 1, 11, 0x600880, 4, 1);        // glow above 1
+    px(g, 5, 11, 0x801060, 4, 1);        // glow above 2
+    px(g, 9, 11, 0x600880, 4, 1);        // glow above 3
+    px(g, 13, 11, 0x801060, 4, 1);       // glow above 4
+    px(g, 17, 11, 0x600880, 4, 1);       // glow above 5
+    px(g, 21, 11, 0x801060, 4, 1);       // glow above 6
+    px(g, 25, 11, 0x600880, 4, 1);       // glow above 7
+    px(g, 29, 11, 0x801060, 3, 1);       // glow above 8
+    px(g, 1, 16, 0x600880, 4, 1);        // glow below 1
+    px(g, 5, 16, 0x801060, 4, 1);        // glow below 2
+    px(g, 9, 16, 0x600880, 4, 1);        // glow below 3
+    px(g, 13, 16, 0x801060, 4, 1);       // glow below 4
+    px(g, 17, 16, 0x600880, 4, 1);       // glow below 5
+    px(g, 21, 16, 0x801060, 4, 1);       // glow below 6
+    px(g, 25, 16, 0x600880, 4, 1);       // glow below 7
+    px(g, 29, 16, 0x801060, 3, 1);       // glow below 8
+    // Wider ambient glow (very subtle)
+    px(g, 0, 10, 0x400660, 32, 1);       // upper ambient
+    px(g, 0, 17, 0x400660, 32, 1);       // lower ambient
   });
 }
 

@@ -1529,7 +1529,32 @@ export class BeachScene extends BaseChapterScene {
 
             // Mark required interaction done — time to move to Wrong Crowd
             this.requiredDone = true;
-            this.frozen = false;
+
+            // Give player a clear direction cue — Nolan tells them to bounce
+            this.time.delayedCall(500, () => {
+              this.dialogue.show([
+                { speaker: 'Nolan', text: 'Bro. You should probably head out before anyone else wakes up.' },
+                { speaker: 'JP\'s Mind', text: 'Yeah. Time to go.' },
+                { speaker: 'Narrator', text: 'Walk south to the street.' },
+              ], () => {
+                // Brief camera pan down toward exit arrow to show where to go
+                const origX = this.cameras.main.scrollX;
+                const origY = this.cameras.main.scrollY;
+                this.cameras.main.stopFollow();
+                this.tweens.add({
+                  targets: this.cameras.main,
+                  scrollY: origY + 400,
+                  duration: 1200,
+                  ease: 'Sine.easeInOut',
+                  yoyo: true,
+                  hold: 800,
+                  onComplete: () => {
+                    this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
+                    this.frozen = false;
+                  },
+                });
+              });
+            });
           });
         },
       });

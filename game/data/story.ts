@@ -103,20 +103,21 @@ export const chapter0NPCs: NPCData[] = [
     y: 2,
     sprite: 'npc_sister',
     dialogue: [
-      { speaker: 'Sister', text: 'JP! Come play with me!' },
-      { speaker: 'JP', text: 'Not right now, I\'m busy.' },
-      { speaker: 'Sister', text: 'You\'re ALWAYS busy.' },
-      { speaker: 'JP', text: 'I know. I\'m sorry.' },
-      { speaker: 'Sister', text: 'Will you be here for my birthday?' },
+      { speaker: 'Sister', text: 'Ugh, you\'re actually home? I thought you lived in your room now.' },
+      { speaker: 'JP', text: 'Nice to see you too.' },
+      { speaker: 'Sister', text: 'I\'m just saying. You literally never come out.' },
+      { speaker: 'JP', text: 'I\'ve been busy.' },
+      { speaker: 'Sister', text: 'Yeah, "busy." Anyway... you\'re gonna be here for my birthday right?' },
       { speaker: 'JP', text: '', choices: [
         { text: '"Of course. I promise."', next: [
-          { speaker: 'Sister', text: 'Pinky promise?' },
-          { speaker: 'JP', text: 'Pinky promise.' },
+          { speaker: 'Sister', text: 'Don\'t make promises you can\'t keep. That\'s literally a TikTok quote.' },
+          { speaker: 'JP', text: 'I\'m serious.' },
+          { speaker: 'Sister', text: '...okay. Fine. But if you miss it I\'m posting about it.' },
           { speaker: 'JP\'s Mind', text: 'Jordan meant it. But life doesn\'t always let you keep promises.' },
         ]},
         { text: '"I\'ll try my best."', next: [
-          { speaker: 'Sister', text: '...okay.' },
-          { speaker: 'JP\'s Mind', text: 'She didn\'t believe him. Smart kid.' },
+          { speaker: 'Sister', text: 'Wow. "Try my best." That\'s so reassuring, thanks.' },
+          { speaker: 'JP\'s Mind', text: 'She saw right through it. She always does.' },
         ]},
       ]},
     ],
@@ -1143,15 +1144,15 @@ const ch0Extras: Record<string, DialogueLine[]> = {
   ],
   // --- Sister's Room ---
   ch0_sister_bed: [
-    { speaker: 'Narrator', text: 'Pink comforter. Stuffed animals lined up like an army.' },
-    { speaker: 'Narrator', text: 'She makes her bed every morning. JP doesn\'t.' },
+    { speaker: 'Narrator', text: 'Gray comforter, tangled up. Clothes piled on one side. Phone charger dangling off the edge.' },
+    { speaker: 'Narrator', text: 'LED strip lights along the ceiling. She picked purple this week.' },
   ],
-  ch0_sister_toys: [
-    { speaker: 'Narrator', text: 'Her drawings are all over the walls.' },
-    { speaker: 'Narrator', text: 'One of them is JP with a cape. He didn\'t ask for that but it hits different.' },
+  ch0_sister_posters: [
+    { speaker: 'Narrator', text: 'Magazine cutouts and art prints taped to the walls. A mood board above the desk.' },
+    { speaker: 'Narrator', text: 'One old drawing buried in the corner. JP with a cape. She never took it down.' },
   ],
   ch0_sister_mirror: [
-    { speaker: 'Narrator', text: 'Little vanity mirror with stickers all over the frame.' },
+    { speaker: 'Narrator', text: 'Ring light mirror. Skincare products, lip gloss, a couple palettes she watches tutorials for.' },
     { speaker: 'Narrator', text: 'She\'s growing up fast.' },
   ],
   // --- Parents' Room ---
@@ -1186,7 +1187,7 @@ const ch0Extras: Record<string, DialogueLine[]> = {
     { speaker: 'Narrator', text: 'No answer.' },
   ],
   ch0_upstairs_tv: [
-    { speaker: 'Narrator', text: 'Small TV upstairs. JP and his sister watch cartoons here on weekends.' },
+    { speaker: 'Narrator', text: 'Small TV upstairs. Sister hogs it for reality shows. JP used to fight her for it.' },
   ],
   ch0_upstairs_couch: [
     { speaker: 'Narrator', text: 'Love seat. Sister falls asleep here every night watching TV.' },
@@ -1207,7 +1208,30 @@ const ch0Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'We were happy.' },
   ],
   ch0_sister_nightlight: [
-    { speaker: 'Narrator', text: 'A nightlight shaped like a butterfly. Still plugged in.' },
+    { speaker: 'Narrator', text: 'LED strip lights trace the ceiling. She changes the color with her phone.' },
+    { speaker: 'Narrator', text: 'The old butterfly nightlight is still plugged in behind the dresser. She\'d never admit it.' },
+  ],
+  ch0_shoe_rack: [
+    { speaker: 'Narrator', text: 'A small shoe rack crammed against the wall. Way too many pairs for the space.' },
+    { speaker: 'JP\'s Mind', text: 'She has more shoes than Mom at this point.' },
+  ],
+  ch0_makeup_stand: [
+    { speaker: 'Narrator', text: 'Vanity stand with brushes, palettes, and a half-empty bottle of setting spray.' },
+    { speaker: 'Narrator', text: 'A ring light is clipped to the mirror. She does her makeup to music every morning.' },
+  ],
+  ch0_led_lights: [
+    { speaker: 'Narrator', text: 'LED strip running along the back wall. Currently set to a soft purple.' },
+    { speaker: 'JP\'s Mind', text: 'She put these up herself. Watched a YouTube tutorial and everything.' },
+  ],
+  ch0_parents_desk: [
+    { speaker: 'Narrator', text: 'Small desk in the corner. Bills, a calculator, and a mug full of pens.' },
+    { speaker: 'JP\'s Mind', text: 'Pops does the budget here every month. Old school.' },
+  ],
+  ch0_living_plant: [
+    { speaker: 'Narrator', text: 'A big potted plant Mom keeps alive somehow. The leaves are spotless.' },
+  ],
+  ch0_living_rug: [
+    { speaker: 'Narrator', text: 'Thick area rug. Everyone takes their shoes off before stepping on it. House rules.' },
   ],
   ch0_den_couch: [
     { speaker: 'Narrator', text: 'The big couch. This is where the family watches movies.' },
@@ -1216,7 +1240,7 @@ const ch0Extras: Record<string, DialogueLine[]> = {
     { speaker: 'Narrator', text: 'Big TV. Pops watches the game every Sunday.' },
   ],
   ch0_den_rug: [
-    { speaker: 'Narrator', text: 'Area rug. Sister spilled juice on it last month. Mom flipped.' },
+    { speaker: 'Narrator', text: 'Area rug. There\'s a juice stain from years ago. Sister still blames JP for it.' },
   ],
   ch0_lounge_rug: [
     { speaker: 'Narrator', text: 'Mom picked this rug. Nobody touches it with shoes on.' },
@@ -1318,10 +1342,11 @@ const ch0Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'I don\'t know who this person is yet. But I think I\'m about to find out.' },
   ],
   ch0_sister_drawing: [
-    { speaker: 'Narrator', text: 'A crayon drawing taped to the fridge.' },
+    { speaker: 'Narrator', text: 'An old crayon drawing still taped to the fridge. Faded and curling at the edges.' },
     { speaker: 'Narrator', text: 'Two stick figures holding hands. One big, one small. "ME AND JP" in wobbly letters.' },
     { speaker: 'JP\'s Mind', text: '...' },
-    { speaker: 'Narrator', text: 'He doesn\'t take it off the fridge. But he stares at it longer than he should.' },
+    { speaker: 'Narrator', text: 'She was maybe 6 when she drew this. She\'d be embarrassed if anyone mentioned it.' },
+    { speaker: 'Narrator', text: 'But nobody\'s taken it down.' },
   ],
   ch0_mom_food: [
     { speaker: 'Narrator', text: 'A plate of food on the counter. Still warm. No note.' },
@@ -1378,7 +1403,7 @@ const ch0Extras: Record<string, DialogueLine[]> = {
     { speaker: 'Narrator', text: 'JP\'s window. Faces the backyard. Good for sneaking out.' },
   ],
   ch0_window_sister: [
-    { speaker: 'Narrator', text: 'Sister\'s window. Stickers on the glass. A handprint from when she was little.' },
+    { speaker: 'Narrator', text: 'Sister\'s window. Old faded stickers on the glass she hasn\'t bothered scraping off. A handprint from when she was little.' },
   ],
   ch0_window_parents: [
     { speaker: 'Narrator', text: 'Parents\' bedroom window. Blinds always halfway closed.' },
@@ -1401,8 +1426,9 @@ const ch0Extras: Record<string, DialogueLine[]> = {
     { speaker: 'Narrator', text: 'They dap up. Pops holds it a second longer than usual.' },
     { speaker: 'Mom', text: '...' },
     { speaker: 'Narrator', text: 'Mom doesn\'t say much. Just watches him from the kitchen doorway.' },
-    { speaker: 'Sister', text: 'You\'re coming back right?' },
-    { speaker: 'JP', text: 'Always.' },
+    { speaker: 'Sister', text: 'Whatever. Just... don\'t be gone too long or whatever.' },
+    { speaker: 'JP', text: 'I won\'t.' },
+    { speaker: 'Narrator', text: 'She\'s trying not to look like she cares. She\'s not great at it.' },
     { speaker: 'Narrator', text: 'Ivy whines at the door. She knows.' },
   ],
 };
@@ -2997,14 +3023,16 @@ const homeReturnNPCs: NPCData[] = [
     y: 6,
     sprite: 'npc_sister',
     dialogue: [
-      { speaker: 'Sister', text: 'JP! You\'re home!' },
-      { speaker: 'JP', text: 'Hey kid. Miss me?' },
-      { speaker: 'Sister', text: 'Mom says you\'re like a CEO now.' },
+      { speaker: 'Sister', text: 'Oh. You\'re back.' },
+      { speaker: 'JP', text: 'That\'s all I get?' },
+      { speaker: 'Sister', text: 'I mean... it\'s cool, I guess. Mom says you\'re like a CEO now or whatever.' },
       { speaker: 'JP', text: 'COO. Close enough.' },
       { speaker: 'Sister', text: 'Can you build me a website?' },
       { speaker: 'JP', text: 'What kind?' },
       { speaker: 'Sister', text: 'I don\'t know yet. But I want one.' },
       { speaker: 'JP', text: 'When you figure it out, I got you.' },
+      { speaker: 'Sister', text: 'Bet.' },
+      { speaker: 'Narrator', text: 'She tries to play it cool. But she hasn\'t stopped smiling since he walked in.' },
     ],
   },
   {
@@ -3081,9 +3109,6 @@ const homeReturnExtras: Record<string, DialogueLine[]> = {
   ],
   ch0_frenchie_ball: [
     { speaker: 'JP\'s Mind', text: 'Ivy\'s ball. She still plays with this thing every day.' },
-  ],
-  ch0_sister_toys: [
-    { speaker: 'JP\'s Mind', text: 'She\'s getting older. Growing up fast.' },
   ],
 };
 

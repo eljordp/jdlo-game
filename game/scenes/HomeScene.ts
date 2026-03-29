@@ -294,6 +294,7 @@ export class HomeScene extends BaseChapterScene {
       loop: true,
       callback: () => {
         if (!this.scene.isActive() || this.frozen) return;
+        if (this.momArgued) return; // once she's in her room after the argument, she stays
         const mom = this.findNPC('ch0_mom');
         if (!mom || !mom.sprite.visible) return;
 
@@ -872,6 +873,8 @@ export class HomeScene extends BaseChapterScene {
         this.moveNPCTo('ch0_mom', 22, 14, 1200, () => {
           // Block the parents room door — Mom locked it
           this.collisionTiles.add('20,17');
+          // Add locked door interactable so player gets feedback when they try to enter
+          this.spawnDynamicInteractable('ch0_parents_door_locked', 20, 17, 'item-door');
 
           // Dark overlay on parents' room (cols 17-30, rows 12-16)
           const roomCenterX = 23.5 * SCALED_TILE + SCALED_TILE / 2;
@@ -1130,74 +1133,104 @@ export class HomeScene extends BaseChapterScene {
     this.frozen = true;
     const objects: Phaser.GameObjects.GameObject[] = [];
 
-    // === SUNRISE OVER THE VINEYARD ===
+    // === NEIGHBORHOOD AT DUSK — VIEW FROM THE ROOF ===
 
-    // Sky gradient — dawn colors (dark blue top → warm orange/pink horizon)
-    objects.push(this.add.rectangle(GAME_WIDTH / 2, 0, GAME_WIDTH, GAME_HEIGHT * 0.3, 0x1a2040)
+    // Sky gradient — late evening (deep blue top → warm pink/orange horizon)
+    objects.push(this.add.rectangle(GAME_WIDTH / 2, 0, GAME_WIDTH, GAME_HEIGHT * 0.25, 0x0f1a2e)
       .setOrigin(0.5, 0).setScrollFactor(0).setDepth(300));
-    objects.push(this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT * 0.2, GAME_WIDTH, GAME_HEIGHT * 0.2, 0x3a3060)
+    objects.push(this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT * 0.2, GAME_WIDTH, GAME_HEIGHT * 0.15, 0x1e2d4a)
       .setOrigin(0.5, 0).setScrollFactor(0).setDepth(300));
-    objects.push(this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT * 0.35, GAME_WIDTH, GAME_HEIGHT * 0.15, 0x804850)
+    objects.push(this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT * 0.3, GAME_WIDTH, GAME_HEIGHT * 0.12, 0x4a3060)
       .setOrigin(0.5, 0).setScrollFactor(0).setDepth(300));
-    objects.push(this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT * 0.45, GAME_WIDTH, GAME_HEIGHT * 0.1, 0xc07040)
+    objects.push(this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT * 0.38, GAME_WIDTH, GAME_HEIGHT * 0.1, 0x9a5040)
+      .setOrigin(0.5, 0).setScrollFactor(0).setDepth(300));
+    objects.push(this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT * 0.45, GAME_WIDTH, GAME_HEIGHT * 0.06, 0xd08050)
       .setOrigin(0.5, 0).setScrollFactor(0).setDepth(300));
 
-    // Sun — golden circle rising at the horizon
-    const sun = this.add.circle(GAME_WIDTH / 2 + 100, GAME_HEIGHT * 0.48, 40, 0xf0c040)
-      .setScrollFactor(0).setDepth(301).setAlpha(0.9);
-    objects.push(sun);
-    // Sun glow
-    const sunGlow = this.add.circle(GAME_WIDTH / 2 + 100, GAME_HEIGHT * 0.48, 70, 0xf0c040)
-      .setScrollFactor(0).setDepth(300).setAlpha(0.15);
-    objects.push(sunGlow);
-    // Sun rises slowly
-    this.tweens.add({ targets: [sun, sunGlow], y: GAME_HEIGHT * 0.42, duration: 8000, ease: 'Sine.easeOut' });
+    // Stars — scattered dots in the dark sky
+    for (let i = 0; i < 25; i++) {
+      const sx = Math.random() * GAME_WIDTH;
+      const sy = Math.random() * GAME_HEIGHT * 0.25;
+      const star = this.add.circle(sx, sy, Math.random() > 0.7 ? 2 : 1, 0xffffff)
+        .setScrollFactor(0).setDepth(301).setAlpha(0.3 + Math.random() * 0.5);
+      objects.push(star);
+      this.tweens.add({ targets: star, alpha: 0.1, duration: 1500 + Math.random() * 2000, yoyo: true, repeat: -1 });
+    }
 
-    // Rolling hills (green, layered)
-    objects.push(this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT * 0.55, GAME_WIDTH + 100, GAME_HEIGHT * 0.5, 0x4a7a3a)
-      .setOrigin(0.5, 0).setScrollFactor(0).setDepth(301));
-    // Hill contour (lighter ridge)
-    objects.push(this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT * 0.53, GAME_WIDTH + 100, 8, 0x5a8a4a)
-      .setScrollFactor(0).setDepth(302));
-
-    // Vineyard rows — parallel lines across the hills
-    for (let i = 0; i < 14; i++) {
-      const rowY = GAME_HEIGHT * 0.58 + i * 18;
-      objects.push(this.add.rectangle(GAME_WIDTH / 2, rowY, GAME_WIDTH - 100, 3, 0x3a6a2a)
-        .setScrollFactor(0).setDepth(302).setAlpha(0.6));
-      // Vine posts (small dots along each row)
-      for (let j = 0; j < 20; j++) {
-        objects.push(this.add.rectangle(80 + j * 60, rowY - 2, 2, 6, 0x5a4030)
-          .setScrollFactor(0).setDepth(302).setAlpha(0.4));
+    // Neighborhood silhouette — houses, trees, power lines
+    const houseY = GAME_HEIGHT * 0.48;
+    // Row of houses (different heights/widths)
+    const houses = [
+      { x: 80, w: 70, h: 45 }, { x: 200, w: 55, h: 55 }, { x: 310, w: 80, h: 40 },
+      { x: 440, w: 60, h: 50 }, { x: 560, w: 75, h: 42 }, { x: 680, w: 50, h: 48 },
+      { x: 790, w: 70, h: 38 }, { x: 920, w: 65, h: 52 }, { x: 1050, w: 55, h: 44 },
+      { x: 1160, w: 80, h: 46 },
+    ];
+    for (const h of houses) {
+      // House body (dark silhouette)
+      objects.push(this.add.rectangle(h.x, houseY - h.h / 2, h.w, h.h, 0x1a1a2a)
+        .setScrollFactor(0).setDepth(302));
+      // Roof triangle (slightly taller)
+      objects.push(this.add.triangle(h.x, houseY - h.h - 8, 0, 18, h.w / 2, 0, h.w, 18, 0x1a1a2a)
+        .setScrollFactor(0).setDepth(302));
+      // Window glow (1-2 per house, warm yellow)
+      if (Math.random() > 0.3) {
+        const winX = h.x - h.w * 0.2 + Math.random() * h.w * 0.4;
+        objects.push(this.add.rectangle(winX, houseY - h.h * 0.4, 8, 8, 0xf0c060)
+          .setScrollFactor(0).setDepth(303).setAlpha(0.7));
       }
     }
 
-    // Rooftop edge (shingles)
-    objects.push(this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT - 80, GAME_WIDTH, 120, 0x3a2a1a)
-      .setScrollFactor(0).setDepth(303));
-    for (let i = 0; i < 20; i++) {
-      objects.push(this.add.rectangle(
-        i * 70 + 20, GAME_HEIGHT - 110 + Math.random() * 15, 55, 3, 0x4a3a2a
-      ).setScrollFactor(0).setDepth(304).setAlpha(0.5));
+    // Trees between houses (silhouettes)
+    const treePosX = [150, 260, 380, 510, 630, 750, 860, 1000, 1120];
+    for (const tx of treePosX) {
+      const treeH = 30 + Math.random() * 25;
+      objects.push(this.add.circle(tx, houseY - treeH, 18 + Math.random() * 8, 0x121828)
+        .setScrollFactor(0).setDepth(302));
+      objects.push(this.add.rectangle(tx, houseY - treeH / 2, 4, treeH, 0x121828)
+        .setScrollFactor(0).setDepth(302));
     }
 
-    // JP sitting on roof edge — silhouette against sunrise
-    const jp = this.add.sprite(GAME_WIDTH / 2 - 60, GAME_HEIGHT - 140, this.getPlayerTexture(), 0)
-      .setScale(3).setScrollFactor(0).setDepth(305);
+    // Power line (thin line across the scene)
+    objects.push(this.add.rectangle(GAME_WIDTH / 2, houseY - 65, GAME_WIDTH, 1, 0x2a2a3a)
+      .setScrollFactor(0).setDepth(303).setAlpha(0.5));
+
+    // Street / ground below houses
+    objects.push(this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT * 0.55, GAME_WIDTH, GAME_HEIGHT * 0.12, 0x2a2a2a)
+      .setScrollFactor(0).setDepth(302));
+    // Streetlight glow (one or two)
+    objects.push(this.add.circle(350, houseY + 10, 25, 0xf0d060)
+      .setScrollFactor(0).setDepth(303).setAlpha(0.08));
+    objects.push(this.add.circle(850, houseY + 10, 25, 0xf0d060)
+      .setScrollFactor(0).setDepth(303).setAlpha(0.06));
+
+    // Rooftop edge (shingles — JP's house roof)
+    objects.push(this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT - 80, GAME_WIDTH, 140, 0x3a2a1a)
+      .setScrollFactor(0).setDepth(304));
+    for (let i = 0; i < 20; i++) {
+      objects.push(this.add.rectangle(
+        i * 70 + 20, GAME_HEIGHT - 120 + Math.random() * 15, 55, 3, 0x4a3a2a
+      ).setScrollFactor(0).setDepth(305).setAlpha(0.5));
+    }
+
+    // JP sitting on roof edge — silhouette against sky
+    const jp = this.add.sprite(GAME_WIDTH / 2 - 60, GAME_HEIGHT - 160, this.getPlayerTexture(), 0)
+      .setScale(3).setScrollFactor(0).setDepth(306);
     objects.push(jp);
 
-    // Warm golden light overlay (sunrise glow on everything)
+    // Subtle warm overlay
     const warmGlow = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0xf0a030)
-      .setScrollFactor(0).setDepth(306).setAlpha(0);
+      .setScrollFactor(0).setDepth(307).setAlpha(0);
     objects.push(warmGlow);
-    this.tweens.add({ targets: warmGlow, alpha: 0.06, duration: 3000 });
+    this.tweens.add({ targets: warmGlow, alpha: 0.04, duration: 3000 });
 
-    // Dialogue
+    // Dialogue — neighborhood reflection (matches story.ts ch0_rooftop)
     this.time.delayedCall(2000, () => {
       this.dialogue.show([
-        { speaker: 'Narrator', text: 'The sun comes up over the hills. Vineyard rows stretch to the horizon.' },
-        { speaker: 'JP\'s Mind', text: 'One day I\'m gonna look back at this moment.' },
-        { speaker: 'JP\'s Mind', text: 'And I\'m gonna know exactly when everything changed.' },
+        { speaker: 'Narrator', text: 'JP climbs up the trellis. Sits on the roof edge.' },
+        { speaker: 'Narrator', text: 'From up here, the whole neighborhood fits in one frame.' },
+        { speaker: 'JP\'s Mind', text: 'Everything looks small from up here. That\'s the problem.' },
+        { speaker: 'JP\'s Mind', text: 'One day I\'ll look at something and it\'ll feel big enough.' },
       ], () => {
         const fade = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0)
           .setScrollFactor(0).setDepth(400);
@@ -1325,8 +1358,9 @@ export class HomeScene extends BaseChapterScene {
       this.interactions.consume(interactable.id);
       return;
     }
-    // Rooftop easter egg
+    // Rooftop easter egg — only accessible from upstairs (bathroom window)
     if (interactable.id === 'ch0_rooftop') {
+      if (this.currentFloor !== 'up') return; // can't reach from downstairs
       Analytics.trackInteraction(interactable.id);
       this.triggerRooftop();
       this.trackForPhoneCall(interactable.id);
@@ -1548,6 +1582,15 @@ export class HomeScene extends BaseChapterScene {
       ];
       this.dialogue.show(lines, () => { this.frozen = false; });
       this.trackForPhoneCall(interactable.id);
+      return;
+    }
+    // Locked parents room door — Mom's upset, door is shut
+    if (interactable.id === 'ch0_parents_door_locked') {
+      this.frozen = true;
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'The door is locked.' },
+        { speaker: 'JP\'s Mind', text: 'She wants to be alone.' },
+      ], () => { this.frozen = false; });
       return;
     }
     // Mom food plate (dynamically spawned)
@@ -2022,26 +2065,61 @@ export class HomeScene extends BaseChapterScene {
     frameObjects.push(this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.7)
       .setScrollFactor(0).setDepth(300));
 
+    // Leather cover — outer shadow
+    frameObjects.push(this.add.rectangle(cx + 3, cy + 3, bookW + 20, bookH + 20, 0x000000)
+      .setScrollFactor(0).setDepth(301).setAlpha(0.3));
     // Leather cover
     frameObjects.push(this.add.rectangle(cx, cy, bookW + 16, bookH + 16, 0x5a3a20)
       .setScrollFactor(0).setDepth(301));
+    // Leather edge highlight (top)
+    frameObjects.push(this.add.rectangle(cx, cy - bookH / 2 - 6, bookW + 16, 2, 0x7a5a38)
+      .setScrollFactor(0).setDepth(301).setAlpha(0.6));
+    // Leather texture — subtle horizontal lines
+    for (let i = 0; i < 6; i++) {
+      frameObjects.push(this.add.rectangle(cx, cy - bookH / 2 + i * (bookH / 5), bookW + 14, 1, 0x4a2a16)
+        .setScrollFactor(0).setDepth(301).setAlpha(0.15));
+    }
     // Spine
-    frameObjects.push(this.add.rectangle(cx - bookW / 2 - 4, cy, 8, bookH + 16, 0x4a2a18)
+    frameObjects.push(this.add.rectangle(cx - bookW / 2 - 4, cy, 10, bookH + 16, 0x4a2a18)
       .setScrollFactor(0).setDepth(302));
-    // Paper
+    // Spine stitching
+    for (let i = 0; i < 12; i++) {
+      frameObjects.push(this.add.rectangle(cx - bookW / 2 - 4, cy - bookH / 2 + 20 + i * 36, 6, 2, 0x8a6a48)
+        .setScrollFactor(0).setDepth(303).setAlpha(0.5));
+    }
+    // Paper — slightly aged edges
+    frameObjects.push(this.add.rectangle(cx + 4, cy, bookW + 2, bookH + 2, 0xe8dcc0)
+      .setScrollFactor(0).setDepth(302)); // aged edge
     frameObjects.push(this.add.rectangle(cx + 4, cy, bookW, bookH, 0xf5edd8)
       .setScrollFactor(0).setDepth(302));
+    // Paper page edges (visible stacked pages on right side)
+    for (let i = 0; i < 4; i++) {
+      frameObjects.push(this.add.rectangle(cx + bookW / 2 + 2 + i, cy, 1, bookH - 10, 0xe0d8c0)
+        .setScrollFactor(0).setDepth(301).setAlpha(0.7 - i * 0.15));
+    }
 
     // Ruled lines
     for (let i = 0; i < 14; i++) {
       const lineY = cy - bookH / 2 + 50 + i * 28;
       frameObjects.push(this.add.rectangle(cx + 4, lineY, bookW - 40, 1, 0xc8c0b0)
-        .setScrollFactor(0).setDepth(303).setAlpha(0.5));
+        .setScrollFactor(0).setDepth(303).setAlpha(0.4));
     }
 
     // Red margin line
     frameObjects.push(this.add.rectangle(cx - bookW / 2 + 60, cy, 1, bookH - 20, 0xd08080)
-      .setScrollFactor(0).setDepth(303).setAlpha(0.6));
+      .setScrollFactor(0).setDepth(303).setAlpha(0.5));
+
+    // Pen resting on the book (diagonal)
+    const penX = cx + bookW / 2 - 40;
+    const penY = cy + bookH / 2 - 50;
+    frameObjects.push(this.add.rectangle(penX, penY, 80, 4, 0x2a2a2a)
+      .setScrollFactor(0).setDepth(304).setAngle(-25));
+    // Pen tip (gold)
+    frameObjects.push(this.add.rectangle(penX - 36, penY + 16, 8, 3, 0xc0a040)
+      .setScrollFactor(0).setDepth(304).setAngle(-25));
+    // Pen clip
+    frameObjects.push(this.add.rectangle(penX + 30, penY - 12, 3, 10, 0x4a4a4a)
+      .setScrollFactor(0).setDepth(304).setAngle(-25));
 
     // Nav buttons
     const prevBtn = this.add.text(cx - bookW / 2 + 20, cy + bookH / 2 + 20, '< PREV', {
@@ -2071,17 +2149,23 @@ export class HomeScene extends BaseChapterScene {
 
       const page = pages[currentPage];
 
-      // Date
+      // Date — underlined
       const dateText = this.add.text(textX, cy - bookH / 2 + 24, page.date, {
-        fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#8a7a6a',
+        fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#6a5a4a',
       }).setScrollFactor(0).setDepth(304);
       pageObjects.push(dateText);
+      // Date underline
+      const dateLine = this.add.rectangle(textX + dateText.width / 2, cy - bookH / 2 + 38, dateText.width + 4, 1, 0x6a5a4a)
+        .setScrollFactor(0).setDepth(304).setAlpha(0.4);
+      pageObjects.push(dateLine);
 
-      // Entries
+      // Entries — slightly varied positions for handwritten feel
       let entryY = cy - bookH / 2 + 56;
-      for (const line of page.lines) {
+      for (let li = 0; li < page.lines.length; li++) {
+        const line = page.lines[li];
         if (line === '') { entryY += 14; continue; }
-        const t = this.add.text(textX, entryY, line, {
+        const jitter = (li % 3 === 0) ? 1 : (li % 3 === 1) ? -1 : 0;
+        const t = this.add.text(textX + jitter, entryY + jitter, line, {
           fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#3a3028',
         }).setScrollFactor(0).setDepth(304);
         pageObjects.push(t);
@@ -2271,23 +2355,81 @@ export class HomeScene extends BaseChapterScene {
       paper.on('pointerdown', () => {
         paper.removeInteractive();
 
-        // Crumple ALL parts
+        // Satisfying crumple — shrink + spin + shake
         for (const t of thisLetterParts) {
           this.tweens.add({
-            targets: t, scaleX: 0.3, scaleY: 0.3,
-            angle: Phaser.Math.Between(-30, 30), duration: 300, ease: 'Back.easeIn',
+            targets: t, scaleX: 0.2, scaleY: 0.25,
+            angle: Phaser.Math.Between(-45, 45), duration: 250, ease: 'Back.easeIn',
           });
         }
+        // Quick screen shake for feedback
+        this.cameras.main.shake(100, 0.003);
+        // Crumple sound text
+        const crunchText = this.add.text(lx, ly - 30, '*crumple*', {
+          fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#aaaaaa',
+        }).setOrigin(0.5).setScrollFactor(0).setDepth(310).setAlpha(1);
+        objects.push(crunchText);
+        this.tweens.add({ targets: crunchText, y: ly - 60, alpha: 0, duration: 600 });
 
-        // Toss to trash
-        this.time.delayedCall(350, () => {
+        // Create paper ball for the toss (replaces individual parts)
+        this.time.delayedCall(300, () => {
+          // Hide original parts
           for (const t of thisLetterParts) {
-            this.tweens.add({
-              targets: t, x: trashX, y: trashY - 20, alpha: 0,
-              duration: 400, ease: 'Quad.easeIn',
-              onComplete: () => { if (t && t.active) (t as Phaser.GameObjects.GameObject).destroy(); },
-            });
+            if (t && t.active) (t as Phaser.GameObjects.Sprite).setAlpha(0);
           }
+
+          // Paper ball
+          const ball = this.add.circle(lx, ly, 16, 0xe8e0d4).setScrollFactor(0).setDepth(308);
+          const ballShadow = this.add.circle(lx, ly + 2, 14, 0xd0c8b8).setScrollFactor(0).setDepth(308);
+          // Wrinkle lines on ball
+          const w1 = this.add.rectangle(lx - 4, ly - 2, 10, 1, 0xc0b8a8).setScrollFactor(0).setDepth(309).setAngle(20);
+          const w2 = this.add.rectangle(lx + 3, ly + 3, 8, 1, 0xc0b8a8).setScrollFactor(0).setDepth(309).setAngle(-15);
+          objects.push(ball, ballShadow, w1, w2);
+
+          const ballParts = [ball, ballShadow, w1, w2];
+
+          // Toss arc to trash can (parabolic arc)
+          const startX = lx;
+          const startY = ly;
+          const peakY = Math.min(startY, trashY) - 120; // arc peak above both points
+          const tossDuration = 500;
+          let elapsed = 0;
+
+          const tossTimer = this.time.addEvent({
+            delay: 16,
+            repeat: Math.floor(tossDuration / 16),
+            callback: () => {
+              elapsed += 16;
+              const t = Math.min(elapsed / tossDuration, 1);
+              const nx = startX + (trashX - startX) * t;
+              // Parabolic Y: lerp + upward arc
+              const linearY = startY + (trashY - 20 - startY) * t;
+              const arcOffset = -4 * (peakY - startY) * t * (1 - t);
+              const ny = linearY + arcOffset;
+              for (const p of ballParts) {
+                if (!p.active) return;
+                p.setPosition(nx + (p === w1 ? -4 : p === w2 ? 3 : p === ballShadow ? 0 : 0),
+                  ny + (p === w1 ? -2 : p === w2 ? 3 : p === ballShadow ? 2 : 0));
+              }
+              // Spin
+              ball.setAngle((ball.angle || 0) + 8);
+
+              if (t >= 1) {
+                // Hit trash — brief bounce + fade
+                for (const p of ballParts) {
+                  this.tweens.add({
+                    targets: p, y: (p.y || 0) + 8, alpha: 0,
+                    duration: 200, ease: 'Bounce.easeOut',
+                    onComplete: () => { if (p.active) p.destroy(); },
+                  });
+                }
+                // Destroy original parts
+                for (const part of thisLetterParts) {
+                  if (part && part.active) (part as Phaser.GameObjects.GameObject).destroy();
+                }
+              }
+            },
+          });
 
           trashed++;
           if (trashed >= 3) {
