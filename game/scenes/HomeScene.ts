@@ -162,8 +162,8 @@ export class HomeScene extends BaseChapterScene {
 
     // ── VISUAL POLISH ─────────────────────────────────────────────────
 
-    // Floor indicator — show initial floor
-    this.showFloorIndicator('Upstairs');
+    // Floor indicator — show initial floor (delayed to avoid text render race)
+    this.time.delayedCall(500, () => this.showFloorIndicator('Upstairs'));
 
     // Highlight first interactable (computer in JP's room)
     this.firstInteractableGlow = this.add.circle(
