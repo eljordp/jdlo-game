@@ -64,6 +64,16 @@ const ITEM_CATALOG: Record<string, Omit<InventoryItem, 'quantity'>> = {
     icon: '🪙', maxStack: 1, uses: -1, maxUses: -1,
     usable: false, consumeOnUse: false,
   },
+  'dev-key': {
+    id: 'dev-key', name: 'Dev Key', description: "A USB key. Someone's initials are on the label: J.P.",
+    icon: '🔑', maxStack: 1, uses: -1, maxUses: -1,
+    usable: false, consumeOnUse: false,
+  },
+  'cryptic-note': {
+    id: 'cryptic-note', name: 'Cryptic Note', description: 'A torn note. "The real world is just another game. Play it better." — ???',
+    icon: '📜', maxStack: 1, uses: -1, maxUses: -1,
+    usable: false, consumeOnUse: false,
+  },
   za: {
     id: 'za', name: 'Za', description: 'Loose za. Pack a bowl or roll up.',
     icon: '\u{1F343}', maxStack: 5, uses: -1, maxUses: -1,

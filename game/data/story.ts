@@ -1515,6 +1515,14 @@ const ch1Extras: Record<string, DialogueLine[]> = {
     { speaker: 'Narrator', text: 'Someone passed out on a towel. Empty Modelo next to her.' },
     { speaker: 'Narrator', text: 'This is what Tuesday looks like in Santa Barbara.' },
   ],
+  ch1_mcwave: [
+    { speaker: 'MC Wave', text: 'Ay, you look like you got bars.' },
+    { speaker: 'MC Wave', text: 'Step up if you\'re nice. I eat everyone on this beach.' },
+  ],
+  ch1_tournament_host: [
+    { speaker: 'T-Money', text: 'Yo — beer pong tournament. 4 teams, bracket style.' },
+    { speaker: 'T-Money', text: 'Winner takes the pot. You in?' },
+  ],
   ch1_setup: [
     { speaker: 'JP\'s Mind', text: 'Dual monitors. Crypto charts on one, Depop on the other.' },
     { speaker: 'JP\'s Mind', text: 'Trading crypto. Selling clothes. Moving weed. All from this desk.' },

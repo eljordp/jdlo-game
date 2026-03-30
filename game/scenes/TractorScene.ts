@@ -10,6 +10,7 @@ import { InventorySystem } from '../systems/InventorySystem';
 import { GameIntelligence } from '../systems/GameIntelligence';
 import { CasinoSystem } from '../systems/CasinoSystem';
 import { DMSystem } from '../systems/DMSystem';
+import { SoundEffects } from '../systems/SoundEffects';
 
 export class TractorScene extends BaseChapterScene {
   private phoneExaminedFirst = false;
@@ -130,6 +131,7 @@ export class TractorScene extends BaseChapterScene {
     if (interactable.id === 'ch4_tractor' || interactable.id === 'ch4_crash') {
       Analytics.trackInteraction(interactable.id);
       this.tractorPlayed = true;
+      SoundEffects.playCarDrive();
       this.playTractorMinigame();
       this.interactions.consume(interactable.id);
       return;
@@ -156,6 +158,7 @@ export class TractorScene extends BaseChapterScene {
       ], () => {
         InventorySystem.addItem('tamales', 1);
         MoodSystem.setMood('vibing', 60);
+        SoundEffects.playPickup();
         this.frozen = false;
       });
       return;
@@ -173,6 +176,7 @@ export class TractorScene extends BaseChapterScene {
       ], () => {
         InventorySystem.addItem('paycheck', 1);
         MoodSystem.changeMorale(15);
+        SoundEffects.playCash();
         this.frozen = false;
       });
       return;
@@ -586,6 +590,7 @@ export class TractorScene extends BaseChapterScene {
 
             // Screen shake on bump
             this.cameras.main.shake(200, 0.008);
+            SoundEffects.playImpact();
 
             // Ernesto reaction (upgrade #2) — pick yell based on severity
             const yellIndex = hitCount >= 4 ? 2 : (hitCount >= 2 ? Phaser.Math.Between(0, 1) : 0);
@@ -747,6 +752,7 @@ export class TractorScene extends BaseChapterScene {
 
                   // Stop engine vibration
                   this.cameras.main.resetFX();
+                  SoundEffects.glassBreak();
 
                   // RED FLASH
                   const flash = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0xff0000, 0.6)
@@ -919,6 +925,7 @@ export class TractorScene extends BaseChapterScene {
                     // Hide cursor
                     cursor.setAlpha(0);
 
+                    SoundEffects.achievementUnlock();
                     // --- REVELATION TEXT: "Everything changed in this moment." ---
                     const revelationText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 80, 'Everything changed in this moment.', {
                       fontFamily: '"Press Start 2P", monospace',

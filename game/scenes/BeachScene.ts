@@ -14,6 +14,9 @@ import { PartyAI } from '../systems/PartyAI';
 import { GameIntelligence } from '../systems/GameIntelligence';
 import { DMSystem } from '../systems/DMSystem';
 import { CasinoSystem } from '../systems/CasinoSystem';
+import { SoundEffects } from '../systems/SoundEffects';
+import { GameStats } from '../systems/GameStats';
+import { AchievementSystem } from '../systems/AchievementSystem';
 
 export class BeachScene extends BaseChapterScene {
   private inHotTub = false;
@@ -33,6 +36,8 @@ export class BeachScene extends BaseChapterScene {
   private armWrestlePlayed = false;
   private rollingContestPlayed = false;
   private beerPongTournamentWon = false;
+  private rapBattlePlayed = false;
+  private tournamentPlayed = false;
 
   private darkWebDone = false;
   private lunaTraded = false;
@@ -721,6 +726,51 @@ export class BeachScene extends BaseChapterScene {
         this.playArmWrestle();
       }, () => {
         this.dialogue.show(dialogue);
+      });
+      return;
+    }
+
+    // MC Wave — rap battle challenge
+    if (npcId === 'ch1_mcwave') {
+      if (this.rapBattlePlayed) {
+        this.dialogue.show([
+          { speaker: 'MC Wave', text: 'You already went bar for bar with me. Respect.' },
+          { speaker: 'MC Wave', text: 'Come back when you ready for a rematch.' },
+        ], () => { this.frozen = false; });
+        return;
+      }
+      this.showYesNoChoice('MC Wave\'s got a mic on the beach.', 'Rap Battle', 'Walk Past', () => {
+        this.playRapBattle();
+      }, () => {
+        this.dialogue.show([
+          { speaker: 'MC Wave', text: 'Thought so. Come back when you ready.' },
+        ], () => { this.frozen = false; });
+      });
+      return;
+    }
+
+    // Tournament Host — beer pong bracket
+    if (npcId === 'ch1_tournament_host') {
+      if (this.tournamentPlayed) {
+        this.dialogue.show([
+          { speaker: 'T-Money', text: 'Tournament\'s over. You already ran it.' },
+          { speaker: 'T-Money', text: 'Next one\'s at the next party.' },
+        ], () => { this.frozen = false; });
+        return;
+      }
+      if (this.currentDay !== 2) {
+        this.dialogue.show([
+          { speaker: 'T-Money', text: 'Bracket drops tonight at the party.' },
+          { speaker: 'T-Money', text: 'Come back when the party\'s live.' },
+        ], () => { this.frozen = false; });
+        return;
+      }
+      this.showYesNoChoice('T-Money is running a 4-team bracket.', 'Enter Tournament', 'Not Now', () => {
+        this.playBeerPongTournament();
+      }, () => {
+        this.dialogue.show([
+          { speaker: 'T-Money', text: 'Aight. Spot stays open for now.' },
+        ], () => { this.frozen = false; });
       });
       return;
     }
@@ -3980,6 +4030,905 @@ export class BeachScene extends BaseChapterScene {
                   updateEvent.remove();
                   spaceKey.off('down', shootHandler);
                   this.time.delayedCall(800, () => endRound2());
+                  return;
+                }
+
+                jpTurn = true;
+                turnText.setText('YOUR SHOT').setColor('#60c060');
+                aimCursor.setAlpha(1);
+                shooting = false;
+              });
+            },
+          });
+        },
+      });
+    };
+
+    const spaceKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    const shootHandler = () => shoot();
+    spaceKey.on('down', shootHandler);
+  }
+
+  // ─── RAP BATTLE MINIGAME (MC Wave) ──────────────────────────────
+  private playRapBattle() {
+    this.rapBattlePlayed = true;
+    this.frozen = true;
+    const objects: Phaser.GameObjects.GameObject[] = [];
+
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+
+    // Dark overlay
+    objects.push(this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.88)
+      .setScrollFactor(0).setDepth(300));
+
+    // Stage background
+    objects.push(this.add.rectangle(cx, cy, 640, 360, 0x1a0a2e)
+      .setScrollFactor(0).setDepth(301));
+    objects.push(this.add.rectangle(cx, cy, 636, 356, 0x0d0520)
+      .setScrollFactor(0).setStrokeStyle(2, 0x8020ff).setDepth(301));
+
+    // Title
+    objects.push(this.add.text(cx, cy - 155, 'RAP BATTLE', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '20px', color: '#c040ff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303));
+
+    objects.push(this.add.text(cx, cy - 130, 'JP  vs  MC WAVE', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#888888',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303));
+
+    // Crowd bar (background)
+    objects.push(this.add.rectangle(cx, cy - 108, 400, 10, 0x333333)
+      .setScrollFactor(0).setDepth(302));
+    // Crowd meter fill — starts center, JP pushes right
+    const crowdMeter = this.add.rectangle(cx, cy - 108, 4, 8, 0xc040ff)
+      .setScrollFactor(0).setDepth(303);
+    objects.push(crowdMeter);
+    objects.push(this.add.rectangle(cx, cy - 108, 2, 14, 0xffffff)
+      .setScrollFactor(0).setDepth(304).setAlpha(0.5));
+    objects.push(this.add.text(cx - 205, cy - 112, 'JP', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#60c060',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303));
+    objects.push(this.add.text(cx + 205, cy - 112, 'WAVE', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#f04040',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303));
+
+    // Score text
+    const roundText = this.add.text(cx, cy - 88, 'ROUND 1 / 3', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#f0c040',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303);
+    objects.push(roundText);
+
+    const scoreText = this.add.text(cx, cy - 70, 'JP: 0  |  WAVE: 0', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303);
+    objects.push(scoreText);
+
+    // Rap line options (3 buttons)
+    const RAP_LINES = [
+      // Round 1 lines
+      [
+        { text: '"I built an empire, you built a playlist"', fire: 3 },
+        { text: '"Bars on bars, I bill by the hour"', fire: 2 },
+        { text: '"I stay in my bag, you stay in my way"', fire: 1 },
+      ],
+      // Round 2 lines
+      [
+        { text: '"SB wave? I\'m the whole ocean"', fire: 3 },
+        { text: '"You rhyme about money, I just count it"', fire: 2 },
+        { text: '"Your flow\'s basic like a Starbucks order"', fire: 1 },
+      ],
+      // Round 3 lines
+      [
+        { text: '"They call it a grind, I call it Monday"', fire: 3 },
+        { text: '"Came from nothing, got receipts for everything"', fire: 2 },
+        { text: '"I\'m the punchline you\'ll never forget"', fire: 1 },
+      ],
+    ];
+
+    const WAVE_LINES = [
+      '"I been on the beach longer than your whole career"',
+      '"You\'re nice for a business type. Almost."',
+      '"SB\'s mine. You just visiting."',
+    ];
+
+    let jpTotal = 0;
+    let waveTotal = 0;
+    let currentRound = 0;
+    let crowdBalance = 0; // -100 (Wave) to +100 (JP)
+
+    // Instruction
+    const instrText = this.add.text(cx, cy - 50, 'Pick your bar:', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#888888',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303);
+    objects.push(instrText);
+
+    // Reaction text (shown after pick)
+    const reactionText = this.add.text(cx, cy + 120, '', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#f0c040',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(304).setAlpha(0);
+    objects.push(reactionText);
+
+    // Wave line display
+    const waveLineText = this.add.text(cx, cy + 145, '', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#f04040',
+      wordWrap: { width: 500 },
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303).setAlpha(0);
+    objects.push(waveLineText);
+
+    const optionButtons: Phaser.GameObjects.GameObject[] = [];
+
+    const updateCrowdMeter = () => {
+      const width = Math.abs(crowdBalance) * 1.6;
+      crowdMeter.setSize(Math.max(4, width), 8);
+      if (crowdBalance >= 0) {
+        crowdMeter.setPosition(cx + crowdBalance * 0.8, cy - 108);
+        crowdMeter.setFillStyle(0x60c060);
+      } else {
+        crowdMeter.setPosition(cx + crowdBalance * 0.8, cy - 108);
+        crowdMeter.setFillStyle(0xf04040);
+      }
+    };
+
+    const showRound = (round: number) => {
+      // Clear old buttons
+      for (const btn of optionButtons) btn.destroy();
+      optionButtons.length = 0;
+
+      roundText.setText(`ROUND ${round + 1} / 3`);
+      const lines = RAP_LINES[round];
+
+      lines.forEach((line, i) => {
+        const btnY = cy - 20 + i * 52;
+        const fireColor = line.fire === 3 ? '#ff6030' : line.fire === 2 ? '#f0c040' : '#888888';
+        const fireLabel = line.fire === 3 ? '🔥🔥🔥' : line.fire === 2 ? '🔥🔥' : '🔥';
+
+        const bg = this.add.rectangle(cx, btnY, 520, 40, 0x1a1a2e)
+          .setScrollFactor(0).setDepth(302)
+          .setStrokeStyle(1, 0x444466)
+          .setInteractive({ useHandCursor: true });
+
+        const label = this.add.text(cx - 10, btnY, line.text, {
+          fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#ccccee',
+          wordWrap: { width: 420 },
+        }).setOrigin(0.5).setScrollFactor(0).setDepth(303);
+
+        const fireText = this.add.text(cx + 230, btnY, fireLabel, {
+          fontSize: '12px',
+        }).setOrigin(0.5).setScrollFactor(0).setDepth(303);
+
+        optionButtons.push(bg, label, fireText);
+
+        bg.on('pointerover', () => bg.setFillStyle(0x2a1a4e));
+        bg.on('pointerout', () => bg.setFillStyle(0x1a1a2e));
+        bg.on('pointerdown', () => {
+          // Disable all buttons
+          for (const btn of optionButtons) {
+            if ((btn as Phaser.GameObjects.Rectangle).input) {
+              (btn as Phaser.GameObjects.Rectangle).removeInteractive();
+            }
+          }
+
+          // JP scores
+          const jpRoundScore = line.fire;
+          jpTotal += jpRoundScore;
+
+          // Wave auto-scores (2 fire rating)
+          const waveRoundScore = 2;
+          waveTotal += waveRoundScore;
+
+          // Update crowd balance
+          crowdBalance += (jpRoundScore - waveRoundScore) * 15;
+          crowdBalance = Math.max(-100, Math.min(100, crowdBalance));
+          updateCrowdMeter();
+
+          scoreText.setText(`JP: ${jpTotal}  |  WAVE: ${waveTotal}`);
+
+          // Play crowd react
+          SoundEffects.crowdReact();
+
+          // Show JP bar reaction
+          const reactions = ['FIRE!', 'OOH!', 'NO CAP!', 'BARS!', 'CROWD\'S HYPE!'];
+          const reaction = jpRoundScore === 3 ? reactions[Math.floor(Math.random() * reactions.length)] : jpRoundScore === 2 ? 'Not bad.' : 'Weak.';
+          reactionText.setText('Crowd: ' + reaction).setAlpha(1);
+          this.tweens.add({ targets: reactionText, alpha: 0, delay: 1800, duration: 600 });
+
+          // Wave drops their line
+          waveLineText.setText('Wave: ' + WAVE_LINES[round]).setAlpha(1);
+          this.tweens.add({ targets: waveLineText, alpha: 0, delay: 2400, duration: 600 });
+
+          if (jpRoundScore === 3) {
+            SoundEffects.success();
+            this.cameras.main.shake(200, 0.004);
+          }
+
+          this.time.delayedCall(3200, () => {
+            currentRound++;
+            if (currentRound < 3) {
+              showRound(currentRound);
+            } else {
+              endRapBattle();
+            }
+          });
+        });
+      });
+    };
+
+    const endRapBattle = () => {
+      // Clear buttons
+      for (const btn of optionButtons) btn.destroy();
+      optionButtons.length = 0;
+
+      const jpWon = jpTotal >= waveTotal;
+
+      // Clean up UI
+      for (const obj of objects) {
+        if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
+      }
+
+      GameStats.increment('minigamesPlayed');
+      if (jpWon) GameStats.increment('minigamesWon');
+
+      if (jpWon) {
+        SoundEffects.crowdReact();
+        SoundEffects.moneyRain();
+        MoodSystem.setMood('hyped', 45);
+        BalanceSystem.earn(200, 'rap battle win');
+        AchievementSystem.checkMoneyAchievements(BalanceSystem.getBalance());
+
+        // Victory flash
+        const victoryBg = this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.9)
+          .setScrollFactor(0).setDepth(300);
+        const victoryText = this.add.text(cx, cy - 30, 'YOU WON', {
+          fontFamily: '"Press Start 2P", monospace', fontSize: '28px', color: '#c040ff',
+        }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+        const victoryScore = this.add.text(cx, cy + 20, `JP: ${jpTotal}  |  WAVE: ${waveTotal}`, {
+          fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#ffffff',
+        }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+        const prizeText = this.add.text(cx, cy + 50, '+$200', {
+          fontFamily: '"Press Start 2P", monospace', fontSize: '12px', color: '#f0c040',
+        }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+
+        this.cameras.main.shake(400, 0.008);
+
+        this.time.delayedCall(2500, () => {
+          victoryBg.destroy(); victoryText.destroy(); victoryScore.destroy(); prizeText.destroy();
+          this.dialogue.show([
+            { speaker: 'Narrator', text: `JP scores ${jpTotal} fire points. Wave only got ${waveTotal}.` },
+            { speaker: 'MC Wave', text: '...Aight. Respect.' },
+            { speaker: 'MC Wave', text: 'Where you from? For real though.' },
+            { speaker: 'JP', text: 'Vacaville. Why?' },
+            { speaker: 'MC Wave', text: 'Nothing. Just doesn\'t make sense.' },
+            { speaker: 'Narrator', text: 'The crowd erupts. Beach goes WILD.' },
+            { speaker: 'Narrator', text: '+$200 from the crowd.' },
+          ], () => { this.frozen = false; });
+        });
+      } else {
+        SoundEffects.fumble();
+        this.dialogue.show([
+          { speaker: 'Narrator', text: `Wave takes it. ${waveTotal} to ${jpTotal}.` },
+          { speaker: 'MC Wave', text: 'Nice bars though. Seriously.' },
+          { speaker: 'MC Wave', text: 'You\'ve got potential, beach boy.' },
+          { speaker: 'JP', text: 'Beach boy? I\'m from the valley.' },
+          { speaker: 'MC Wave', text: 'Even worse. Good job.' },
+        ], () => { this.frozen = false; });
+      }
+    };
+
+    // Kick off first round
+    showRound(0);
+  }
+
+  // ─── BEER PONG TOURNAMENT BRACKET ───────────────────────────────
+  private playBeerPongTournament() {
+    this.tournamentPlayed = true;
+    this.frozen = true;
+    const objects: Phaser.GameObjects.GameObject[] = [];
+
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+
+    // ── Teams ──
+    const TEAMS = ['Team Nolan', 'Team Cooper', 'Team SB Locals'];
+    const randomTeam = (excludeIndex?: number): string => {
+      let idx = Math.floor(Math.random() * TEAMS.length);
+      while (excludeIndex !== undefined && TEAMS[idx] === TEAMS[excludeIndex]) {
+        idx = Math.floor(Math.random() * TEAMS.length);
+      }
+      return TEAMS[idx];
+    };
+
+    // Semi-final 2 simulated winner (random)
+    const semiFinal2Winner = randomTeam();
+
+    const showBracket = (phase: 'intro' | 'after-semi1' | 'after-semi2', jpWonSemi1?: boolean) => {
+      // Clear any bracket objects from previous call
+      const bracketObjs: Phaser.GameObjects.GameObject[] = [];
+
+      // Dark overlay
+      const overlay = this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.88)
+        .setScrollFactor(0).setDepth(300);
+      bracketObjs.push(overlay);
+
+      // Panel
+      const panel = this.add.rectangle(cx, cy, 580, 360, 0x0a1a0a)
+        .setScrollFactor(0).setDepth(301)
+        .setStrokeStyle(2, 0x30c060);
+      bracketObjs.push(panel);
+
+      // Title
+      bracketObjs.push(this.add.text(cx, cy - 150, 'BEER PONG TOURNAMENT', {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '12px', color: '#f0c040',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(302));
+
+      bracketObjs.push(this.add.text(cx, cy - 130, '4-TEAM BRACKET', {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#888888',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(302));
+
+      // Bracket lines
+      const leftX = cx - 220;
+      const rightX = cx + 220;
+      const finalX = cx;
+      const sf1Y = cy - 60;
+      const sf2Y = cy + 40;
+      const finalY = cy - 10;
+
+      // Semi 1 bracket
+      const sf1Color = phase === 'intro' ? '#ffffff' : (jpWonSemi1 ? '#60c060' : '#f04040');
+      bracketObjs.push(this.add.text(leftX, sf1Y - 30, 'SEMI-FINAL 1', {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#888888',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(302));
+      bracketObjs.push(this.add.text(leftX, sf1Y - 10, 'JP', {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: sf1Color,
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(302));
+      bracketObjs.push(this.add.text(leftX, sf1Y + 10, 'vs', {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#444444',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(302));
+      bracketObjs.push(this.add.text(leftX, sf1Y + 30, TEAMS[0], {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#cccccc',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(302));
+
+      // Semi 2 bracket
+      const sf2WinColor = phase === 'after-semi2' ? '#60c060' : '#cccccc';
+      bracketObjs.push(this.add.text(rightX, sf2Y - 30, 'SEMI-FINAL 2', {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#888888',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(302));
+      bracketObjs.push(this.add.text(rightX, sf2Y - 10, TEAMS[1], {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#cccccc',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(302));
+      bracketObjs.push(this.add.text(rightX, sf2Y + 10, 'vs', {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#444444',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(302));
+      bracketObjs.push(this.add.text(rightX, sf2Y + 30, TEAMS[2], {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#cccccc',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(302));
+
+      // Final bracket
+      if (phase !== 'intro') {
+        bracketObjs.push(this.add.text(finalX, cy + 110, 'FINAL', {
+          fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#f0c040',
+        }).setOrigin(0.5).setScrollFactor(0).setDepth(302));
+
+        const jpFinalName = jpWonSemi1 ? 'JP' : '---';
+        const waveFinalName = phase === 'after-semi2' ? semiFinal2Winner : '???';
+
+        bracketObjs.push(this.add.text(finalX, cy + 130, `${jpFinalName}  vs  ${waveFinalName}`, {
+          fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: jpWonSemi1 ? '#f0c040' : '#888888',
+        }).setOrigin(0.5).setScrollFactor(0).setDepth(302));
+      }
+
+      // Continue prompt
+      const continueText = this.add.text(cx, cy + 155, 'PRESS SPACE TO CONTINUE', {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#666666',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(302);
+      bracketObjs.push(continueText);
+      this.tweens.add({ targets: continueText, alpha: 0.3, duration: 600, yoyo: true, repeat: -1 });
+
+      return bracketObjs;
+    };
+
+    // ── Phase 1: Show intro bracket ──
+    let bracketObjs = showBracket('intro');
+    GameStats.increment('minigamesPlayed');
+
+    const spaceKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
+    const afterSemi1Handler = () => {
+      spaceKey.off('down', afterSemi1Handler);
+      // Clean up bracket
+      for (const obj of bracketObjs) if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
+      for (const obj of objects) if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
+
+      // ── Run semi-final 1: JP vs Team Nolan ──
+      this.dialogue.show([
+        { speaker: 'T-Money', text: 'SEMI-FINAL 1: JP vs Team Nolan!' },
+        { speaker: 'T-Money', text: 'First team to sink 6 cups wins.' },
+        { speaker: 'Big Bart', text: 'LETS GOOOOO!' },
+      ], () => {
+        // Use existing beer pong game for the semi
+        this.playSemiFinal1(semiFinal2Winner);
+      });
+    };
+
+    spaceKey.once('down', afterSemi1Handler);
+  }
+
+  // ── TOURNAMENT: SEMI-FINAL 1 (reuses beer pong core) ─────────────
+  private playSemiFinal1(semiFinal2Winner: string) {
+    this.frozen = true;
+    const objects: Phaser.GameObjects.GameObject[] = [];
+
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+
+    objects.push(this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.85)
+      .setScrollFactor(0).setDepth(300));
+    objects.push(this.add.rectangle(cx, cy, 600, 280, 0x2a5030)
+      .setScrollFactor(0).setDepth(301));
+    objects.push(this.add.rectangle(cx, cy, 590, 270, 0x306838)
+      .setScrollFactor(0).setDepth(301));
+    objects.push(this.add.rectangle(cx, cy, 2, 270, 0xffffff)
+      .setScrollFactor(0).setDepth(302).setAlpha(0.3));
+
+    objects.push(this.add.text(cx, cy - 170, 'SEMI-FINAL 1', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '16px', color: '#f0c040',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303));
+    objects.push(this.add.text(cx, cy - 150, 'JP  vs  TEAM NOLAN', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#cccccc',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303));
+    objects.push(this.add.text(cx, cy - 135, 'LEFT/RIGHT to aim  |  SPACE to shoot', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#888888',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303));
+
+    const cupRadius = 16;
+    const cupColor = 0xe03030;
+
+    const oppCupPositions = [
+      { x: cx + 220, y: cy - 50 }, { x: cx + 220, y: cy }, { x: cx + 220, y: cy + 50 },
+      { x: cx + 258, y: cy - 25 }, { x: cx + 258, y: cy + 25 },
+      { x: cx + 296, y: cy },
+    ];
+    const myCupPositions = [
+      { x: cx - 220, y: cy - 50 }, { x: cx - 220, y: cy }, { x: cx - 220, y: cy + 50 },
+      { x: cx - 258, y: cy - 25 }, { x: cx - 258, y: cy + 25 },
+      { x: cx - 296, y: cy },
+    ];
+
+    const oppCups: { obj: Phaser.GameObjects.Arc; hit: boolean; pos: { x: number; y: number } }[] = [];
+    const myCups: { obj: Phaser.GameObjects.Arc; hit: boolean }[] = [];
+
+    for (const pos of oppCupPositions) {
+      const cup = this.add.circle(pos.x, pos.y, cupRadius, cupColor).setScrollFactor(0).setDepth(302);
+      const beer = this.add.circle(pos.x, pos.y, cupRadius - 4, 0xf0c040).setScrollFactor(0).setDepth(302).setAlpha(0.6);
+      objects.push(cup, beer);
+      oppCups.push({ obj: cup, hit: false, pos });
+    }
+    for (const pos of myCupPositions) {
+      const cup = this.add.circle(pos.x, pos.y, cupRadius, cupColor).setScrollFactor(0).setDepth(302);
+      const beer = this.add.circle(pos.x, pos.y, cupRadius - 4, 0xf0c040).setScrollFactor(0).setDepth(302).setAlpha(0.6);
+      objects.push(cup, beer);
+      myCups.push({ obj: cup, hit: false });
+    }
+
+    let jpScore = 0;
+    let oppScore = 0;
+    let jpTurn = true;
+    let shots = 0;
+    const maxShots = 12;
+    let aimY = cy;
+    let aimDir = 1;
+    let power = 0;
+    let powerDir = 1;
+    let shooting = false;
+    let gameOver = false;
+
+    const scoreText = this.add.text(cx, cy + 160, 'JP: 0  |  NOLAN: 0', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '12px', color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303);
+    objects.push(scoreText);
+
+    const turnText = this.add.text(cx, cy + 180, 'YOUR SHOT', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#60c060',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303);
+    objects.push(turnText);
+
+    const aimCursor = this.add.triangle(cx - 160, aimY, 0, -8, 0, 8, 12, 0, 0xffffff)
+      .setScrollFactor(0).setDepth(304);
+    objects.push(aimCursor);
+
+    const powerBarBg = this.add.rectangle(cx - 330, cy, 20, 200, 0x333333)
+      .setScrollFactor(0).setDepth(302);
+    objects.push(powerBarBg);
+    const powerBar = this.add.rectangle(cx - 330, cy + 100, 16, 0, 0x30c060)
+      .setOrigin(0.5, 1).setScrollFactor(0).setDepth(303);
+    objects.push(powerBar);
+
+    const updateEvent = this.time.addEvent({
+      delay: 16,
+      loop: true,
+      callback: () => {
+        if (gameOver || shooting) return;
+        if (jpTurn) {
+          aimY += 2 * aimDir;
+          if (aimY > cy + 100) aimDir = -1;
+          if (aimY < cy - 100) aimDir = 1;
+          aimCursor.setY(aimY);
+          power += 1.5 * powerDir;
+          if (power > 100) powerDir = -1;
+          if (power < 0) powerDir = 1;
+          powerBar.setSize(16, power * 2);
+          powerBar.setFillStyle(power > 70 ? 0x30c060 : power > 40 ? 0xf0c040 : 0xf04040);
+        }
+      },
+    });
+
+    const endSemi1 = () => {
+      const jpWon = jpScore > oppScore;
+      for (const obj of objects) {
+        if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
+      }
+      if (jpWon) GameStats.increment('minigamesWon');
+      this.showSemiFinal2Result(jpWon, semiFinal2Winner);
+    };
+
+    const shoot = () => {
+      if (!jpTurn || shooting || gameOver) return;
+      shooting = true;
+
+      const ball = this.add.circle(cx - 140, aimY, 8, 0xffffff)
+        .setScrollFactor(0).setDepth(305);
+      objects.push(ball);
+
+      const targetX = cx + 220 + (power / 100) * 80;
+      const targetY = aimY;
+
+      this.tweens.add({
+        targets: ball, x: targetX, y: targetY - 30, duration: 400, ease: 'Quad.easeOut',
+        onComplete: () => {
+          this.tweens.add({
+            targets: ball, y: targetY, duration: 200, ease: 'Bounce.easeOut',
+            onComplete: () => {
+              let hitCup = false;
+              for (const cup of oppCups) {
+                if (cup.hit) continue;
+                const dist = Math.sqrt((ball.x - cup.pos.x) ** 2 + (ball.y - cup.pos.y) ** 2);
+                if (dist < cupRadius + 8) {
+                  hitCup = true; cup.hit = true; jpScore++;
+                  this.tweens.add({ targets: cup.obj, alpha: 0.2, scaleX: 0.5, scaleY: 0.5, duration: 300 });
+                  SoundEffects.splash();
+                  const ht = this.add.text(cup.pos.x, cup.pos.y - 20, 'SPLASH!', {
+                    fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#f0c040',
+                  }).setOrigin(0.5).setScrollFactor(0).setDepth(306);
+                  this.tweens.add({ targets: ht, y: ht.y - 30, alpha: 0, duration: 800, onComplete: () => ht.destroy() });
+                  break;
+                }
+              }
+              if (!hitCup) {
+                const mt = this.add.text(ball.x, ball.y - 15, 'MISS', {
+                  fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#f04040',
+                }).setOrigin(0.5).setScrollFactor(0).setDepth(306);
+                this.tweens.add({ targets: mt, alpha: 0, duration: 600, onComplete: () => mt.destroy() });
+              }
+
+              ball.destroy();
+              scoreText.setText(`JP: ${jpScore}  |  NOLAN: ${oppScore}`);
+              shots++;
+
+              if (jpScore >= 6 || oppScore >= 6 || shots >= maxShots) {
+                gameOver = true;
+                updateEvent.remove();
+                spaceKey.off('down', shootHandler);
+                this.time.delayedCall(800, () => endSemi1());
+                return;
+              }
+
+              jpTurn = false;
+              turnText.setText('THEIR SHOT').setColor('#f04040');
+              aimCursor.setAlpha(0.3);
+
+              this.time.delayedCall(1200, () => {
+                const hit = Math.random() < 0.4;
+                if (hit) {
+                  const available = myCups.filter(c => !c.hit);
+                  if (available.length > 0) {
+                    const target = available[Math.floor(Math.random() * available.length)];
+                    target.hit = true; oppScore++;
+                    this.tweens.add({ targets: target.obj, alpha: 0.2, scaleX: 0.5, scaleY: 0.5, duration: 300 });
+                  }
+                }
+                scoreText.setText(`JP: ${jpScore}  |  NOLAN: ${oppScore}`);
+                shots++;
+
+                if (jpScore >= 6 || oppScore >= 6 || shots >= maxShots) {
+                  gameOver = true;
+                  updateEvent.remove();
+                  spaceKey.off('down', shootHandler);
+                  this.time.delayedCall(800, () => endSemi1());
+                  return;
+                }
+
+                jpTurn = true;
+                turnText.setText('YOUR SHOT').setColor('#60c060');
+                aimCursor.setAlpha(1);
+                shooting = false;
+              });
+            },
+          });
+        },
+      });
+    };
+
+    const spaceKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    const shootHandler = () => shoot();
+    spaceKey.on('down', shootHandler);
+  }
+
+  // ── TOURNAMENT: Show semi-2 result + set up final ─────────────────
+  private showSemiFinal2Result(jpWonSemi1: boolean, semiFinal2Winner: string) {
+    this.dialogue.show([
+      { speaker: 'T-Money', text: jpWonSemi1 ? 'JP eliminates Team Nolan! Let\'s GOOOO!' : 'Team Nolan takes it. JP is eliminated.' },
+      { speaker: 'T-Money', text: `Meanwhile — Semi-Final 2: ${semiFinal2Winner} wins!` },
+      { speaker: 'Narrator', text: `The other bracket finishes. ${semiFinal2Winner} advances.` },
+    ], () => {
+      if (!jpWonSemi1) {
+        // JP lost — can't play final
+        this.dialogue.show([
+          { speaker: 'Cooper', text: 'Damn bro. Semifinals though.' },
+          { speaker: 'Big Bart', text: 'RUN IT BACK NEXT PARTY!!' },
+        ], () => { this.frozen = false; });
+        return;
+      }
+
+      // JP won semi — set up final
+      this.time.delayedCall(800, () => {
+        this.dialogue.show([
+          { speaker: 'T-Money', text: `FINAL: JP vs ${semiFinal2Winner}!` },
+          { speaker: 'T-Money', text: 'Winner takes the pot. $500 on the line.' },
+          { speaker: 'Big Bart', text: 'NOBODY CAN STOP HIM RIGHT NOW!!' },
+        ], () => {
+          this.playTournamentFinal(semiFinal2Winner);
+        });
+      });
+    });
+  }
+
+  // ── TOURNAMENT: FINAL ROUND ──────────────────────────────────────
+  private playTournamentFinal(opponent: string) {
+    // Reuse Round 2 / harder beer pong mechanics — smaller cups, faster aim, 50% opp hit rate
+    this.frozen = true;
+    const objects: Phaser.GameObjects.GameObject[] = [];
+
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+
+    objects.push(this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.85)
+      .setScrollFactor(0).setDepth(300));
+    objects.push(this.add.rectangle(cx, cy, 600, 280, 0x2a5030)
+      .setScrollFactor(0).setDepth(301));
+    objects.push(this.add.rectangle(cx, cy, 590, 270, 0x306838)
+      .setScrollFactor(0).setDepth(301));
+    objects.push(this.add.rectangle(cx, cy, 2, 270, 0xffffff)
+      .setScrollFactor(0).setDepth(302).setAlpha(0.3));
+
+    objects.push(this.add.text(cx, cy - 170, 'TOURNAMENT FINAL', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '16px', color: '#f04040',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303));
+    objects.push(this.add.text(cx, cy - 150, `JP  vs  ${opponent.toUpperCase()}`, {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#f0c040',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303));
+    objects.push(this.add.text(cx, cy - 135, 'Smaller cups. Faster aim. Tougher opponent.', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#ff8888',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303));
+
+    const cupRadius = 12;
+    const cupColor = 0xe03030;
+
+    const oppCupPositions = [
+      { x: cx + 220, y: cy - 50 }, { x: cx + 220, y: cy }, { x: cx + 220, y: cy + 50 },
+      { x: cx + 258, y: cy - 25 }, { x: cx + 258, y: cy + 25 },
+      { x: cx + 296, y: cy },
+    ];
+    const myCupPositions = [
+      { x: cx - 220, y: cy - 50 }, { x: cx - 220, y: cy }, { x: cx - 220, y: cy + 50 },
+      { x: cx - 258, y: cy - 25 }, { x: cx - 258, y: cy + 25 },
+      { x: cx - 296, y: cy },
+    ];
+
+    const oppCups: { obj: Phaser.GameObjects.Arc; hit: boolean; pos: { x: number; y: number } }[] = [];
+    const myCups: { obj: Phaser.GameObjects.Arc; hit: boolean }[] = [];
+
+    for (const pos of oppCupPositions) {
+      const cup = this.add.circle(pos.x, pos.y, cupRadius, cupColor).setScrollFactor(0).setDepth(302);
+      const beer = this.add.circle(pos.x, pos.y, cupRadius - 3, 0xf0c040).setScrollFactor(0).setDepth(302).setAlpha(0.6);
+      objects.push(cup, beer);
+      oppCups.push({ obj: cup, hit: false, pos });
+    }
+    for (const pos of myCupPositions) {
+      const cup = this.add.circle(pos.x, pos.y, cupRadius, cupColor).setScrollFactor(0).setDepth(302);
+      const beer = this.add.circle(pos.x, pos.y, cupRadius - 3, 0xf0c040).setScrollFactor(0).setDepth(302).setAlpha(0.6);
+      objects.push(cup, beer);
+      myCups.push({ obj: cup, hit: false });
+    }
+
+    let jpScore = 0;
+    let oppScore = 0;
+    let jpTurn = true;
+    let shots = 0;
+    const maxShots = 12;
+    let aimY = cy;
+    let aimDir = 1;
+    let power = 0;
+    let powerDir = 1;
+    let shooting = false;
+    let gameOver = false;
+
+    const scoreText = this.add.text(cx, cy + 160, `JP: 0  |  ${opponent}: 0`, {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '12px', color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303);
+    objects.push(scoreText);
+
+    const turnText = this.add.text(cx, cy + 180, 'YOUR SHOT', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#60c060',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303);
+    objects.push(turnText);
+
+    const aimCursor = this.add.triangle(cx - 160, aimY, 0, -8, 0, 8, 12, 0, 0xffffff)
+      .setScrollFactor(0).setDepth(304);
+    objects.push(aimCursor);
+
+    const powerBarBg = this.add.rectangle(cx - 330, cy, 20, 200, 0x333333)
+      .setScrollFactor(0).setDepth(302);
+    objects.push(powerBarBg);
+    const powerBar = this.add.rectangle(cx - 330, cy + 100, 16, 0, 0x30c060)
+      .setOrigin(0.5, 1).setScrollFactor(0).setDepth(303);
+    objects.push(powerBar);
+
+    const updateEvent = this.time.addEvent({
+      delay: 16,
+      loop: true,
+      callback: () => {
+        if (gameOver || shooting) return;
+        if (jpTurn) {
+          aimY += 2.5 * aimDir;
+          if (aimY > cy + 100) aimDir = -1;
+          if (aimY < cy - 100) aimDir = 1;
+          aimCursor.setY(aimY);
+          power += 2 * powerDir;
+          if (power > 100) powerDir = -1;
+          if (power < 0) powerDir = 1;
+          powerBar.setSize(16, power * 2);
+          powerBar.setFillStyle(power > 70 ? 0x30c060 : power > 40 ? 0xf0c040 : 0xf04040);
+        }
+      },
+    });
+
+    const endFinal = () => {
+      const jpWon = jpScore > oppScore;
+      for (const obj of objects) {
+        if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
+      }
+
+      if (jpWon) {
+        this.beerPongTournamentWon = true;
+        GameStats.increment('minigamesWon');
+        SubstanceSystem.hype();
+        MoodSystem.setMood('hyped', 60);
+        BalanceSystem.earn(500, 'tournament win');
+        AchievementSystem.checkMoneyAchievements(BalanceSystem.getBalance());
+
+        // Championship screen
+        const champBg = this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.9)
+          .setScrollFactor(0).setDepth(300);
+        const champText = this.add.text(cx, cy - 30, 'TOURNAMENT CHAMPION', {
+          fontFamily: '"Press Start 2P", monospace', fontSize: '16px', color: '#f0c040',
+        }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+        const champScore = this.add.text(cx, cy + 10, `${jpScore} cups vs ${oppScore}`, {
+          fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#ffffff',
+        }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+        const champPrize = this.add.text(cx, cy + 40, '+$500 PRIZE MONEY', {
+          fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#60c060',
+        }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+
+        this.cameras.main.shake(600, 0.012);
+        SoundEffects.moneyRain();
+        SoundEffects.crowdReact();
+
+        this.time.delayedCall(3000, () => {
+          champBg.destroy(); champText.destroy(); champScore.destroy(); champPrize.destroy();
+          this.dialogue.show([
+            { speaker: 'T-Money', text: 'LADIES AND GENTLEMEN — JP IS YOUR CHAMPION!' },
+            { speaker: 'Big Bart', text: 'NOBODY CAN BEAT THIS MAN!!' },
+            { speaker: 'Narrator', text: 'Bart lifts JP onto his shoulders. The whole party chants his name.' },
+            { speaker: 'Girl', text: 'Who IS that guy??' },
+            { speaker: 'Nolan', text: 'That\'s my boy.' },
+            { speaker: 'Narrator', text: '$500 from the tournament pot.' },
+          ], () => { this.frozen = false; });
+        });
+      } else {
+        SoundEffects.fumble();
+        this.dialogue.show([
+          { speaker: 'Narrator', text: `JP falls in the final. ${jpScore} vs ${oppScore}.` },
+          { speaker: 'T-Money', text: 'Close game though. Semifinals to finals — that\'s a W.' },
+          { speaker: 'Cooper', text: 'Finals though. That\'s still fire.' },
+          { speaker: 'Big Bart', text: 'RUN IT BACK NEXT PARTY!!' },
+        ], () => { this.frozen = false; });
+      }
+    };
+
+    const shoot = () => {
+      if (!jpTurn || shooting || gameOver) return;
+      shooting = true;
+
+      const ball = this.add.circle(cx - 140, aimY, 8, 0xffffff)
+        .setScrollFactor(0).setDepth(305);
+      objects.push(ball);
+
+      const targetX = cx + 220 + (power / 100) * 80;
+      const targetY = aimY;
+
+      this.tweens.add({
+        targets: ball, x: targetX, y: targetY - 30, duration: 400, ease: 'Quad.easeOut',
+        onComplete: () => {
+          this.tweens.add({
+            targets: ball, y: targetY, duration: 200, ease: 'Bounce.easeOut',
+            onComplete: () => {
+              let hitCup = false;
+              for (const cup of oppCups) {
+                if (cup.hit) continue;
+                const dist = Math.sqrt((ball.x - cup.pos.x) ** 2 + (ball.y - cup.pos.y) ** 2);
+                if (dist < cupRadius + 6) {
+                  hitCup = true; cup.hit = true; jpScore++;
+                  this.tweens.add({ targets: cup.obj, alpha: 0.2, scaleX: 0.5, scaleY: 0.5, duration: 300 });
+                  SoundEffects.splash();
+                  const ht = this.add.text(cup.pos.x, cup.pos.y - 20, 'SPLASH!', {
+                    fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#f0c040',
+                  }).setOrigin(0.5).setScrollFactor(0).setDepth(306);
+                  this.tweens.add({ targets: ht, y: ht.y - 30, alpha: 0, duration: 800, onComplete: () => ht.destroy() });
+                  break;
+                }
+              }
+              if (!hitCup) {
+                const mt = this.add.text(ball.x, ball.y - 15, 'MISS', {
+                  fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#f04040',
+                }).setOrigin(0.5).setScrollFactor(0).setDepth(306);
+                this.tweens.add({ targets: mt, alpha: 0, duration: 600, onComplete: () => mt.destroy() });
+              }
+
+              ball.destroy();
+              scoreText.setText(`JP: ${jpScore}  |  ${opponent}: ${oppScore}`);
+              shots++;
+
+              if (jpScore >= 6 || oppScore >= 6 || shots >= maxShots) {
+                gameOver = true;
+                updateEvent.remove();
+                spaceKey.off('down', shootHandler);
+                this.time.delayedCall(800, () => endFinal());
+                return;
+              }
+
+              jpTurn = false;
+              turnText.setText('THEIR SHOT').setColor('#f04040');
+              aimCursor.setAlpha(0.3);
+
+              this.time.delayedCall(1200, () => {
+                // Harder opponent: 50% hit rate
+                const hit = Math.random() < 0.50;
+                if (hit) {
+                  const available = myCups.filter(c => !c.hit);
+                  if (available.length > 0) {
+                    const target = available[Math.floor(Math.random() * available.length)];
+                    target.hit = true; oppScore++;
+                    this.tweens.add({ targets: target.obj, alpha: 0.2, scaleX: 0.5, scaleY: 0.5, duration: 300 });
+                  }
+                }
+                scoreText.setText(`JP: ${jpScore}  |  ${opponent}: ${oppScore}`);
+                shots++;
+
+                if (jpScore >= 6 || oppScore >= 6 || shots >= maxShots) {
+                  gameOver = true;
+                  updateEvent.remove();
+                  spaceKey.off('down', shootHandler);
+                  this.time.delayedCall(800, () => endFinal());
                   return;
                 }
 

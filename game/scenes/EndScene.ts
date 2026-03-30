@@ -5,9 +5,11 @@ import { Analytics } from '../systems/Analytics';
 import { GameStats, type GameStatsData } from '../systems/GameStats';
 import { BalanceSystem } from '../systems/BalanceSystem';
 import { AchievementSystem } from '../systems/AchievementSystem';
+import { SoundEffects } from '../systems/SoundEffects';
 
 export class EndScene extends Phaser.Scene {
   private statsElements: Phaser.GameObjects.GameObject[] = [];
+  private shareCardElements: Phaser.GameObjects.GameObject[] = [];
 
   constructor() {
     super({ key: 'EndScene' });
@@ -223,7 +225,7 @@ export class EndScene extends Phaser.Scene {
     });
 
     // SHARE button
-    const shareBtn = this.add.text(cx + 60, btnY, '[ SCREENSHOT THIS ]', {
+    const shareBtn = this.add.text(cx + 60, btnY, '[ SHARE CARD ]', {
       fontFamily: '"Press Start 2P", monospace',
       fontSize: '10px',
       color: '#6688cc',
@@ -233,12 +235,7 @@ export class EndScene extends Phaser.Scene {
     shareBtn.on('pointerover', () => shareBtn.setColor('#88aaee'));
     shareBtn.on('pointerout', () => shareBtn.setColor('#6688cc'));
     shareBtn.on('pointerdown', () => {
-      shareBtn.setText('Screenshot & share @jdlo');
-      shareBtn.setColor('#f0c040');
-      this.time.delayedCall(3000, () => {
-        shareBtn.setText('[ SCREENSHOT THIS ]');
-        shareBtn.setColor('#6688cc');
-      });
+      this.showShareCard(stats, grade.letter, grade.color);
     });
 
     this.tweens.add({ targets: shareBtn, alpha: 1, duration: 800, delay: btnDelay + 200 });
@@ -340,6 +337,335 @@ export class EndScene extends Phaser.Scene {
     if (score >= 40) return { letter: 'B', color: '#00ccff', flashColor: 0x00ccff, description: 'Solid run. Missed some things though.' };
     if (score >= 20) return { letter: 'C', color: '#ff8844', flashColor: 0xff8844, description: 'Rushed through. Go back and explore.' };
     return { letter: 'D', color: '#ff4444', flashColor: 0xff4444, description: 'Barely scratched the surface.' };
+  }
+
+  // ═══════════════════════════════════════════════════════════════════
+  //  SHARE CARD
+  // ═══════════════════════════════════════════════════════════════════
+
+  private showShareCard(stats: GameStatsData, gradeLetter: string, gradeColor: string) {
+    // Destroy any existing card first
+    this.dismissShareCard();
+
+    SoundEffects.achievementUnlock();
+    this.cameras.main.shake(250, 0.008);
+
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+    const d = 500; // above everything
+
+    // ── Dark fullscreen backdrop (click-to-dismiss) ──
+    const backdrop = this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x000000)
+      .setDepth(d).setAlpha(0).setInteractive();
+    this.shareCardElements.push(backdrop);
+
+    this.tweens.add({ targets: backdrop, alpha: 0.82, duration: 300 });
+
+    // ── Card dimensions ──
+    const cardW = 580;
+    const cardH = 760;
+    const cardX = cx;
+    const cardY = cy;
+
+    // ── Card background ──
+    const cardBg = this.add.rectangle(cardX, cardY, cardW, cardH, 0x07071a)
+      .setDepth(d + 1).setAlpha(0);
+    this.shareCardElements.push(cardBg);
+
+    // Gold border — drawn as a slightly larger rectangle behind the card
+    const cardBorder = this.add.rectangle(cardX, cardY, cardW + 4, cardH + 4, 0xd4a017)
+      .setDepth(d + 0.5).setAlpha(0);
+    this.shareCardElements.push(cardBorder);
+
+    // Inner accent border
+    const cardInner = this.add.rectangle(cardX, cardY, cardW - 24, cardH - 24, 0x0d0d2a)
+      .setDepth(d + 1.5).setAlpha(0);
+    this.shareCardElements.push(cardInner);
+
+    // ── Animate card in ──
+    this.tweens.add({
+      targets: [cardBorder, cardBg, cardInner],
+      alpha: 1,
+      duration: 400,
+      ease: 'Back.easeOut',
+      delay: 100,
+    });
+
+    const topY = cardY - cardH / 2;
+
+    // ── Top accent line ──
+    const accentLine = this.add.rectangle(cardX, topY + 42, cardW - 60, 2, 0xd4a017)
+      .setDepth(d + 2).setAlpha(0);
+    this.shareCardElements.push(accentLine);
+    this.tweens.add({ targets: accentLine, alpha: 0.7, duration: 400, delay: 350 });
+
+    // ── Header label ──
+    const headerLabel = this.add.text(cardX, topY + 28, 'JDLO THE GAME', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '9px',
+      color: '#d4a017',
+      letterSpacing: 6,
+    }).setOrigin(0.5).setDepth(d + 2).setAlpha(0);
+    this.shareCardElements.push(headerLabel);
+    this.tweens.add({ targets: headerLabel, alpha: 1, duration: 400, delay: 300 });
+
+    // ── Main title ──
+    const titleLine1 = this.add.text(cardX, topY + 70, 'I JUST BEAT', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '20px',
+      color: '#ffffff',
+    }).setOrigin(0.5).setDepth(d + 2).setAlpha(0);
+    this.shareCardElements.push(titleLine1);
+
+    const titleLine2 = this.add.text(cardX, topY + 100, 'JDLO THE GAME', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '20px',
+      color: '#d4a017',
+    }).setOrigin(0.5).setDepth(d + 2).setAlpha(0);
+    this.shareCardElements.push(titleLine2);
+
+    this.tweens.add({ targets: [titleLine1, titleLine2], alpha: 1, duration: 500, delay: 400 });
+
+    // ── Grade section ──
+    const gradeY = topY + 160;
+
+    const gradeCircleBg = this.add.circle(cardX, gradeY + 10, 52, 0x000000)
+      .setDepth(d + 2).setAlpha(0).setStrokeStyle(2, Phaser.Display.Color.HexStringToColor(gradeColor.replace('#', '')).color);
+    this.shareCardElements.push(gradeCircleBg);
+
+    const gradeBig = this.add.text(cardX, gradeY + 10, gradeLetter, {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '58px',
+      color: gradeColor,
+      stroke: '#000000',
+      strokeThickness: 6,
+    }).setOrigin(0.5).setDepth(d + 3).setAlpha(0).setScale(0);
+    this.shareCardElements.push(gradeBig);
+
+    this.tweens.add({
+      targets: [gradeCircleBg],
+      alpha: 1,
+      duration: 400,
+      delay: 500,
+    });
+    this.tweens.add({
+      targets: gradeBig,
+      alpha: 1,
+      scale: 1,
+      duration: 500,
+      ease: 'Back.easeOut',
+      delay: 550,
+      onComplete: () => {
+        this.tweens.add({
+          targets: gradeBig,
+          scaleX: 1.08,
+          scaleY: 1.08,
+          duration: 500,
+          yoyo: true,
+          repeat: 1,
+        });
+      },
+    });
+
+    // ── Tagline ──
+    const tagline = this.add.text(cardX, gradeY + 80, this.getTagline(gradeLetter), {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '8px',
+      color: gradeColor,
+      letterSpacing: 3,
+    }).setOrigin(0.5).setDepth(d + 2).setAlpha(0);
+    this.shareCardElements.push(tagline);
+    this.tweens.add({ targets: tagline, alpha: 1, duration: 400, delay: 700 });
+
+    // ── Divider ──
+    const divider = this.add.rectangle(cardX, gradeY + 106, cardW - 100, 1, 0x333355)
+      .setDepth(d + 2).setAlpha(0);
+    this.shareCardElements.push(divider);
+    this.tweens.add({ targets: divider, alpha: 0.8, duration: 400, delay: 750 });
+
+    // ── Stats grid ──
+    const statsStartY = gradeY + 132;
+    const col1X = cardX - 220;
+    const col2X = cardX + 20;
+    const rowH = 68;
+
+    const achievementCount = AchievementSystem.getUnlocked().length;
+
+    const cardStats = [
+      // Left column
+      { col: 0, row: 0, icon: '\u{1F4B0}', label: 'MONEY MADE',     value: '$' + stats.totalMoney.toLocaleString(),                                color: '#22ff88' },
+      { col: 0, row: 1, icon: '\u{1F3B0}', label: 'CASINO RECORD',  value: stats.casinoWins + '-' + stats.casinoLosses,                           color: stats.casinoWins >= stats.casinoLosses ? '#22ff88' : '#ff4444' },
+      { col: 0, row: 2, icon: '\u{1F494}', label: 'GIRLS FUMBLED',  value: '' + stats.girlsFumbled,                                               color: stats.girlsFumbled > 3 ? '#ff4444' : '#ffffff' },
+      { col: 0, row: 3, icon: '\u{23F1}\u{FE0F}', label: 'PLAY TIME', value: this.formatPlayTime(stats.totalPlayTimeMs),                          color: '#cccccc' },
+      // Right column
+      { col: 1, row: 0, icon: '\u{1F4C8}', label: 'CRYPTO PEAK',    value: stats.cryptoPeakPortfolio > 0 ? '$' + stats.cryptoPeakPortfolio.toLocaleString() : '--', color: '#00ccff' },
+      { col: 1, row: 1, icon: '\u{1F37A}', label: 'DRINKS HAD',     value: '' + stats.drinksHad,                                                  color: '#ffaa00' },
+      { col: 1, row: 2, icon: '\u{1F3C5}', label: 'ACHIEVEMENTS',   value: achievementCount + '/20',                                              color: '#f0c040' },
+      { col: 1, row: 3, icon: '\u{1F4E6}', label: 'ITEMS FOUND',    value: '' + stats.itemsCollected,                                             color: '#ffcc44' },
+    ];
+
+    cardStats.forEach((s, idx) => {
+      const x = s.col === 0 ? col1X : col2X;
+      const y = statsStartY + s.row * rowH;
+      const delay = 800 + idx * 80;
+
+      const iconT = this.add.text(x, y, s.icon, { fontSize: '16px' })
+        .setOrigin(0, 0.5).setDepth(d + 2).setAlpha(0);
+      this.shareCardElements.push(iconT);
+
+      const labelT = this.add.text(x + 26, y - 9, s.label, {
+        fontFamily: '"Press Start 2P", monospace',
+        fontSize: '6px',
+        color: '#555577',
+      }).setOrigin(0, 0.5).setDepth(d + 2).setAlpha(0);
+      this.shareCardElements.push(labelT);
+
+      const valueT = this.add.text(x + 26, y + 9, s.value, {
+        fontFamily: '"Press Start 2P", monospace',
+        fontSize: '11px',
+        color: s.color,
+      }).setOrigin(0, 0.5).setDepth(d + 2).setAlpha(0).setScale(0.85);
+      this.shareCardElements.push(valueT);
+
+      this.tweens.add({ targets: iconT, alpha: 1, duration: 300, delay });
+      this.tweens.add({ targets: labelT, alpha: 1, duration: 300, delay: delay + 30 });
+      this.tweens.add({ targets: valueT, alpha: 1, scale: 1, duration: 350, ease: 'Back.easeOut', delay: delay + 60 });
+    });
+
+    // ── Bottom accent line ──
+    const bottomAccent = this.add.rectangle(cardX, topY + cardH - 50, cardW - 60, 2, 0xd4a017)
+      .setDepth(d + 2).setAlpha(0);
+    this.shareCardElements.push(bottomAccent);
+    this.tweens.add({ targets: bottomAccent, alpha: 0.5, duration: 400, delay: 1500 });
+
+    // ── Footer branding ──
+    const footer = this.add.text(cardX, topY + cardH - 32, 'jdlo.site', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '9px',
+      color: '#d4a017',
+      letterSpacing: 4,
+    }).setOrigin(0.5).setDepth(d + 2).setAlpha(0);
+    this.shareCardElements.push(footer);
+    this.tweens.add({ targets: footer, alpha: 0.8, duration: 400, delay: 1550 });
+
+    // ── Buttons row ──
+    const btnRowY = topY + cardH + 30;
+
+    // SAVE button
+    const saveBtn = this.add.text(cardX - 100, btnRowY, '[ SAVE IMAGE ]', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '10px',
+      color: '#22ff88',
+    }).setOrigin(0.5).setDepth(d + 3).setAlpha(0).setInteractive({ useHandCursor: true });
+    this.shareCardElements.push(saveBtn);
+
+    saveBtn.on('pointerover', () => saveBtn.setColor('#66ffaa'));
+    saveBtn.on('pointerout', () => saveBtn.setColor('#22ff88'));
+    saveBtn.on('pointerdown', () => {
+      saveBtn.setText('SAVING...');
+      saveBtn.setColor('#f0c040');
+      this.downloadShareCard(() => {
+        saveBtn.setText('SAVED!');
+        SoundEffects.slotWin();
+        this.time.delayedCall(2000, () => {
+          saveBtn.setText('[ SAVE IMAGE ]');
+          saveBtn.setColor('#22ff88');
+        });
+      });
+    });
+
+    this.tweens.add({ targets: saveBtn, alpha: 1, duration: 400, delay: 1700 });
+
+    // CLOSE button
+    const closeBtn = this.add.text(cardX + 100, btnRowY, '[ CLOSE ]', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '10px',
+      color: '#555577',
+    }).setOrigin(0.5).setDepth(d + 3).setAlpha(0).setInteractive({ useHandCursor: true });
+    this.shareCardElements.push(closeBtn);
+
+    closeBtn.on('pointerover', () => closeBtn.setColor('#8888aa'));
+    closeBtn.on('pointerout', () => closeBtn.setColor('#555577'));
+    closeBtn.on('pointerdown', () => this.dismissShareCard());
+
+    this.tweens.add({ targets: closeBtn, alpha: 1, duration: 400, delay: 1750 });
+
+    // ESC to close
+    const escKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+    const escHandler = () => {
+      this.dismissShareCard();
+      escKey.off('down', escHandler);
+    };
+    escKey.on('down', escHandler);
+  }
+
+  private dismissShareCard() {
+    if (this.shareCardElements.length === 0) return;
+    this.tweens.add({
+      targets: this.shareCardElements.filter(e => e && e.active),
+      alpha: 0,
+      duration: 250,
+      onComplete: () => {
+        this.shareCardElements.forEach(e => { try { e.destroy(); } catch { /* */ } });
+        this.shareCardElements = [];
+      },
+    });
+  }
+
+  private downloadShareCard(onDone: () => void) {
+    // Hide everything except the card itself (backdrop + card elements)
+    // by hiding stats elements and buttons that sit outside the card.
+    // Then snapshot the canvas, crop to the card region, and trigger download.
+    const canvas = this.game.canvas;
+    const cardW = 580;
+    const cardH = 760;
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+
+    // Small delay so any button state has settled
+    this.time.delayedCall(80, () => {
+      try {
+        // Capture the full game canvas
+        const fullDataUrl = canvas.toDataURL('image/png');
+
+        // Draw into an offscreen canvas cropped to the card
+        const offscreen = document.createElement('canvas');
+        const cropX = Math.floor(cx - cardW / 2);
+        const cropY = Math.floor(cy - cardH / 2);
+        offscreen.width = cardW;
+        offscreen.height = cardH;
+        const ctx2d = offscreen.getContext('2d')!;
+        const img = new Image();
+        img.onload = () => {
+          ctx2d.drawImage(img, cropX, cropY, cardW, cardH, 0, 0, cardW, cardH);
+          const croppedUrl = offscreen.toDataURL('image/png');
+          const a = document.createElement('a');
+          a.href = croppedUrl;
+          a.download = 'jdlo-game-card.png';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          onDone();
+        };
+        img.src = fullDataUrl;
+      } catch {
+        // Fallback — just open the full canvas in a new tab
+        const url = canvas.toDataURL('image/png');
+        window.open(url, '_blank');
+        onDone();
+      }
+    });
+  }
+
+  private getTagline(gradeLetter: string): string {
+    const taglines: Record<string, string> = {
+      S: 'ABSOLUTELY BUILT DIFFERENT',
+      A: 'BUILT DIFFERENT',
+      B: 'SOLID. KEEP PUSHING.',
+      C: 'ROOM TO GROW, NO CAP',
+      D: 'DOWN BAD. GO AGAIN.',
+    };
+    return taglines[gradeLetter] ?? 'DOWN BAD. GO AGAIN.';
   }
 
   // ── Record Formatter ──

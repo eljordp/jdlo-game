@@ -10,6 +10,7 @@ import { InventoryUI } from '../systems/InventoryUI';
 import { GameIntelligence } from '../systems/GameIntelligence';
 import { CasinoSystem } from '../systems/CasinoSystem';
 import { DMSystem } from '../systems/DMSystem';
+import { SoundEffects } from '../systems/SoundEffects';
 
 export class HomeScene extends BaseChapterScene {
   private interactionCount = 0;
@@ -40,6 +41,15 @@ export class HomeScene extends BaseChapterScene {
   private firstInteractableGlow: Phaser.GameObjects.Arc | null = null;
   private morningTint: Phaser.GameObjects.Rectangle | null = null;
   private secretGhostFound = false;
+
+  // Easter egg: hidden developer room
+  private hiddenRoomFound = false;
+
+  // Easter egg: secret timed NPC
+  private npcTalkCount = 0;
+  private secretNPCSpawned = false;
+  private secretNPCInteracted = false;
+  private secretNPCSprite: Phaser.GameObjects.Sprite | null = null;
 
   constructor() {
     super({ key: 'HomeScene' });
@@ -257,6 +267,32 @@ export class HomeScene extends BaseChapterScene {
         });
       },
     });
+
+    // ── HIDDEN ROOM: Developer terminal behind garage shelf ──────────
+    // The interactable at tile (38, 26) — back corner of the garage, behind the record player.
+    // Players have to walk all the way into the corner. No glow hint.
+    if (!localStorage.getItem('jdlo_dev_room_found')) {
+      this.interactions.addInteractable({
+        id: 'ch0_dev_terminal',
+        x: 38, y: 26,
+        type: 'examine',
+        glow: false,
+      });
+
+      // Subtle "screen glow" ambient effect so it rewards exploration
+      const glowX = 38 * SCALED_TILE + SCALED_TILE / 2;
+      const glowY = 26 * SCALED_TILE + SCALED_TILE / 2;
+      const screenGlow = this.add.rectangle(glowX, glowY, SCALED_TILE - 4, SCALED_TILE - 4, 0x203850, 0.3)
+        .setDepth(2);
+      this.tweens.add({
+        targets: screenGlow,
+        alpha: 0.12,
+        duration: 2000,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+      });
+    }
   }
 
   protected getObjectiveHint(): string {
@@ -1714,8 +1750,129 @@ export class HomeScene extends BaseChapterScene {
       return;
     }
 
+    // ── HIDDEN ROOM: Developer terminal in garage corner ──────────────
+    if (interactable.id === 'ch0_dev_terminal') {
+      Analytics.trackInteraction(interactable.id);
+      this.interactions.consume(interactable.id);
+      this.triggerHiddenDevRoom();
+      return;
+    }
+
     this.trackForPhoneCall(interactable.id);
     super.handleInteractable(interactable);
+  }
+
+  // ─── HIDDEN DEVELOPER ROOM ──────────────────────────────────────────
+  private triggerHiddenDevRoom() {
+    if (this.hiddenRoomFound) return;
+    this.hiddenRoomFound = true;
+    this.frozen = true;
+
+    try { localStorage.setItem('jdlo_dev_room_found', 'true'); } catch {}
+
+    const objects: Phaser.GameObjects.GameObject[] = [];
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+
+    // Dark overlay — late night dev cave vibes
+    objects.push(this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x050a10, 0.92)
+      .setScrollFactor(0).setDepth(500));
+
+    // Monitor frame
+    const monitor = this.add.rectangle(cx, cy - 30, 340, 200, 0x0a1520)
+      .setScrollFactor(0).setDepth(501).setStrokeStyle(2, 0x1a3a5a);
+    objects.push(monitor);
+
+    // Screen glow
+    objects.push(this.add.rectangle(cx, cy - 30, 320, 180, 0x101c28)
+      .setScrollFactor(0).setDepth(502));
+
+    // Monitor stand
+    objects.push(this.add.rectangle(cx, cy + 72, 8, 20, 0x1a2a3a)
+      .setScrollFactor(0).setDepth(501));
+    objects.push(this.add.rectangle(cx, cy + 84, 40, 6, 0x1a2a3a)
+      .setScrollFactor(0).setDepth(501));
+
+    // Screen flicker — subtle
+    this.tweens.add({
+      targets: monitor,
+      alpha: 0.9,
+      duration: 3000,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
+    });
+
+    // Terminal text lines — typewriter reveal
+    const termLines = [
+      { text: '> JDLO_GAME v1.0.0', color: '#4a8a4a', delay: 200 },
+      { text: '> author: jp (eljordp)', color: '#4a8a4a', delay: 800 },
+      { text: '> engine: phaser 3 + next.js', color: '#608060', delay: 1400 },
+      { text: '> chapters: 7 / 7 built', color: '#608060', delay: 2000 },
+      { text: '> commits: 300+', color: '#708070', delay: 2600 },
+      { text: '> total hours: lost count', color: '#708070', delay: 3200 },
+      { text: '> status: shipping', color: '#a0c040', delay: 3800 },
+      { text: '> ...', color: '#406040', delay: 4400 },
+      { text: '> you found this. respect.', color: '#f0c040', delay: 5200 },
+    ];
+
+    let lineY = cy - 110;
+    for (const line of termLines) {
+      const t = this.add.text(cx - 148, lineY, '', {
+        fontFamily: 'monospace',
+        fontSize: '10px',
+        color: line.color,
+      }).setScrollFactor(0).setDepth(503).setAlpha(0);
+      objects.push(t);
+
+      this.time.delayedCall(line.delay, () => {
+        t.setAlpha(1);
+        let charIdx = 0;
+        this.time.addEvent({
+          delay: 28,
+          repeat: line.text.length - 1,
+          callback: () => {
+            charIdx++;
+            t.setText(line.text.substring(0, charIdx));
+          },
+        });
+      });
+
+      lineY += 20;
+    }
+
+    // JP label — developer sitting here
+    const jpSprite = this.add.sprite(cx, cy + 115, this.getPlayerTexture(), 0)
+      .setScale(2).setScrollFactor(0).setDepth(503);
+    objects.push(jpSprite);
+
+    // Cursor blink
+    const cursor = this.add.text(cx - 148, lineY - 2, '█', {
+      fontFamily: 'monospace', fontSize: '10px', color: '#f0c040',
+    }).setScrollFactor(0).setDepth(503);
+    objects.push(cursor);
+    this.tweens.add({ targets: cursor, alpha: 0, duration: 500, yoyo: true, repeat: -1 });
+
+    // After all lines, show dialogue and give item
+    this.time.delayedCall(6500, () => {
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'A dusty laptop. Screen still on. Screensaver: a blinking terminal.' },
+        { speaker: 'Narrator', text: 'Someone built something here. You can feel the late nights.' },
+        { speaker: 'JP\'s Mind', text: 'That\'s gonna be me. Building at 2 AM, nobody watching.' },
+        { speaker: 'JP\'s Mind', text: 'One day they\'ll find my room like this.' },
+        { speaker: 'Narrator', text: 'A USB key on the desk. JP\'s initials on the label.' },
+        { speaker: 'Narrator', text: 'Dev Key added to inventory.' },
+      ], () => {
+        InventorySystem.addItem('dev-key', 1);
+        SoundEffects.achievementUnlock();
+        this.playConfetti(cx, cy);
+        // Clean up
+        for (const obj of objects) {
+          if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
+        }
+        this.frozen = false;
+      });
+    });
   }
 
   // Reusable yes/no choice UI — prompt shows ABOVE buttons
@@ -1769,9 +1926,92 @@ export class HomeScene extends BaseChapterScene {
     nKey.on('down', nHandler);
   }
 
+  // ─── SECRET TIMED NPC ─────────────────────────────────────────────
+  private spawnSecretNPC() {
+    if (this.secretNPCSpawned) return;
+    this.secretNPCSpawned = true;
+
+    // Spawn in the yard, near the pond — cryptic stranger sitting alone
+    const npcTileX = 30;
+    const npcTileY = 35;
+    const npcX = npcTileX * SCALED_TILE + SCALED_TILE / 2;
+    const npcY = npcTileY * SCALED_TILE + SCALED_TILE / 2;
+
+    // Ghost-tinted stranger sprite
+    this.secretNPCSprite = this.add.sprite(npcX, npcY, 'player-ch0', 0)
+      .setScale(SCALE * 0.9).setDepth(9).setAlpha(0).setTint(0xc0d8ff);
+
+    // Blink into existence
+    this.tweens.add({
+      targets: this.secretNPCSprite,
+      alpha: 0.85,
+      duration: 800,
+      ease: 'Sine.easeIn',
+    });
+
+    // Subtle idle float
+    this.tweens.add({
+      targets: this.secretNPCSprite,
+      y: npcY - 3,
+      duration: 1800,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
+    });
+
+    // Block movement on that tile
+    this.collisionTiles.add(`${npcTileX},${npcTileY}`);
+
+    // Register as NPC so interact system picks it up
+    this.npcs.push({
+      sprite: this.secretNPCSprite,
+      id: 'ch0_secret_stranger',
+      dialogue: [], // handled in handleNPCDialogue
+    });
+
+    // Floating "?" indicator — distinct from the usual "!"
+    const indicator = this.add.text(npcX, npcY - 22, '?', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '9px',
+      color: '#80c0ff',
+    }).setOrigin(0.5).setDepth(14).setAlpha(0);
+
+    this.tweens.add({
+      targets: indicator,
+      alpha: 1,
+      y: npcY - 26,
+      duration: 500,
+      delay: 500,
+      ease: 'Sine.easeOut',
+    });
+    this.tweens.add({
+      targets: indicator,
+      y: npcY - 30,
+      alpha: 0.5,
+      duration: 900,
+      yoyo: true,
+      repeat: -1,
+      delay: 1000,
+      ease: 'Sine.easeInOut',
+    });
+
+    // Store indicator ref for cleanup
+    (this.secretNPCSprite as any)._indicator = indicator;
+  }
+
   // Override NPC dialogue to add reactive behaviors
   protected handleNPCDialogue(npcId: string, dialogue: DialogueLine[]) {
     GameIntelligence.onNPCTalked(npcId);
+
+    // Track total NPC conversations for secret NPC unlock
+    const mainNPCs = ['ch0_pops', 'ch0_mom', 'ch0_sister', 'ch0_frenchie', 'ch0_secret_ghost'];
+    if (mainNPCs.includes(npcId) || npcId.startsWith('ch0_')) {
+      this.npcTalkCount++;
+      if (this.npcTalkCount >= 5 && !this.secretNPCSpawned) {
+        // Delay spawn slightly so current dialogue finishes first
+        this.time.delayedCall(3000, () => this.spawnSecretNPC());
+      }
+    }
 
     // Secret ghost NPC — easter egg
     if (npcId === 'ch0_secret_ghost' && !this.secretGhostFound) {
@@ -1799,6 +2039,50 @@ export class HomeScene extends BaseChapterScene {
             },
           });
         }
+        this.frozen = false;
+      });
+      return;
+    }
+
+    // Secret Timed NPC — cryptic stranger who only appears after 5 NPC talks
+    if (npcId === 'ch0_secret_stranger' && !this.secretNPCInteracted) {
+      this.secretNPCInteracted = true;
+      this.frozen = true;
+      this.dialogue.show([
+        { speaker: '???', text: 'You talk to a lot of people for someone who feels like an outsider.' },
+        { speaker: '???', text: 'I\'ve seen your type. Watching, learning, waiting for the moment.' },
+        { speaker: '???', text: 'The city won\'t give you anything. You take it.' },
+        { speaker: '???', text: 'One last thing — the game you\'re playing right now?' },
+        { speaker: '???', text: 'You\'re not the character. You\'re the developer.' },
+        { speaker: 'Narrator', text: 'The stranger stands. Drops a folded note at your feet.' },
+        { speaker: 'Narrator', text: 'Cryptic Note added to inventory.' },
+      ], () => {
+        InventorySystem.addItem('cryptic-note', 1);
+        SoundEffects.achievementUnlock();
+        // Fade and remove the secret NPC
+        if (this.secretNPCSprite && this.secretNPCSprite.active) {
+          const indicator = (this.secretNPCSprite as any)._indicator;
+          if (indicator && indicator.active) indicator.destroy();
+          const npcTileX = 30;
+          const npcTileY = 35;
+          this.collisionTiles.delete(`${npcTileX},${npcTileY}`);
+          this.tweens.add({
+            targets: this.secretNPCSprite,
+            alpha: 0,
+            y: this.secretNPCSprite.y - 20,
+            duration: 1200,
+            ease: 'Sine.easeIn',
+            onComplete: () => {
+              if (this.secretNPCSprite) {
+                this.secretNPCSprite.setVisible(false);
+                this.secretNPCSprite.setActive(false);
+              }
+            },
+          });
+        }
+        // Remove from npcs array so it can't be re-interacted
+        const idx = this.npcs.findIndex(n => n.id === 'ch0_secret_stranger');
+        if (idx !== -1) this.npcs.splice(idx, 1);
         this.frozen = false;
       });
       return;

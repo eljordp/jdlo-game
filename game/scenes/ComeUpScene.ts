@@ -9,6 +9,7 @@ import { InventorySystem } from '../systems/InventorySystem';
 import { GameIntelligence } from '../systems/GameIntelligence';
 import { CasinoSystem } from '../systems/CasinoSystem';
 import { DMSystem } from '../systems/DMSystem';
+import { SoundEffects } from '../systems/SoundEffects';
 
 export class ComeUpScene extends BaseChapterScene {
   private typingPlayed = false;
@@ -134,6 +135,7 @@ export class ComeUpScene extends BaseChapterScene {
     GameIntelligence.onNPCTalked(npcId);
     if (npcId === 'ch5_sticker' && !this.stickerTalked) {
       this.stickerTalked = true;
+      SoundEffects.playConfirm();
       this.dialogue.show(dialogue, () => {
         // After talking to Sticker, Manza gets a referral indicator
         const manza = this.npcs.find(n => n.id === 'ch5_manza');
@@ -170,6 +172,7 @@ export class ComeUpScene extends BaseChapterScene {
     GameIntelligence.onInteracted(interactable.id);
     if (interactable.id === 'ch5_stack' || interactable.id === 'ch5_github') {
       Analytics.trackInteraction(interactable.id);
+      SoundEffects.playBlip();
       this.playTypingMinigame();
       this.interactions.consume(interactable.id);
       return;
@@ -187,6 +190,7 @@ export class ComeUpScene extends BaseChapterScene {
     if (interactable.id === 'ch5_first_dollar') {
       Analytics.trackInteraction(interactable.id);
       this.requiredDone = true;
+      SoundEffects.moneyRain();
       this.playPaymentCutscene();
       this.interactions.consume(interactable.id);
 
@@ -272,6 +276,7 @@ export class ComeUpScene extends BaseChapterScene {
       Analytics.trackInteraction(interactable.id);
       this.frozen = true;
       this.interactions.consume(interactable.id);
+      SoundEffects.fumble();
       this.playRejectionMontage();
       return;
     }
@@ -282,6 +287,7 @@ export class ComeUpScene extends BaseChapterScene {
       Analytics.trackInteraction(interactable.id);
       this.frozen = true;
       this.interactions.consume(interactable.id);
+      SoundEffects.playCash();
       this.playBankScene();
       return;
     }
@@ -305,6 +311,7 @@ export class ComeUpScene extends BaseChapterScene {
       if (lines) {
         this.dialogue.show(lines, () => {
           InventorySystem.addItem('ramen', 1);
+          SoundEffects.playPickup();
           this.frozen = false;
         });
       } else {
@@ -733,6 +740,7 @@ export class ComeUpScene extends BaseChapterScene {
     this.frozen = true;
 
     // Phone ring
+    SoundEffects.playVibrate();
     this.cameras.main.shake(200, 0.003);
 
     this.dialogue.show([

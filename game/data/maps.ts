@@ -330,6 +330,8 @@ export const beachMap: MapData = {
       { id: 'ch1_volleyball1',  x: 16, y: 25, sprite: 'npc_surfer' },
       { id: 'ch1_volleyball2',  x: 18, y: 25, sprite: 'npc_kid' },
       { id: 'ch1_sunbather',    x: 28, y: 26, sprite: 'npc_bikini1' },
+      { id: 'ch1_mcwave',       x: 22, y: 26, sprite: 'npc_generic' }, // MC Wave — rap battle
+      { id: 'ch1_tournament_host', x: 12, y: 24, sprite: 'npc_surfer' }, // Tournament host — beer pong bracket
     ],
   },
   triggers: [

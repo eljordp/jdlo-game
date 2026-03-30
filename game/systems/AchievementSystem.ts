@@ -51,6 +51,7 @@ const ACHIEVEMENTS: AchievementDef[] = [
   { id: 'faded_247',     name: 'Faded 24/7',        subtitle: 'Stay faded for 60+ seconds',            icon: '\u{1F32C}\u{FE0F}', category: 'gameplay' },
   { id: 'sober_sally',   name: 'Sober Sally',       subtitle: 'Complete a chapter without substances',  icon: '\u{1F9CA}', category: 'gameplay' },
   { id: 'the_whole_story', name: 'The Whole Story', subtitle: 'Beat all 7 chapters',                   icon: '\u{1F3C6}', category: 'gameplay', rare: true },
+  { id: 'konami_found',    name: 'Old School',      subtitle: 'You know the code',                     icon: '\u{1F579}\u{FE0F}', category: 'gameplay', rare: true },
 ];
 
 // ─── Achievement System ─────────────────────────────────────────────

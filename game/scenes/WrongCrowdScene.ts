@@ -9,6 +9,7 @@ import { InventorySystem } from '../systems/InventorySystem';
 import { GameIntelligence } from '../systems/GameIntelligence';
 import { CasinoSystem } from '../systems/CasinoSystem';
 import { DMSystem } from '../systems/DMSystem';
+import { SoundEffects } from '../systems/SoundEffects';
 
 export class WrongCrowdScene extends BaseChapterScene {
   private raidTriggered = false;
@@ -282,6 +283,11 @@ export class WrongCrowdScene extends BaseChapterScene {
           });
         }
 
+        // Phone buzz at the "Phone buzzes" thought line
+        this.time.delayedCall(4800, () => {
+          SoundEffects.playVibrate();
+        });
+
         // After all thoughts, stop heartbeat, reset zoom, fade out and start gameplay
         this.time.delayedCall(8500, () => {
           // Stop heartbeat
@@ -444,6 +450,7 @@ export class WrongCrowdScene extends BaseChapterScene {
     // Lookout blocks and warns
     if (npcId === 'ch2_lookout' && !this.lookoutWarned) {
       this.lookoutWarned = true;
+      SoundEffects.playAlert();
       const lookout = this.npcs.find(n => n.id === 'ch2_lookout');
 
       // Lookout steps closer
@@ -575,6 +582,7 @@ export class WrongCrowdScene extends BaseChapterScene {
       Analytics.trackInteraction(interactable.id);
       this.frozen = true;
       this.interactions.consume(interactable.id);
+      SoundEffects.playVibrate();
       this.dialogue.show([
         { speaker: 'Narrator', text: '3 missed calls from Pops. 11:42 PM. 12:15 AM. 1:30 AM.' },
         { speaker: 'Narrator', text: 'One voicemail: "Just checking on you, son. Call me back."' },
@@ -592,6 +600,7 @@ export class WrongCrowdScene extends BaseChapterScene {
       Analytics.trackInteraction(interactable.id);
       this.frozen = true;
       this.interactions.consume(interactable.id);
+      SoundEffects.playCarDrive();
       // Driving = 4 extra tension bumps (you skipped the walk)
       for (let i = 0; i < 4; i++) {
         this.interactionCount++;
@@ -1017,6 +1026,7 @@ export class WrongCrowdScene extends BaseChapterScene {
   }
 
   private executeRaid() {
+    SoundEffects.playPoliceSiren();
     // --- Red/blue alternating police flashes on screen edges ---
     const redFlash = this.add.rectangle(
       60, GAME_HEIGHT / 2, 120, GAME_HEIGHT, 0xff0000

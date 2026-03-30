@@ -1691,6 +1691,14 @@ export abstract class BaseChapterScene extends Phaser.Scene {
 
   // ─── KONAMI CODE EASTER EGG ──────────────────────────────────────
   private initKonamiCode() {
+    // Only works once per playthrough — check localStorage
+    try {
+      if (localStorage.getItem('jdlo_konami_found') === 'true') {
+        this.konamiActivated = true;
+        return;
+      }
+    } catch {}
+
     const keyMap: Record<string, string> = {
       'ArrowUp': 'UP', 'ArrowDown': 'DOWN', 'ArrowLeft': 'LEFT', 'ArrowRight': 'RIGHT',
       'b': 'B', 'B': 'B', 'a': 'A', 'A': 'A',
@@ -1715,27 +1723,69 @@ export abstract class BaseChapterScene extends Phaser.Scene {
 
   private activateKonamiCode() {
     this.konamiActivated = true;
-    this.frozen = true;
 
-    // Save to localStorage as a hidden stat
+    // Save to localStorage — once per playthrough
     try { localStorage.setItem('jdlo_konami_found', 'true'); } catch {}
 
-    // Rainbow flash effect
-    const colors = [0xff0000, 0xff8000, 0xffff00, 0x00ff00, 0x0080ff, 0x8000ff];
-    const flash = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, colors[0], 0.6)
+    // Gold screen flash
+    const flash = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0xf0c040, 0)
       .setScrollFactor(0).setDepth(900);
 
-    let colorIndex = 0;
-    const rainbowTimer = this.time.addEvent({
-      delay: 100,
-      repeat: 19,
-      callback: () => {
-        colorIndex = (colorIndex + 1) % colors.length;
-        flash.setFillStyle(colors[colorIndex], 0.6);
+    this.tweens.add({
+      targets: flash,
+      alpha: 0.55,
+      duration: 150,
+      yoyo: true,
+      repeat: 3,
+      onComplete: () => flash.destroy(),
+    });
+
+    // Achievement sound
+    SoundEffects.achievementUnlock();
+
+    // $1000 bonus
+    BalanceSystem.earn(1000, 'Konami Code');
+
+    // Camera shake for impact
+    this.cameras.main.shake(300, 0.012);
+
+    // Toast — "KONAMI CODE ACTIVATED"
+    const toastBg = this.add.rectangle(GAME_WIDTH / 2, -50, 420, 50, 0x1a1400)
+      .setScrollFactor(0).setDepth(990).setStrokeStyle(2, 0xf0c040);
+    const toastIcon = this.add.text(GAME_WIDTH / 2 - 175, -50, '🕹️', { fontSize: '20px' })
+      .setOrigin(0.5).setScrollFactor(0).setDepth(990);
+    const toastText = this.add.text(GAME_WIDTH / 2 + 10, -50, 'KONAMI CODE ACTIVATED', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#f0c040',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(990);
+    const toastSub = this.add.text(GAME_WIDTH / 2 + 10, -35, '+$1,000 bonus', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#c0a030',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(990);
+
+    const toastElements = [toastBg, toastIcon, toastText, toastSub];
+    const slideIn = 50;
+
+    this.tweens.add({
+      targets: toastElements,
+      y: `+=${slideIn}`,
+      duration: 500,
+      ease: 'Back.easeOut',
+      onComplete: () => {
+        this.time.delayedCall(3000, () => {
+          this.tweens.add({
+            targets: toastElements,
+            y: `-=${slideIn}`,
+            duration: 400,
+            ease: 'Quad.easeIn',
+            onComplete: () => toastElements.forEach(e => e.destroy()),
+          });
+        });
       },
     });
 
-    // Flip all NPC sprites upside down briefly
+    // Unlock achievement
+    AchievementSystem.unlock('konami_found');
+
+    // Flip all NPC sprites upside down briefly — silly visual gag
     const flippedNpcs: Phaser.GameObjects.Sprite[] = [];
     for (const npc of this.npcs) {
       if (npc.sprite.visible) {
@@ -1743,50 +1793,33 @@ export abstract class BaseChapterScene extends Phaser.Scene {
         flippedNpcs.push(npc.sprite);
       }
     }
-
-    // Secret message
-    const msgBg = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, 400, 60, 0x000000, 0.9)
-      .setScrollFactor(0).setDepth(901);
-    const msg = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'JDLO MODE ACTIVATED', {
-      fontFamily: '"Press Start 2P", monospace', fontSize: '16px', color: '#f0c040',
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(902);
-
-    // After 2 seconds, clean up and apply speed boost
-    this.time.delayedCall(2000, () => {
-      flash.destroy();
-      msgBg.destroy();
-      msg.destroy();
-      rainbowTimer.remove();
-
-      // Restore NPC sprites
+    this.time.delayedCall(1500, () => {
       for (const sprite of flippedNpcs) {
         if (sprite.active) sprite.setFlipY(false);
       }
+    });
 
-      // Double player speed for 30 seconds
-      this.time.timeScale = 2;
-      this.tweens.timeScale = 2;
+    // Speed boost for 30 seconds
+    this.time.timeScale = 2;
+    this.tweens.timeScale = 2;
 
-      const speedText = this.add.text(GAME_WIDTH - 10, 40, 'JDLO MODE: 30s', {
-        fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#f0c040',
-      }).setOrigin(1, 0).setScrollFactor(0).setDepth(90).setAlpha(0.7);
+    const speedText = this.add.text(GAME_WIDTH - 10, 40, 'JDLO MODE: 30s', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#f0c040',
+    }).setOrigin(1, 0).setScrollFactor(0).setDepth(90).setAlpha(0.7);
 
-      let remaining = 30;
-      this.konamiSpeedBoostTimer = this.time.addEvent({
-        delay: 1000,
-        repeat: 29,
-        callback: () => {
-          remaining--;
-          speedText.setText('JDLO MODE: ' + remaining + 's');
-          if (remaining <= 0) {
-            speedText.destroy();
-            this.time.timeScale = 1;
-            this.tweens.timeScale = 1;
-          }
-        },
-      });
-
-      this.frozen = false;
+    let remaining = 30;
+    this.konamiSpeedBoostTimer = this.time.addEvent({
+      delay: 1000,
+      repeat: 29,
+      callback: () => {
+        remaining--;
+        speedText.setText('JDLO MODE: ' + remaining + 's');
+        if (remaining <= 0) {
+          speedText.destroy();
+          this.time.timeScale = 1;
+          this.tweens.timeScale = 1;
+        }
+      },
     });
   }
 }

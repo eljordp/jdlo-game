@@ -9,6 +9,7 @@ import { InventorySystem } from '../systems/InventorySystem';
 import { Analytics } from '../systems/Analytics';
 import { GameSettings } from '../systems/GameSettings';
 import { GameIntelligence } from '../systems/GameIntelligence';
+import { SoundEffects } from '../systems/SoundEffects';
 
 export class JailScene extends BaseChapterScene {
   private currentDay = 1;
@@ -295,6 +296,7 @@ export class JailScene extends BaseChapterScene {
         InventorySystem.addItem('ramen', 2);
         InventorySystem.addItem('stamps', 1);
         InventorySystem.addItem('soap', 1);
+        SoundEffects.playPickup();
         this.frozen = false;
       });
       return;
@@ -313,6 +315,7 @@ export class JailScene extends BaseChapterScene {
       ], () => {
         InventorySystem.addItem('letter', 1);
         MoodSystem.changeMorale(10);
+        SoundEffects.playConfirm();
         this.frozen = false;
       });
       return;
@@ -338,6 +341,7 @@ export class JailScene extends BaseChapterScene {
       ], () => {
         MoodSystem.setMood('locked_in', 90);
         MoodSystem.changeMorale(20);
+        SoundEffects.achievementUnlock();
         this.tweens.add({ targets: dim, alpha: 0, duration: 800, onComplete: () => { dim.destroy(); this.frozen = false; } });
       });
       return;
@@ -427,6 +431,7 @@ export class JailScene extends BaseChapterScene {
    */
   private playDayTransition(text: string, callback: () => void) {
     this.frozen = true;
+    SoundEffects.playCinematicSwoosh();
 
     // Determine which day we're transitioning FROM
     const fromDay = this.currentDay;
@@ -868,6 +873,13 @@ export class JailScene extends BaseChapterScene {
           // Track pushup outcome for reactive NPC dialogue
           if (diff > 10) this.pushupDominated = true;
 
+          // Sound on result
+          if (diff > 0) {
+            SoundEffects.crowdReact();
+          } else if (diff < 0) {
+            SoundEffects.fumble();
+          }
+
           // Locked in on pushup win
           if (diff > 0) {
             MoodSystem.setMood('locked_in', 45);
@@ -1126,6 +1138,7 @@ export class JailScene extends BaseChapterScene {
 
       // Inmate shouts during the roll
       showInmateShout();
+      SoundEffects.diceRoll();
       this.time.delayedCall(500, () => showInmateShout());
 
       // Dice tumble animation — full rotation spin
@@ -1196,6 +1209,7 @@ export class JailScene extends BaseChapterScene {
 
         if (total >= 7) {
           points += currentBet;
+          SoundEffects.success();
           resultText.setText(`${total}! Win +${currentBet} pts`);
           resultText.setColor('#40c040');
           commentText.setText(winComments[Phaser.Math.Between(0, winComments.length - 1)]);
@@ -1220,6 +1234,7 @@ export class JailScene extends BaseChapterScene {
           }
         } else {
           points -= currentBet;
+          SoundEffects.casinoLose();
           resultText.setText(`${total}. Lose -${currentBet} pts`);
           resultText.setColor('#ff4444');
           commentText.setText(loseComments[Phaser.Math.Between(0, loseComments.length - 1)]);

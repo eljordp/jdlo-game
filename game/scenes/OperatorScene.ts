@@ -10,6 +10,7 @@ import { InventorySystem } from '../systems/InventorySystem';
 import { GameIntelligence } from '../systems/GameIntelligence';
 import { CasinoSystem } from '../systems/CasinoSystem';
 import { DMSystem } from '../systems/DMSystem';
+import { SoundEffects } from '../systems/SoundEffects';
 
 export class OperatorScene extends BaseChapterScene {
   private npcsTalkedTo = new Set<string>();
@@ -53,6 +54,7 @@ export class OperatorScene extends BaseChapterScene {
     // JP has money by Ch7 — seed balance if not already set
     if (BalanceSystem.getBalance() < 2550) {
       BalanceSystem.earn(2550); // $2,550 earned through Ch6 clients
+      SoundEffects.playCash();
     }
 
 
@@ -492,6 +494,7 @@ export class OperatorScene extends BaseChapterScene {
     // The equal moment -- the required interaction
     if (interactable.id === 'ch6_equal_moment') {
       Analytics.trackInteraction(interactable.id);
+      SoundEffects.achievementUnlock();
       this.playEqualMoment();
       this.interactions.consume(interactable.id);
       return;
@@ -515,6 +518,7 @@ export class OperatorScene extends BaseChapterScene {
     // C8 Corvette — big purchase moment
     if (interactable.id === 'ch6_corvette') {
       Analytics.trackInteraction(interactable.id);
+      SoundEffects.moneyRain();
       this.playCorvetteScene();
       this.interactions.consume(interactable.id);
       return;
@@ -728,6 +732,7 @@ export class OperatorScene extends BaseChapterScene {
         return;
       }
       BalanceSystem.spend(item.cost);
+      SoundEffects.playCash();
       // Add purchased item to inventory
       const itemId = item.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+$/, '');
       InventorySystem.addItem(itemId, 1);
@@ -943,6 +948,7 @@ export class OperatorScene extends BaseChapterScene {
             color: '#111111',
           }).setOrigin(0.5).setScrollFactor(0).setDepth(302).setAlpha(0);
           objects.push(closedText);
+          SoundEffects.success();
 
           this.tweens.add({
             targets: closedText,
