@@ -103,6 +103,11 @@ export class InventoryUI {
         virtualInput.inventoryJustPressed = false;
         this.toggle();
       }
+      if (virtualInput.cancelJustPressed && (this.isOpen || this.detailOpen)) {
+        virtualInput.cancelJustPressed = false;
+        if (this.detailOpen) this.closeDetail();
+        else this.close();
+      }
     });
 
     this.unsubscribe = InventorySystem.onChange(() => {

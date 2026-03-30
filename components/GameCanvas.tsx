@@ -37,6 +37,7 @@ export const virtualInput = {
   down: false,
   action: false,
   actionJustPressed: false,
+  cancelJustPressed: false,
   phoneJustPressed: false,
   emoteJustPressed: false,
   inventoryJustPressed: false,
@@ -244,6 +245,10 @@ export default function GameCanvas() {
   const releaseAction = useCallback(() => {
     virtualInput.action = false;
   }, []);
+  const pressCancel = useCallback(() => {
+    virtualInput.cancelJustPressed = true;
+    setTimeout(() => { virtualInput.cancelJustPressed = false; }, 100);
+  }, []);
 
   return (
     <div
@@ -390,79 +395,150 @@ export default function GameCanvas() {
         </div>
       )}
 
-      {/* Mobile controls — landscape overlay ON the game */}
+      {/* Mobile controls — landscape overlay ON the game (DS/Pokemon style) */}
       {isMobile && (
         <div className="portrait:hidden landscape:block">
-          {/* D-Pad — bottom left, overlaid on game */}
-          <div className="absolute bottom-3 left-3 z-30">
-            <div className="relative w-28 h-28">
+          {/* D-Pad — bottom left, cross pattern */}
+          <div className="absolute bottom-4 left-4 z-30">
+            <div className="relative" style={{ width: 156, height: 156 }}>
+              {/* Center hub */}
+              <div
+                className="absolute rounded-full"
+                style={{
+                  width: 28, height: 28,
+                  left: 64, top: 64,
+                  backgroundColor: '#222222',
+                }}
+              />
+              {/* Up */}
               <button
-                className="absolute top-0 left-1/2 -translate-x-1/2 w-10 h-10 bg-white/10 rounded-lg active:bg-white/30 flex items-center justify-center"
+                className="absolute flex items-center justify-center rounded-t-xl active:brightness-150 transition-all"
+                style={{
+                  width: 60, height: 60,
+                  left: 48, top: 0,
+                  backgroundColor: '#333333',
+                  border: '2px solid #444444',
+                }}
                 onTouchStart={(e) => { e.preventDefault(); pressDir("up"); }}
                 onTouchEnd={() => releaseDir("up")}
                 onTouchCancel={() => releaseDir("up")}
               >
-                <span className="text-white/50 text-sm">▲</span>
+                <span className="text-white text-xl font-bold" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>&#9650;</span>
               </button>
+              {/* Down */}
               <button
-                className="absolute bottom-0 left-1/2 -translate-x-1/2 w-10 h-10 bg-white/10 rounded-lg active:bg-white/30 flex items-center justify-center"
+                className="absolute flex items-center justify-center rounded-b-xl active:brightness-150 transition-all"
+                style={{
+                  width: 60, height: 60,
+                  left: 48, top: 96,
+                  backgroundColor: '#333333',
+                  border: '2px solid #444444',
+                }}
                 onTouchStart={(e) => { e.preventDefault(); pressDir("down"); }}
                 onTouchEnd={() => releaseDir("down")}
                 onTouchCancel={() => releaseDir("down")}
               >
-                <span className="text-white/50 text-sm">▼</span>
+                <span className="text-white text-xl font-bold" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>&#9660;</span>
               </button>
+              {/* Left */}
               <button
-                className="absolute left-0 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/10 rounded-lg active:bg-white/30 flex items-center justify-center"
+                className="absolute flex items-center justify-center rounded-l-xl active:brightness-150 transition-all"
+                style={{
+                  width: 60, height: 60,
+                  left: 0, top: 48,
+                  backgroundColor: '#333333',
+                  border: '2px solid #444444',
+                }}
                 onTouchStart={(e) => { e.preventDefault(); pressDir("left"); }}
                 onTouchEnd={() => releaseDir("left")}
                 onTouchCancel={() => releaseDir("left")}
               >
-                <span className="text-white/50 text-sm">◀</span>
+                <span className="text-white text-xl font-bold" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>&#9664;</span>
               </button>
+              {/* Right */}
               <button
-                className="absolute right-0 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/10 rounded-lg active:bg-white/30 flex items-center justify-center"
+                className="absolute flex items-center justify-center rounded-r-xl active:brightness-150 transition-all"
+                style={{
+                  width: 60, height: 60,
+                  left: 96, top: 48,
+                  backgroundColor: '#333333',
+                  border: '2px solid #444444',
+                }}
                 onTouchStart={(e) => { e.preventDefault(); pressDir("right"); }}
                 onTouchEnd={() => releaseDir("right")}
                 onTouchCancel={() => releaseDir("right")}
               >
-                <span className="text-white/50 text-sm">▶</span>
+                <span className="text-white text-xl font-bold" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>&#9654;</span>
               </button>
             </div>
           </div>
 
-          {/* Action button — bottom right */}
+          {/* A button — bottom right, large green circle (interact / advance dialogue) */}
           <button
-            className="absolute bottom-5 right-5 z-30 w-14 h-14 bg-white/10 rounded-full active:bg-white/30 flex items-center justify-center border border-white/15"
+            className="absolute z-30 flex items-center justify-center rounded-full active:brightness-150 transition-all"
+            style={{
+              width: 70, height: 70,
+              bottom: 16, right: 20,
+              backgroundColor: 'rgba(34, 204, 68, 0.45)',
+              border: '3px solid rgba(34, 204, 68, 0.6)',
+              boxShadow: '0 2px 8px rgba(34, 204, 68, 0.3), inset 0 -2px 4px rgba(0,0,0,0.3)',
+            }}
             onTouchStart={(e) => { e.preventDefault(); pressAction(); }}
             onTouchEnd={() => releaseAction()}
             onTouchCancel={() => releaseAction()}
           >
-            <span className="text-white/60 text-xs font-mono font-bold">A</span>
+            <span className="text-white font-mono font-bold text-lg" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>A</span>
           </button>
 
-          {/* Phone button — above action button */}
+          {/* B button — above-left of A, smaller red circle (cancel / back) */}
           <button
-            className="absolute bottom-24 right-6 z-30 w-10 h-10 bg-white/10 rounded-lg active:bg-white/30 flex items-center justify-center border border-white/15"
+            className="absolute z-30 flex items-center justify-center rounded-full active:brightness-150 transition-all"
+            style={{
+              width: 52, height: 52,
+              bottom: 88, right: 80,
+              backgroundColor: 'rgba(204, 34, 68, 0.45)',
+              border: '3px solid rgba(204, 34, 68, 0.6)',
+              boxShadow: '0 2px 8px rgba(204, 34, 68, 0.3), inset 0 -2px 4px rgba(0,0,0,0.3)',
+            }}
+            onTouchStart={(e) => { e.preventDefault(); pressCancel(); }}
+          >
+            <span className="text-white font-mono font-bold text-sm" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>B</span>
+          </button>
+
+          {/* Phone button — top right area */}
+          <button
+            className="absolute z-30 flex items-center justify-center rounded-lg active:brightness-150 transition-all"
+            style={{
+              width: 42, height: 42,
+              bottom: 148, right: 24,
+              backgroundColor: 'rgba(255,255,255,0.08)',
+              border: '2px solid rgba(255,255,255,0.15)',
+            }}
             onTouchStart={(e) => {
               e.preventDefault();
               virtualInput.phoneJustPressed = true;
               setTimeout(() => { virtualInput.phoneJustPressed = false; }, 100);
             }}
           >
-            <span className="text-white/60 text-lg">📱</span>
+            <span className="text-white/60 text-lg">&#128241;</span>
           </button>
 
-          {/* Emote button — above phone button */}
+          {/* Emote button — above phone */}
           <button
-            className="absolute bottom-[8.5rem] right-6 z-30 w-10 h-10 bg-white/10 rounded-lg active:bg-white/30 flex items-center justify-center border border-white/15"
+            className="absolute z-30 flex items-center justify-center rounded-lg active:brightness-150 transition-all"
+            style={{
+              width: 42, height: 42,
+              bottom: 196, right: 24,
+              backgroundColor: 'rgba(255,255,255,0.08)',
+              border: '2px solid rgba(255,255,255,0.15)',
+            }}
             onTouchStart={(e) => {
               e.preventDefault();
               virtualInput.emoteJustPressed = true;
               setTimeout(() => { virtualInput.emoteJustPressed = false; }, 100);
             }}
           >
-            <span className="text-white/60 text-lg">😤</span>
+            <span className="text-white/60 text-lg">&#128548;</span>
           </button>
         </div>
       )}

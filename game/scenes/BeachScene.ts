@@ -7,9 +7,13 @@ import { SCALED_TILE, SCALE, GAME_WIDTH, GAME_HEIGHT, TILE_IDS } from '../config
 import { Analytics } from '../systems/Analytics';
 import { MoodSystem } from '../systems/MoodSystem';
 import { InventorySystem } from '../systems/InventorySystem';
+import { BalanceSystem } from '../systems/BalanceSystem';
 import { GameSettings } from '../systems/GameSettings';
 import { SubstanceSystem } from '../systems/SubstanceSystem';
 import { PartyAI } from '../systems/PartyAI';
+import { GameIntelligence } from '../systems/GameIntelligence';
+import { DMSystem } from '../systems/DMSystem';
+import { CasinoSystem } from '../systems/CasinoSystem';
 
 export class BeachScene extends BaseChapterScene {
   private inHotTub = false;
@@ -26,12 +30,22 @@ export class BeachScene extends BaseChapterScene {
   private partyOverlay: Phaser.GameObjects.Rectangle | null = null;
   private bartRampage = false;
   private beerPongPlayed = false;
+  private armWrestlePlayed = false;
+  private rollingContestPlayed = false;
+  private beerPongTournamentWon = false;
+
+  private darkWebDone = false;
+  private lunaTraded = false;
+  private plugCalled = false;
+  private bagsReturned = false;
+  private bmwLeft = false;
   private smokeSeshDone = false;
   private weedPickedUp = new Set<string>();
   private partyLevel = 0; // 0=sober, 1=drinking, 2=faded, 3=coked, 4=blackout
   private drinksDone = false;
   private blowOffered = false;
   private blackedOut = false;
+  private nolanRoomCaught = false;
   private wobbleEffect: Phaser.Tweens.Tween | null = null;
 
   constructor() {
@@ -52,9 +66,26 @@ export class BeachScene extends BaseChapterScene {
   create() {
     super.create();
     SubstanceSystem.reset();
-    this.events.on('shutdown', () => { PartyAI.destroy(); });
+    this.events.on('shutdown', () => {
+      PartyAI.destroy();
+      GameIntelligence.flush();
+    });
+
+    // Watch key story interactions so GameIntelligence can track misses/stucks
+    GameIntelligence.init(this, this.player);
+    GameIntelligence.watch('ch1_bed',          15, 2,  true);  // required: wake K
+    GameIntelligence.watch('ch1_computer',     14, 2,  true);  // required: LUNA trade
+    GameIntelligence.watch('ch1_phone',        20, 2);
+    GameIntelligence.watch('ch1_hottub',       36, 4);
+    GameIntelligence.watch('ch1_volleyball1',  17, 25);
+    GameIntelligence.watch('ch1_kitchen_sesh', 28, 6);
+    GameIntelligence.watch('ch1_smoke',        10, 19, true);  // required: gate to ch3
+    GameIntelligence.attachDebugPanel(this);
     // Exit triggers at south beach
     this.addNavArrow(18, 26, 'Next chapter');
+
+    // Day 1 opening — JP wakes up, K is still asleep
+    this.playMorningCutscene();
 
     // Place the BMW 335i in the yard (row 17)
     const carX = 4 * SCALED_TILE + SCALED_TILE / 2;
@@ -108,7 +139,7 @@ export class BeachScene extends BaseChapterScene {
           fillColor: { from: ledStrip.fillColor, to: ledColors[ledIdx] },
           duration: 1000,
         });
-        // Can't tween fillColor directly — just set it
+        // Can\'t tween fillColor directly — just set it
         ledStrip.setFillStyle(ledColors[ledIdx], 0.3);
       },
     });
@@ -143,11 +174,11 @@ export class BeachScene extends BaseChapterScene {
       }
     }
 
-    // K starts hidden — she's visually part of the bed sprite (item-bed-k)
+    // K starts hidden — she\'s visually part of the bed sprite (item-bed-k)
     const k = this.npcs.find(n => n.id === 'ch1_gf_k');
     if (k) {
       k.sprite.setVisible(false);
-      // Remove K's collision so player can walk near the bed
+      // Remove K\'s collision so player can walk near the bed
       const kTX = Math.round((k.sprite.x - SCALED_TILE / 2) / SCALED_TILE);
       const kTY = Math.round((k.sprite.y - SCALED_TILE / 2) / SCALED_TILE);
       this.collisionTiles.delete(`${kTX},${kTY}`);
@@ -332,7 +363,7 @@ export class BeachScene extends BaseChapterScene {
             repeat: -1,
             ease: 'Sine.easeInOut',
           });
-          // Update Cooper's dialogue
+          // Update Cooper\'s dialogue
           cooper.dialogue = [
             { speaker: 'Narrator', text: 'Cooper passed out. Beer still in his hand.' },
             { speaker: 'JP\'s Mind', text: 'Lightweight.' },
@@ -454,6 +485,8 @@ export class BeachScene extends BaseChapterScene {
                 ease: 'Quad.easeIn',
                 onComplete: () => {
                   k.sprite.setVisible(false);
+                  // K is gone — check if LUNA trade already happened, fire plug call
+                  this.maybeAutoPlugCall();
                 },
               });
             },
@@ -463,89 +496,208 @@ export class BeachScene extends BaseChapterScene {
     }
   }
 
+  // ─── MORNING CUTSCENE ────────────────────────────────────────────
+  private playMorningCutscene() {
+    this.frozen = true;
+    this.time.delayedCall(800, () => {
+      if (!this.scene.isActive()) return;
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'Santa Barbara. JP\'s room in the frat house.' },
+        { speaker: 'Narrator', text: 'K is still asleep. Her phone has been going off for an hour.' },
+        { speaker: 'JP\'s Mind', text: 'She sleeps through everything. Always has.' },
+        { speaker: 'JP\'s Mind', text: 'I\'ve been up for a while. Thinking.' },
+        { speaker: 'Narrator', text: 'The house is quiet. The guys are still knocked out.' },
+        { speaker: 'JP\'s Mind', text: 'Let\'s see what\'s going on in the market.' },
+      ], () => {
+        this.frozen = false;
+      });
+    });
+  }
+
+  // ─── LUNA CRYPTO TRADE (Day 1) ───────────────────────────────────
+  private playLunaTrade() {
+    this.lunaTraded = true;
+    this.frozen = true;
+
+    // Fake phone/app overlay
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+    const screen = this.add.rectangle(cx, cy, 320, 480, 0x0a0a0a)
+      .setScrollFactor(0).setDepth(300).setAlpha(0);
+    const border = this.add.rectangle(cx, cy, 322, 482, 0x22ff88, 0)
+      .setScrollFactor(0).setDepth(299).setAlpha(0);
+
+    this.tweens.add({ targets: [screen, border], alpha: 1, duration: 400, onComplete: () => {
+      // App header
+      this.add.text(cx, cy - 210, 'ROBINHOOD', {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#22ff88',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+
+      // Portfolio
+      this.add.text(cx, cy - 160, 'PORTFOLIO', {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#888888',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+
+      const portfolioValue = this.add.text(cx, cy - 130, '$1,200.00', {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '18px', color: '#ffffff',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+
+      // LUNA ticker
+      this.add.text(cx - 100, cy - 80, 'LUNA', {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#ffffff',
+      }).setOrigin(0, 0.5).setScrollFactor(0).setDepth(301);
+
+      const lunaPrice = this.add.text(cx + 60, cy - 80, '+3,489%', {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#22ff88',
+      }).setOrigin(0, 0.5).setScrollFactor(0).setDepth(301);
+
+      this.cameras.main.shake(300, 0.005);
+
+      this.time.delayedCall(1000, () => {
+        // Update to real value
+        portfolioValue.setText('$42,468.00');
+        portfolioValue.setColor('#22ff88');
+        portfolioValue.setScale(1);
+        this.tweens.add({ targets: portfolioValue, scaleX: 1.2, scaleY: 1.2, duration: 150, yoyo: true, repeat: 2 });
+        this.cameras.main.shake(500, 0.012);
+
+        this.time.delayedCall(1200, () => {
+          this.tweens.add({ targets: [screen, border], alpha: 0, duration: 400, onComplete: () => {
+            screen.destroy(); border.destroy();
+
+            this.dialogue.show([
+              { speaker: 'JP\'s Mind', text: 'LUNA is up 3,489%.' },
+              { speaker: 'JP\'s Mind', text: 'I put in $1,200 two weeks ago and forgot about it.' },
+              { speaker: 'JP\'s Mind', text: '$42,000.' },
+              { speaker: 'JP\'s Mind', text: '...' },
+              { speaker: 'JP\'s Mind', text: 'FORTY. TWO. THOUSAND. DOLLARS.' },
+              { speaker: 'JP\'s Mind', text: 'I need to wake K up right now.' },
+              { speaker: 'JP\'s Mind', text: 'And then I need to call the plug.' },
+            ], () => {
+              this.frozen = false;
+              // Check if K scene already done
+              this.maybeAutoPlugCall();
+            });
+          }});
+        });
+      });
+    }});
+  }
+
+  // ─── PLUG CALL (auto after LUNA + K both done) ───────────────────
+  private maybeAutoPlugCall() {
+    if (!this.lunaTraded || !this.kGoodbyeDone || this.plugCalled) return;
+    this.plugCalled = true;
+
+    this.time.delayedCall(1000, () => {
+      if (!this.scene.isActive()) return;
+      this.frozen = true;
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'JP pulls out his phone. Calls his plug.' },
+        { speaker: 'Plug', text: 'Ayy.' },
+        { speaker: 'JP', text: 'Bro I need a big one. Trash bag big.' },
+        { speaker: 'Plug', text: '...how big we talking.' },
+        { speaker: 'JP', text: 'Multiple.' },
+        { speaker: 'Plug', text: 'You got the bread though?' },
+        { speaker: 'JP', text: 'I just hit 40K on LUNA.' },
+        { speaker: 'Plug', text: '...' },
+        { speaker: 'Plug', text: 'Say less. You know where I\'m at.' },
+        { speaker: 'JP', text: 'On my way.' },
+        { speaker: 'JP\'s Mind', text: 'He\'s gonna front me the whole thing. He always does.' },
+        { speaker: 'Narrator', text: 'Go get in the BMW.' },
+      ], () => {
+        this.frozen = false;
+      });
+    });
+  }
+
+  // ─── BMW DRIVE + BAG RETURN ──────────────────────────────────────
+  private triggerBMWDrive() {
+    this.bmwLeft = true;
+    this.frozen = true;
+
+    const black = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0)
+      .setScrollFactor(0).setDepth(500);
+
+    this.tweens.add({ targets: black, alpha: 1, duration: 800, onComplete: () => {
+      const timeText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'Later...', {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '14px', color: '#f0c040',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(501).setAlpha(0);
+
+      this.tweens.add({ targets: timeText, alpha: 1, duration: 600, hold: 1500, yoyo: true, onComplete: () => {
+        timeText.destroy();
+
+        // JP returns — spawn trash bags in living room
+        this.bagsReturned = true;
+        this.player.setPosition(7 * SCALED_TILE + SCALED_TILE / 2, 5 * SCALED_TILE + SCALED_TILE / 2);
+
+        // Spawn bag sprites in living room
+        const bagPositions = [{ x: 3, y: 4 }, { x: 4, y: 4 }, { x: 5, y: 4 }];
+        for (const pos of bagPositions) {
+          const bag = this.add.rectangle(
+            pos.x * SCALED_TILE + SCALED_TILE / 2,
+            pos.y * SCALED_TILE + SCALED_TILE / 2,
+            28, 36, 0x111111
+          ).setDepth(4);
+          // Tie at top
+          this.add.circle(
+            pos.x * SCALED_TILE + SCALED_TILE / 2,
+            pos.y * SCALED_TILE + SCALED_TILE / 2 - 18,
+            4, 0x333333
+          ).setDepth(5);
+        }
+
+        this.tweens.add({ targets: black, alpha: 0, duration: 600, onComplete: () => {
+          black.destroy();
+          this.dialogue.show([
+            { speaker: 'Narrator', text: 'JP pulls up. Pops the trunk.' },
+            { speaker: 'JP', text: 'Aye everybody outside! Help me with these!' },
+            { speaker: 'Nolan', text: '...bro what is in those bags.' },
+            { speaker: 'JP', text: 'Don\'t worry about it. Just grab one.' },
+            { speaker: 'Big Bart', text: 'YOOO IS THAT—' },
+            { speaker: 'JP', text: 'BART. Keep your voice down.' },
+            { speaker: 'Big Bart', text: '*whisper* YOOOO IS THAT—' },
+            { speaker: 'Cooper', text: 'I\'m not asking questions. I\'m just carrying the bag.' },
+            { speaker: 'Narrator', text: 'Three trash bags. Living room floor. The boys go quiet.' },
+            { speaker: 'Narrator', text: 'Then all at once—' },
+            { speaker: 'Big Bart', text: 'LETS GOOOOOO.' },
+            { speaker: 'JP\'s Mind', text: 'Didn\'t cost me a dollar. Plug showed love.' },
+            { speaker: 'JP\'s Mind', text: 'We\'re smoking for free for the rest of the trip.' },
+          ], () => {
+            this.frozen = false;
+            // Spawn kitchen table sesh interactable
+            this.spawnDynamicInteractable('ch1_kitchen_sesh', 28, 6, 'item-weed-bag');
+          });
+        }});
+      }});
+    }});
+  }
+
   // NPC reactive behaviors
   protected handleNPCDialogue(npcId: string, dialogue: DialogueLine[]): void {
-    // K — already woke up, just show dialogue if she's still visible
+    GameIntelligence.onNPCTalked(npcId);
+    // K — already woke up, just show dialogue if she\'s still visible
     if (npcId === 'ch1_gf_k') {
       this.dialogue.show(dialogue);
       return;
     }
 
-    // Girls at the party (Day 2) — threesome only after partying hard (faded+)
-    if ((npcId === 'ch1_girl1' || npcId === 'ch1_girl2') && this.currentDay === 2 && this.partyLevel >= 2) {
-      const isKids = GameSettings.kidsMode;
-
-      const ratedRIntro: DialogueLine[] = [
-        { speaker: 'Girl', text: 'You live here right? This party is insane.' },
-        { speaker: 'JP', text: 'Yeah. My boy Nolan set it up.' },
-        { speaker: 'Girl', text: 'My friend thinks you\'re cute. She\'s too shy to say it.' },
-        { speaker: 'Girl 2', text: 'I am NOT shy. I just don\'t talk to random guys.' },
-        { speaker: 'JP', text: 'I\'m not random. I live here.' },
-        { speaker: 'Girl 2', text: '...okay that was smooth.' },
-        { speaker: 'Narrator', text: 'The first girl whispers something in her friend\'s ear. They both look at JP.' },
-        { speaker: 'Girl', text: 'We should go somewhere quieter. All three of us.' },
-        { speaker: 'JP\'s Mind', text: 'No way this is happening right now.' },
-      ];
-
-      const kidsIntro: DialogueLine[] = [
-        { speaker: 'Girl', text: 'Hey! Wanna play Mario Kart?' },
-        { speaker: 'JP', text: 'I\'m pretty good at Mario Kart.' },
-        { speaker: 'Girl 2', text: 'We\'ll see about that!' },
-        { speaker: 'Narrator', text: 'They go inside to play video games. What a fun party!' },
-      ];
-
-      this.dialogue.show(isKids ? kidsIntro : ratedRIntro, () => {
-        this.frozen = true;
-        const fadeObj = this.add.rectangle(
-          GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0
-        ).setScrollFactor(0).setDepth(400);
-        this.tweens.add({
-          targets: fadeObj,
-          alpha: 1,
-          duration: 1000,
-          onComplete: () => {
-            const afterLines: DialogueLine[] = isKids ? [
-              { speaker: 'Narrator', text: 'JP won 3 races in a row! Then lost the last one on purpose.' },
-              { speaker: 'Girl', text: 'Rematch tomorrow?' },
-              { speaker: 'JP', text: 'Absolutely.' },
-            ] : [
-              { speaker: 'Narrator', text: '...' },
-              { speaker: 'Narrator', text: 'The bedroom door is locked.' },
-              { speaker: 'Narrator', text: '...' },
-              { speaker: 'Narrator', text: 'Time passes.' },
-              { speaker: 'Narrator', text: '...' },
-              { speaker: 'Girl 2', text: '...is that it?' },
-              { speaker: 'Girl', text: 'Bro.' },
-              { speaker: 'JP', text: '...give me a minute.' },
-              { speaker: 'Girl 2', text: 'Nah it\'s like... small.' },
-              { speaker: 'JP', text: 'I\'ve been drinking all night! And smoking! That\'s not—' },
-              { speaker: 'Girl', text: 'Sure babe.' },
-              { speaker: 'Girl 2', text: 'It\'s okay. It happens.' },
-              { speaker: 'JP\'s Mind', text: 'This is the worst moment of my life.' },
-              { speaker: 'Narrator', text: '...' },
-              { speaker: 'Narrator', text: 'They get dressed. Nobody makes eye contact.' },
-              { speaker: 'Girl', text: 'The party\'s still going right? Let\'s just... go back out there.' },
-              { speaker: 'JP\'s Mind', text: 'I am never drinking and smoking before... nah forget it.' },
-              { speaker: 'Narrator', text: 'The party keeps going outside. Nobody noticed they left. Thank god.' },
-            ];
-            this.time.delayedCall(2000, () => {
-              this.dialogue.show(afterLines, () => {
-                this.tweens.add({
-                  targets: fadeObj,
-                  alpha: 0,
-                  duration: 800,
-                  onComplete: () => {
-                    fadeObj.destroy();
-                    this.frozen = false;
-                  },
-                });
-              });
-            });
-          },
-        });
+    // Girls at the party (Day 2) — Talk / Flirt choice for any girl NPC
+    if ((npcId.includes('girl') || npcId === 'ch1_sunbather') && this.currentDay === 2) {
+      this.showYesNoChoice('What do you do?', 'Talk', 'Flirt', () => {
+        // Talk — threesome path for girl1/girl2 at faded+, otherwise normal dialogue
+        if ((npcId === 'ch1_girl1' || npcId === 'ch1_girl2') && this.partyLevel >= 2) {
+          this.handleGirlThreesome(npcId);
+        } else {
+          this.dialogue.show(dialogue);
+        }
+      }, () => {
+        // Flirt — 50/50 success/rejection
+        this.handlePartyFlirt(npcId);
       });
       return;
     }
+
     // David puts his phone down
     if (npcId === 'ch1_david' && !this.davidPhoneDown) {
       this.davidPhoneDown = true;
@@ -559,6 +711,16 @@ export class BeachScene extends BaseChapterScene {
             yoyo: true,
           });
         }
+      });
+      return;
+    }
+
+    // Big Bart — arm wrestle option (Day 2 party, after rampage)
+    if (npcId === 'ch1_bigbart' && this.bartRampage && this.currentDay === 2 && !this.armWrestlePlayed) {
+      this.showYesNoChoice('Big Bart flexes.', 'Arm Wrestle', 'Talk', () => {
+        this.playArmWrestle();
+      }, () => {
+        this.dialogue.show(dialogue);
       });
       return;
     }
@@ -620,6 +782,108 @@ export class BeachScene extends BaseChapterScene {
     this.dialogue.show(dialogue);
   }
 
+  // ─── PARTY FLIRT SYSTEM ────���────────────────────────────────────
+  private handleGirlThreesome(_npcId: string) {
+    const isKids = GameSettings.kidsMode;
+    const ratedRIntro: DialogueLine[] = [
+      { speaker: 'Girl', text: 'You live here right? This party is insane.' },
+      { speaker: 'JP', text: 'Yeah. My boy Nolan set it up.' },
+      { speaker: 'Girl', text: 'My friend thinks you\'re cute. She\'s too shy to say it.' },
+      { speaker: 'Girl 2', text: 'I am NOT shy. I just don\'t talk to random guys.' },
+      { speaker: 'JP', text: 'I\'m not random. I live here.' },
+      { speaker: 'Girl 2', text: '...okay that was smooth.' },
+      { speaker: 'Narrator', text: 'The first girl whispers something in her friend\'s ear. They both look at JP.' },
+      { speaker: 'Girl', text: 'We should go somewhere quieter. All three of us.' },
+      { speaker: 'JP\'s Mind', text: 'No way this is happening right now.' },
+    ];
+    const kidsIntro: DialogueLine[] = [
+      { speaker: 'Girl', text: 'Hey! Wanna play Mario Kart?' },
+      { speaker: 'JP', text: 'I\'m pretty good at Mario Kart.' },
+      { speaker: 'Girl 2', text: 'We\'ll see about that!' },
+      { speaker: 'Narrator', text: 'They go inside to play video games. What a fun party!' },
+    ];
+    this.dialogue.show(isKids ? kidsIntro : ratedRIntro, () => {
+      this.frozen = true;
+      const fadeObj = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0).setScrollFactor(0).setDepth(400);
+      this.tweens.add({ targets: fadeObj, alpha: 1, duration: 1000, onComplete: () => {
+        const afterLines: DialogueLine[] = isKids ? [
+          { speaker: 'Narrator', text: 'JP won 3 races in a row! Then lost the last one on purpose.' },
+          { speaker: 'Girl', text: 'Rematch tomorrow?' },
+          { speaker: 'JP', text: 'Absolutely.' },
+        ] : [
+          { speaker: 'Narrator', text: '...' },
+          { speaker: 'Narrator', text: 'The bedroom door is locked.' },
+          { speaker: 'Narrator', text: '...' },
+          { speaker: 'Narrator', text: 'Time passes.' },
+          { speaker: 'Narrator', text: '...' },
+          { speaker: 'Narrator', text: 'More time.' },
+          { speaker: 'Narrator', text: '...' },
+          { speaker: 'Girl', text: 'Oh my god.' },
+          { speaker: 'Girl 2', text: '...yeah.' },
+          { speaker: 'Narrator', text: 'Nobody says anything after that.' },
+          { speaker: 'Narrator', text: 'They fall asleep. All three of them.' },
+          { speaker: 'Narrator', text: 'Sunlight hits the room before JP processes what just happened.' },
+          { speaker: 'JP\'s Mind', text: '...K can never find out about this.' },
+          { speaker: 'Narrator', text: 'She always finds out.' },
+        ];
+        this.time.delayedCall(2000, () => {
+          this.dialogue.show(afterLines, () => {
+            this.tweens.add({ targets: fadeObj, alpha: 0, duration: 800, onComplete: () => {
+              fadeObj.destroy();
+              this.player.setPosition(33 * SCALED_TILE + SCALED_TILE / 2, 6 * SCALED_TILE + SCALED_TILE / 2);
+              MoodSystem.setMood('tired', 60);
+              this.requiredDone = true;
+              this.time.delayedCall(400, () => {
+                this.dialogue.show([
+                  { speaker: 'Narrator', text: 'Morning. The girls are gone. The house is trashed.' },
+                  { speaker: 'JP\'s Mind', text: 'Why do I feel like shit right now.' },
+                  { speaker: 'JP\'s Mind', text: 'Post-nut clarity is a different kind of prison.' },
+                  { speaker: 'JP\'s Mind', text: 'These people don\'t actually mess with me.' },
+                  { speaker: 'JP\'s Mind', text: 'They mess with the bags. The free food. The DoorDash runs at 2am.' },
+                  { speaker: 'JP\'s Mind', text: 'I\'m just the trapper with a credit card.' },
+                  { speaker: 'JP\'s Mind', text: 'K texted me four times.' },
+                  { speaker: 'JP\'s Mind', text: 'I can\'t even look at my phone right now.' },
+                  { speaker: 'Narrator', text: 'Walk south to the street.' },
+                ], () => { this.frozen = false; });
+              });
+            }});
+          });
+        });
+      }});
+    });
+  }
+
+  private handlePartyFlirt(npcId: string) {
+    const fumbleBefore = DMSystem.getFumbleCount();
+    DMSystem.openFlirt(this, (lines, onComplete) => {
+      const fumbledNow = DMSystem.getFumbleCount() > fumbleBefore;
+      // If fumbleCount >= 3 after this rejection, Big Bart intervenes (chapter-specific)
+      if (fumbledNow && DMSystem.getFumbleCount() >= 3) {
+        const bartLines: DialogueLine[] = [
+          ...lines,
+          { speaker: 'Big Bart', text: 'BRO STOP.' },
+          { speaker: 'Big Bart', text: 'You are 0 for ' + DMSystem.getFumbleCount() + ' tonight.' },
+          { speaker: 'Big Bart', text: 'Just... go stand by the speakers or something.' },
+          { speaker: 'JP\'s Mind', text: 'Even Bart feels bad for me. That\'s how you know it\'s over.' },
+        ];
+        this.dialogue.show(bartLines, () => {
+          // Bart speech bubble stays visible briefly
+          const bart = this.npcs.find(n => n.id === 'ch1_bigbart');
+          if (bart) {
+            const bubbleBg = this.add.rectangle(bart.sprite.x, bart.sprite.y - 30, 80, 20, 0x000000, 0.8).setDepth(20);
+            const bubbleText = this.add.text(bart.sprite.x, bart.sprite.y - 30, 'BRO STOP', {
+              fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#ff4444',
+            }).setOrigin(0.5).setDepth(21);
+            this.time.delayedCall(3000, () => { bubbleBg.destroy(); bubbleText.destroy(); });
+          }
+          if (onComplete) onComplete();
+        });
+      } else {
+        this.dialogue.show(lines, onComplete);
+      }
+    }, npcId);
+  }
+
   protected getObjectiveHint(): string {
     if (this.currentDay === 1) {
       if (!this.bedroomStayed) return 'Explore the house. Hit the bed when you\'re ready.';
@@ -637,12 +901,32 @@ export class BeachScene extends BaseChapterScene {
     return beachMap;
   }
 
+  private spawnDynamicInteractable(id: string, x: number, y: number, sprite?: string) {
+    this.interactions.addInteractable({ id, x, y, type: 'examine', glow: true, sprite });
+    const worldX = x * SCALED_TILE + SCALED_TILE / 2;
+    const worldY = y * SCALED_TILE + SCALED_TILE / 2;
+    for (let i = 0; i < 5; i++) {
+      const sparkle = this.add.circle(
+        worldX + Phaser.Math.Between(-15, 15),
+        worldY + Phaser.Math.Between(-15, 15),
+        2, 0xf0c040, 0.8
+      ).setDepth(12);
+      this.tweens.add({
+        targets: sparkle, alpha: 0, y: sparkle.y - 20, duration: 600, delay: i * 100,
+        onComplete: () => sparkle.destroy(),
+      });
+    }
+  }
+
   getChapterDialogue(): { intro: DialogueLine[]; npcs: Record<string, DialogueLine[]> } {
     return beachDialogue;
   }
 
   // Override to add volleyball mini-game, BMW, and bed wake-up
   protected handleInteractable(interactable: { id: string; type: string; consumed?: boolean }) {
+    // Always notify GameIntelligence — one place, catches everything
+    GameIntelligence.onInteracted(interactable.id);
+
     if (interactable.id === 'ch1_volleyball1') {
       Analytics.trackInteraction(interactable.id);
       this.playVolleyballMinigame();
@@ -738,7 +1022,7 @@ export class BeachScene extends BaseChapterScene {
         this.frozen = false;
 
         // After a few seconds of drinking, girls walk in
-        this.time.delayedCall(8000, () => {
+        this.time.delayedCall(4000, () => {
           if (!this.scene.isActive() || this.currentDay !== 2) return;
           this.frozen = true;
           this.cameras.main.shake(80, 0.002);
@@ -774,8 +1058,8 @@ export class BeachScene extends BaseChapterScene {
             this.frozen = false;
 
             // After drinking + girls arrive, blow gets offered (delayed)
-            this.time.delayedCall(20000, () => {
-              if (this.scene.isActive() && !this.blowOffered && this.currentDay === 2) {
+            this.time.delayedCall(10000, () => {
+              if (this.scene.isActive() && !this.blowOffered && !this.requiredDone && this.currentDay === 2) {
                 this.triggerBlowOffer();
               }
             });
@@ -838,13 +1122,25 @@ export class BeachScene extends BaseChapterScene {
         return;
       }
       if (this.currentDay === 1 && !this.bedroomStayed) {
-        this.bedroomStayed = true;
         this.frozen = true;
-        this.dialogue.show([
-          { speaker: 'JP\'s Mind', text: 'Just a quick nap...' },
-        ], () => {
-          this.triggerPartyNight();
-        });
+        this.showYesNoChoice(
+          'It\'s getting late...',
+          'Get some sleep',
+          'Keep going',
+          () => {
+            this.bedroomStayed = true;
+            this.dialogue.show([
+              { speaker: 'JP\'s Mind', text: 'Just a quick nap...' },
+            ], () => {
+              this.triggerPartyNight();
+            });
+          },
+          () => {
+            this.dialogue.show([
+              { speaker: 'JP\'s Mind', text: 'Not done yet.' },
+            ], () => { this.frozen = false; });
+          }
+        );
       } else if (this.currentDay === 2) {
         this.frozen = true;
         this.dialogue.show([
@@ -872,6 +1168,111 @@ export class BeachScene extends BaseChapterScene {
       return;
     }
 
+    // Computer — Day 1: LUNA crypto trade
+    if (interactable.id === 'ch1_computer' && this.currentDay === 1 && !this.lunaTraded) {
+      Analytics.trackInteraction(interactable.id);
+      this.playLunaTrade();
+      return;
+    }
+
+    // Kitchen table sesh (spawned dynamically after bag return)
+    if (interactable.id === 'ch1_kitchen_sesh') {
+      Analytics.trackInteraction(interactable.id);
+      this.interactions.consume(interactable.id);
+      this.frozen = true;
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'The whole crew pulls up to the kitchen table.' },
+        { speaker: 'Narrator', text: 'Someone dumps a bag out. The whole table is covered.' },
+        { speaker: 'Big Bart', text: 'BRO.' },
+        { speaker: 'Cooper', text: 'JP who did you rob for this.' },
+        { speaker: 'JP', text: 'Nobody. Plug fronted it.' },
+        { speaker: 'Nolan', text: 'How do you get a plug to FRONT THIS MUCH.' },
+        { speaker: 'JP', text: 'Track record.' },
+        { speaker: 'Narrator', text: 'They roll up. They smoke. They roll up again.' },
+        { speaker: 'Narrator', text: 'For two hours, nobody talks about anything real.' },
+        { speaker: 'JP\'s Mind', text: 'This is what it\'s supposed to feel like.' },
+      ], () => {
+        SubstanceSystem.hit(2);
+        this.frozen = false;
+      });
+      return;
+    }
+
+    // Phone — call the plug (Day 1, after LUNA trade), then phone apps after
+    if (interactable.id === 'ch1_phone' && this.currentDay === 1) {
+      if (!this.lunaTraded) {
+        this.frozen = true;
+        this.dialogue.show([{ speaker: 'JP\'s Mind', text: 'Check the computer first.' }], () => { this.frozen = false; });
+      } else if (!this.plugCalled) {
+        this.kGoodbyeDone = true; // treat K scene as done
+        this.maybeAutoPlugCall();
+      } else {
+        this.showPhoneApps();
+      }
+      return;
+    }
+
+    // Phone — Day 2: phone apps
+    if (interactable.id === 'ch1_phone' && this.currentDay === 2) {
+      this.showPhoneApps();
+      return;
+    }
+
+    // Computer — Day 1: story already done, show apps menu
+    if (interactable.id === 'ch1_computer' && this.currentDay === 1 && this.lunaTraded) {
+      this.showComputerApps();
+      return;
+    }
+
+    // Nolan\'s computer — Day 2: JP goes on the dark web, buys a stolen card
+    if (interactable.id === 'ch1_computer' && this.currentDay === 2 && !this.darkWebDone) {
+      Analytics.trackInteraction(interactable.id);
+      this.darkWebDone = true;
+      this.frozen = true;
+      const isKids = GameSettings.kidsMode;
+      this.dialogue.show(isKids ? [
+        { speaker: 'JP', text: 'Nolan has a gaming PC. Nice setup.' },
+        { speaker: 'JP\'s Mind', text: 'Maybe I\'ll look up some cool games.' },
+      ] : [
+        { speaker: 'JP', text: 'Nolan\'s computer. Fancy.' },
+        { speaker: 'JP\'s Mind', text: 'I heard you can find anything on Tor.' },
+        { speaker: 'Narrator', text: 'JP opens the browser. Doesn\'t tell anyone what he\'s doing.' },
+        { speaker: 'JP\'s Mind', text: 'Credit card marketplace. 16 digits, exp date, CVV. $40.' },
+        { speaker: 'JP\'s Mind', text: 'This is stupid. This is really stupid.' },
+        { speaker: 'JP\'s Mind', text: 'He buys it anyway.' },
+        { speaker: 'Narrator', text: 'Card added to Apple Pay.' },
+        { speaker: 'JP\'s Mind', text: 'Okay. Now for the real test.' },
+      ], () => {
+        if (isKids) { this.frozen = false; return; }
+        // Order the haul on his phone
+        this.time.delayedCall(800, () => {
+          this.dialogue.show([
+            { speaker: 'Narrator', text: 'JP opens DoorDash on his phone.' },
+            { speaker: 'JP\'s Mind', text: 'Wing stop. Two orders of Cane\'s. A full box of Wingstop. 6 bottles of Hennessy.' },
+            { speaker: 'JP\'s Mind', text: 'Oh and the plug. Let me text the plug real quick.' },
+            { speaker: 'Narrator', text: 'JP orders $400 worth of food and alcohol. Hits the connect for a zip.' },
+            { speaker: 'Narrator', text: 'Card goes through.' },
+            { speaker: 'JP\'s Mind', text: '...' },
+            { speaker: 'JP\'s Mind', text: 'I just did that.' },
+            { speaker: 'Big Bart', text: 'YO WHO ORDERED ALL THIS FOOD?!' },
+            { speaker: 'JP', text: 'Me.' },
+            { speaker: 'Nolan', text: 'BRO HOW.' },
+            { speaker: 'JP', text: 'Don\'t ask.' },
+          ], () => {
+            this.frozen = false;
+            InventorySystem.addItem('eighth', 2); // zip arrived
+          });
+        });
+      });
+      return;
+    }
+
+    // Computer — Day 2: story already done, show apps menu
+    if (interactable.id === 'ch1_computer' && this.currentDay === 2 && this.darkWebDone) {
+      this.showComputerApps();
+      return;
+    }
+
     // BMW interaction — check if player is adjacent to the car tiles (3-5, 9)
     // We handle this via proximity in the interact handler below
     super.handleInteractable(interactable);
@@ -885,32 +1286,72 @@ export class BeachScene extends BaseChapterScene {
       return;
     }
 
-    // Check if player is near the BMW (tiles 3-5, row 9)
-    if (!this.bmwInteracted && this.player) {
+    // Check if player is near the BMW (tiles 3-5, row 17)
+    if (this.player) {
       const playerTileX = Math.round((this.player.x - SCALED_TILE / 2) / SCALED_TILE);
       const playerTileY = Math.round((this.player.y - SCALED_TILE / 2) / SCALED_TILE);
 
       const nearBMW =
         playerTileX >= 2 && playerTileX <= 6 &&
-        playerTileY >= 10 && playerTileY <= 12;
+        playerTileY >= 15 && playerTileY <= 19;
 
       if (nearBMW) {
-        this.bmwInteracted = true;
-        this.frozen = true;
-        this.dialogue.show([
-          { speaker: "JP's Mind", text: '335i. Twin turbo. Catless downpipes.' },
-          { speaker: "JP's Mind", text: 'This car is trouble. But it sounds SO good.' },
-        ], () => {
-          this.frozen = false;
-        });
-        return;
+        // If plug call done and haven\'t left yet — drive to pickup
+        if (this.plugCalled && !this.bmwLeft) {
+          this.triggerBMWDrive();
+          return;
+        }
+        // Otherwise just look at the car
+        if (!this.bmwInteracted) {
+          this.bmwInteracted = true;
+          this.frozen = true;
+          this.dialogue.show([
+            { speaker: "JP\'s Mind", text: '335i. Twin turbo. Catless downpipes.' },
+            { speaker: "JP\'s Mind", text: 'This car is trouble. But it sounds SO good.' },
+          ], () => {
+            this.frozen = false;
+          });
+          return;
+        }
+      }
+
+      // Nolan\'s master bedroom door — party night scene
+      if (this.currentDay === 2 && !this.nolanRoomCaught) {
+        const nearNolanDoor =
+          playerTileX >= 25 && playerTileX <= 29 &&
+          playerTileY >= 15 && playerTileY <= 17;
+
+        if (nearNolanDoor) {
+          this.nolanRoomCaught = true;
+          this.frozen = true;
+
+          const isKids = GameSettings.kidsMode;
+
+          this.dialogue.show(isKids ? [
+            { speaker: 'Narrator', text: 'The door is locked. Sounds like someone\'s watching a movie really loud in there.' },
+            { speaker: "JP\'s Mind", text: 'I\'ll come back later.' },
+          ] : [
+            { speaker: 'Narrator', text: 'The door\'s cracked open. Someone\'s in there.' },
+            { speaker: 'Narrator', text: 'JP pushes the door.' },
+            { speaker: 'JP', text: 'Oh shit—my bad my bad' },
+            { speaker: '???', text: 'BRO CLOSE THE DOOR' },
+            { speaker: '???', text: '*screams*' },
+            { speaker: 'Narrator', text: 'JP backs out. The door slams shut.' },
+            { speaker: "JP\'s Mind", text: 'Nolan\'s room is OFF LIMITS tonight.' },
+          ], () => {
+            // Block re-entry by adding collision at the door tile (col 27, row 16)
+            this.collisionTiles.add('27,16');
+            this.frozen = false;
+          });
+          return;
+        }
       }
     }
 
     super.handleInteract();
   }
 
-  // Reusable yes/no choice UI — prompt text shows ABOVE buttons so you know what you're choosing
+  // Reusable yes/no choice UI — prompt text shows ABOVE buttons so you know what you\'re choosing
   private showYesNoChoice(
     prompt: string,
     yesLabel: string,
@@ -921,7 +1362,7 @@ export class BeachScene extends BaseChapterScene {
     const cx = GAME_WIDTH / 2;
     const cy = GAME_HEIGHT / 2;
 
-    // Prompt text — tells you what you're deciding
+    // Prompt text — tells you what you\'re deciding
     const promptText = this.add.text(cx, cy - 35, prompt, {
       fontFamily: '"Press Start 2P", monospace', fontSize: '11px', color: '#f0c040',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(201);
@@ -1110,7 +1551,7 @@ export class BeachScene extends BaseChapterScene {
                   this.collisionTiles.delete(`${kTileX},${kTileY}`);
                 }
 
-                // K's texts — phone buzzing on screen before party starts
+                // K\'s texts — phone buzzing on screen before party starts
                 this.dialogue.show([
                   { speaker: 'Narrator', text: 'JP\'s phone is blowing up.' },
                   { speaker: 'K (text)', text: 'babe??' },
@@ -1171,9 +1612,9 @@ export class BeachScene extends BaseChapterScene {
     // Each room gets a color-cycling strip along the top wall
     const ledRooms = [
       { startCol: 1, endCol: 8, row: 1 },   // Living room
-      { startCol: 10, endCol: 15, row: 1 },  // JP's room
+      { startCol: 10, endCol: 15, row: 1 },  // JP\'s room
       { startCol: 17, endCol: 21, row: 1 },  // Kitchen
-      { startCol: 23, endCol: 27, row: 1 },  // Nolan's room
+      { startCol: 23, endCol: 27, row: 1 },  // Nolan\'s room
     ];
     const ledColors = [0xff2080, 0x8020ff, 0x20c0ff, 0xff2080, 0x40ff60];
     for (const room of ledRooms) {
@@ -1254,7 +1695,7 @@ export class BeachScene extends BaseChapterScene {
     });
 
     // ── PARTY PEOPLE (AI-driven) ──
-    PartyAI.init(this);
+    PartyAI.init(this, this.player);
 
     // ── DANCE FLOOR LIGHTS (on the ground near DJ) ──
     const floorColors = [0xff2080, 0x20c0ff, 0xf0c040, 0x40ff60, 0xc040ff, 0xff6030];
@@ -1318,7 +1759,7 @@ export class BeachScene extends BaseChapterScene {
     this.blowOffered = true;
     this.frozen = true;
 
-    // Camera shake — someone taps JP's shoulder
+    // Camera shake — someone taps JP\'s shoulder
     this.cameras.main.shake(100, 0.002);
 
     const isKids = GameSettings.kidsMode;
@@ -1381,13 +1822,15 @@ export class BeachScene extends BaseChapterScene {
           });
         });
       }, () => {
-        // NO — stays at party level 2
+        // NO — stays sober enough, but the night is still young
         this.dialogue.show([
-          { speaker: 'JP', text: 'Nah I\'m straight.' },
+          { speaker: 'JP', text: 'Nah I\'m good.' },
           { speaker: '???', text: 'Suit yourself.' },
-          { speaker: 'JP\'s Mind', text: 'Smart decision. First one tonight.' },
+          { speaker: 'JP\'s Mind', text: 'At least I got that right.' },
+          { speaker: 'JP\'s Mind', text: 'Party\'s still going though. Don\'t waste it.' },
         ], () => {
           this.frozen = false;
+          // Girls are already out — interact with them to continue the night
         });
       });
     });
@@ -1479,7 +1922,7 @@ export class BeachScene extends BaseChapterScene {
           // Slumped girl on chair — tilted, sleeping
           const slumpedGirl = this.add.sprite(chairX, chairY - 6, 'npc_bikini1', 0)
             .setScale(SCALE).setDepth(9).setAngle(25);
-          // Breathing animation — she's out cold
+          // Breathing animation — she\'s out cold
           this.tweens.add({
             targets: slumpedGirl,
             scaleY: SCALE * 0.95,
@@ -2091,14 +2534,14 @@ export class BeachScene extends BaseChapterScene {
       updateRallyDisplay();
 
       if (toJP) {
-        // Serve to JP's side
+        // Serve to JP\'s side
         ballX = GAME_WIDTH / 4 + Phaser.Math.Between(-80, 80);
         ballY = courtTop + 40;
         ballVX = Phaser.Math.Between(-1, 1);
         ballVY = 2;
         ballOnJPSide = true;
       } else {
-        // Serve to opponent's side
+        // Serve to opponent\'s side
         ballX = GAME_WIDTH * 3 / 4 + Phaser.Math.Between(-80, 80);
         ballY = courtTop + 40;
         ballVX = Phaser.Math.Between(-1, 1);
@@ -2167,7 +2610,7 @@ export class BeachScene extends BaseChapterScene {
         ballSpeed = Math.min(10, 5 + rallyCount * 0.4);
         updateRallyDisplay();
 
-        // Send ball to JP's side
+        // Send ball to JP\'s side
         const targetY = jpSprite.y + Phaser.Math.Between(-60, 60);
         const angle = Math.atan2(targetY - ballY, (GAME_WIDTH / 4 + Phaser.Math.Between(-80, 80)) - ballX);
         ballVX = Math.cos(angle) * ballSpeed;
@@ -2189,7 +2632,7 @@ export class BeachScene extends BaseChapterScene {
 
       const msg = jpWon
         ? 'JP takes the set. Beach king.'
-        : "Not his day. But he'll be back.";
+        : "Not his day. But he\'ll be back.";
 
       instr.setText(`Final: JP ${jpScore} - ${oppScore} OPP`);
 
@@ -2210,17 +2653,17 @@ export class BeachScene extends BaseChapterScene {
         // Post-game dialogue
         const postGameLines: DialogueLine[] = jpWon
           ? [
-              { speaker: 'Nolan', text: "Bro you're NICE at this!" },
+              { speaker: 'Nolan', text: "Bro you\'re NICE at this!" },
               { speaker: 'JP', text: 'Run it back anytime.' },
             ]
           : [
-              { speaker: 'Nolan', text: "We'll get you next time bro." },
+              { speaker: 'Nolan', text: "We\'ll get you next time bro." },
               { speaker: 'JP', text: 'Whatever man.' },
             ];
 
         this.dialogue.show(postGameLines, () => {
           this.frozen = false;
-          // Update Nolan's dialogue based on volleyball result
+          // Update Nolan\'s dialogue based on volleyball result
           this.volleyballPlayed = true;
           this.volleyballWon = jpWon;
           const nolan = this.npcs.find(n => n.id === 'ch1_nolan');
@@ -2303,12 +2746,12 @@ export class BeachScene extends BaseChapterScene {
         spawnSpikeTrail();
       }
 
-      // Player hits ball when SPACE pressed and ball is near JP on JP's side
+      // Player hits ball when SPACE pressed and ball is near JP on JP\'s side
       if (spaceKey.isDown && ballOnJPSide && !pointScored) {
         const distX = Math.abs(ballX - jpSprite.x);
         const distY = Math.abs(ballY - jpSprite.y);
         if (distX < 60 && distY < 60) {
-          // Hit! Send ball to opponent's side
+          // Hit! Send ball to opponent\'s side
           this.tweens.add({
             targets: jpSprite,
             scaleY: 5.5,
@@ -2323,7 +2766,7 @@ export class BeachScene extends BaseChapterScene {
           // Check for spike — ball is high (near top of court)
           const isSpike = ballY < courtTop + 100;
 
-          // Arc ball to opponent's side
+          // Arc ball to opponent\'s side
           const targetX = GAME_WIDTH * 3 / 4 + Phaser.Math.Between(-80, 80);
 
           if (isSpike) {
@@ -2359,10 +2802,10 @@ export class BeachScene extends BaseChapterScene {
       if (ballY > groundY && !pointScored) {
         isSpiking = false;
         if (ballOnJPSide) {
-          // Ball hit JP's ground — opponent scores
+          // Ball hit JP\'s ground — opponent scores
           scorePoint(false);
         } else {
-          // Ball hit opponent's ground — JP scores
+          // Ball hit opponent\'s ground — JP scores
           scorePoint(true);
         }
         return;
@@ -2393,6 +2836,1167 @@ export class BeachScene extends BaseChapterScene {
     };
 
     this.events.on('update', updateHandler);
+  }
+
+  // ─── COMPUTER APPS MENU ───────────────────────────────────────────
+  private showComputerApps() {
+    this.frozen = true;
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+
+    const bg = this.add.rectangle(cx, cy, 280, 350, 0x0a0a0a)
+      .setScrollFactor(0).setDepth(300);
+    const border = this.add.rectangle(cx, cy, 282, 352, 0x4488ff, 0)
+      .setStrokeStyle(2, 0x4488ff)
+      .setScrollFactor(0).setDepth(299);
+
+    const title = this.add.text(cx, cy - 155, 'DESKTOP', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#4488ff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+
+    const apps = ['Stocks Viewer', 'Sports Betting', 'Portfolio Tracker', 'Crypto', 'Casino', 'Close'];
+    const buttons: Phaser.GameObjects.Rectangle[] = [];
+    const labels: Phaser.GameObjects.Text[] = [];
+
+    apps.forEach((app, i) => {
+      const y = cy - 100 + i * 38;
+      const isClose = app === 'Close';
+      const isCasino = app === 'Casino';
+      const isCrypto = app === 'Crypto';
+      const btnColor = isClose ? 0x333333 : isCasino ? 0x0a3a1a : isCrypto ? 0x1a0a2a : 0x1a3355;
+      const hoverColor = isClose ? 0x555555 : isCasino ? 0x1a5a2a : isCrypto ? 0x3a1a5a : 0x2a5580;
+
+      const btn = this.add.rectangle(cx, y, 240, 34, btnColor)
+        .setScrollFactor(0).setDepth(301).setInteractive({ useHandCursor: true });
+      const labelColor = isCasino ? '#f0c040' : isCrypto ? '#bb66ff' : '#ffffff';
+      const label = this.add.text(cx, y, app, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: labelColor,
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(302);
+
+      btn.on('pointerover', () => btn.setFillStyle(hoverColor));
+      btn.on('pointerout', () => btn.setFillStyle(btnColor));
+
+      btn.on('pointerdown', () => {
+        cleanup();
+        if (app === 'Stocks Viewer') this.showStocksViewer();
+        else if (app === 'Sports Betting') this.showSportsBetting();
+        else if (app === 'Portfolio Tracker') this.showPortfolioTracker();
+        else if (app === 'Crypto') CasinoSystem.openCrypto(this, () => { this.showComputerApps(); });
+        else if (app === 'Casino') CasinoSystem.openCasino(this, () => { this.showComputerApps(); });
+        else this.frozen = false;
+      });
+
+      buttons.push(btn);
+      labels.push(label);
+    });
+
+    const cleanup = () => {
+      bg.destroy();
+      border.destroy();
+      title.destroy();
+      buttons.forEach(b => b.destroy());
+      labels.forEach(l => l.destroy());
+    };
+
+    // Keyboard: 1-6 to pick
+    const keys = [
+      this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ONE),
+      this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.TWO),
+      this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.THREE),
+      this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.FOUR),
+      this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.FIVE),
+      this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SIX),
+    ];
+    const handlers: (() => void)[] = [];
+    keys.forEach((key, i) => {
+      const handler = () => {
+        keys.forEach((k, j) => k.off('down', handlers[j]));
+        cleanup();
+        if (i === 0) this.showStocksViewer();
+        else if (i === 1) this.showSportsBetting();
+        else if (i === 2) this.showPortfolioTracker();
+        else if (i === 3) CasinoSystem.openCrypto(this, () => { this.showComputerApps(); });
+        else if (i === 4) CasinoSystem.openCasino(this, () => { this.showComputerApps(); });
+        else this.frozen = false;
+      };
+      handlers.push(handler);
+      key.on('down', handler);
+    });
+  }
+
+  // ─── STOCKS VIEWER APP ─────────────────────────────────────────────
+  private showStocksViewer() {
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+
+    const screen = this.add.rectangle(cx, cy, 320, 400, 0x0a0a0a)
+      .setScrollFactor(0).setDepth(300);
+    const border = this.add.rectangle(cx, cy, 322, 402, 0x22ff88, 0)
+      .setStrokeStyle(2, 0x22ff88)
+      .setScrollFactor(0).setDepth(299);
+
+    const header = this.add.text(cx, cy - 175, 'ROBINHOOD', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#22ff88',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+
+    const subHeader = this.add.text(cx, cy - 145, 'WATCHLIST', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#888888',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+
+    const tickers = [
+      { name: 'LUNA', change: '+3,489%', color: '#22ff88' },
+      { name: 'AAPL', change: '+2.3%', color: '#22ff88' },
+      { name: 'TSLA', change: '-4.1%', color: '#ff4444' },
+      { name: 'GME', change: '+420%', color: '#22ff88' },
+    ];
+
+    const elements: Phaser.GameObjects.GameObject[] = [screen, border, header, subHeader];
+
+    tickers.forEach((t, i) => {
+      const y = cy - 95 + i * 55;
+      const sep = this.add.rectangle(cx, y - 20, 280, 1, 0x333333)
+        .setScrollFactor(0).setDepth(301);
+      const name = this.add.text(cx - 120, y, t.name, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#ffffff',
+      }).setOrigin(0, 0.5).setScrollFactor(0).setDepth(301);
+      const change = this.add.text(cx + 120, y, t.change, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: t.color,
+      }).setOrigin(1, 0.5).setScrollFactor(0).setDepth(301);
+      elements.push(sep, name, change);
+    });
+
+    const hint = this.add.text(cx, cy + 170, '[SPACE] Close', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#666666',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+    elements.push(hint);
+
+    const spaceKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    const handler = () => {
+      spaceKey.off('down', handler);
+      elements.forEach(e => e.destroy());
+      this.showComputerApps();
+    };
+    spaceKey.on('down', handler);
+  }
+
+  // ─── SPORTS BETTING APP ────────────────────────────────────────────
+  private showSportsBetting() {
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+
+    const screen = this.add.rectangle(cx, cy, 320, 400, 0x0a0a0a)
+      .setScrollFactor(0).setDepth(300);
+    const border = this.add.rectangle(cx, cy, 322, 402, 0xf0c040, 0)
+      .setStrokeStyle(2, 0xf0c040)
+      .setScrollFactor(0).setDepth(299);
+
+    const header = this.add.text(cx, cy - 175, 'FANDUEL', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#f0c040',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+
+    const subHeader = this.add.text(cx, cy - 145, 'PICK A BET', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#888888',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+
+    // Bet 1: Lakers vs Celtics
+    const bet1Label = this.add.text(cx, cy - 100, 'Lakers vs Celtics', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+    const bet1Line = this.add.text(cx, cy - 80, 'Lakers -3.5', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#aaaaaa',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+    const bet1Btn = this.add.rectangle(cx, cy - 50, 200, 32, 0x1a3355)
+      .setScrollFactor(0).setDepth(301).setInteractive({ useHandCursor: true });
+    const bet1BtnText = this.add.text(cx, cy - 50, 'Place Bet ($50)', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(302);
+
+    // Bet 2: UFC 300
+    const bet2Label = this.add.text(cx, cy + 10, 'UFC 300 Main Event', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+    const bet2Line = this.add.text(cx, cy + 30, 'KO Rd 1 (+450)', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#aaaaaa',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+    const bet2Btn = this.add.rectangle(cx, cy + 60, 200, 32, 0x1a3355)
+      .setScrollFactor(0).setDepth(301).setInteractive({ useHandCursor: true });
+    const bet2BtnText = this.add.text(cx, cy + 60, 'Place Bet ($50)', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(302);
+
+    const elements: Phaser.GameObjects.GameObject[] = [
+      screen, border, header, subHeader,
+      bet1Label, bet1Line, bet1Btn, bet1BtnText,
+      bet2Label, bet2Line, bet2Btn, bet2BtnText,
+    ];
+
+    bet1Btn.on('pointerover', () => bet1Btn.setFillStyle(0x2a5580));
+    bet1Btn.on('pointerout', () => bet1Btn.setFillStyle(0x1a3355));
+    bet2Btn.on('pointerover', () => bet2Btn.setFillStyle(0x2a5580));
+    bet2Btn.on('pointerout', () => bet2Btn.setFillStyle(0x1a3355));
+
+    const showResult = (win: boolean) => {
+      elements.forEach(e => e.destroy());
+      this.showBetResult(win);
+    };
+
+    // Bet 1: 50/50
+    bet1Btn.on('pointerdown', () => {
+      const win = Math.random() >= 0.5;
+      showResult(win);
+    });
+
+    // Bet 2: always wins
+    bet2Btn.on('pointerdown', () => {
+      showResult(true);
+    });
+
+    // Keyboard: 1 for bet 1, 2 for bet 2, space to close
+    const key1 = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ONE);
+    const key2 = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.TWO);
+    const spaceKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    const cleanKeys = () => {
+      key1.off('down', h1);
+      key2.off('down', h2);
+      spaceKey.off('down', hSpace);
+    };
+    const h1 = () => { cleanKeys(); const win = Math.random() >= 0.5; showResult(win); };
+    const h2 = () => { cleanKeys(); showResult(true); };
+    const hSpace = () => { cleanKeys(); elements.forEach(e => e.destroy()); this.showComputerApps(); };
+    key1.on('down', h1);
+    key2.on('down', h2);
+    spaceKey.on('down', hSpace);
+  }
+
+  private showBetResult(win: boolean) {
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+
+    const bg = this.add.rectangle(cx, cy, 320, 200, 0x0a0a0a)
+      .setScrollFactor(0).setDepth(300);
+    const border = this.add.rectangle(cx, cy, 322, 202, win ? 0x22ff88 : 0xff4444, 0)
+      .setStrokeStyle(2, win ? 0x22ff88 : 0xff4444)
+      .setScrollFactor(0).setDepth(299);
+
+    const resultText = this.add.text(cx, cy - 40, win ? 'W' : 'L', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '36px', color: win ? '#22ff88' : '#ff4444',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+
+    const msgText = this.add.text(cx, cy + 10, win ? '+$275' : '-$50', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '14px', color: win ? '#22ff88' : '#ff4444',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+
+    const flavorText = this.add.text(cx, cy + 50, win ? 'JP stays winning.' : 'House always wins.', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#888888',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+
+    const hint = this.add.text(cx, cy + 80, '[SPACE] Back', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#666666',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+
+    if (win) this.cameras.main.shake(300, 0.005);
+
+    const elements = [bg, border, resultText, msgText, flavorText, hint];
+    const spaceKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    const handler = () => {
+      spaceKey.off('down', handler);
+      elements.forEach(e => e.destroy());
+      this.showComputerApps();
+    };
+    spaceKey.on('down', handler);
+  }
+
+  // ─── PORTFOLIO TRACKER APP ─────────────────────────────────────────
+  private showPortfolioTracker() {
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+    const hasLuna = this.lunaTraded;
+
+    const cryptoVal = hasLuna ? '$42,468' : '$1,200';
+    const netWorthVal = hasLuna ? '$39,268' : '-$2,000';
+    const netColor = hasLuna ? '#22ff88' : '#ff4444';
+
+    const screen = this.add.rectangle(cx, cy, 320, 360, 0x0a0a0a)
+      .setScrollFactor(0).setDepth(300);
+    const border = this.add.rectangle(cx, cy, 322, 362, 0x8844ff, 0)
+      .setStrokeStyle(2, 0x8844ff)
+      .setScrollFactor(0).setDepth(299);
+
+    const header = this.add.text(cx, cy - 155, 'NET WORTH', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#8844ff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+
+    const lines = [
+      { label: 'Crypto', value: cryptoVal, color: '#22ff88' },
+      { label: 'Cash', value: '$200', color: '#ffffff' },
+      { label: 'Debt', value: '-$3,400', color: '#ff4444' },
+    ];
+
+    const elements: Phaser.GameObjects.GameObject[] = [screen, border, header];
+
+    lines.forEach((line, i) => {
+      const y = cy - 90 + i * 55;
+      const sep = this.add.rectangle(cx, y - 18, 280, 1, 0x333333)
+        .setScrollFactor(0).setDepth(301);
+      const label = this.add.text(cx - 120, y, line.label, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#888888',
+      }).setOrigin(0, 0.5).setScrollFactor(0).setDepth(301);
+      const value = this.add.text(cx + 120, y, line.value, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: line.color,
+      }).setOrigin(1, 0.5).setScrollFactor(0).setDepth(301);
+      elements.push(sep, label, value);
+    });
+
+    // Net worth total
+    const totalSep = this.add.rectangle(cx, cy + 80, 280, 2, 0x8844ff)
+      .setScrollFactor(0).setDepth(301);
+    const totalLabel = this.add.text(cx - 120, cy + 105, 'Net Worth', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#ffffff',
+    }).setOrigin(0, 0.5).setScrollFactor(0).setDepth(301);
+    const totalValue = this.add.text(cx + 120, cy + 105, netWorthVal, {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '11px', color: netColor,
+    }).setOrigin(1, 0.5).setScrollFactor(0).setDepth(301);
+    elements.push(totalSep, totalLabel, totalValue);
+
+    const hint = this.add.text(cx, cy + 155, '[SPACE] Close', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#666666',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+    elements.push(hint);
+
+    const spaceKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    const handler = () => {
+      spaceKey.off('down', handler);
+      elements.forEach(e => e.destroy());
+      this.showComputerApps();
+    };
+    spaceKey.on('down', handler);
+  }
+
+  // ─── PHONE APP STORE ───────────────────────────────────────────────
+  private showPhoneApps() {
+    this.frozen = true;
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+
+    // Phone body — darker, taller than computer overlay
+    const phoneBg = this.add.rectangle(cx, cy, 240, 370, 0x1a1a2e)
+      .setScrollFactor(0).setDepth(300);
+    const phoneBorder = this.add.rectangle(cx, cy, 242, 372, 0x555577, 0)
+      .setStrokeStyle(2, 0x555577)
+      .setScrollFactor(0).setDepth(299);
+    // Notch at top center
+    const notch = this.add.rectangle(cx, cy - 177, 60, 8, 0x0d0d1a)
+      .setScrollFactor(0).setDepth(301);
+
+    const timeText = this.add.text(cx, cy - 155, '9:41 AM', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#888899',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+
+    const apps = ['Messages', 'Weedmaps', 'Instagram', 'Casino', 'Close'];
+    const appColors = [0x2a4a2a, 0x2a4a1a, 0x3a2a4a, 0x0a3a1a, 0x333344];
+    const hoverColors = [0x3a6a3a, 0x3a6a2a, 0x5a3a6a, 0x1a5a2a, 0x555566];
+    const buttons: Phaser.GameObjects.Rectangle[] = [];
+    const labels: Phaser.GameObjects.Text[] = [];
+
+    apps.forEach((app, i) => {
+      const y = cy - 100 + i * 48;
+      const btn = this.add.rectangle(cx, y, 200, 36, appColors[i])
+        .setScrollFactor(0).setDepth(301).setInteractive({ useHandCursor: true });
+      const isCasino = app === 'Casino';
+      const labelColor = isCasino ? '#f0c040' : '#ffffff';
+      const label = this.add.text(cx, y, app, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: labelColor,
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(302);
+
+      btn.on('pointerover', () => btn.setFillStyle(hoverColors[i]));
+      btn.on('pointerout', () => btn.setFillStyle(appColors[i]));
+
+      btn.on('pointerdown', () => {
+        cleanup();
+        if (app === 'Messages') this.showPhoneMessages();
+        else if (app === 'Weedmaps') this.showPhoneWeedmaps();
+        else if (app === 'Instagram') DMSystem.openDMs(this, (l, cb) => this.dialogue.show(l, cb), () => this.showPhoneApps());
+        else if (app === 'Casino') CasinoSystem.openCasino(this, () => { this.showPhoneApps(); });
+        else this.frozen = false;
+      });
+
+      buttons.push(btn);
+      labels.push(label);
+    });
+
+    const cleanup = () => {
+      phoneBg.destroy(); phoneBorder.destroy(); notch.destroy(); timeText.destroy();
+      buttons.forEach(b => b.destroy());
+      labels.forEach(l => l.destroy());
+    };
+
+    // Keyboard: 1-5 to pick
+    const keys = [
+      this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ONE),
+      this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.TWO),
+      this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.THREE),
+      this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.FOUR),
+      this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.FIVE),
+    ];
+    const handlers: (() => void)[] = [];
+    keys.forEach((key, i) => {
+      const handler = () => {
+        keys.forEach((k, j) => k.off('down', handlers[j]));
+        cleanup();
+        if (i === 0) this.showPhoneMessages();
+        else if (i === 1) this.showPhoneWeedmaps();
+        else if (i === 2) DMSystem.openDMs(this, (l, cb) => this.dialogue.show(l, cb), () => this.showPhoneApps());
+        else if (i === 3) CasinoSystem.openCasino(this, () => { this.showPhoneApps(); });
+        else this.frozen = false;
+      };
+      handlers.push(handler);
+      key.on('down', handler);
+    });
+  }
+
+  // ─── PHONE: MESSAGES ──────────────────────────────────────────────
+  private showPhoneMessages() {
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+
+    const bg = this.add.rectangle(cx, cy, 260, 300, 0x1a1a2e)
+      .setScrollFactor(0).setDepth(300);
+    const border = this.add.rectangle(cx, cy, 262, 302, 0x555577, 0)
+      .setStrokeStyle(2, 0x555577)
+      .setScrollFactor(0).setDepth(299);
+
+    const header = this.add.text(cx, cy - 125, 'MESSAGES', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#6688cc',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+
+    const threads = [
+      { name: 'K \u2764\uFE0F',      preview: 'be safe. i love you' },
+      { name: 'Plug \uD83D\uDD0C',   preview: 'say less. you know where im at' },
+      { name: 'Mom',                  preview: 'call me when you get a chance' },
+      { name: 'Nolan',                preview: 'bro where are the cups' },
+    ];
+
+    const elements: Phaser.GameObjects.GameObject[] = [bg, border, header];
+
+    threads.forEach((t, i) => {
+      const y = cy - 70 + i * 50;
+      const sep = this.add.rectangle(cx, y - 18, 220, 1, 0x333344)
+        .setScrollFactor(0).setDepth(301);
+      const name = this.add.text(cx - 110, y - 5, t.name, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#ffffff',
+      }).setOrigin(0, 0.5).setScrollFactor(0).setDepth(301);
+      const preview = this.add.text(cx - 110, y + 10, t.preview, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#888899',
+      }).setOrigin(0, 0.5).setScrollFactor(0).setDepth(301);
+      elements.push(sep, name, preview);
+    });
+
+    const hint = this.add.text(cx, cy + 130, '[SPACE] Back', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#666677',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+    elements.push(hint);
+
+    const spaceKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    const handler = () => {
+      spaceKey.off('down', handler);
+      elements.forEach(e => e.destroy());
+      this.showPhoneApps();
+    };
+    spaceKey.on('down', handler);
+  }
+
+  // ─── PHONE: WEEDMAPS ─────────────────────────────────────────────
+  private showPhoneWeedmaps() {
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+
+    const bg = this.add.rectangle(cx, cy, 260, 320, 0x1a1a2e)
+      .setScrollFactor(0).setDepth(300);
+    const border = this.add.rectangle(cx, cy, 262, 322, 0x44aa44, 0)
+      .setStrokeStyle(2, 0x44aa44)
+      .setScrollFactor(0).setDepth(299);
+
+    const header = this.add.text(cx, cy - 135, 'WEEDMAPS', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#44aa44',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+
+    const shopName = this.add.text(cx, cy - 105, 'SB Green Room \u2014 0.3 mi', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#aaaaaa',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+
+    const items = [
+      { name: 'Top Shelf OG', price: '$45/8th' },
+      { name: 'Blue Dream',   price: '$35/8th' },
+      { name: 'Edibles',      price: '$25' },
+    ];
+
+    const elements: Phaser.GameObjects.GameObject[] = [bg, border, header, shopName];
+    const itemBtns: Phaser.GameObjects.Rectangle[] = [];
+
+    items.forEach((item, i) => {
+      const y = cy - 55 + i * 55;
+      const sep = this.add.rectangle(cx, y - 20, 220, 1, 0x2a3a2a)
+        .setScrollFactor(0).setDepth(301);
+      const nameText = this.add.text(cx - 100, y, item.name, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#ffffff',
+      }).setOrigin(0, 0.5).setScrollFactor(0).setDepth(301);
+      const priceText = this.add.text(cx + 100, y, item.price, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#44aa44',
+      }).setOrigin(1, 0.5).setScrollFactor(0).setDepth(301);
+
+      const orderBtn = this.add.rectangle(cx, y + 20, 160, 24, 0x2a5a2a)
+        .setScrollFactor(0).setDepth(301).setInteractive({ useHandCursor: true });
+      const orderLabel = this.add.text(cx, y + 20, 'Order', {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#ffffff',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(302);
+
+      orderBtn.on('pointerover', () => orderBtn.setFillStyle(0x3a7a3a));
+      orderBtn.on('pointerout', () => orderBtn.setFillStyle(0x2a5a2a));
+
+      orderBtn.on('pointerdown', () => {
+        cleanKeys();
+        cleanup();
+        this.showWeedmapsOrder(item.name);
+      });
+
+      elements.push(sep, nameText, priceText, orderBtn, orderLabel);
+      itemBtns.push(orderBtn);
+    });
+
+    const hint = this.add.text(cx, cy + 140, '[1-3] Order  [SPACE] Back', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#666677',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+    elements.push(hint);
+
+    const cleanup = () => { elements.forEach(e => e.destroy()); };
+
+    const key1 = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ONE);
+    const key2 = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.TWO);
+    const key3 = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.THREE);
+    const spaceKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
+    const cleanKeys = () => { key1.off('down', h1); key2.off('down', h2); key3.off('down', h3); spaceKey.off('down', hSpace); };
+    const h1 = () => { cleanKeys(); cleanup(); this.showWeedmapsOrder(items[0].name); };
+    const h2 = () => { cleanKeys(); cleanup(); this.showWeedmapsOrder(items[1].name); };
+    const h3 = () => { cleanKeys(); cleanup(); this.showWeedmapsOrder(items[2].name); };
+    const hSpace = () => { cleanKeys(); cleanup(); this.showPhoneApps(); };
+    key1.on('down', h1); key2.on('down', h2); key3.on('down', h3); spaceKey.on('down', hSpace);
+  }
+
+  private showWeedmapsOrder(itemName: string) {
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+
+    const bg = this.add.rectangle(cx, cy, 260, 160, 0x1a1a2e)
+      .setScrollFactor(0).setDepth(300);
+    const border = this.add.rectangle(cx, cy, 262, 162, 0x44aa44, 0)
+      .setStrokeStyle(2, 0x44aa44)
+      .setScrollFactor(0).setDepth(299);
+
+    const checkmark = this.add.text(cx, cy - 40, '\u2713', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '24px', color: '#44aa44',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+
+    const msg = this.add.text(cx, cy, 'Order placed.', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+
+    const msg2 = this.add.text(cx, cy + 20, 'Pick up in 30 min.', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#aaaaaa',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+
+    const hint = this.add.text(cx, cy + 55, '[SPACE] Back', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#666677',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+
+    // Add item to inventory
+    if (itemName === 'Edibles') {
+      InventorySystem.addItem('edible', 1);
+    } else {
+      InventorySystem.addItem('eighth', 1);
+    }
+
+    const elements = [bg, border, checkmark, msg, msg2, hint];
+    const spaceKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    const handler = () => {
+      spaceKey.off('down', handler);
+      elements.forEach(e => e.destroy());
+      this.showPhoneApps();
+    };
+    spaceKey.on('down', handler);
+  }
+
+
+  // ─── ARM WRESTLING MINIGAME (Big Bart) ──────────────────────────
+  private playArmWrestle() {
+    this.armWrestlePlayed = true;
+    this.frozen = true;
+    const objects: Phaser.GameObjects.GameObject[] = [];
+
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+
+    // Dark overlay
+    objects.push(this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.85)
+      .setScrollFactor(0).setDepth(300));
+
+    // Title
+    objects.push(this.add.text(cx, cy - 130, 'ARM WRESTLE', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '16px', color: '#f0c040',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303));
+
+    objects.push(this.add.text(cx, cy - 108, 'MASH A KEY AS FAST AS POSSIBLE!', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#888888',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303));
+
+    // Table
+    objects.push(this.add.rectangle(cx, cy + 30, 300, 20, 0x5a3a20)
+      .setScrollFactor(0).setDepth(301));
+
+    // Arms (rectangles) — JP on right, Bart on left
+    const armY = cy + 10;
+    const jpArm = this.add.rectangle(cx + 40, armY, 60, 18, 0xd4a574)
+      .setScrollFactor(0).setDepth(302);
+    objects.push(jpArm);
+
+    const bartArm = this.add.rectangle(cx - 40, armY, 70, 22, 0xc48a54)
+      .setScrollFactor(0).setDepth(302);
+    objects.push(bartArm);
+
+    // Hands (clasped in center)
+    const handGrip = this.add.circle(cx, armY, 12, 0xe0b080)
+      .setScrollFactor(0).setDepth(303);
+    objects.push(handGrip);
+
+    // Labels
+    objects.push(this.add.text(cx + 80, armY - 30, 'JP', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#60c060',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303));
+
+    objects.push(this.add.text(cx - 80, armY - 30, 'BART', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#f04040',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303));
+
+    // Power meter — horizontal bar
+    const meterBg = this.add.rectangle(cx, cy - 60, 260, 24, 0x333333)
+      .setScrollFactor(0).setDepth(301);
+    objects.push(meterBg);
+
+    // Meter fill — starts at center (130px = neutral), JP pushes right, Bart pushes left
+    let meterValue = 0; // -100 (Bart wins) to +100 (JP wins), starts at 0
+    const meterFill = this.add.rectangle(cx, cy - 60, 4, 20, 0xf0c040)
+      .setScrollFactor(0).setDepth(302);
+    objects.push(meterFill);
+
+    // Center line
+    objects.push(this.add.rectangle(cx, cy - 60, 2, 28, 0xffffff)
+      .setScrollFactor(0).setDepth(303).setAlpha(0.5));
+
+    // Timer
+    let timeLeft = 5;
+    const timerText = this.add.text(cx, cy + 70, '5.0', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '14px', color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303);
+    objects.push(timerText);
+
+    let taps = 0;
+    let gameOver = false;
+
+    // Bart auto-taps (simulated strength)
+    const bartTimer = this.time.addEvent({
+      delay: 250,
+      loop: true,
+      callback: () => {
+        if (gameOver) return;
+        meterValue -= 4; // Bart pushes steadily
+        meterValue = Math.max(-100, Math.min(100, meterValue));
+      },
+    });
+
+    // Player tap handler
+    const tapHandler = () => {
+      if (gameOver) return;
+      taps++;
+      meterValue += 5;
+      meterValue = Math.max(-100, Math.min(100, meterValue));
+      // Camera shake on each tap
+      this.cameras.main.shake(30, 0.002);
+    };
+
+    // Listen for A key, SPACE, or any key really
+    const aKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+    const spaceKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    aKey.on('down', tapHandler);
+    spaceKey.on('down', tapHandler);
+    this.input.on('pointerdown', tapHandler);
+
+    // Game loop — update meter visual + timer
+    const updateTimer = this.time.addEvent({
+      delay: 16,
+      loop: true,
+      callback: () => {
+        if (gameOver) return;
+        // Update meter visual
+        const width = Math.abs(meterValue) * 1.3;
+        meterFill.setSize(Math.max(4, width), 20);
+        if (meterValue >= 0) {
+          meterFill.setPosition(cx + meterValue * 0.65, cy - 60);
+          meterFill.setFillStyle(0x60c060);
+        } else {
+          meterFill.setPosition(cx + meterValue * 0.65, cy - 60);
+          meterFill.setFillStyle(0xf04040);
+        }
+
+        // Tilt the arms based on meter
+        const tilt = meterValue / 100 * 25;
+        handGrip.setPosition(cx + tilt, armY);
+        jpArm.setPosition(cx + 40 + tilt * 0.5, armY);
+        bartArm.setPosition(cx - 40 + tilt * 0.5, armY);
+      },
+    });
+
+    // Countdown
+    const countdownTimer = this.time.addEvent({
+      delay: 100,
+      repeat: 49,
+      callback: () => {
+        timeLeft -= 0.1;
+        if (timeLeft <= 0) timeLeft = 0;
+        timerText.setText(timeLeft.toFixed(1));
+
+        if (timeLeft <= 0 && !gameOver) {
+          gameOver = true;
+          aKey.off('down', tapHandler);
+          spaceKey.off('down', tapHandler);
+          this.input.off('pointerdown', tapHandler);
+          bartTimer.remove();
+          updateTimer.remove();
+
+          const won = taps >= 20 && meterValue > 0;
+
+          // Clean up
+          this.time.delayedCall(500, () => {
+            for (const obj of objects) {
+              if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
+            }
+
+            const lines: DialogueLine[] = won ? [
+              { speaker: 'JP', text: 'LETS GOOO!!' },
+              { speaker: 'Big Bart', text: 'HOW.' },
+              { speaker: 'Narrator', text: 'The whole table goes silent. Bart stares at his arm.' },
+              { speaker: 'Big Bart', text: '...best of three?' },
+              { speaker: 'Narrator', text: 'JP\'s confidence is through the roof.' },
+            ] : [
+              { speaker: 'Narrator', text: 'Bart slams JP\'s arm down like a pancake.' },
+              { speaker: 'Big Bart', text: 'NOT EVEN CLOSE.' },
+              { speaker: 'Narrator', text: 'The crowd laughs. Even JP laughs.' },
+              { speaker: 'JP', text: 'Bro you\'re like 280 pounds.' },
+              { speaker: 'Big Bart', text: '295 ACTUALLY.' },
+            ];
+
+            if (won) {
+              MoodSystem.changeMorale(15);
+              try { localStorage.setItem('jdlo_arm_wrestle_won', 'true'); } catch {}
+            }
+
+            this.dialogue.show(lines, () => { this.frozen = false; });
+          });
+        }
+      },
+    });
+  }
+
+  // ─── ROLLING CONTEST MINIGAME ──────────────────────────────────
+  private playRollingContest() {
+    this.rollingContestPlayed = true;
+    this.frozen = true;
+    const objects: Phaser.GameObjects.GameObject[] = [];
+
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+
+    // Dark overlay
+    objects.push(this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.85)
+      .setScrollFactor(0).setDepth(300));
+
+    // Title
+    objects.push(this.add.text(cx, cy - 120, 'WHO CAN ROLL THE FATTEST?', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '12px', color: '#80c060',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303));
+
+    objects.push(this.add.text(cx, cy - 98, 'Press SPACE in the GREEN zone!', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#888888',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303));
+
+    // Timing bar
+    const barWidth = 300;
+    const barHeight = 30;
+    const barX = cx - barWidth / 2;
+    const barY = cy - 20;
+
+    // Background
+    objects.push(this.add.rectangle(cx, barY + barHeight / 2, barWidth, barHeight, 0x333333)
+      .setScrollFactor(0).setDepth(301));
+
+    // Red zone (full bar)
+    objects.push(this.add.rectangle(cx, barY + barHeight / 2, barWidth - 4, barHeight - 4, 0xcc3333)
+      .setScrollFactor(0).setDepth(302));
+
+    // Yellow zone (middle 40%)
+    const yellowWidth = barWidth * 0.4;
+    objects.push(this.add.rectangle(cx, barY + barHeight / 2, yellowWidth, barHeight - 4, 0xcccc33)
+      .setScrollFactor(0).setDepth(302));
+
+    // Green zone (center 15%)
+    const greenWidth = barWidth * 0.15;
+    objects.push(this.add.rectangle(cx, barY + barHeight / 2, greenWidth, barHeight - 4, 0x33cc33)
+      .setScrollFactor(0).setDepth(302));
+
+    // Moving indicator
+    let indicatorPos = 0; // 0 to barWidth
+    let indicatorDir = 1;
+    const indicatorSpeed = 4;
+    const indicator = this.add.rectangle(barX + 2, barY + barHeight / 2, 4, barHeight + 6, 0xffffff)
+      .setScrollFactor(0).setDepth(304);
+    objects.push(indicator);
+
+    let pressed = false;
+
+    // Game loop — move indicator back and forth
+    const updateEvent = this.time.addEvent({
+      delay: 16,
+      loop: true,
+      callback: () => {
+        if (pressed) return;
+        indicatorPos += indicatorSpeed * indicatorDir;
+        if (indicatorPos >= barWidth) { indicatorPos = barWidth; indicatorDir = -1; }
+        if (indicatorPos <= 0) { indicatorPos = 0; indicatorDir = 1; }
+        indicator.setX(barX + indicatorPos);
+      },
+    });
+
+    const pressHandler = () => {
+      if (pressed) return;
+      pressed = true;
+      updateEvent.remove();
+      spaceKey.off('down', pressHandler);
+      this.input.off('pointerdown', pressHandler);
+
+      // Determine zone: green = center 15%, yellow = center 40%, red = rest
+      const normalizedPos = indicatorPos / barWidth; // 0 to 1
+      const distFromCenter = Math.abs(normalizedPos - 0.5);
+
+      let result: 'perfect' | 'decent' | 'bad';
+      if (distFromCenter <= 0.075) {
+        result = 'perfect';
+      } else if (distFromCenter <= 0.2) {
+        result = 'decent';
+      } else {
+        result = 'bad';
+      }
+
+      // Flash indicator
+      this.tweens.add({
+        targets: indicator,
+        alpha: 0,
+        duration: 200,
+        yoyo: true,
+        repeat: 2,
+      });
+
+      this.time.delayedCall(800, () => {
+        for (const obj of objects) {
+          if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
+        }
+
+        const lines: DialogueLine[] = result === 'perfect' ? [
+          { speaker: 'Narrator', text: 'JP rolls it. Tight. Even. Perfect cone.' },
+          { speaker: 'Cooper', text: 'That\'s a cannon.' },
+          { speaker: 'Big Bart', text: 'HOW IS HE THIS GOOD AT EVERYTHING.' },
+          { speaker: 'Narrator', text: 'The whole table goes quiet looking at this perfect roll.' },
+          { speaker: 'JP\'s Mind', text: 'Track record.' },
+        ] : result === 'decent' ? [
+          { speaker: 'Narrator', text: 'JP rolls it. A little uneven but it\'ll smoke.' },
+          { speaker: 'Nolan', text: 'Not bad.' },
+          { speaker: 'Big Bart', text: 'I\'ve seen worse. I\'ve also seen better.' },
+          { speaker: 'JP', text: 'It\'s functional.' },
+        ] : [
+          { speaker: 'Narrator', text: 'JP tries. The paper tears. Weed falls out.' },
+          { speaker: 'Cooper', text: 'Bro that\'s a toothpick.' },
+          { speaker: 'Narrator', text: 'Everyone laughs. Even JP.' },
+          { speaker: 'Big Bart', text: 'GIVE ME THAT. Let a real one handle this.' },
+          { speaker: 'Narrator', text: 'Bart rolls a perfect blunt in 8 seconds. Nobody\'s surprised.' },
+        ];
+
+        if (result === 'perfect') {
+          MoodSystem.changeMorale(10);
+          try { localStorage.setItem('jdlo_perfect_roll', 'true'); } catch {}
+        }
+
+        this.dialogue.show(lines, () => { this.frozen = false; });
+      });
+    };
+
+    const spaceKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    spaceKey.on('down', pressHandler);
+    this.input.on('pointerdown', pressHandler);
+  }
+
+  // ─── BEER PONG TOURNAMENT ROUND 2 ─────────────────────────────
+  private playBeerPongRound2() {
+    // Same as regular beer pong but harder — smaller cups (radius 12), opponent 55% hit rate
+    this.frozen = true;
+    const objects: Phaser.GameObjects.GameObject[] = [];
+
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+
+    objects.push(this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.85)
+      .setScrollFactor(0).setDepth(300));
+
+    objects.push(this.add.rectangle(cx, cy, 600, 280, 0x2a5030)
+      .setScrollFactor(0).setDepth(301));
+    objects.push(this.add.rectangle(cx, cy, 590, 270, 0x306838)
+      .setScrollFactor(0).setDepth(301));
+    objects.push(this.add.rectangle(cx, cy, 2, 270, 0xffffff)
+      .setScrollFactor(0).setDepth(302).setAlpha(0.3));
+
+    objects.push(this.add.text(cx, cy - 170, 'BEER PONG - FINALS', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '16px', color: '#f04040',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303));
+
+    objects.push(this.add.text(cx, cy - 148, 'LEFT/RIGHT aim  |  SPACE shoot  |  HARDER OPPONENT', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#ff8888',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303));
+
+    // Smaller cups for harder round
+    const cupRadius = 12;
+    const cupColor = 0xe03030;
+
+    const oppCupPositions = [
+      { x: cx + 220, y: cy - 50 }, { x: cx + 220, y: cy }, { x: cx + 220, y: cy + 50 },
+      { x: cx + 258, y: cy - 25 }, { x: cx + 258, y: cy + 25 },
+      { x: cx + 296, y: cy },
+    ];
+    const myCupPositions = [
+      { x: cx - 220, y: cy - 50 }, { x: cx - 220, y: cy }, { x: cx - 220, y: cy + 50 },
+      { x: cx - 258, y: cy - 25 }, { x: cx - 258, y: cy + 25 },
+      { x: cx - 296, y: cy },
+    ];
+
+    const oppCups: { obj: Phaser.GameObjects.Arc; hit: boolean; pos: { x: number; y: number } }[] = [];
+    const myCups: { obj: Phaser.GameObjects.Arc; hit: boolean }[] = [];
+
+    for (const pos of oppCupPositions) {
+      const cup = this.add.circle(pos.x, pos.y, cupRadius, cupColor).setScrollFactor(0).setDepth(302);
+      const beer = this.add.circle(pos.x, pos.y, cupRadius - 3, 0xf0c040).setScrollFactor(0).setDepth(302).setAlpha(0.6);
+      objects.push(cup, beer);
+      oppCups.push({ obj: cup, hit: false, pos });
+    }
+    for (const pos of myCupPositions) {
+      const cup = this.add.circle(pos.x, pos.y, cupRadius, cupColor).setScrollFactor(0).setDepth(302);
+      const beer = this.add.circle(pos.x, pos.y, cupRadius - 3, 0xf0c040).setScrollFactor(0).setDepth(302).setAlpha(0.6);
+      objects.push(cup, beer);
+      myCups.push({ obj: cup, hit: false });
+    }
+
+    let jpScore = 0;
+    let oppScore = 0;
+    let jpTurn = true;
+    let shots = 0;
+    const maxShots = 12;
+
+    const scoreText = this.add.text(cx, cy + 160, 'JP: 0  |  THEM: 0', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '12px', color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303);
+    objects.push(scoreText);
+
+    const turnText = this.add.text(cx, cy + 180, 'YOUR SHOT', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#60c060',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303);
+    objects.push(turnText);
+
+    let aimY = cy;
+    let aimDir = 1;
+    const aimSpeed = 2.5; // Faster aim movement
+    const aimCursor = this.add.triangle(cx - 160, aimY, 0, -8, 0, 8, 12, 0, 0xffffff)
+      .setScrollFactor(0).setDepth(304);
+    objects.push(aimCursor);
+
+    let power = 0;
+    let powerDir = 1;
+    const powerBarBg = this.add.rectangle(cx - 330, cy, 20, 200, 0x333333)
+      .setScrollFactor(0).setDepth(302);
+    objects.push(powerBarBg);
+    const powerBar = this.add.rectangle(cx - 330, cy + 100, 16, 0, 0x30c060)
+      .setOrigin(0.5, 1).setScrollFactor(0).setDepth(303);
+    objects.push(powerBar);
+
+    let shooting = false;
+    let gameOver = false;
+
+    const updateEvent = this.time.addEvent({
+      delay: 16,
+      loop: true,
+      callback: () => {
+        if (gameOver || shooting) return;
+        if (jpTurn) {
+          aimY += aimSpeed * aimDir;
+          if (aimY > cy + 100) aimDir = -1;
+          if (aimY < cy - 100) aimDir = 1;
+          aimCursor.setY(aimY);
+          power += 2 * powerDir; // Faster power
+          if (power > 100) powerDir = -1;
+          if (power < 0) powerDir = 1;
+          powerBar.setSize(16, power * 2);
+          powerBar.setFillStyle(power > 70 ? 0x30c060 : power > 40 ? 0xf0c040 : 0xf04040);
+        }
+      },
+    });
+
+    const endRound2 = () => {
+      const won = jpScore > oppScore;
+      for (const obj of objects) {
+        if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
+      }
+
+      if (won) {
+        this.beerPongTournamentWon = true;
+        SubstanceSystem.hype();
+        MoodSystem.setMood('hyped', 60);
+        try { localStorage.setItem('jdlo_bp_champion', 'true'); } catch {}
+
+        // TOURNAMENT CHAMPION text
+        const champBg = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.9)
+          .setScrollFactor(0).setDepth(300);
+        const champText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 20, 'TOURNAMENT CHAMPION', {
+          fontFamily: '"Press Start 2P", monospace', fontSize: '18px', color: '#f0c040',
+        }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+        const champSub = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 20, 'The crowd goes INSANE', {
+          fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#ffffff',
+        }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+
+        this.cameras.main.shake(500, 0.01);
+
+        this.time.delayedCall(2500, () => {
+          champBg.destroy(); champText.destroy(); champSub.destroy();
+          this.dialogue.show([
+            { speaker: 'Big Bart', text: 'NOBODY CAN BEAT THIS MAN!!' },
+            { speaker: 'Narrator', text: 'Bart lifts JP onto his shoulders. The whole party chants his name.' },
+            { speaker: 'Girl', text: 'Who IS that guy??' },
+            { speaker: 'Nolan', text: 'That\'s my boy.' },
+          ], () => { this.frozen = false; });
+        });
+      } else {
+        this.dialogue.show([
+          { speaker: 'Narrator', text: 'JP goes down in the finals. ' + jpScore + ' cups.' },
+          { speaker: 'Narrator', text: 'Eliminated.' },
+          { speaker: 'Cooper', text: 'Finals though. That\'s still fire.' },
+          { speaker: 'Big Bart', text: 'RUN IT BACK NEXT PARTY!!' },
+        ], () => { this.frozen = false; });
+      }
+    };
+
+    const shoot = () => {
+      if (!jpTurn || shooting || gameOver) return;
+      shooting = true;
+
+      const ball = this.add.circle(cx - 140, aimY, 8, 0xffffff)
+        .setScrollFactor(0).setDepth(305);
+      objects.push(ball);
+
+      const targetX = cx + 220 + (power / 100) * 80;
+      const targetY = aimY;
+
+      this.tweens.add({
+        targets: ball,
+        x: targetX,
+        y: targetY - 30,
+        duration: 400,
+        ease: 'Quad.easeOut',
+        onComplete: () => {
+          this.tweens.add({
+            targets: ball,
+            y: targetY,
+            duration: 200,
+            ease: 'Bounce.easeOut',
+            onComplete: () => {
+              let hitCup = false;
+              for (const cup of oppCups) {
+                if (cup.hit) continue;
+                const dist = Math.sqrt((ball.x - cup.pos.x) ** 2 + (ball.y - cup.pos.y) ** 2);
+                if (dist < cupRadius + 6) { // Tighter hit detection
+                  hitCup = true;
+                  cup.hit = true;
+                  jpScore++;
+                  this.tweens.add({ targets: cup.obj, alpha: 0.2, scaleX: 0.5, scaleY: 0.5, duration: 300 });
+                  const ht = this.add.text(cup.pos.x, cup.pos.y - 20, 'SPLASH!', {
+                    fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#f0c040',
+                  }).setOrigin(0.5).setScrollFactor(0).setDepth(306);
+                  this.tweens.add({ targets: ht, y: ht.y - 30, alpha: 0, duration: 800, onComplete: () => ht.destroy() });
+                  break;
+                }
+              }
+              if (!hitCup) {
+                const mt = this.add.text(ball.x, ball.y - 15, 'MISS', {
+                  fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#f04040',
+                }).setOrigin(0.5).setScrollFactor(0).setDepth(306);
+                this.tweens.add({ targets: mt, alpha: 0, duration: 600, onComplete: () => mt.destroy() });
+              }
+
+              ball.destroy();
+              scoreText.setText('JP: ' + jpScore + '  |  THEM: ' + oppScore);
+              shots++;
+
+              if (jpScore >= 6 || oppScore >= 6 || shots >= maxShots) {
+                gameOver = true;
+                updateEvent.remove();
+                spaceKey.off('down', shootHandler);
+                this.time.delayedCall(800, () => endRound2());
+                return;
+              }
+
+              jpTurn = false;
+              turnText.setText('THEIR SHOT').setColor('#f04040');
+              aimCursor.setAlpha(0.3);
+
+              this.time.delayedCall(1200, () => {
+                // Harder opponent: 55% hit rate
+                const hit = Math.random() < 0.55;
+                if (hit) {
+                  const available = myCups.filter(c => !c.hit);
+                  if (available.length > 0) {
+                    const target = available[Math.floor(Math.random() * available.length)];
+                    target.hit = true;
+                    oppScore++;
+                    this.tweens.add({ targets: target.obj, alpha: 0.2, scaleX: 0.5, scaleY: 0.5, duration: 300 });
+                  }
+                }
+                scoreText.setText('JP: ' + jpScore + '  |  THEM: ' + oppScore);
+                shots++;
+
+                if (jpScore >= 6 || oppScore >= 6 || shots >= maxShots) {
+                  gameOver = true;
+                  updateEvent.remove();
+                  spaceKey.off('down', shootHandler);
+                  this.time.delayedCall(800, () => endRound2());
+                  return;
+                }
+
+                jpTurn = true;
+                turnText.setText('YOUR SHOT').setColor('#60c060');
+                aimCursor.setAlpha(1);
+                shooting = false;
+              });
+            },
+          });
+        },
+      });
+    };
+
+    const spaceKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    const shootHandler = () => shoot();
+    spaceKey.on('down', shootHandler);
   }
 
   update(time: number, delta: number) {

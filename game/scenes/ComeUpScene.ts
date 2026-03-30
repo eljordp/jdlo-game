@@ -6,6 +6,9 @@ import { GAME_WIDTH, GAME_HEIGHT } from '../config';
 import { Analytics } from '../systems/Analytics';
 import { MoodSystem } from '../systems/MoodSystem';
 import { InventorySystem } from '../systems/InventorySystem';
+import { GameIntelligence } from '../systems/GameIntelligence';
+import { CasinoSystem } from '../systems/CasinoSystem';
+import { DMSystem } from '../systems/DMSystem';
 
 export class ComeUpScene extends BaseChapterScene {
   private typingPlayed = false;
@@ -35,6 +38,21 @@ export class ComeUpScene extends BaseChapterScene {
 
   create() {
     super.create();
+
+    // GameIntelligence — track player behavior
+    GameIntelligence.init(this, this.player);
+    GameIntelligence.watch('ch5_first_dollar',      5,  3,  true);  // required: gate
+    GameIntelligence.watch('ch5_first_site',        10, 2,  true);  // required: build first site
+    GameIntelligence.watch('ch5_stack',             7,  2);
+    GameIntelligence.watch('ch5_fiverr',            19, 5);
+    GameIntelligence.watch('ch5_cold_email',        12, 6,  true);  // required: outreach
+    GameIntelligence.watch('ch5_invoice',           17, 2);
+    GameIntelligence.watch('ch5_wct_showcase',      5,  17);
+    GameIntelligence.watch('ch5_sticker_showcase',  30, 18);
+    GameIntelligence.watch('ch5_dhl_showcase',      30, 28);
+    GameIntelligence.watch('ch5_bank_app',          11, 4);
+    GameIntelligence.attachDebugPanel(this);
+
     // Client showcases
     this.addNavArrow(5, 16, 'WCT');
     this.addNavArrow(18, 16, 'Sticker Smith');
@@ -113,6 +131,7 @@ export class ComeUpScene extends BaseChapterScene {
 
   // Sticker Smith triggers referral chain to Manza
   protected handleNPCDialogue(npcId: string, dialogue: DialogueLine[]): void {
+    GameIntelligence.onNPCTalked(npcId);
     if (npcId === 'ch5_sticker' && !this.stickerTalked) {
       this.stickerTalked = true;
       this.dialogue.show(dialogue, () => {
@@ -148,6 +167,7 @@ export class ComeUpScene extends BaseChapterScene {
 
   // Override to add typing mini-game and payment cutscene
   protected handleInteractable(interactable: { id: string; type: string; consumed?: boolean }) {
+    GameIntelligence.onInteracted(interactable.id);
     if (interactable.id === 'ch5_stack' || interactable.id === 'ch5_github') {
       Analytics.trackInteraction(interactable.id);
       this.playTypingMinigame();
@@ -276,6 +296,24 @@ export class ComeUpScene extends BaseChapterScene {
       return;
     }
 
+    // Ramen — add to inventory
+    if (interactable.id === 'ch5_ramen') {
+      Analytics.trackInteraction(interactable.id);
+      this.frozen = true;
+      const chapterDialogue = this.getChapterDialogue();
+      const lines = chapterDialogue.npcs['ch5_ramen'];
+      if (lines) {
+        this.dialogue.show(lines, () => {
+          InventorySystem.addItem('ramen', 1);
+          this.frozen = false;
+        });
+      } else {
+        this.frozen = false;
+      }
+      this.interactions.consume(interactable.id);
+      return;
+    }
+
     // Fiverr — triggers Pops call after a delay
     if (interactable.id === 'ch5_fiverr' && !this.popsCallDone) {
       Analytics.trackInteraction(interactable.id);
@@ -297,7 +335,170 @@ export class ComeUpScene extends BaseChapterScene {
       return;
     }
 
+    // Phone — story first, then apps on revisit
+    if (interactable.id === 'ch5_phone') {
+      Analytics.trackInteraction(interactable.id);
+      this.showPhoneApps();
+      return;
+    }
+
+    // Computer — story first, then apps on revisit
+    if (interactable.id === 'ch5_computer') {
+      Analytics.trackInteraction(interactable.id);
+      this.showComputerApps();
+      return;
+    }
+
     super.handleInteractable(interactable);
+  }
+
+  // ─── PHONE APPS (Ch6: full hustle — DMs, Casino, Crypto) ───────
+  private showPhoneApps() {
+    this.frozen = true;
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+
+    const phoneBg = this.add.rectangle(cx, cy, 240, 370, 0x1a1a2e)
+      .setScrollFactor(0).setDepth(300);
+    const phoneBorder = this.add.rectangle(cx, cy, 242, 372, 0x555577, 0)
+      .setStrokeStyle(2, 0x555577)
+      .setScrollFactor(0).setDepth(299);
+    const notch = this.add.rectangle(cx, cy - 177, 60, 8, 0x0d0d1a)
+      .setScrollFactor(0).setDepth(301);
+    const timeText = this.add.text(cx, cy - 155, '2:14 AM', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#888899',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+
+    const apps = ['DMs', 'Casino', 'Crypto', 'Close'];
+    const appColors = [0x3a2a4a, 0x0a3a1a, 0x1a0a2a, 0x333344];
+    const hoverColors = [0x5a3a6a, 0x1a5a2a, 0x3a1a5a, 0x555566];
+    const labelColors = ['#ffffff', '#f0c040', '#bb66ff', '#ffffff'];
+    const buttons: Phaser.GameObjects.Rectangle[] = [];
+    const labels: Phaser.GameObjects.Text[] = [];
+
+    apps.forEach((app, i) => {
+      const y = cy - 100 + i * 48;
+      const btn = this.add.rectangle(cx, y, 200, 36, appColors[i])
+        .setScrollFactor(0).setDepth(301).setInteractive({ useHandCursor: true });
+      const label = this.add.text(cx, y, app, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: labelColors[i],
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(302);
+
+      btn.on('pointerover', () => btn.setFillStyle(hoverColors[i]));
+      btn.on('pointerout', () => btn.setFillStyle(appColors[i]));
+
+      btn.on('pointerdown', () => {
+        cleanup();
+        if (app === 'DMs') DMSystem.openDMs(this, (l, cb) => this.dialogue.show(l, cb), () => this.showPhoneApps());
+        else if (app === 'Casino') CasinoSystem.openCasino(this, () => { this.showPhoneApps(); });
+        else if (app === 'Crypto') CasinoSystem.openCrypto(this, () => { this.showPhoneApps(); });
+        else this.frozen = false;
+      });
+
+      buttons.push(btn);
+      labels.push(label);
+    });
+
+    const cleanup = () => {
+      phoneBg.destroy(); phoneBorder.destroy(); notch.destroy(); timeText.destroy();
+      buttons.forEach(b => b.destroy());
+      labels.forEach(l => l.destroy());
+    };
+
+    // Keyboard: 1-4 to pick
+    const keys = [
+      this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ONE),
+      this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.TWO),
+      this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.THREE),
+      this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.FOUR),
+    ];
+    const handlers: (() => void)[] = [];
+    keys.forEach((key, i) => {
+      const handler = () => {
+        keys.forEach((k, j) => k.off('down', handlers[j]));
+        cleanup();
+        if (i === 0) DMSystem.openDMs(this, (l, cb) => this.dialogue.show(l, cb), () => this.showPhoneApps());
+        else if (i === 1) CasinoSystem.openCasino(this, () => { this.showPhoneApps(); });
+        else if (i === 2) CasinoSystem.openCrypto(this, () => { this.showPhoneApps(); });
+        else this.frozen = false;
+      };
+      handlers.push(handler);
+      key.on('down', handler);
+    });
+  }
+
+  // ─── COMPUTER APPS (Ch6: Crypto + Casino) ──────────────────────
+  private showComputerApps() {
+    this.frozen = true;
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+
+    const bg = this.add.rectangle(cx, cy, 280, 280, 0x0a0a0a)
+      .setScrollFactor(0).setDepth(300);
+    const border = this.add.rectangle(cx, cy, 282, 282, 0x4488ff, 0)
+      .setStrokeStyle(2, 0x4488ff)
+      .setScrollFactor(0).setDepth(299);
+    const title = this.add.text(cx, cy - 115, 'DESKTOP', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#4488ff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+
+    const apps = ['Crypto', 'Casino', 'Close'];
+    const buttons: Phaser.GameObjects.Rectangle[] = [];
+    const labels: Phaser.GameObjects.Text[] = [];
+
+    apps.forEach((app, i) => {
+      const y = cy - 50 + i * 48;
+      const isClose = app === 'Close';
+      const isCasino = app === 'Casino';
+      const isCrypto = app === 'Crypto';
+      const btnColor = isClose ? 0x333333 : isCasino ? 0x0a3a1a : 0x1a0a2a;
+      const hoverColor = isClose ? 0x555555 : isCasino ? 0x1a5a2a : 0x3a1a5a;
+      const labelColor = isCasino ? '#f0c040' : isCrypto ? '#bb66ff' : '#ffffff';
+
+      const btn = this.add.rectangle(cx, y, 240, 36, btnColor)
+        .setScrollFactor(0).setDepth(301).setInteractive({ useHandCursor: true });
+      const label = this.add.text(cx, y, app, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: labelColor,
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(302);
+
+      btn.on('pointerover', () => btn.setFillStyle(hoverColor));
+      btn.on('pointerout', () => btn.setFillStyle(btnColor));
+
+      btn.on('pointerdown', () => {
+        cleanup();
+        if (app === 'Crypto') CasinoSystem.openCrypto(this, () => { this.showComputerApps(); });
+        else if (app === 'Casino') CasinoSystem.openCasino(this, () => { this.showComputerApps(); });
+        else this.frozen = false;
+      });
+
+      buttons.push(btn);
+      labels.push(label);
+    });
+
+    const cleanup = () => {
+      bg.destroy(); border.destroy(); title.destroy();
+      buttons.forEach(b => b.destroy());
+      labels.forEach(l => l.destroy());
+    };
+
+    // Keyboard: 1-3 to pick
+    const keys = [
+      this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ONE),
+      this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.TWO),
+      this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.THREE),
+    ];
+    const handlers: (() => void)[] = [];
+    keys.forEach((key, i) => {
+      const handler = () => {
+        keys.forEach((k, j) => k.off('down', handlers[j]));
+        cleanup();
+        if (i === 0) CasinoSystem.openCrypto(this, () => { this.showComputerApps(); });
+        else if (i === 1) CasinoSystem.openCasino(this, () => { this.showComputerApps(); });
+        else this.frozen = false;
+      };
+      handlers.push(handler);
+      key.on('down', handler);
+    });
   }
 
   // ─── REJECTION MONTAGE ──────────────────────────────────────────
@@ -1185,6 +1386,7 @@ export class ComeUpScene extends BaseChapterScene {
                     allObjects.forEach((obj) => {
                       if (obj && obj.active) obj.destroy();
                     });
+                    InventorySystem.addItem('cash', 1);
                     this.frozen = false;
                   },
                 });

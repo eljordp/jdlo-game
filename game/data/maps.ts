@@ -272,14 +272,14 @@ export const beachMap: MapData = {
     //0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39
     // === FRAT HOUSE — living rm + JP rm + kitchen + NOLAN'S MASTER down the hall + hot tub ===
     [ B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, G, G, G, G, G ], // 0  house top wall (wider — cols 0-34)
-    [ B, F, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, G, G, G, G, G ], // 1  living rm (1-11) | JP rm (13-22) | kitchen (24-33)
-    [ B, F, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, G, C, C, C, G ], // 2
-    [ B, F, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, G, C, H, C, G ], // 3  hot tub
-    [ B, F, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, N, N, F, F, F, B, G, C, H, C, G ], // 4  kitchen counter
-    [ B, F, F, F, F, F, F, F, F, F, F, F, O, F, F, F, F, F, F, F, F, F, F, O, F, F, F, F, F, F, F, F, F, F, O, G, C, H, C, G ], // 5  doors between rooms (12, 23, 34)
-    [ B, F, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, G, C, C, C, G ], // 6
-    [ B, F, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, G, G, G, G, G ], // 7
-    [ B, F, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, G, G, G, G, G ], // 8
+    [ B, F, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, C, C, C, C, G ], // 1  living rm (1-11) | JP rm (13-22) | kitchen (24-33)
+    [ B, F, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, C, H, H, H, G ], // 2
+    [ B, F, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, O, C, H, H, H, G ], // 3  hot tub
+    [ B, F, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, N, N, F, F, F, B, C, H, H, H, G ], // 4  kitchen counter
+    [ B, F, F, F, F, F, F, F, F, F, F, F, O, F, F, F, F, F, F, F, F, F, F, O, F, F, F, F, F, F, F, F, F, F, O, C, H, H, H, G ], // 5  doors between rooms (12, 23, 34)
+    [ B, F, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, C, H, H, H, G ], // 6
+    [ B, F, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, O, C, C, C, C, G ], // 7
+    [ B, F, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, F, F, F, F, F, F, F, F, F, F, B, C, G, G, G, G ], // 8
     [ B, B, B, B, B, B, O, B, B, B, B, B, B, B, B, B, B, B, O, B, B, B, B, B, B, B, B, B, B, O, B, B, B, B, B, G, G, G, G, G ], // 9  bottom wall, doors at 6, 18, 29
     // === HALLWAY + NOLAN'S MASTER BEDROOM (rows 10-16) ===
     [ G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G, C, G, G, G, G, G, G, G, G, G, G ], // 10 walks from doors
@@ -309,7 +309,7 @@ export const beachMap: MapData = {
   ],
   collisions: STANDARD_COLLISIONS,
   spawns: {
-    player: { x: 18, y: 17 },
+    player: { x: 14, y: 4 },
     npcs: [
       // Living room
       { id: 'ch1_homie2',       x: 5,  y: 4,  sprite: 'npc_david' },
@@ -333,14 +333,14 @@ export const beachMap: MapData = {
     ],
   },
   triggers: [
-    { x: 15, y: 27, action: 'scene', target: 'WrongCrowdScene' },
-    { x: 16, y: 27, action: 'scene', target: 'WrongCrowdScene' },
-    { x: 17, y: 27, action: 'scene', target: 'WrongCrowdScene' },
-    { x: 18, y: 27, action: 'scene', target: 'WrongCrowdScene' },
-    { x: 19, y: 27, action: 'scene', target: 'WrongCrowdScene' },
-    { x: 20, y: 27, action: 'scene', target: 'WrongCrowdScene' },
-    { x: 21, y: 27, action: 'scene', target: 'WrongCrowdScene' },
-    { x: 22, y: 27, action: 'scene', target: 'WrongCrowdScene' },
+    { x: 15, y: 27, action: 'scene', target: 'TransitionScene', data: { text: 'That summer changed everything.', subtext: 'Wrong people. Wrong choices.', nextScene: 'WrongCrowdScene' } },
+    { x: 16, y: 27, action: 'scene', target: 'TransitionScene', data: { text: 'That summer changed everything.', subtext: 'Wrong people. Wrong choices.', nextScene: 'WrongCrowdScene' } },
+    { x: 17, y: 27, action: 'scene', target: 'TransitionScene', data: { text: 'That summer changed everything.', subtext: 'Wrong people. Wrong choices.', nextScene: 'WrongCrowdScene' } },
+    { x: 18, y: 27, action: 'scene', target: 'TransitionScene', data: { text: 'That summer changed everything.', subtext: 'Wrong people. Wrong choices.', nextScene: 'WrongCrowdScene' } },
+    { x: 19, y: 27, action: 'scene', target: 'TransitionScene', data: { text: 'That summer changed everything.', subtext: 'Wrong people. Wrong choices.', nextScene: 'WrongCrowdScene' } },
+    { x: 20, y: 27, action: 'scene', target: 'TransitionScene', data: { text: 'That summer changed everything.', subtext: 'Wrong people. Wrong choices.', nextScene: 'WrongCrowdScene' } },
+    { x: 21, y: 27, action: 'scene', target: 'TransitionScene', data: { text: 'That summer changed everything.', subtext: 'Wrong people. Wrong choices.', nextScene: 'WrongCrowdScene' } },
+    { x: 22, y: 27, action: 'scene', target: 'TransitionScene', data: { text: 'That summer changed everything.', subtext: 'Wrong people. Wrong choices.', nextScene: 'WrongCrowdScene' } },
   ],
   interactables: [
     // --- Living Room (cols 1-11, rows 1-8) ---
@@ -359,6 +359,7 @@ export const beachMap: MapData = {
     { id: 'ch1_closet',     x: 22, y: 1,  type: 'examine', glow: false, sprite: 'item-nightstand' },
     { id: 'ch1_poster',     x: 18, y: 1,  type: 'examine', glow: false, sprite: 'item-poster' },
     { id: 'ch1_clothes',    x: 20, y: 8,  type: 'examine', glow: false, sprite: 'item-laundry-basket' },
+    { id: 'ch1_shower',     x: 22, y: 7,  type: 'examine', glow: true, sprite: 'item-shower' },       // bathroom corner
 
     // --- Kitchen (cols 24-33, rows 1-8) ---
     { id: 'ch1_fridge',     x: 24, y: 1,  type: 'examine', glow: false, sprite: 'item-fridge' },
@@ -368,9 +369,8 @@ export const beachMap: MapData = {
     { id: 'ch1_weed3',      x: 25, y: 6,  type: 'examine', glow: true, sprite: 'item-weed-bag' },
     { id: 'ch1_blunt',      x: 30, y: 7,  type: 'examine', glow: true, sprite: 'item-joint' },
 
-    // --- Hot Tub Patio (outside, cols 36-38, rows 3-5) ---
-    { id: 'ch1_hottub',     x: 37, y: 4,  type: 'examine', glow: false, sprite: 'item-hottub' },
-    { id: 'ch1_shower',     x: 23, y: 15, type: 'examine', glow: true, sprite: 'item-shower' },
+    // --- Hot Tub Patio (outside, cols 36-38, rows 2-6) ---
+    { id: 'ch1_hottub',     x: 36, y: 4,  type: 'examine', glow: false, sprite: 'item-hottub' },
 
     // --- NOLAN'S MASTER BEDROOM (cols 22-32, rows 12-15) — THE room ---
     { id: 'ch1_nolan_bed',   x: 23, y: 12, type: 'examine', glow: false, sprite: 'item-bed' },         // king size bed
@@ -393,6 +393,10 @@ export const beachMap: MapData = {
     { id: 'ch1_bonfire',    x: 30, y: 26, type: 'examine', glow: false, sprite: 'item-bonfire' },
     { id: 'ch1_surfboards', x: 5,  y: 24, type: 'examine', glow: false, sprite: 'item-surfboard' },
     { id: 'ch1_sunset',     x: 36, y: 25, type: 'examine', glow: false, sprite: 'item-photo' },
+
+    // --- JP's Room additions ---
+    { id: 'ch1_phone',          x: 20, y: 2,  type: 'examine', glow: true,  sprite: 'item-phone' },       // JP's room phone
+    { id: 'ch1_kitchen_table',  x: 28, y: 6,  type: 'examine', glow: false, sprite: 'item-food' },        // kitchen table sesh spot
   ],
 };
 
@@ -546,7 +550,7 @@ export const jailMap: MapData = {
     [ X, X, X, X, O, Z, Z, X, X, X, O, Z, Z, X, C, C, C, C, C, X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 9  cell doors
     [ X, X, D, D, D, D, Z, X, D, D, D, D, Z, X, C, C, C, C, C, X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 10 cell5 | cell6
     [ X, X, D, D, D, D, Z, X, D, D, D, D, Z, X, C, C, C, C, C, X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 11
-    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, C, C, C, C, C, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 12 cell block end wall
+    [ X, X, C, C, C, X, X, X, C, C, C, X, X, X, C, C, C, C, C, X, X, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, X, X ], // 12 cell block gates open to hallway
 
     // --- MAIN HALLWAY (rows 13-16): wide concrete corridor + guard station ---
     [ X, X, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, X, X ], // 13
@@ -820,7 +824,7 @@ export const comeUpMap: MapData = {
     ],
   },
   triggers: [
-    { x: 38, y: 35, action: 'scene', target: 'LAScene' },
+    { x: 38, y: 35, action: 'scene', target: 'TransitionScene', data: { text: 'The grind paid off.', subtext: 'Los Angeles was calling.', nextScene: 'LAScene' } },
   ],
   interactables: [
     // Showcases near client building doors
@@ -852,6 +856,10 @@ export const comeUpMap: MapData = {
     { id: 'ch5_dhl_building',  x: 30, y: 29, type: 'examine', glow: false, sprite: 'item-tablet' },
     { id: 'ch5_rejection',     x: 20, y: 17, type: 'examine', glow: true, sprite: 'item-phone' },
     { id: 'ch5_testimonial',   x: 32, y: 15, type: 'examine', glow: true, sprite: 'item-letter' },
+
+    // Phone & computer — for CasinoSystem/DMSystem apps
+    { id: 'ch5_phone',         x: 6,  y: 4,  type: 'examine', glow: true, sprite: 'item-phone' },
+    { id: 'ch5_computer',      x: 16, y: 3,  type: 'examine', glow: true, sprite: 'item-tablet' },
   ],
 };
 
@@ -991,12 +999,12 @@ export const operatorMap: MapData = {
   },
   triggers: [
     // Exit south — JP heads to Vegas (6-wide road at row 58)
-    { x: 17, y: 58, action: 'scene', target: 'VegasScene' },
-    { x: 18, y: 58, action: 'scene', target: 'VegasScene' },
-    { x: 19, y: 58, action: 'scene', target: 'VegasScene' },
-    { x: 20, y: 58, action: 'scene', target: 'VegasScene' },
-    { x: 21, y: 58, action: 'scene', target: 'VegasScene' },
-    { x: 22, y: 58, action: 'scene', target: 'VegasScene' },
+    { x: 17, y: 58, action: 'scene', target: 'TransitionScene', data: { text: 'Time to see what this life is about.', subtext: 'Las Vegas, Nevada.', nextScene: 'VegasScene' } },
+    { x: 18, y: 58, action: 'scene', target: 'TransitionScene', data: { text: 'Time to see what this life is about.', subtext: 'Las Vegas, Nevada.', nextScene: 'VegasScene' } },
+    { x: 19, y: 58, action: 'scene', target: 'TransitionScene', data: { text: 'Time to see what this life is about.', subtext: 'Las Vegas, Nevada.', nextScene: 'VegasScene' } },
+    { x: 20, y: 58, action: 'scene', target: 'TransitionScene', data: { text: 'Time to see what this life is about.', subtext: 'Las Vegas, Nevada.', nextScene: 'VegasScene' } },
+    { x: 21, y: 58, action: 'scene', target: 'TransitionScene', data: { text: 'Time to see what this life is about.', subtext: 'Las Vegas, Nevada.', nextScene: 'VegasScene' } },
+    { x: 22, y: 58, action: 'scene', target: 'TransitionScene', data: { text: 'Time to see what this life is about.', subtext: 'Las Vegas, Nevada.', nextScene: 'VegasScene' } },
   ],
   interactables: [
     // Pomaikai HQ — one tablet (dashboard), rest are invisible "!" markers
@@ -1046,6 +1054,8 @@ export const operatorMap: MapData = {
     { id: 'ch6_homeless',        x: 5,  y: 35, type: 'examine', glow: true,  sprite: 'item-food' },       // homeless person (reality check)
     { id: 'ch6_billboard',       x: 35, y: 15, type: 'examine', glow: false, sprite: 'item-poster' },     // billboard on the street
     { id: 'ch6_pops_call',       x: 12, y: 48, type: 'examine', glow: true,  sprite: 'item-phone' },      // call from Pops
+    { id: 'ch6_phone',           x: 31, y: 44, type: 'examine', glow: true,  sprite: 'item-phone' },      // JP's phone in apartment
+    { id: 'ch6_computer',        x: 6,  y: 5,  type: 'examine', glow: true,  sprite: 'item-desk' },       // office computer at Pomaikai HQ
   ],
 };
 

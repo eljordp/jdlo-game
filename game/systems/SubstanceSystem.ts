@@ -1,4 +1,6 @@
 import { MoodSystem, Mood } from './MoodSystem';
+import { AchievementSystem } from './AchievementSystem';
+import { GameStats } from './GameStats';
 
 // Substance levels
 export type IntoxicationLevel = 'sober' | 'buzzed' | 'drunk' | 'wasted' | 'blacked_out';
@@ -26,6 +28,8 @@ export class SubstanceSystem {
   static drink(): void {
     this.drinks++;
     this.drinkDecayTimer = 0; // reset decay
+    GameStats.increment('drinksHad');
+    AchievementSystem.trackSubstanceUse();
     this.recalculate();
   }
 
@@ -34,6 +38,8 @@ export class SubstanceSystem {
     // potency: 1=joint/blunt, 2=bong, 3=cart/blinker
     this.hits += potency;
     this.hitDecayTimer = 0;
+    GameStats.increment('timesSmoked');
+    AchievementSystem.trackSubstanceUse();
     this.recalculate();
   }
 

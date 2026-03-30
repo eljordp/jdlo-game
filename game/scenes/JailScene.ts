@@ -8,6 +8,7 @@ import { MoodSystem } from '../systems/MoodSystem';
 import { InventorySystem } from '../systems/InventorySystem';
 import { Analytics } from '../systems/Analytics';
 import { GameSettings } from '../systems/GameSettings';
+import { GameIntelligence } from '../systems/GameIntelligence';
 
 export class JailScene extends BaseChapterScene {
   private currentDay = 1;
@@ -43,6 +44,20 @@ export class JailScene extends BaseChapterScene {
     this.diceBroke = false;
     this.shirtOff = false;
     super.create();
+
+    // GameIntelligence — track player behavior
+    GameIntelligence.init(this, this.player);
+    GameIntelligence.watch('ch3_bed',         3,  6,  true);  // required: gate to ch5
+    GameIntelligence.watch('ch3_book',        5,  8,  true);  // required: Compound Effect
+    GameIntelligence.watch('ch3_letter_home', 4,  6);
+    GameIntelligence.watch('ch3_phone',       10, 13);
+    GameIntelligence.watch('ch3_fight_watch', 23, 3);
+    GameIntelligence.watch('ch3_dice_watch',  34, 8);
+    GameIntelligence.watch('ch3_pushups',     12, 19, true);  // required: minigame
+    GameIntelligence.watch('ch3_faith',       7,  22, true);  // required: transformation arc
+    GameIntelligence.watch('ch3_psych_course', 35, 24);
+    GameIntelligence.attachDebugPanel(this);
+
     // Exit triggers at y=25, x=17-18
     this.addNavArrow(17, 24, 'Freedom');
 
@@ -102,10 +117,10 @@ export class JailScene extends BaseChapterScene {
     const patrols: { id: string; axis: 'x' | 'y'; endTile: number; delay: number; duration: number }[] = [
       // Mikey — paces back and forth in JP's cell row (y=7, x 2→4)
       { id: 'ch3_mikey', axis: 'x', endTile: 4, delay: 5000, duration: 2500 },
-      // Chris — wanders down the cell hallway (x=9, y 3→6)
-      { id: 'ch3_chris', axis: 'y', endTile: 6, delay: 7000, duration: 3500 },
-      // Bird — walks toward the yard entrance (x=9, y 7→10)
-      { id: 'ch3_bird', axis: 'y', endTile: 10, delay: 8000, duration: 4000 },
+      // Chris — paces within cell 2 (x 9→11, row 3)
+      { id: 'ch3_chris', axis: 'x', endTile: 11, delay: 7000, duration: 3500 },
+      // Bird — paces within cell 4 (x 9→11, row 7)
+      { id: 'ch3_bird', axis: 'x', endTile: 11, delay: 8000, duration: 4000 },
       // Smoker — paces in the yard corner (y=23, x 5→8)
       { id: 'ch3_smoker', axis: 'x', endTile: 8, delay: 9000, duration: 3000 },
       // Pullups guy — walks along the exercise zone (y=19, x 10→13)
@@ -188,6 +203,7 @@ export class JailScene extends BaseChapterScene {
 
   // NPC dialogue reacts to minigame outcomes
   protected handleNPCDialogue(npcId: string, dialogue: DialogueLine[]): void {
+    GameIntelligence.onNPCTalked(npcId);
     // Fighter reacts based on battle outcome
     if ((npcId === 'ch3_fighter1' || npcId === 'ch3_fighter2') && this.battleWon !== null && this.currentDay >= 2) {
       const chapterDialogue = this.getChapterDialogue();
@@ -241,6 +257,7 @@ export class JailScene extends BaseChapterScene {
   }
 
   protected handleInteractable(interactable: { id: string; type: string; consumed?: boolean }) {
+    GameIntelligence.onInteracted(interactable.id);
     if (interactable.id === 'ch3_bed') {
       this.handleBedInteraction();
       return;
@@ -274,7 +291,12 @@ export class JailScene extends BaseChapterScene {
         { speaker: 'Narrator', text: 'Commissary window. Ramen, chips, soap, envelopes.' },
         { speaker: 'Narrator', text: 'JP grabs a couple soups and a pen.' },
         { speaker: 'JP\'s Mind', text: 'This is currency in here.' },
-      ], () => { this.frozen = false; });
+      ], () => {
+        InventorySystem.addItem('ramen', 2);
+        InventorySystem.addItem('stamps', 1);
+        InventorySystem.addItem('soap', 1);
+        this.frozen = false;
+      });
       return;
     }
 
@@ -289,6 +311,7 @@ export class JailScene extends BaseChapterScene {
         { speaker: 'Narrator', text: '"I\'m going to be different when I get out. I promise."' },
         { speaker: 'JP\'s Mind', text: 'He folds it. Holds it for a minute before putting it in the envelope.' },
       ], () => {
+        InventorySystem.addItem('letter', 1);
         MoodSystem.changeMorale(10);
         this.frozen = false;
       });
@@ -331,6 +354,7 @@ export class JailScene extends BaseChapterScene {
         { speaker: 'JP\'s Mind', text: 'No wonder I ended up here.' },
         { speaker: 'Narrator', text: 'He keeps reading.' },
       ], () => {
+        InventorySystem.addItem('compound-effect', 1);
         MoodSystem.changeMorale(10);
         this.frozen = false;
       });
@@ -874,6 +898,49 @@ export class JailScene extends BaseChapterScene {
     const winComments = ['Lucky.', 'JP collects.', 'The yard nods.'];
     const loseComments = ['Cold dice.', 'The yard laughs.', 'JP pays up.'];
 
+    // Inmate speech bubbles — random shouts during rolls
+    const inmateShouts = [
+      'COME ON BABY', 'SEVEN SEVEN SEVEN', "HE'S HEATED",
+      'LET IT RIDE', 'BLOW ON EM', 'THAT BOY NICE',
+      'NAH NAH NAH', 'OOOH SHIT', 'PAY THE MAN',
+      'CMON YOUNGSTER', "DON'T CHOKE", 'BIG MONEY',
+    ];
+    const shoutPositions = [
+      { x: 80, y: 60 }, { x: GAME_WIDTH - 80, y: 60 },
+      { x: 100, y: GAME_HEIGHT - 40 }, { x: GAME_WIDTH - 100, y: GAME_HEIGHT - 40 },
+      { x: 60, y: GAME_HEIGHT / 2 - 60 }, { x: GAME_WIDTH - 60, y: GAME_HEIGHT / 2 + 60 },
+    ];
+    const showInmateShout = () => {
+      const msg = inmateShouts[Phaser.Math.Between(0, inmateShouts.length - 1)];
+      const pos = shoutPositions[Phaser.Math.Between(0, shoutPositions.length - 1)];
+      const shout = this.add.text(pos.x, pos.y, msg, {
+        fontFamily: '"Press Start 2P", monospace',
+        fontSize: '8px',
+        color: '#ccccaa',
+        backgroundColor: '#222222',
+        padding: { x: 6, y: 4 },
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(305).setAlpha(0);
+      objects.push(shout);
+      this.tweens.add({
+        targets: shout,
+        alpha: 1,
+        y: pos.y - 15,
+        duration: 300,
+        ease: 'Quad.easeOut',
+        onComplete: () => {
+          this.tweens.add({
+            targets: shout,
+            alpha: 0,
+            y: pos.y - 35,
+            duration: 800,
+            delay: 600,
+            ease: 'Quad.easeIn',
+            onComplete: () => shout.destroy(),
+          });
+        },
+      });
+    };
+
     // Dark overlay
     const overlay = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.7)
       .setScrollFactor(0).setDepth(300);
@@ -1057,6 +1124,10 @@ export class JailScene extends BaseChapterScene {
       leftArrow.setVisible(false);
       rightArrow.setVisible(false);
 
+      // Inmate shouts during the roll
+      showInmateShout();
+      this.time.delayedCall(500, () => showInmateShout());
+
       // Dice tumble animation — full rotation spin
       this.tweens.add({
         targets: [die1Bg, die1Text],
@@ -1119,6 +1190,9 @@ export class JailScene extends BaseChapterScene {
         });
 
         roundNum++;
+
+        // Crowd reacts to result
+        showInmateShout();
 
         if (total >= 7) {
           points += currentBet;

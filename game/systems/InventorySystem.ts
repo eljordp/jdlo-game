@@ -2,6 +2,8 @@
 // Items with quantities, durability (lighter uses), and crafting.
 // Persists to localStorage.
 
+import { GameStats } from './GameStats';
+
 export interface InventoryItem {
   id: string;
   name: string;
@@ -56,6 +58,11 @@ const ITEM_CATALOG: Record<string, Omit<InventoryItem, 'quantity'>> = {
     id: 'bong', name: 'Bong', description: 'Glass piece. Hits hard.',
     icon: '\u{1F4A8}', maxStack: 1, uses: -1, maxUses: -1,
     usable: true, consumeOnUse: false, requiresForUse: 'lighter',
+  },
+  'lucky-coin': {
+    id: 'lucky-coin', name: 'Lucky Coin', description: 'Found in a hidden place. Feels warm.',
+    icon: '🪙', maxStack: 1, uses: -1, maxUses: -1,
+    usable: false, consumeOnUse: false,
   },
   za: {
     id: 'za', name: 'Za', description: 'Loose za. Pack a bowl or roll up.',
@@ -151,6 +158,7 @@ export class InventorySystem {
       if (!catalog) return; // unknown item
       this.items.set(id, { ...catalog, quantity });
     }
+    GameStats.increment('itemsCollected', quantity);
     this.persist();
     this.notify();
   }

@@ -6,6 +6,9 @@ import { GAME_WIDTH, GAME_HEIGHT, SCALED_TILE, SCALE } from '../config';
 import { Analytics } from '../systems/Analytics';
 import { MoodSystem } from '../systems/MoodSystem';
 import { InventorySystem } from '../systems/InventorySystem';
+import { GameIntelligence } from '../systems/GameIntelligence';
+import { CasinoSystem } from '../systems/CasinoSystem';
+import { DMSystem } from '../systems/DMSystem';
 
 export class WrongCrowdScene extends BaseChapterScene {
   private raidTriggered = false;
@@ -38,6 +41,18 @@ export class WrongCrowdScene extends BaseChapterScene {
 
   create() {
     super.create();
+
+    // GameIntelligence — track player behavior
+    GameIntelligence.init(this, this.player);
+    GameIntelligence.watch('ch2_grab_weed',   19, 3,  true);  // required: story
+    GameIntelligence.watch('ch2_gun',         16, 1);
+    GameIntelligence.watch('ch2_phone',       16, 3);
+    GameIntelligence.watch('ch2_money_stack', 20, 3);
+    GameIntelligence.watch('ch2_pops_missed', 17, 5,  true);  // required: story beat
+    GameIntelligence.watch('ch2_car',         18, 13, true);  // required: drives to sale
+    GameIntelligence.watch('ch2_sale',        25, 37, true);  // required: gate to ch4
+    GameIntelligence.attachDebugPanel(this);
+
     this.raidTriggered = false;
     this.interactionCount = 0;
     this.dogBarkShown = false;
@@ -385,6 +400,7 @@ export class WrongCrowdScene extends BaseChapterScene {
 
   // Reactive NPC dialogue
   protected handleNPCDialogue(npcId: string, dialogue: DialogueLine[]): void {
+    GameIntelligence.onNPCTalked(npcId);
     // Jose grabs JP's arm before he leaves
     if (npcId === 'ch2_homie_door' && !this.joseGrabbed) {
       this.joseGrabbed = true;
@@ -515,6 +531,7 @@ export class WrongCrowdScene extends BaseChapterScene {
   }
 
   protected handleInteractable(interactable: { id: string; type: string; consumed?: boolean }) {
+    GameIntelligence.onInteracted(interactable.id);
     // Increase tension on every interaction
     this.increaseTension();
 
@@ -657,6 +674,21 @@ export class WrongCrowdScene extends BaseChapterScene {
       return;
     }
 
+    // Phone — open phone apps (DMs, Casino)
+    if (interactable.id === 'ch2_phone') {
+      Analytics.trackInteraction(interactable.id);
+      this.showPhoneApps();
+      return;
+    }
+
+    // Computer — crypto trading
+    if (interactable.id === 'ch2_computer') {
+      Analytics.trackInteraction(interactable.id);
+      this.frozen = true;
+      CasinoSystem.openCrypto(this, () => { this.frozen = false; });
+      return;
+    }
+
     if (interactable.id === 'ch2_sale' && !this.raidTriggered) {
       Analytics.trackInteraction(interactable.id);
       this.raidTriggered = true;
@@ -668,6 +700,81 @@ export class WrongCrowdScene extends BaseChapterScene {
       return;
     }
     super.handleInteractable(interactable);
+  }
+
+  // ─── PHONE APP MENU ────────────────────────────────────────────────
+  private showPhoneApps() {
+    this.frozen = true;
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+
+    // Phone body
+    const phoneBg = this.add.rectangle(cx, cy, 240, 300, 0x1a1a2e)
+      .setScrollFactor(0).setDepth(300);
+    const phoneBorder = this.add.rectangle(cx, cy, 242, 302, 0x555577, 0)
+      .setStrokeStyle(2, 0x555577)
+      .setScrollFactor(0).setDepth(299);
+    const notch = this.add.rectangle(cx, cy - 142, 60, 8, 0x0d0d1a)
+      .setScrollFactor(0).setDepth(301);
+
+    const timeText = this.add.text(cx, cy - 120, '3:33 AM', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#888899',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+
+    const apps = ['DMs', 'Casino', 'Close'];
+    const appColors = [0x3a2a4a, 0x0a3a1a, 0x333344];
+    const hoverColors = [0x5a3a6a, 0x1a5a2a, 0x555566];
+    const buttons: Phaser.GameObjects.Rectangle[] = [];
+    const labels: Phaser.GameObjects.Text[] = [];
+
+    apps.forEach((app, i) => {
+      const y = cy - 50 + i * 55;
+      const btn = this.add.rectangle(cx, y, 200, 40, appColors[i])
+        .setScrollFactor(0).setDepth(301).setInteractive({ useHandCursor: true });
+      const isCasino = app === 'Casino';
+      const labelColor = isCasino ? '#f0c040' : '#ffffff';
+      const label = this.add.text(cx, y, app, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: labelColor,
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(302);
+
+      btn.on('pointerover', () => btn.setFillStyle(hoverColors[i]));
+      btn.on('pointerout', () => btn.setFillStyle(appColors[i]));
+
+      btn.on('pointerdown', () => {
+        cleanup();
+        if (app === 'DMs') DMSystem.openDMs(this, (l, cb) => this.dialogue.show(l, cb), () => this.showPhoneApps());
+        else if (app === 'Casino') CasinoSystem.openCasino(this, () => { this.showPhoneApps(); });
+        else this.frozen = false;
+      });
+
+      buttons.push(btn);
+      labels.push(label);
+    });
+
+    const cleanup = () => {
+      phoneBg.destroy(); phoneBorder.destroy(); notch.destroy(); timeText.destroy();
+      buttons.forEach(b => b.destroy());
+      labels.forEach(l => l.destroy());
+    };
+
+    // Keyboard: 1-3 to pick
+    const keys = [
+      this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ONE),
+      this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.TWO),
+      this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.THREE),
+    ];
+    const handlers: (() => void)[] = [];
+    keys.forEach((key, i) => {
+      const handler = () => {
+        keys.forEach((k, j) => k.off('down', handlers[j]));
+        cleanup();
+        if (i === 0) DMSystem.openDMs(this, (l, cb) => this.dialogue.show(l, cb), () => this.showPhoneApps());
+        else if (i === 1) CasinoSystem.openCasino(this, () => { this.showPhoneApps(); });
+        else this.frozen = false;
+      };
+      handlers.push(handler);
+      key.on('down', handler);
+    });
   }
 
   private playDrivingCutscene() {

@@ -7,6 +7,9 @@ import { Analytics } from '../systems/Analytics';
 import { MoodSystem } from '../systems/MoodSystem';
 import { InventorySystem } from '../systems/InventorySystem';
 import { InventoryUI } from '../systems/InventoryUI';
+import { GameIntelligence } from '../systems/GameIntelligence';
+import { CasinoSystem } from '../systems/CasinoSystem';
+import { DMSystem } from '../systems/DMSystem';
 
 export class HomeScene extends BaseChapterScene {
   private interactionCount = 0;
@@ -27,6 +30,7 @@ export class HomeScene extends BaseChapterScene {
   private sisterDrawingSpawned = false;
   private popsRecordPlayed = false;
   private stashSmoked = false;
+  private cryptoViewed = false;
   private bedLocked = false;
   private nightOverlay: Phaser.GameObjects.Rectangle | null = null;
   private ivyFollowHistory: { x: number; y: number }[] = [];
@@ -35,6 +39,7 @@ export class HomeScene extends BaseChapterScene {
   private openingCutsceneDone = false;
   private firstInteractableGlow: Phaser.GameObjects.Arc | null = null;
   private morningTint: Phaser.GameObjects.Rectangle | null = null;
+  private secretGhostFound = false;
 
   constructor() {
     super({ key: 'HomeScene' });
@@ -55,10 +60,50 @@ export class HomeScene extends BaseChapterScene {
     // Skip default chapter title — opening cutscene handles it
     this.chapterTitle = '';
     super.create();
+
+    // GameIntelligence — track player behavior
+    GameIntelligence.init(this, this.player);
+    GameIntelligence.watch('ch0_computer',      10, 5,  true);  // required: story
+    GameIntelligence.watch('ch0_college',       10, 6,  true);  // required: college letters
+    GameIntelligence.watch('ch0_journal',       8,  8);
+    GameIntelligence.watch('ch0_family_albums', 13, 4);
+    GameIntelligence.watch('ch0_family_photo',  8,  12);
+    GameIntelligence.watch('ch0_parents_safe',  14, 15);
+    GameIntelligence.watch('ch0_mirror',        30, 4);
+    GameIntelligence.watch('ch0_shower',        32, 6);
+    GameIntelligence.attachDebugPanel(this);
+
     this.addNavArrow(14, 42, 'Leave home');
 
     // Play cinematic opening cutscene
     this.playOpeningCutscene();
+
+    // Secret ghost NPC — hidden in garage corner (tile 37, 29)
+    // Only spawns if not already found
+    if (!localStorage.getItem('jdlo_ghost_found')) {
+      const ghostX = 37 * SCALED_TILE + SCALED_TILE / 2;
+      const ghostY = 29 * SCALED_TILE + SCALED_TILE / 2;
+      const ghostSprite = this.add.sprite(ghostX, ghostY, 'player-ch0', 0)
+        .setScale(SCALE * 0.8).setDepth(9).setAlpha(0.25).setTint(0x8888ff);
+      // Subtle floating animation
+      this.tweens.add({
+        targets: ghostSprite,
+        y: ghostY - 4,
+        alpha: 0.15,
+        duration: 2000,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+      });
+      this.npcs.push({
+        sprite: ghostSprite,
+        id: 'ch0_secret_ghost',
+        dialogue: [
+          { speaker: '???', text: 'You found me. Not many people look here.' },
+        ],
+      });
+    }
+
 
     // Player starts upstairs — hide everything below row 12 (Pokemon-style)
     const upRows = Array.from({ length: 12 }, (_, i) => i); // rows 0-11
@@ -97,7 +142,7 @@ export class HomeScene extends BaseChapterScene {
     }).setOrigin(0.5).setDepth(15);
     this.tweens.add({ targets: stairsArrow2, y: stairsUpY - 28, alpha: 0.3, duration: 600, yoyo: true, repeat: -1 });
 
-    // Sister's crayon drawings on walls — UPSTAIRS (cols 22-27, row 3)
+    // Sister\'s crayon drawings on walls — UPSTAIRS (cols 22-27, row 3)
     // Drawing 1: Sun on back wall
     this.add.circle(23 * SCALED_TILE + 20, 3 * SCALED_TILE + 40, 8, 0xf0c040).setDepth(1);
     for (let i = 0; i < 6; i++) {
@@ -121,9 +166,9 @@ export class HomeScene extends BaseChapterScene {
 
     // Render windows directly on wall tiles (not floating sprites)
     const windowPositions = [
-      { x: 4, y: 3 },   // JP's room (upstairs back wall)
+      { x: 4, y: 3 },   // JP\'s room (upstairs back wall)
       { x: 16, y: 3 },  // Upstairs lounge (back wall)
-      { x: 25, y: 3 },  // Sister's room (upstairs back wall)
+      { x: 25, y: 3 },  // Sister\'s room (upstairs back wall)
       { x: 31, y: 3 },  // Bathroom (upstairs back wall)
       { x: 8, y: 11 },  // Parents' room (downstairs)
     ];
@@ -165,7 +210,7 @@ export class HomeScene extends BaseChapterScene {
     // Floor indicator — show initial floor (delayed to avoid text render race)
     this.time.delayedCall(500, () => this.showFloorIndicator('Upstairs'));
 
-    // Highlight first interactable (computer in JP's room)
+    // Highlight first interactable (computer in JP\'s room)
     this.firstInteractableGlow = this.add.circle(
       10 * SCALED_TILE + SCALED_TILE / 2, 5 * SCALED_TILE + SCALED_TILE / 2,
       24, 0xf0c040, 0.15
@@ -294,12 +339,13 @@ export class HomeScene extends BaseChapterScene {
       loop: true,
       callback: () => {
         if (!this.scene.isActive() || this.frozen) return;
-        if (this.momArgued) return; // once she's in her room after the argument, she stays
+        if (this.momArgued) return; // once she\'s in her room after the argument, she stays
         const mom = this.findNPC('ch0_mom');
         if (!mom || !mom.sprite.visible) return;
 
-        const targetX = this.momForward ? 8 : 28;
-        const targetY = this.momForward ? 16 : 18;
+        // Patrol within the kitchen/living area on same row — no walls to cross
+        const targetX = this.momForward ? 8 : 22;
+        const targetY = 20;
         this.momForward = !this.momForward;
 
         this.moveNPCTo('ch0_mom', targetX, targetY, 4000);
@@ -312,7 +358,7 @@ export class HomeScene extends BaseChapterScene {
       loop: true,
       callback: () => {
         if (!this.scene.isActive() || this.frozen) return;
-        if (this.ivyFollowing) return; // Don't wander when following JP
+        if (this.ivyFollowing) return; // Don\'t wander when following JP
 
         const ivy = this.findNPC('ch0_frenchie');
         if (!ivy || !ivy.sprite.visible) return;
@@ -743,7 +789,7 @@ export class HomeScene extends BaseChapterScene {
   private triggerIvyGift() {
     this.frozen = true;
 
-    // Ivy drops a sock at JP's feet
+    // Ivy drops a sock at JP\'s feet
     const chapterDialogue = this.getChapterDialogue();
     const lines = chapterDialogue.npcs['ch0_ivy_gift'] || [
       { speaker: 'Narrator', text: 'Ivy drops something at JP\'s feet. It\'s... a sock.' },
@@ -864,22 +910,22 @@ export class HomeScene extends BaseChapterScene {
     const mom = this.findNPC('ch0_mom');
     if (!mom) return;
 
-    // Mom walks a REAL PATH: kitchen → hallway → parents room door → inside
-    // Step 1: Walk to hallway door area (through kitchen to row 18)
-    this.moveNPCTo('ch0_mom', 20, 18, 1200, () => {
-      // Step 2: Walk down hallway toward parents room door
-      this.moveNPCTo('ch0_mom', 20, 17, 400, () => {
-        // Step 3: Walk into parents room through door
-        this.moveNPCTo('ch0_mom', 22, 14, 1200, () => {
+    // Mom walks a REAL PATH: living room → hallway → parents room door (col 8, row 17) → inside
+    // Step 1: Walk to hallway near bedroom door
+    this.moveNPCTo('ch0_mom', 8, 18, 1200, () => {
+      // Step 2: Through the parents room door (O tile at col 8, row 17)
+      this.moveNPCTo('ch0_mom', 8, 17, 400, () => {
+        // Step 3: Into the bedroom
+        this.moveNPCTo('ch0_mom', 8, 14, 1200, () => {
           // Block the parents room door — Mom locked it
-          this.collisionTiles.add('20,17');
+          this.collisionTiles.add('8,17');
           // Add locked door interactable so player gets feedback when they try to enter
-          this.spawnDynamicInteractable('ch0_parents_door_locked', 20, 17, 'item-door');
+          this.spawnDynamicInteractable('ch0_parents_door_locked', 8, 17, 'item-door');
 
-          // Dark overlay on parents' room (cols 17-30, rows 12-16)
-          const roomCenterX = 23.5 * SCALED_TILE + SCALED_TILE / 2;
+          // Dark overlay on parents' room (cols 4-14, rows 12-16)
+          const roomCenterX = 9 * SCALED_TILE + SCALED_TILE / 2;
           const roomCenterY = 14 * SCALED_TILE + SCALED_TILE / 2;
-          const roomW = 14 * SCALED_TILE;
+          const roomW = 11 * SCALED_TILE;
           const roomH = 5 * SCALED_TILE;
 
           const darkness = this.add.rectangle(roomCenterX, roomCenterY, roomW, roomH, 0x000000, 0)
@@ -894,7 +940,7 @@ export class HomeScene extends BaseChapterScene {
           // Door closing sound effect — just visual "thud"
           this.cameras.main.shake(100, 0.002);
 
-          // Update Mom's dialogue to reflect state
+          // Update Mom\'s dialogue to reflect state
           mom.dialogue = [
             { speaker: 'Narrator', text: 'The door is locked. She\'s done talking.' },
           ];
@@ -1204,7 +1250,7 @@ export class HomeScene extends BaseChapterScene {
     objects.push(this.add.circle(850, houseY + 10, 25, 0xf0d060)
       .setScrollFactor(0).setDepth(303).setAlpha(0.06));
 
-    // Rooftop edge (shingles — JP's house roof)
+    // Rooftop edge (shingles — JP\'s house roof)
     objects.push(this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT - 80, GAME_WIDTH, 140, 0x3a2a1a)
       .setScrollFactor(0).setDepth(304));
     for (let i = 0; i < 20; i++) {
@@ -1255,11 +1301,11 @@ export class HomeScene extends BaseChapterScene {
     this.popsRecordPlayed = true;
     const pops = this.findNPC('ch0_pops');
 
-    // Move Pops to garage if he's not already there
+    // Move Pops to garage if he\'s not already there
     if (pops) {
       const popsTX = Math.round((pops.sprite.x - SCALED_TILE / 2) / SCALED_TILE);
       const popsTY = Math.round((pops.sprite.y - SCALED_TILE / 2) / SCALED_TILE);
-      // If Pops isn't near the garage, walk him over
+      // If Pops isn\'t near the garage, walk him over
       if (Math.abs(popsTX - 33) > 3 || Math.abs(popsTY - 26) > 3) {
         this.moveNPCTo('ch0_pops', 33, 26, 1500);
       }
@@ -1313,6 +1359,7 @@ export class HomeScene extends BaseChapterScene {
 
   // Override to add computer interface, fetch, goodbye, phone ring, + all surprise elements
   protected handleInteractable(interactable: { id: string; type: string; consumed?: boolean }) {
+    GameIntelligence.onInteracted(interactable.id);
     // Destroy first-interactable glow on any interaction
     if (this.firstInteractableGlow) {
       this.firstInteractableGlow.destroy();
@@ -1334,6 +1381,27 @@ export class HomeScene extends BaseChapterScene {
       if (this.frozen) return;
       Analytics.trackInteraction(interactable.id);
       this.showComputerInterface();
+      this.trackForPhoneCall(interactable.id);
+      return;
+    }
+    if (interactable.id === 'ch0_crypto') {
+      if (this.frozen) return;
+      Analytics.trackInteraction(interactable.id);
+      if (!this.cryptoViewed) {
+        // First time — show story dialogue, then open phone apps
+        this.cryptoViewed = true;
+        this.frozen = true;
+        this.dialogue.show([
+          { speaker: 'Narrator', text: 'JP\'s phone. Coinbase notification: "BTC up 4% today."' },
+          { speaker: 'JP\'s Mind', text: 'Let me check everything real quick.' },
+        ], () => {
+          this.frozen = false;
+          this.showPhoneApps();
+        });
+      } else {
+        // Subsequent — straight to phone apps
+        this.showPhoneApps();
+      }
       this.trackForPhoneCall(interactable.id);
       return;
     }
@@ -1360,7 +1428,7 @@ export class HomeScene extends BaseChapterScene {
     }
     // Rooftop easter egg — only accessible from upstairs (bathroom window)
     if (interactable.id === 'ch0_rooftop') {
-      if (this.currentFloor !== 'up') return; // can't reach from downstairs
+      if (this.currentFloor !== 'up') return; // can\'t reach from downstairs
       Analytics.trackInteraction(interactable.id);
       this.triggerRooftop();
       this.trackForPhoneCall(interactable.id);
@@ -1584,7 +1652,7 @@ export class HomeScene extends BaseChapterScene {
       this.trackForPhoneCall(interactable.id);
       return;
     }
-    // Locked parents room door — Mom's upset, door is shut
+    // Locked parents room door — Mom\'s upset, door is shut
     if (interactable.id === 'ch0_parents_door_locked') {
       this.frozen = true;
       this.dialogue.show([
@@ -1703,6 +1771,39 @@ export class HomeScene extends BaseChapterScene {
 
   // Override NPC dialogue to add reactive behaviors
   protected handleNPCDialogue(npcId: string, dialogue: DialogueLine[]) {
+    GameIntelligence.onNPCTalked(npcId);
+
+    // Secret ghost NPC — easter egg
+    if (npcId === 'ch0_secret_ghost' && !this.secretGhostFound) {
+      this.secretGhostFound = true;
+      this.frozen = true;
+      const ghost = this.npcs.find(n => n.id === 'ch0_secret_ghost');
+      this.dialogue.show([
+        { speaker: '???', text: 'You found me. Not many people look here.' },
+        { speaker: '???', text: "I\'ve been watching your whole story. Keep going." },
+        { speaker: '???', text: 'You remind me of someone who made it out.' },
+        { speaker: 'Narrator', text: 'The figure fades... but leaves something behind.' },
+        { speaker: 'Narrator', text: 'Lucky Coin added to inventory.' },
+      ], () => {
+        InventorySystem.addItem('lucky-coin', 1);
+        try { localStorage.setItem('jdlo_ghost_found', 'true'); } catch {}
+        // Fade the ghost away forever
+        if (ghost) {
+          this.tweens.add({
+            targets: ghost.sprite,
+            alpha: 0,
+            duration: 1000,
+            onComplete: () => {
+              ghost.sprite.setVisible(false);
+              ghost.sprite.setActive(false);
+            },
+          });
+        }
+        this.frozen = false;
+      });
+      return;
+    }
+
     if (npcId === 'ch0_pops' && !this.popsTalkedTo) {
       // First conversation with Pops — unlock his movement after
       this.dialogue.show(dialogue, () => {
@@ -2528,18 +2629,20 @@ export class HomeScene extends BaseChapterScene {
 
     // === macOS Dock ===
     const dockY = cy + monH / 2 - 36;
-    const dockW = 420;
+    const dockW = 520;
     // Glass dock — above app windows so buttons always clickable
     objects.push(this.add.rectangle(cx, dockY, dockW, 50, 0x2a2a3a, 0.5).setScrollFactor(0).setDepth(319));
     objects.push(this.add.rectangle(cx, dockY - 25, dockW, 1, 0x505070, 0.25).setScrollFactor(0).setDepth(319));
 
     // Dock apps
     const apps = [
-      { name: 'Safari',    color: 0x2090e0, icon: 'S',  x: cx - 160 },
-      { name: 'Mail',      color: 0x3080d0, icon: 'M',  x: cx - 90 },
-      { name: 'Instagram', color: 0xc040a0, icon: 'IG', x: cx - 20 },
-      { name: 'YouTube',   color: 0xe02020, icon: 'YT', x: cx + 50 },
-      { name: 'Close',     color: 0x505058, icon: 'X',  x: cx + 160 },
+      { name: 'Safari',    color: 0x2090e0, icon: 'S',  x: cx - 190 },
+      { name: 'Mail',      color: 0x3080d0, icon: 'M',  x: cx - 130 },
+      { name: 'Instagram', color: 0xc040a0, icon: 'IG', x: cx - 70 },
+      { name: 'YouTube',   color: 0xe02020, icon: 'YT', x: cx - 10 },
+      { name: 'Crypto',    color: 0x5a1a8a, icon: 'C',  x: cx + 50 },
+      { name: 'Casino',    color: 0x0a3a1a, icon: '$',  x: cx + 110 },
+      { name: 'Close',     color: 0x505058, icon: 'X',  x: cx + 190 },
     ];
 
     const appButtons: Phaser.GameObjects.Rectangle[] = [];
@@ -2832,7 +2935,105 @@ export class HomeScene extends BaseChapterScene {
       { speaker: 'JP\'s Mind', text: 'Everyone selling the dream. Nobody shows the work.' },
     ]));
 
-    appButtons[4].on('pointerdown', () => closeAll());
+    // Helper: tear down the MacBook UI without triggering stash discovery (for app switching)
+    const closeMacSilent = () => {
+      if (currentWinCleanup) currentWinCleanup();
+      active = false;
+      escKey.off('down', closeAll);
+      for (const obj of objects) {
+        if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
+      }
+    };
+
+    appButtons[4].on('pointerdown', () => {
+      closeMacSilent();
+      CasinoSystem.openCrypto(this, () => { this.showComputerInterface(); });
+    });
+
+    appButtons[5].on('pointerdown', () => {
+      closeMacSilent();
+      CasinoSystem.openCasino(this, () => { this.showComputerInterface(); });
+    });
+
+    appButtons[6].on('pointerdown', () => closeAll());
+  }
+
+  // ─── PHONE APPS MENU (Ch0 — JP\'s phone on nightstand) ─────────
+  private showPhoneApps() {
+    this.frozen = true;
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+
+    // Phone body
+    const phoneBg = this.add.rectangle(cx, cy, 240, 340, 0x1a1a2e)
+      .setScrollFactor(0).setDepth(300);
+    const phoneBorder = this.add.rectangle(cx, cy, 242, 342, 0x555577, 0)
+      .setStrokeStyle(2, 0x555577)
+      .setScrollFactor(0).setDepth(299);
+    // Notch
+    const notch = this.add.rectangle(cx, cy - 162, 60, 8, 0x0d0d1a)
+      .setScrollFactor(0).setDepth(301);
+
+    const timeLabel = this.add.text(cx, cy - 140, '11:42 PM', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#888899',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+
+    const apps = ['DMs', 'Casino', 'Crypto', 'Close'];
+    const appColors =  [0x3a2a4a, 0x0a3a1a, 0x1a0a2a, 0x333344];
+    const hoverColors = [0x5a3a6a, 0x1a5a2a, 0x3a1a5a, 0x555566];
+    const labelColors = ['#ffffff', '#f0c040', '#bb66ff', '#ffffff'];
+    const buttons: Phaser.GameObjects.Rectangle[] = [];
+    const labels: Phaser.GameObjects.Text[] = [];
+
+    apps.forEach((app, i) => {
+      const y = cy - 80 + i * 48;
+      const btn = this.add.rectangle(cx, y, 200, 36, appColors[i])
+        .setScrollFactor(0).setDepth(301).setInteractive({ useHandCursor: true });
+      const label = this.add.text(cx, y, app, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: labelColors[i],
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(302);
+
+      btn.on('pointerover', () => btn.setFillStyle(hoverColors[i]));
+      btn.on('pointerout', () => btn.setFillStyle(appColors[i]));
+
+      btn.on('pointerdown', () => {
+        cleanup();
+        if (app === 'DMs') DMSystem.openDMs(this, (l, cb) => this.dialogue.show(l, cb), () => this.showPhoneApps());
+        else if (app === 'Casino') CasinoSystem.openCasino(this, () => { this.showPhoneApps(); });
+        else if (app === 'Crypto') CasinoSystem.openCrypto(this, () => { this.showPhoneApps(); });
+        else this.frozen = false;
+      });
+
+      buttons.push(btn);
+      labels.push(label);
+    });
+
+    const cleanup = () => {
+      phoneBg.destroy(); phoneBorder.destroy(); notch.destroy(); timeLabel.destroy();
+      buttons.forEach(b => b.destroy());
+      labels.forEach(l => l.destroy());
+    };
+
+    // Keyboard: 1-4 to pick
+    const keys = [
+      this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ONE),
+      this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.TWO),
+      this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.THREE),
+      this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.FOUR),
+    ];
+    const handlers: (() => void)[] = [];
+    keys.forEach((key, i) => {
+      const handler = () => {
+        keys.forEach((k, j) => k.off('down', handlers[j]));
+        cleanup();
+        if (i === 0) DMSystem.openDMs(this, (l, cb) => this.dialogue.show(l, cb), () => this.showPhoneApps());
+        else if (i === 1) CasinoSystem.openCasino(this, () => { this.showPhoneApps(); });
+        else if (i === 2) CasinoSystem.openCrypto(this, () => { this.showPhoneApps(); });
+        else this.frozen = false;
+      };
+      handlers.push(handler);
+      key.on('down', handler);
+    });
   }
 
   // ─── LIFTING MINIGAME (Dumbbell Curls) ─────────────────────────
@@ -2867,7 +3068,7 @@ export class HomeScene extends BaseChapterScene {
       .setScale(6).setScrollFactor(0).setDepth(305);
     objects.push(jpSprite);
 
-    // Dumbbell in JP's hand
+    // Dumbbell in JP\'s hand
     const dumbbell = this.add.rectangle(GAME_WIDTH / 2 + 80, GAME_HEIGHT / 2 + 50, 50, 16, 0x404040)
       .setScrollFactor(0).setDepth(306);
     objects.push(dumbbell);
@@ -3274,8 +3475,8 @@ export class HomeScene extends BaseChapterScene {
       });
     };
 
-    const catchPhrases = ["That's a keeper!", "Nice one, son!", "Just like when you were little."];
-    const missPhrases = ["Almost had it.", "They're fighters today.", "Patience, JP."];
+    const catchPhrases = ["That\'s a keeper!", "Nice one, son!", "Just like when you were little."];
+    const missPhrases = ["Almost had it.", "They\'re fighters today.", "Patience, JP."];
 
     const showPopsComment = (caught: boolean) => {
       const phrases = caught ? catchPhrases : missPhrases;
@@ -3410,7 +3611,7 @@ export class HomeScene extends BaseChapterScene {
             this.tweens.add({ targets: panel2, y: doorY - SCALED_TILE - 8, alpha: 0, duration: 400, delay: 100 });
             this.tweens.add({ targets: panel1, y: doorY - SCALED_TILE - 16, alpha: 0, duration: 400, delay: 200 });
 
-            // Remove door collision so it's now open
+            // Remove door collision so it\'s now open
             this.collisionTiles.delete('35,30');
 
             // Cover the door tile with concrete (open garage)

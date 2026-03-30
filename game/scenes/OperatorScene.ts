@@ -7,6 +7,9 @@ import { Analytics } from '../systems/Analytics';
 import { BalanceSystem } from '../systems/BalanceSystem';
 import { MoodSystem } from '../systems/MoodSystem';
 import { InventorySystem } from '../systems/InventorySystem';
+import { GameIntelligence } from '../systems/GameIntelligence';
+import { CasinoSystem } from '../systems/CasinoSystem';
+import { DMSystem } from '../systems/DMSystem';
 
 export class OperatorScene extends BaseChapterScene {
   private npcsTalkedTo = new Set<string>();
@@ -14,6 +17,7 @@ export class OperatorScene extends BaseChapterScene {
   private pitchDone = false;
   private clockText?: Phaser.GameObjects.Text;
   private dayNightOverlay?: Phaser.GameObjects.Rectangle;
+  private hiddenRoomFound = false;
 
   constructor() {
     super({ key: 'OperatorScene' });
@@ -33,10 +37,42 @@ export class OperatorScene extends BaseChapterScene {
   create() {
     super.create();
 
+    // GameIntelligence — track player behavior
+    GameIntelligence.init(this, this.player);
+    GameIntelligence.watch('ch6_dashboard',      12, 4,  true);  // required: see the empire
+    GameIntelligence.watch('ch6_portfolio',      19, 12);
+    GameIntelligence.watch('ch6_equal_moment',   22, 12, true);  // required: gate to next
+    GameIntelligence.watch('ch6_revenue',        33, 16);
+    GameIntelligence.watch('ch6_client_call',    15, 6,  true);  // required: close the deal
+    GameIntelligence.watch('ch6_view_city',      32, 44);
+    GameIntelligence.watch('ch6_homeless',       5,  35);
+    GameIntelligence.watch('ch6_pops_call',      12, 48, true);  // required: emotional peak
+    GameIntelligence.watch('ch6_food_truck_menu', 24, 48);
+    GameIntelligence.attachDebugPanel(this);
+
     // JP has money by Ch7 — seed balance if not already set
     if (BalanceSystem.getBalance() < 2550) {
       BalanceSystem.earn(2550); // $2,550 earned through Ch6 clients
     }
+
+
+    // --- HIDDEN ROOM (behind restaurant, alley at col 1, row 23-25) ---
+    // Remove collision from a specific wall tile to make it secretly walkable
+    this.collisionTiles.delete('1,23');
+    this.collisionTiles.delete('1,24');
+    this.collisionTiles.delete('1,25');
+    // Add a small hidden room visual (only visible when you walk in)
+    const hiddenRoomX = 1 * SCALED_TILE + SCALED_TILE / 2;
+    const hiddenRoomY = 24 * SCALED_TILE + SCALED_TILE / 2;
+    // Dim computer glow to hint there\'s something there
+    const glow = this.add.circle(hiddenRoomX, hiddenRoomY, 4, 0x4080ff, 0.3).setDepth(3);
+    this.tweens.add({
+      targets: glow,
+      alpha: 0.1,
+      duration: 1500,
+      yoyo: true,
+      repeat: -1,
+    });
 
     // Exit south -- head to Vegas (row 57 visible, triggers at 58)
     this.addNavArrow(19, 57, 'Vegas');
@@ -267,6 +303,53 @@ export class OperatorScene extends BaseChapterScene {
 
     // Valet — walks near the cars (row 51, cols 17-25)
     patrolX('ch6_valet', 17, 25, 5000, 3000);
+
+    // --- Pomaikai HQ office NPCs ---
+    // Malachi — purposeful walk across the office, checking on things (cols 4-14)
+    patrolX('ch6_malachi', 4, 14, 6000, 4000);
+
+    // Elijah — short pace near conference area (cols 10-14)
+    patrolX('ch6_elijah', 10, 14, 7000, 2500);
+
+    // Office Kult tech — working at desk, small shift (cols 4-7)
+    patrolX('ch6_office_kult', 4, 7, 8000, 2000);
+
+    // --- Office 2 + Office 3 ---
+    // Big client — paces while on a call (cols 22-27)
+    patrolX('ch6_big_client', 22, 27, 5500, 3000);
+
+    // Client 2 — small fidget in the tight office (cols 34-36)
+    patrolX('ch6_client2', 34, 36, 9000, 1800);
+
+    // --- Street NPCs ---
+    // Equal (whale) — slow stroll down the sidewalk (cols 17-26)
+    patrolX('ch6_equal', 17, 26, 7000, 5000);
+
+    // Mentor — walks thoughtfully near the plaza (cols 14-22)
+    patrolX('ch6_mentor', 14, 22, 8000, 4500);
+
+    // --- Downtown / Plaza ---
+    // Team member — wanders the plaza area (cols 4-8)
+    patrolX('ch6_team_member', 4, 8, 6500, 3000);
+
+    // --- Restaurant ---
+    // Restaurant NPC — subtle seat shift (cols 5-7, seated movement)
+    patrolX('ch6_restaurant', 5, 7, 10000, 1500);
+
+    // --- Coworking space ---
+    // Coworker 1 — rolls chair between desks (cols 14-19)
+    patrolX('ch6_coworker1', 14, 19, 7500, 2500);
+
+    // Coworker 2 — paces to whiteboard and back (cols 20-25)
+    patrolX('ch6_coworker2', 20, 25, 8500, 3000);
+
+    // --- Coffee shop ---
+    // Barista — moves behind the counter (cols 15-19)
+    patrolX('ch6_barista', 15, 19, 6000, 2000);
+
+    // --- Block 4 ---
+    // Food truck NPC — steps out and back (tiny movement, cols 23-25)
+    patrolX('ch6_food_truck', 23, 25, 9000, 1800);
   }
 
   // Clock advances based on NPC count + shifts day/night lighting
@@ -305,6 +388,7 @@ export class OperatorScene extends BaseChapterScene {
 
   // Malachi reacts based on client count + dashboard/pitch
   protected handleNPCDialogue(npcId: string, dialogue: DialogueLine[]): void {
+    GameIntelligence.onNPCTalked(npcId);
     this.npcsTalkedTo.add(npcId);
     this.advanceClock();
 
@@ -321,7 +405,7 @@ export class OperatorScene extends BaseChapterScene {
       return;
     }
 
-    // Malachi impressed if you've talked to 5+ people
+    // Malachi impressed if you\'ve talked to 5+ people
     if (npcId === 'ch6_malachi' && this.npcsTalkedTo.size >= 5) {
       const chapterDialogue = this.getChapterDialogue();
       const impressedLines = chapterDialogue.npcs['ch6_malachi_impressed'];
@@ -386,6 +470,7 @@ export class OperatorScene extends BaseChapterScene {
 
   // --- Override handleInteractable for custom moments ---
   protected handleInteractable(interactable: { id: string; type: string; consumed?: boolean }) {
+    GameIntelligence.onInteracted(interactable.id);
     // Client pitch presentation (big_client or client2)
     if (interactable.id === 'ch6_portfolio') {
       Analytics.trackInteraction(interactable.id);
@@ -446,9 +531,30 @@ export class OperatorScene extends BaseChapterScene {
         { speaker: 'JP', text: 'I\'ll take the ribeye.' },
         { speaker: 'Malachi', text: 'Good man.' },
       ], () => {
+        InventorySystem.addItem('steak-dinner', 1);
         MoodSystem.setMood('vibing', 60);
         this.frozen = false;
       });
+      return;
+    }
+
+    // Homeless man — give $20
+    if (interactable.id === 'ch6_homeless') {
+      Analytics.trackInteraction(interactable.id);
+      this.frozen = true;
+      this.interactions.consume(interactable.id);
+      const chapterDialogue = this.getChapterDialogue();
+      const lines = chapterDialogue.npcs['ch6_homeless'];
+      if (lines) {
+        this.dialogue.show(lines, () => {
+          InventorySystem.addItem('receipt', 1);
+          BalanceSystem.spend(20);
+          MoodSystem.changeMorale(10);
+          this.frozen = false;
+        });
+      } else {
+        this.frozen = false;
+      }
       return;
     }
 
@@ -495,6 +601,32 @@ export class OperatorScene extends BaseChapterScene {
       ], () => {
         MoodSystem.setMood('locked_in', 45);
         this.frozen = false;
+      });
+      return;
+    }
+
+    // JP\'s phone — full apps menu
+    if (interactable.id === 'ch6_phone') {
+      Analytics.trackInteraction(interactable.id);
+      this.frozen = true;
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'JP pulls out his phone. Battery at 87%. 14 notifications.' },
+        { speaker: 'JP\'s Mind', text: 'Let me check on a few things.' },
+      ], () => {
+        this.showPhoneApps();
+      });
+      return;
+    }
+
+    // Office computer — apps menu
+    if (interactable.id === 'ch6_computer') {
+      Analytics.trackInteraction(interactable.id);
+      this.frozen = true;
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'JP sits down at the workstation. Three monitors. Dark mode everything.' },
+        { speaker: 'JP\'s Mind', text: 'Empire runs from right here.' },
+      ], () => {
+        this.showComputerApps();
       });
       return;
     }
@@ -588,7 +720,7 @@ export class OperatorScene extends BaseChapterScene {
       const item = items[selectedIndex];
       // Check balance
       if (!BalanceSystem.canAfford(item.cost)) {
-        const noFunds = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + menuH / 2 - 45, "Can't afford that rn", {
+        const noFunds = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + menuH / 2 - 45, "Can\'t afford that rn", {
           fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#ff4444',
         }).setOrigin(0.5).setScrollFactor(0).setDepth(310);
         objects.push(noFunds);
@@ -596,6 +728,9 @@ export class OperatorScene extends BaseChapterScene {
         return;
       }
       BalanceSystem.spend(item.cost);
+      // Add purchased item to inventory
+      const itemId = item.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+$/, '');
+      InventorySystem.addItem(itemId, 1);
       // Purchase animation
       const purchaseText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2, `${item.name}  ✓`, {
         fontFamily: '"Press Start 2P", monospace', fontSize: '14px', color: '#40c060',
@@ -929,7 +1064,7 @@ export class OperatorScene extends BaseChapterScene {
       });
     }
 
-    // After all counters finish, show Malachi's line
+    // After all counters finish, show Malachi\'s line
     const totalDuration = (stats.length - 1) * 600 + 300 + 1500 + 800;
     this.time.delayedCall(totalDuration, () => {
       // Fade out the dashboard
@@ -945,6 +1080,264 @@ export class OperatorScene extends BaseChapterScene {
         },
       });
     });
+  }
+
+  // ─── PHONE APPS MENU ─────────────────────────────────────────────────
+  private showPhoneApps() {
+    this.frozen = true;
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+
+    // Phone body — dark with notch
+    const phoneBg = this.add.rectangle(cx, cy, 240, 370, 0x1a1a2e)
+      .setScrollFactor(0).setDepth(300);
+    const phoneBorder = this.add.rectangle(cx, cy, 242, 372, 0x555577, 0)
+      .setStrokeStyle(2, 0x555577)
+      .setScrollFactor(0).setDepth(299);
+    // Notch
+    const notch = this.add.rectangle(cx, cy - 177, 60, 8, 0x0d0d1a)
+      .setScrollFactor(0).setDepth(301);
+    // Time display
+    const timeText = this.add.text(cx, cy - 155, '3:14 PM', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#888899',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+
+    const apps = ['DMs', 'Casino', 'Crypto', 'Close'];
+    const appColors = [0x2a4a2a, 0x0a3a1a, 0x1a2a4a, 0x333344];
+    const hoverColors = [0x3a6a3a, 0x1a5a2a, 0x2a4a6a, 0x555566];
+    const buttons: Phaser.GameObjects.Rectangle[] = [];
+    const labels: Phaser.GameObjects.Text[] = [];
+
+    apps.forEach((app, i) => {
+      const y = cy - 80 + i * 52;
+      const btn = this.add.rectangle(cx, y, 200, 38, appColors[i])
+        .setScrollFactor(0).setDepth(301).setInteractive({ useHandCursor: true });
+      const isCasino = app === 'Casino';
+      const isCrypto = app === 'Crypto';
+      const labelColor = isCasino ? '#f0c040' : isCrypto ? '#40c0f0' : '#ffffff';
+      const label = this.add.text(cx, y, app, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: labelColor,
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(302);
+
+      btn.on('pointerover', () => btn.setFillStyle(hoverColors[i]));
+      btn.on('pointerout', () => btn.setFillStyle(appColors[i]));
+
+      btn.on('pointerdown', () => {
+        cleanup();
+        if (app === 'DMs') DMSystem.openDMs(this, (l: DialogueLine[], cb?: () => void) => this.dialogue.show(l, cb), () => this.showPhoneApps());
+        else if (app === 'Casino') CasinoSystem.openCasino(this, () => { this.showPhoneApps(); });
+        else if (app === 'Crypto') this.showCryptoPortfolio(() => this.showPhoneApps());
+        else this.frozen = false;
+      });
+
+      buttons.push(btn);
+      labels.push(label);
+    });
+
+    const cleanup = () => {
+      phoneBg.destroy(); phoneBorder.destroy(); notch.destroy(); timeText.destroy();
+      buttons.forEach(b => b.destroy());
+      labels.forEach(l => l.destroy());
+    };
+
+    // Keyboard: 1-4 to pick
+    const keys = [
+      this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ONE),
+      this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.TWO),
+      this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.THREE),
+      this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.FOUR),
+    ];
+    const handlers: (() => void)[] = [];
+    keys.forEach((key, i) => {
+      const handler = () => {
+        keys.forEach((k, j) => k.off('down', handlers[j]));
+        cleanup();
+        if (i === 0) DMSystem.openDMs(this, (l: DialogueLine[], cb?: () => void) => this.dialogue.show(l, cb), () => this.showPhoneApps());
+        else if (i === 1) CasinoSystem.openCasino(this, () => { this.showPhoneApps(); });
+        else if (i === 2) this.showCryptoPortfolio(() => this.showPhoneApps());
+        else this.frozen = false;
+      };
+      handlers.push(handler);
+      key.on('down', handler);
+    });
+  }
+
+  // ─── COMPUTER APPS MENU ──────────────────────────────────────────────
+  private showComputerApps() {
+    this.frozen = true;
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+
+    // Monitor body — lighter, wider than phone
+    const monitorBg = this.add.rectangle(cx, cy, 500, 320, 0x1a1a2a)
+      .setScrollFactor(0).setDepth(300);
+    const monitorBorder = this.add.rectangle(cx, cy, 504, 324, 0x444466, 0)
+      .setStrokeStyle(2, 0x444466)
+      .setScrollFactor(0).setDepth(299);
+    // Monitor stand
+    const stand = this.add.rectangle(cx, cy + 170, 80, 12, 0x333344)
+      .setScrollFactor(0).setDepth(299);
+    // Title bar
+    const titleBar = this.add.rectangle(cx, cy - 148, 500, 24, 0x0d0d1a)
+      .setScrollFactor(0).setDepth(301);
+    const titleText = this.add.text(cx, cy - 148, 'JDLO WORKSTATION', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#888899',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(302);
+    // Dot indicators (red/yellow/green)
+    this.add.circle(cx - 230, cy - 148, 4, 0xff4444).setScrollFactor(0).setDepth(302);
+    this.add.circle(cx - 218, cy - 148, 4, 0xf0c040).setScrollFactor(0).setDepth(302);
+    this.add.circle(cx - 206, cy - 148, 4, 0x40c060).setScrollFactor(0).setDepth(302);
+
+    const apps = ['Crypto', 'Casino', 'Close'];
+    const appColors = [0x1a2a4a, 0x0a3a1a, 0x333344];
+    const hoverColors = [0x2a4a6a, 0x1a5a2a, 0x555566];
+    const buttons: Phaser.GameObjects.Rectangle[] = [];
+    const labels: Phaser.GameObjects.Text[] = [];
+
+    apps.forEach((app, i) => {
+      const x = cx - 140 + i * 150;
+      const y = cy + 20;
+      const btn = this.add.rectangle(x, y, 120, 80, appColors[i])
+        .setScrollFactor(0).setDepth(301).setInteractive({ useHandCursor: true });
+      const isCasino = app === 'Casino';
+      const isCrypto = app === 'Crypto';
+      const labelColor = isCasino ? '#f0c040' : isCrypto ? '#40c0f0' : '#ffffff';
+      const label = this.add.text(x, y, app, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: labelColor,
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(302);
+
+      btn.on('pointerover', () => btn.setFillStyle(hoverColors[i]));
+      btn.on('pointerout', () => btn.setFillStyle(appColors[i]));
+
+      btn.on('pointerdown', () => {
+        cleanup();
+        if (app === 'Crypto') this.showCryptoPortfolio(() => this.showComputerApps());
+        else if (app === 'Casino') CasinoSystem.openCasino(this, () => { this.showComputerApps(); });
+        else this.frozen = false;
+      });
+
+      buttons.push(btn);
+      labels.push(label);
+    });
+
+    const cleanup = () => {
+      monitorBg.destroy(); monitorBorder.destroy(); stand.destroy();
+      titleBar.destroy(); titleText.destroy();
+      buttons.forEach(b => b.destroy());
+      labels.forEach(l => l.destroy());
+    };
+
+    // Keyboard: 1-3 to pick
+    const keys = [
+      this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ONE),
+      this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.TWO),
+      this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.THREE),
+    ];
+    const handlers: (() => void)[] = [];
+    keys.forEach((key, i) => {
+      const handler = () => {
+        keys.forEach((k, j) => k.off('down', handlers[j]));
+        cleanup();
+        if (i === 0) this.showCryptoPortfolio(() => this.showComputerApps());
+        else if (i === 1) CasinoSystem.openCasino(this, () => { this.showComputerApps(); });
+        else this.frozen = false;
+      };
+      handlers.push(handler);
+      key.on('down', handler);
+    });
+  }
+
+  // ─── CRYPTO PORTFOLIO ────────────────────────────────────────────────
+  private showCryptoPortfolio(onBack: () => void) {
+    this.frozen = true;
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+    const objects: Phaser.GameObjects.GameObject[] = [];
+
+    // Dark overlay
+    const bg = this.add.rectangle(cx, cy, 300, 340, 0x0a0a1a)
+      .setScrollFactor(0).setDepth(300);
+    objects.push(bg);
+    const border = this.add.rectangle(cx, cy, 302, 342, 0x40c0f0, 0)
+      .setStrokeStyle(1, 0x40c0f0)
+      .setScrollFactor(0).setDepth(299);
+    objects.push(border);
+
+    // Header
+    const header = this.add.text(cx, cy - 150, 'PORTFOLIO', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#40c0f0',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+    objects.push(header);
+
+    // Total
+    const totalLabel = this.add.text(cx, cy - 120, 'Total Value', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#666688',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+    objects.push(totalLabel);
+
+    const totalValue = this.add.text(cx, cy - 100, '$12,847.33', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '14px', color: '#40f080',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+    objects.push(totalValue);
+
+    const changeText = this.add.text(cx, cy - 80, '+$2,341.12 (22.3%)', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#40f080',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+    objects.push(changeText);
+
+    // Holdings
+    const holdings = [
+      { name: 'BTC', amount: '0.087', value: '$5,480', change: '+12.4%', color: '#f0a020' },
+      { name: 'ETH', amount: '2.14',  value: '$4,120', change: '+8.7%',  color: '#627eea' },
+      { name: 'SOL', amount: '18.5',  value: '$2,220', change: '+41.2%', color: '#00d18c' },
+      { name: 'DOGE', amount: '4200',  value: '$1,027', change: '-3.1%', color: '#c2a633' },
+    ];
+
+    holdings.forEach((h, i) => {
+      const y = cy - 40 + i * 44;
+      const nameT = this.add.text(cx - 120, y, h.name, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: h.color,
+      }).setScrollFactor(0).setDepth(301);
+      objects.push(nameT);
+
+      const amountT = this.add.text(cx - 120, y + 16, h.amount, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#555577',
+      }).setScrollFactor(0).setDepth(301);
+      objects.push(amountT);
+
+      const valueT = this.add.text(cx + 120, y, h.value, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#ffffff',
+      }).setOrigin(1, 0).setScrollFactor(0).setDepth(301);
+      objects.push(valueT);
+
+      const changeT = this.add.text(cx + 120, y + 16, h.change, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '6px',
+        color: h.change.startsWith('-') ? '#ff4444' : '#40f080',
+      }).setOrigin(1, 0).setScrollFactor(0).setDepth(301);
+      objects.push(changeT);
+    });
+
+    // Back button
+    const backBtn = this.add.text(cx, cy + 150, '[ BACK ]', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#666688',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301)
+      .setInteractive({ useHandCursor: true });
+    objects.push(backBtn);
+
+    backBtn.on('pointerover', () => backBtn.setColor('#ffffff'));
+    backBtn.on('pointerout', () => backBtn.setColor('#666688'));
+
+    const close = () => {
+      for (const obj of objects) { if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy(); }
+      onBack();
+    };
+
+    backBtn.on('pointerdown', close);
+
+    // ESC to go back
+    const escKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+    const onEsc = () => { escKey.off('down', onEsc); close(); };
+    escKey.on('down', onEsc);
   }
 
   // ─── EQUAL MOMENT (Required Interaction) ────────────────────────────
@@ -999,4 +1392,64 @@ export class OperatorScene extends BaseChapterScene {
       },
     });
   }
+
+  protected onPlayerMove(tileX: number, tileY: number): void {
+    // Hidden room — behind the restaurant alley
+    if (tileX === 1 && tileY === 24 && !this.hiddenRoomFound) {
+      this.hiddenRoomFound = true;
+      this.frozen = true;
+
+      try { localStorage.setItem('jdlo_hidden_room_found', 'true'); } catch {}
+
+      // Reveal the room
+      const cx = GAME_WIDTH / 2;
+      const cy = GAME_HEIGHT / 2;
+
+      const dimOverlay = this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0)
+        .setScrollFactor(0).setDepth(300);
+      this.tweens.add({ targets: dimOverlay, alpha: 0.5, duration: 600 });
+
+      // Computer screen visual
+      const screenBg = this.add.rectangle(cx, cy - 20, 200, 120, 0x111111)
+        .setScrollFactor(0).setDepth(301);
+      const screenGlow = this.add.rectangle(cx, cy - 20, 190, 110, 0x1a1a2e)
+        .setScrollFactor(0).setDepth(302);
+      // Browser mockup showing jdlo.site
+      const urlBar = this.add.rectangle(cx, cy - 68, 180, 14, 0x333344)
+        .setScrollFactor(0).setDepth(303);
+      const urlText = this.add.text(cx, cy - 68, 'jdlo.site', {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#80c0ff',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(304);
+
+      // Site content mockup
+      const siteTitle = this.add.text(cx, cy - 40, 'JDLO', {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '14px', color: '#ffffff',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(303);
+      const siteSub = this.add.text(cx, cy - 20, 'Websites. AI. Systems.', {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#aaaacc',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(303);
+      const siteTagline = this.add.text(cx, cy, 'Built different.', {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#666688',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(303);
+
+      const objects = [dimOverlay, screenBg, screenGlow, urlBar, urlText, siteTitle, siteSub, siteTagline];
+
+      this.time.delayedCall(1500, () => {
+        this.dialogue.show([
+          { speaker: 'Narrator', text: 'A small room. Barely fits a desk. One laptop.' },
+          { speaker: 'Narrator', text: 'The screen shows jdlo.site. His site. The first thing he ever built.' },
+          { speaker: 'JP', text: 'This is where it all started. A laptop and a dream.' },
+          { speaker: 'JP', text: 'If you\'re playing this game, I built it for you.' },
+          { speaker: 'JP', text: 'No fancy tools. No team. Just Claude and stubbornness.' },
+          { speaker: 'Narrator', text: 'JP smiles. Closes the laptop. Walks out.' },
+        ], () => {
+          for (const obj of objects) {
+            if (obj.active) this.tweens.add({ targets: obj, alpha: 0, duration: 400, onComplete: () => obj.destroy() });
+          }
+          this.time.delayedCall(500, () => { this.frozen = false; });
+        });
+      });
+    }
+  }
+
 }

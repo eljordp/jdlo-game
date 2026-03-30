@@ -79,11 +79,15 @@ export class PhoneSystem {
       if (this.isOpen) this.close();
     });
 
-    // Mobile: poll virtualInput for phone button
+    // Mobile: poll virtualInput for phone button and cancel (B) button
     scene.events.on('update', () => {
       if (virtualInput.phoneJustPressed) {
         virtualInput.phoneJustPressed = false;
         this.toggle();
+      }
+      if (virtualInput.cancelJustPressed && this.isOpen) {
+        virtualInput.cancelJustPressed = false;
+        this.close();
       }
     });
   }

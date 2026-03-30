@@ -2,8 +2,13 @@ import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '../config';
 import { MusicSystem } from '../systems/MusicSystem';
 import { Analytics } from '../systems/Analytics';
+import { GameStats, type GameStatsData } from '../systems/GameStats';
+import { BalanceSystem } from '../systems/BalanceSystem';
+import { AchievementSystem } from '../systems/AchievementSystem';
 
 export class EndScene extends Phaser.Scene {
+  private statsElements: Phaser.GameObjects.GameObject[] = [];
+
   constructor() {
     super({ key: 'EndScene' });
   }
@@ -11,8 +16,372 @@ export class EndScene extends Phaser.Scene {
   create() {
     MusicSystem.stop();
     Analytics.trackGameComplete();
-    this.cameras.main.fadeIn(1500, 0, 0, 0);
 
+    // Final stat snapshot
+    GameStats.setMax('totalMoney', BalanceSystem.getBalance());
+
+    // Beat all chapters achievement
+    AchievementSystem.attachScene(this);
+    AchievementSystem.check('the_whole_story');
+
+    this.cameras.main.fadeIn(1500, 0, 0, 0);
+    this.showStatsScreen();
+  }
+
+  // ═══════════════════════════════════════════════════════════════════
+  //  GTA-STYLE STATS SCREEN
+  // ═══════════════════════════════════════════════════════════════════
+
+  private showStatsScreen() {
+    const stats = GameStats.getAll();
+    const cx = GAME_WIDTH / 2;
+    const d = 100; // depth base
+
+    // ── Full black background ──
+    const bg = this.add.rectangle(cx, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x050510)
+      .setDepth(d);
+    this.statsElements.push(bg);
+
+    // ── Gold trim lines ──
+    const topLine = this.add.rectangle(cx, 40, GAME_WIDTH - 120, 2, 0xd4a017)
+      .setDepth(d + 1).setAlpha(0);
+    const bottomLine = this.add.rectangle(cx, GAME_HEIGHT - 100, GAME_WIDTH - 120, 2, 0xd4a017)
+      .setDepth(d + 1).setAlpha(0);
+    this.statsElements.push(topLine, bottomLine);
+
+    this.tweens.add({ targets: [topLine, bottomLine], alpha: 0.6, duration: 800, delay: 300 });
+
+    // ── Title ──
+    const title = this.add.text(cx, 72, 'JDLO: THE STATS', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '22px',
+      color: '#d4a017',
+    }).setOrigin(0.5).setDepth(d + 2).setAlpha(0);
+    this.statsElements.push(title);
+
+    this.tweens.add({
+      targets: title,
+      alpha: 1,
+      duration: 1000,
+      delay: 200,
+    });
+
+    // Subtitle
+    const subtitle = this.add.text(cx, 100, 'YOUR STORY IN NUMBERS', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '8px',
+      color: '#8888aa',
+      letterSpacing: 4,
+    }).setOrigin(0.5).setDepth(d + 2).setAlpha(0);
+    this.statsElements.push(subtitle);
+
+    this.tweens.add({ targets: subtitle, alpha: 1, duration: 800, delay: 600 });
+
+    // ── Stats in two columns ──
+    const leftX = cx - 260;
+    const rightX = cx + 40;
+    const startY = 150;
+    const lineH = 52;
+
+    const leftStats = [
+      { icon: '\u{1F4B0}', label: 'Peak Balance', value: '$' + stats.totalMoney.toLocaleString(), color: '#22ff88' },
+      { icon: '\u{1F3B0}', label: 'Casino Record', value: this.formatRecord(stats.casinoWins, stats.casinoLosses, stats.casinoProfit), color: stats.casinoProfit >= 0 ? '#22ff88' : '#ff4444' },
+      { icon: '\u{1F4C8}', label: 'Crypto Peak', value: stats.cryptoPeakPortfolio > 0 ? '$' + stats.cryptoPeakPortfolio.toLocaleString() : '--', color: '#00ccff' },
+      { icon: '\u{1F494}', label: 'Girls Fumbled', value: '' + stats.girlsFumbled, color: stats.girlsFumbled > 3 ? '#ff4444' : '#ffffff' },
+      { icon: '\u{2764}\u{FE0F}', label: 'Girls Succeeded', value: '' + stats.girlsSucceeded, color: '#ff69b4' },
+      { icon: '\u{1F37A}', label: 'Drinks Had', value: '' + stats.drinksHad, color: '#ffaa00' },
+    ];
+
+    const rightStats = [
+      { icon: '\u{1F33F}', label: 'Times Smoked', value: '' + stats.timesSmoked, color: '#66cc66' },
+      { icon: '\u{1F3B2}', label: 'Dice Record', value: stats.diceWins + '-' + stats.diceLosses, color: '#ffffff' },
+      { icon: '\u{1F5E3}\u{FE0F}', label: 'NPCs Met', value: '' + stats.npcsTalkedTo, color: '#aaaaff' },
+      { icon: '\u{1F4E6}', label: 'Items Found', value: '' + stats.itemsCollected, color: '#ffcc44' },
+      { icon: '\u{23F1}\u{FE0F}', label: 'Play Time', value: this.formatPlayTime(stats.totalPlayTimeMs), color: '#cccccc' },
+      { icon: '\u{1F3AE}', label: 'Minigames', value: stats.minigamesWon + '/' + stats.minigamesPlayed + ' won', color: '#ff8844' },
+    ];
+
+    // Render left column with stagger
+    leftStats.forEach((s, i) => {
+      this.createStatRow(leftX, startY + i * lineH, s.icon, s.label, s.value, s.color, d + 2, 800 + i * 150);
+    });
+
+    // Render right column with stagger
+    rightStats.forEach((s, i) => {
+      this.createStatRow(rightX, startY + i * lineH, s.icon, s.label, s.value, s.color, d + 2, 800 + i * 150 + 75);
+    });
+
+    // ── Divider before grade ──
+    const gradeDivider = this.add.rectangle(cx, startY + 6 * lineH + 10, GAME_WIDTH - 200, 1, 0x333355)
+      .setDepth(d + 1).setAlpha(0);
+    this.statsElements.push(gradeDivider);
+    this.tweens.add({ targets: gradeDivider, alpha: 0.5, duration: 600, delay: 2200 });
+
+    // ── GRADE ──
+    const gradeDelay = 2600;
+    const grade = this.calculateGrade(stats);
+    const gradeY = startY + 6 * lineH + 55;
+
+    const gradeLabel = this.add.text(cx - 60, gradeY, 'GRADE:', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '14px',
+      color: '#8888aa',
+    }).setOrigin(0.5).setDepth(d + 2).setAlpha(0);
+    this.statsElements.push(gradeLabel);
+
+    const gradeText = this.add.text(cx + 40, gradeY, grade.letter, {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '48px',
+      color: grade.color,
+      stroke: '#000000',
+      strokeThickness: 6,
+    }).setOrigin(0.5).setDepth(d + 3).setScale(0);
+    this.statsElements.push(gradeText);
+
+    const gradeDesc = this.add.text(cx, gradeY + 40, grade.description, {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '8px',
+      color: '#aaaacc',
+    }).setOrigin(0.5).setDepth(d + 2).setAlpha(0);
+    this.statsElements.push(gradeDesc);
+
+    // Grade label fade in
+    this.tweens.add({ targets: gradeLabel, alpha: 1, duration: 600, delay: gradeDelay });
+
+    // Grade letter bounce in with flash
+    this.tweens.add({
+      targets: gradeText,
+      scale: 1,
+      duration: 600,
+      ease: 'Back.easeOut',
+      delay: gradeDelay + 400,
+      onStart: () => {
+        // Screen flash on grade reveal
+        this.time.delayedCall(gradeDelay > 0 ? 0 : gradeDelay + 400, () => {
+          const flash = this.add.rectangle(cx, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, grade.flashColor)
+            .setDepth(d + 10).setAlpha(0);
+          this.statsElements.push(flash);
+          this.tweens.add({
+            targets: flash,
+            alpha: { from: 0, to: 0.5 },
+            duration: 150,
+            yoyo: true,
+            onComplete: () => {
+              this.tweens.add({
+                targets: flash,
+                alpha: { from: 0, to: 0.3 },
+                duration: 100,
+                yoyo: true,
+                onComplete: () => flash.destroy(),
+              });
+            },
+          });
+        });
+        // Camera shake
+        this.cameras.main.shake(400, 0.012);
+      },
+    });
+
+    // Grade bounce pulse
+    this.tweens.add({
+      targets: gradeText,
+      scaleX: 1.1,
+      scaleY: 1.1,
+      duration: 500,
+      yoyo: true,
+      repeat: 2,
+      delay: gradeDelay + 1200,
+    });
+
+    // Grade description
+    this.tweens.add({ targets: gradeDesc, alpha: 1, duration: 600, delay: gradeDelay + 1000 });
+
+    // ── Buttons ──
+    const btnY = GAME_HEIGHT - 55;
+    const btnDelay = gradeDelay + 1600;
+
+    // CONTINUE button (goes to narrative end)
+    const continueBtn = this.add.text(cx - 160, btnY, '[ CONTINUE ]', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '12px',
+      color: '#f0c040',
+    }).setOrigin(0.5).setDepth(d + 5).setAlpha(0).setInteractive({ useHandCursor: true });
+    this.statsElements.push(continueBtn);
+
+    continueBtn.on('pointerover', () => continueBtn.setColor('#ffdd66'));
+    continueBtn.on('pointerout', () => continueBtn.setColor('#f0c040'));
+    continueBtn.on('pointerdown', () => this.transitionToNarrative());
+
+    this.tweens.add({ targets: continueBtn, alpha: 1, duration: 800, delay: btnDelay });
+    this.tweens.add({
+      targets: continueBtn,
+      alpha: 0.5,
+      duration: 1000,
+      yoyo: true,
+      repeat: -1,
+      delay: btnDelay + 1000,
+    });
+
+    // SHARE button
+    const shareBtn = this.add.text(cx + 60, btnY, '[ SCREENSHOT THIS ]', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '10px',
+      color: '#6688cc',
+    }).setOrigin(0.5).setDepth(d + 5).setAlpha(0).setInteractive({ useHandCursor: true });
+    this.statsElements.push(shareBtn);
+
+    shareBtn.on('pointerover', () => shareBtn.setColor('#88aaee'));
+    shareBtn.on('pointerout', () => shareBtn.setColor('#6688cc'));
+    shareBtn.on('pointerdown', () => {
+      shareBtn.setText('Screenshot & share @jdlo');
+      shareBtn.setColor('#f0c040');
+      this.time.delayedCall(3000, () => {
+        shareBtn.setText('[ SCREENSHOT THIS ]');
+        shareBtn.setColor('#6688cc');
+      });
+    });
+
+    this.tweens.add({ targets: shareBtn, alpha: 1, duration: 800, delay: btnDelay + 200 });
+
+    // PLAY AGAIN
+    const playAgain = this.add.text(cx + 240, btnY, '[ PLAY AGAIN ]', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '10px',
+      color: '#555577',
+    }).setOrigin(0.5).setDepth(d + 5).setAlpha(0).setInteractive({ useHandCursor: true });
+    this.statsElements.push(playAgain);
+
+    playAgain.on('pointerover', () => playAgain.setColor('#8888aa'));
+    playAgain.on('pointerout', () => playAgain.setColor('#555577'));
+    playAgain.on('pointerdown', () => {
+      GameStats.reset();
+      this.cameras.main.fadeOut(1000, 0, 0, 0);
+      this.cameras.main.once('camerafadeoutcomplete', () => {
+        this.scene.start('IntroScene');
+      });
+    });
+
+    this.tweens.add({ targets: playAgain, alpha: 1, duration: 800, delay: btnDelay + 400 });
+
+    // SPACE to continue
+    this.input.keyboard!.on('keydown-SPACE', () => {
+      this.transitionToNarrative();
+    });
+  }
+
+  // ── Stat Row Builder ──
+
+  private createStatRow(
+    x: number, y: number,
+    icon: string, label: string, value: string, valueColor: string,
+    depth: number, delay: number,
+  ) {
+    // Icon
+    const iconText = this.add.text(x, y, icon, {
+      fontSize: '18px',
+    }).setOrigin(0, 0.5).setDepth(depth).setAlpha(0);
+    this.statsElements.push(iconText);
+
+    // Label
+    const labelText = this.add.text(x + 30, y - 8, label, {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '8px',
+      color: '#666688',
+    }).setOrigin(0, 0.5).setDepth(depth).setAlpha(0);
+    this.statsElements.push(labelText);
+
+    // Value
+    const valueText = this.add.text(x + 30, y + 10, value, {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '13px',
+      color: valueColor,
+    }).setOrigin(0, 0.5).setDepth(depth).setAlpha(0).setScale(0.8);
+    this.statsElements.push(valueText);
+
+    // Animate in
+    this.tweens.add({ targets: iconText, alpha: 1, duration: 400, delay });
+    this.tweens.add({ targets: labelText, alpha: 1, duration: 400, delay: delay + 50 });
+    this.tweens.add({
+      targets: valueText,
+      alpha: 1,
+      scale: 1,
+      duration: 400,
+      ease: 'Back.easeOut',
+      delay: delay + 100,
+    });
+  }
+
+  // ── Grade Calculator ──
+
+  private calculateGrade(stats: GameStatsData): { letter: string; color: string; flashColor: number; description: string } {
+    let score = 0;
+
+    // NPCs talked to (max 20 pts)
+    score += Math.min(stats.npcsTalkedTo * 2, 20);
+    // Items collected (max 15 pts)
+    score += Math.min(stats.itemsCollected * 3, 15);
+    // Chapters (max 21 pts, 3 per chapter)
+    score += stats.chaptersCompleted * 3;
+    // Casino games played (max 10 pts)
+    score += Math.min((stats.casinoWins + stats.casinoLosses), 10);
+    // Girls interacted with (max 10 pts)
+    score += Math.min((stats.girlsFumbled + stats.girlsSucceeded) * 2, 10);
+    // Substances (max 5 pts)
+    score += Math.min(stats.drinksHad + stats.timesSmoked, 5);
+    // Minigames (max 10 pts)
+    score += Math.min(stats.minigamesPlayed * 2, 10);
+    // Play time bonus (max 9 pts, 1pt per 5 min)
+    score += Math.min(Math.floor(stats.totalPlayTimeMs / 300000), 9);
+
+    // Total possible = ~100
+
+    if (score >= 80) return { letter: 'S', color: '#FFD700', flashColor: 0xFFD700, description: 'You lived every moment. Legend.' };
+    if (score >= 60) return { letter: 'A', color: '#22ff88', flashColor: 0x22ff88, description: 'Experienced most of the story. Respect.' };
+    if (score >= 40) return { letter: 'B', color: '#00ccff', flashColor: 0x00ccff, description: 'Solid run. Missed some things though.' };
+    if (score >= 20) return { letter: 'C', color: '#ff8844', flashColor: 0xff8844, description: 'Rushed through. Go back and explore.' };
+    return { letter: 'D', color: '#ff4444', flashColor: 0xff4444, description: 'Barely scratched the surface.' };
+  }
+
+  // ── Record Formatter ──
+
+  private formatRecord(wins: number, losses: number, profit: number): string {
+    const sign = profit >= 0 ? '+' : '';
+    return wins + '-' + losses + ' (' + sign + '$' + profit.toLocaleString() + ')';
+  }
+
+  // ── Play Time Formatter ──
+
+  private formatPlayTime(ms: number): string {
+    const totalSeconds = Math.floor(ms / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    if (hours > 0) return hours + 'h ' + minutes + 'm';
+    return minutes + 'm';
+  }
+
+  // ═══════════════════════════════════════════════════════════════════
+  //  TRANSITION FROM STATS → NARRATIVE END
+  // ═══════════════════════════════════════════════════════════════════
+
+  private transitionToNarrative() {
+    // Fade out stats
+    this.tweens.add({
+      targets: this.statsElements.filter(e => e && e.active),
+      alpha: 0,
+      duration: 800,
+      onComplete: () => {
+        this.statsElements.forEach(e => { try { e.destroy(); } catch { /* */ } });
+        this.statsElements = [];
+        this.showNarrativeEnd();
+      },
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════════════════
+  //  NARRATIVE END (Original EndScene content)
+  // ═══════════════════════════════════════════════════════════════════
+
+  private showNarrativeEnd() {
     this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x0a0a1a);
 
     // Player sprite — operator outfit
@@ -150,7 +519,7 @@ export class EndScene extends Phaser.Scene {
     this.tweens.add({ targets: igHandle, alpha: 1, duration: 800, delay: ctaDelay + 200 });
 
     // Divider
-    const divider = this.add.text(GAME_WIDTH / 2, ctaY + 65, '—————', {
+    const divider = this.add.text(GAME_WIDTH / 2, ctaY + 65, '\u2014\u2014\u2014\u2014\u2014', {
       fontFamily: '"Press Start 2P", monospace',
       fontSize: '8px',
       color: '#333355',

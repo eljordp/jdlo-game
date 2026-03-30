@@ -15,6 +15,10 @@ import { MoodSystem } from '../systems/MoodSystem';
 import { PhoneSystem } from '../systems/PhoneSystem';
 import { InventoryUI } from '../systems/InventoryUI';
 import { SubstanceSystem } from '../systems/SubstanceSystem';
+import { GameIntelligence } from '../systems/GameIntelligence';
+import { BalanceSystem } from '../systems/BalanceSystem';
+import { AchievementSystem } from '../systems/AchievementSystem';
+import { GameStats } from '../systems/GameStats';
 import type { MapData } from '../data/maps';
 
 type NPCObject = {
@@ -54,6 +58,17 @@ export abstract class BaseChapterScene extends Phaser.Scene {
   private talkedToNpcs: Set<string> = new Set();
   private floorIndicatorText: Phaser.GameObjects.Text | null = null;
 
+  // NPC nudge system — hints players toward missed interactables
+  private nudgeTimers: Map<string, number> = new Map();
+  private nudgedItems: Set<string> = new Set();
+  private nudgeCheckAccum = 0;
+
+  // Konami code easter egg
+  private konamiSequence = ['UP', 'UP', 'DOWN', 'DOWN', 'LEFT', 'RIGHT', 'LEFT', 'RIGHT', 'B', 'A'];
+  private konamiProgress = 0;
+  private konamiActivated = false;
+  private konamiSpeedBoostTimer: Phaser.Time.TimerEvent | null = null;
+
   abstract getMapData(): MapData;
   abstract getChapterDialogue(): { intro: DialogueLine[]; npcs: Record<string, DialogueLine[]> };
 
@@ -84,6 +99,13 @@ export abstract class BaseChapterScene extends Phaser.Scene {
 
     // Analytics
     Analytics.trackChapterStart(this.scene.key);
+
+    // Milestone celebrations
+    BalanceSystem.attachScene(this);
+
+    // Achievement system
+    AchievementSystem.attachScene(this);
+    AchievementSystem.resetChapterTrackers();
 
     // Clean up previous nav arrows
     for (const tween of this.navArrowTweens) tween.stop();
@@ -215,6 +237,9 @@ export abstract class BaseChapterScene extends Phaser.Scene {
 
     // Inventory UI — press I to open inventory/crafting
     InventoryUI.init(this);
+
+    // Konami code easter egg listener
+    this.initKonamiCode();
   }
 
   private showChapterTitle() {
@@ -1024,6 +1049,12 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     this.frozen = true;
     SoundEffects.playDoorOpen();
     Analytics.trackChapterComplete(this.scene.key);
+    GameStats.increment('chaptersCompleted');
+    GameStats.setMax('totalMoney', BalanceSystem.getBalance());
+
+    // Achievement checks on chapter completion
+    AchievementSystem.checkSpeedRunner();
+    AchievementSystem.checkSoberSally();
 
     const currentScene = this.scene.key;
     const DEPTH = 2000;
@@ -1175,7 +1206,7 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     }
 
     // Ch2 -> Ch3: Night overlay fade
-    if (fromScene === 'BeachScene' && toScene === 'WrongCrowdScene') {
+    if (fromScene === 'BeachScene' && (toScene === 'WrongCrowdScene' || toScene === 'TransitionScene')) {
       const nightOverlay = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000030)
         .setScrollFactor(0).setDepth(DEPTH).setAlpha(0);
       this.tweens.add({
@@ -1213,7 +1244,7 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     }
 
     // Ch7 -> Vegas: Road stretching out
-    if (fromScene === 'OperatorScene' && toScene === 'VegasScene') {
+    if (fromScene === 'OperatorScene' && (toScene === 'VegasScene' || toScene === 'TransitionScene')) {
       SoundEffects.playRoadWind();
       this.playRoadStretch(DEPTH);
     }
@@ -1319,10 +1350,108 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     });
   }
 
+  // ── NPC Nudge System ──────────────────────────────────────────
+
+  private static NUDGE_HINTS = [
+    'Hey, check that out over there',
+    'You see that? Might be worth a look',
+    "Don't miss that",
+    'Yo, go look at that',
+  ];
+
+  private updateNpcNudges(): void {
+    const missedIds = GameIntelligence.getMissedItems();
+    if (missedIds.length === 0) return;
+
+    const playerTileX = Math.round((this.player.x - SCALED_TILE / 2) / SCALED_TILE);
+    const playerTileY = Math.round((this.player.y - SCALED_TILE / 2) / SCALED_TILE);
+
+    // Get interactable positions from the interaction system
+    const visuals = this.interactions.getVisuals();
+
+    for (const itemId of missedIds) {
+      if (this.nudgedItems.has(itemId)) continue;
+
+      // Find position for this interactable
+      const visual = visuals.find(v => v.id === itemId);
+      if (!visual) continue;
+
+      const distToPlayer = Math.abs(visual.x - playerTileX) + Math.abs(visual.y - playerTileY);
+
+      if (distToPlayer <= 4) {
+        // Player is near a missed item — accumulate time
+        const prev = this.nudgeTimers.get(itemId) ?? 0;
+        const next = prev + 1000; // called every ~1s
+        this.nudgeTimers.set(itemId, next);
+
+        if (next >= 10000) {
+          // Find nearest NPC within 6 tiles of the player
+          let nearestNpc: NPCObject | null = null;
+          let nearestDist = Infinity;
+
+          for (const npc of this.npcs) {
+            const npcTileX = Math.round((npc.sprite.x - SCALED_TILE / 2) / SCALED_TILE);
+            const npcTileY = Math.round((npc.sprite.y - SCALED_TILE / 2) / SCALED_TILE);
+            const d = Math.abs(npcTileX - playerTileX) + Math.abs(npcTileY - playerTileY);
+            if (d <= 6 && d < nearestDist && npc.sprite.visible) {
+              nearestDist = d;
+              nearestNpc = npc;
+            }
+          }
+
+          if (nearestNpc) {
+            const hint = BaseChapterScene.NUDGE_HINTS[
+              Math.floor(Math.random() * BaseChapterScene.NUDGE_HINTS.length)
+            ];
+            this.showNpcNudgeBubble(nearestNpc.sprite, hint);
+            this.nudgedItems.add(itemId);
+            GameIntelligence.logAdaptation('npc_nudge', `NPC hinted toward ${itemId}`);
+          }
+        }
+      } else {
+        // Player moved away — reset timer
+        this.nudgeTimers.delete(itemId);
+      }
+    }
+  }
+
+  private showNpcNudgeBubble(npcSprite: Phaser.GameObjects.Sprite, text: string): void {
+    const bubble = this.add.text(npcSprite.x, npcSprite.y - 28, text, {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '6px',
+      color: '#ffffff',
+      stroke: '#000000',
+      strokeThickness: 3,
+      align: 'center',
+    })
+      .setOrigin(0.5, 1)
+      .setDepth(200);
+
+    // Fade out after 3 seconds
+    this.tweens.add({
+      targets: bubble,
+      alpha: 0,
+      duration: 800,
+      delay: 2200,
+      onComplete: () => bubble.destroy(),
+    });
+  }
+
   update(_time: number, _delta: number) {
     // Update mood system every frame (particles, effects, timer)
     MoodSystem.update(this, this.player);
     SubstanceSystem.update(_delta);
+
+    // Achievement tracking: faded timer + money milestones
+    AchievementSystem.updateFadedTimer(_delta, MoodSystem.isFaded());
+    AchievementSystem.checkMoneyAchievements(BalanceSystem.getBalance());
+
+    // NPC nudge system — throttled to every 1s
+    this.nudgeCheckAccum += _delta;
+    if (this.nudgeCheckAccum >= 1000) {
+      this.nudgeCheckAccum = 0;
+      this.updateNpcNudges();
+    }
 
     // Refresh objective hint if state changed
     this.refreshObjectiveHint();
@@ -1341,6 +1470,14 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     if (virtualInput.actionJustPressed) {
       virtualInput.actionJustPressed = false;
       this.handleInteract();
+    }
+
+    // Check mobile cancel (B) button — advance dialogue or close overlays
+    if (virtualInput.cancelJustPressed) {
+      virtualInput.cancelJustPressed = false;
+      if (this.dialogue.isActive()) {
+        this.dialogue.advance();
+      }
     }
 
     if (this.frozen || this.dialogue.isActive() || this.isMoving) return;
@@ -1511,6 +1648,7 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     if (!this.talkedToNpcs.has(_npcId)) {
       this.talkedToNpcs.add(_npcId);
       this.removeNpcIndicator(_npcId);
+      GameStats.increment('npcsTalkedTo');
     }
 
     // Mood-reactive NPC dialogue: if faded, 30% chance NPCs comment on it
@@ -1549,5 +1687,106 @@ export abstract class BaseChapterScene extends Phaser.Scene {
         }
       }
     }
+  }
+
+  // ─── KONAMI CODE EASTER EGG ──────────────────────────────────────
+  private initKonamiCode() {
+    const keyMap: Record<string, string> = {
+      'ArrowUp': 'UP', 'ArrowDown': 'DOWN', 'ArrowLeft': 'LEFT', 'ArrowRight': 'RIGHT',
+      'b': 'B', 'B': 'B', 'a': 'A', 'A': 'A',
+    };
+
+    this.input.keyboard!.on('keydown', (event: KeyboardEvent) => {
+      if (this.konamiActivated) return;
+      const mapped = keyMap[event.key];
+      if (!mapped) { this.konamiProgress = 0; return; }
+
+      if (mapped === this.konamiSequence[this.konamiProgress]) {
+        this.konamiProgress++;
+        if (this.konamiProgress >= this.konamiSequence.length) {
+          this.konamiProgress = 0;
+          this.activateKonamiCode();
+        }
+      } else {
+        this.konamiProgress = mapped === this.konamiSequence[0] ? 1 : 0;
+      }
+    });
+  }
+
+  private activateKonamiCode() {
+    this.konamiActivated = true;
+    this.frozen = true;
+
+    // Save to localStorage as a hidden stat
+    try { localStorage.setItem('jdlo_konami_found', 'true'); } catch {}
+
+    // Rainbow flash effect
+    const colors = [0xff0000, 0xff8000, 0xffff00, 0x00ff00, 0x0080ff, 0x8000ff];
+    const flash = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, colors[0], 0.6)
+      .setScrollFactor(0).setDepth(900);
+
+    let colorIndex = 0;
+    const rainbowTimer = this.time.addEvent({
+      delay: 100,
+      repeat: 19,
+      callback: () => {
+        colorIndex = (colorIndex + 1) % colors.length;
+        flash.setFillStyle(colors[colorIndex], 0.6);
+      },
+    });
+
+    // Flip all NPC sprites upside down briefly
+    const flippedNpcs: Phaser.GameObjects.Sprite[] = [];
+    for (const npc of this.npcs) {
+      if (npc.sprite.visible) {
+        npc.sprite.setFlipY(true);
+        flippedNpcs.push(npc.sprite);
+      }
+    }
+
+    // Secret message
+    const msgBg = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, 400, 60, 0x000000, 0.9)
+      .setScrollFactor(0).setDepth(901);
+    const msg = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'JDLO MODE ACTIVATED', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '16px', color: '#f0c040',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(902);
+
+    // After 2 seconds, clean up and apply speed boost
+    this.time.delayedCall(2000, () => {
+      flash.destroy();
+      msgBg.destroy();
+      msg.destroy();
+      rainbowTimer.remove();
+
+      // Restore NPC sprites
+      for (const sprite of flippedNpcs) {
+        if (sprite.active) sprite.setFlipY(false);
+      }
+
+      // Double player speed for 30 seconds
+      this.time.timeScale = 2;
+      this.tweens.timeScale = 2;
+
+      const speedText = this.add.text(GAME_WIDTH - 10, 40, 'JDLO MODE: 30s', {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#f0c040',
+      }).setOrigin(1, 0).setScrollFactor(0).setDepth(90).setAlpha(0.7);
+
+      let remaining = 30;
+      this.konamiSpeedBoostTimer = this.time.addEvent({
+        delay: 1000,
+        repeat: 29,
+        callback: () => {
+          remaining--;
+          speedText.setText('JDLO MODE: ' + remaining + 's');
+          if (remaining <= 0) {
+            speedText.destroy();
+            this.time.timeScale = 1;
+            this.tweens.timeScale = 1;
+          }
+        },
+      });
+
+      this.frozen = false;
+    });
   }
 }

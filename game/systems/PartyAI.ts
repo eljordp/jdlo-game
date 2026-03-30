@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { SCALED_TILE, SCALE } from '../config';
+import { GameIntelligence } from './GameIntelligence';
 
 // ── Waypoints — locations NPCs can walk to ──────────────────────
 
@@ -134,6 +135,7 @@ interface PartyNPC {
   drinksHad: number;
   currentBubble: Phaser.GameObjects.Text | null;
   bubbleTimer: number;       // ms remaining for bubble display
+  bubbleCooldown: number;    // ms before this NPC can talk again
   tileX: number;
   tileY: number;
   moveProgress: number;      // 0-1 for interpolating walk between tiles
@@ -141,9 +143,11 @@ interface PartyNPC {
   moveStartY: number;
   moveTargetX: number;       // pixel target for current tile move
   moveTargetY: number;
+  waitTimer: number;         // ms to wait when blocked by another NPC
   danceTween: Phaser.Tweens.Tween | null;
   zzzText: Phaser.GameObjects.Text | null;
   zzzTimer: number;          // ms counter for ZZZ respawn
+  unpopular: boolean;        // flagged by intelligence — wanders toward player
 }
 
 // ── Helpers ─────────────────────────────────────────────────────
@@ -256,23 +260,67 @@ const ZZZ_FONT = {
   strokeThickness: 2,
 };
 
+// ── Random Event Configs ────────────────────────────────────────
+
+interface RandomEventConfig {
+  id: string;
+  chance: number;      // 0-1 probability when rolled
+  minTime: number;     // earliest ms from party start this can fire
+  maxTime: number;     // latest ms it can fire
+  handler: () => void; // executed when triggered
+}
+
 // ── Main Party AI System ────────────────────────────────────────
 
 export class PartyAI {
   private static scene: Phaser.Scene | null = null;
+  private static playerSprite: Phaser.GameObjects.Sprite | null = null;
   private static npcs: PartyNPC[] = [];
   private static active: boolean = false;
   private static elapsedTime: number = 0;
   private static nextEventIndex: number = 0;
 
+  // Random events system
+  private static randomEventsFired: Set<string> = new Set();
+  private static randomEventsRollTimer: number = 0;
+  private static randomEventActive: boolean = false; // lock to prevent overlap
+  private static maxRandomEvents: number = 3; // max random events per party
+
+  // Tile occupancy: key = "x,y" → which npcId owns it
+  private static occupiedTiles: Map<string, string> = new Map();
+
+  private static tileKey(x: number, y: number): string {
+    return `${x},${y}`;
+  }
+
+  private static claimTile(npc: PartyNPC, newX: number, newY: number): void {
+    // Release old tile
+    const oldKey = PartyAI.tileKey(npc.tileX, npc.tileY);
+    if (PartyAI.occupiedTiles.get(oldKey) === npc.config.id) {
+      PartyAI.occupiedTiles.delete(oldKey);
+    }
+    // Claim new tile
+    PartyAI.occupiedTiles.set(PartyAI.tileKey(newX, newY), npc.config.id);
+  }
+
+  private static isTileOccupied(x: number, y: number, excludeId: string): boolean {
+    const owner = PartyAI.occupiedTiles.get(PartyAI.tileKey(x, y));
+    return owner !== undefined && owner !== excludeId;
+  }
+
   // ── Init ────────────────────────────────────────────────────
 
-  static init(scene: Phaser.Scene): Phaser.GameObjects.Sprite[] {
+  static init(scene: Phaser.Scene, playerSprite?: Phaser.GameObjects.Sprite): Phaser.GameObjects.Sprite[] {
     PartyAI.scene = scene;
+    PartyAI.playerSprite = playerSprite ?? null;
     PartyAI.npcs = [];
     PartyAI.active = true;
     PartyAI.elapsedTime = 0;
     PartyAI.nextEventIndex = 0;
+    PartyAI.occupiedTiles = new Map();
+    PartyAI.randomEventsFired = new Set();
+    PartyAI.randomEventsRollTimer = 0;
+    PartyAI.randomEventActive = false;
 
     const sprites: Phaser.GameObjects.Sprite[] = [];
 
@@ -299,6 +347,7 @@ export class PartyAI {
         drinksHad: 0,
         currentBubble: null,
         bubbleTimer: 0,
+        bubbleCooldown: randomRange(4000, 10000), // stagger initial speech
         tileX: wp.x,
         tileY: wp.y,
         moveProgress: 0,
@@ -306,16 +355,74 @@ export class PartyAI {
         moveStartY: py,
         moveTargetX: px,
         moveTargetY: py,
+        waitTimer: 0,
         danceTween: null,
         zzzText: null,
         zzzTimer: 0,
+        unpopular: false,
       };
+
+      PartyAI.occupiedTiles.set(PartyAI.tileKey(wp.x, wp.y), config.id);
 
       PartyAI.npcs.push(npc);
       sprites.push(sprite);
     }
 
+    // Apply intelligence-driven adjustments from aggregate player data
+    PartyAI.applyIntelligence();
+
     return sprites;
+  }
+
+  // ── Intelligence-driven NPC adjustment ─────────────────────
+
+  private static applyIntelligence(): void {
+    const agg = GameIntelligence.getAggregate();
+    const popularity = agg.npcPopularity;
+
+    // Loose match: check if signal key contains the PartyAI id or vice versa
+    // e.g. 'ch1_bigbart' contains 'bart', 'ch1_cooper' contains 'cooper'
+    const getTalkCount = (npcId: string): number => {
+      let total = 0;
+      for (const [key, count] of Object.entries(popularity)) {
+        if (key.includes(npcId) || npcId.includes(key)) {
+          total += count;
+        }
+      }
+      return total;
+    };
+
+    // Build scored list
+    const scored = PartyAI.npcs.map(npc => ({
+      npc,
+      talks: getTalkCount(npc.config.id),
+    }));
+
+    // Sort descending by talks to find top and bottom
+    const sorted = [...scored].sort((a, b) => b.talks - a.talks);
+
+    // Top 3 popular NPCs: boost talkBias
+    const top3 = sorted.slice(0, 3).filter(s => s.talks > 0);
+    for (const { npc } of top3) {
+      npc.config.talkBias = Math.min(1, npc.config.talkBias + 0.2);
+    }
+
+    // Bottom 3 or those with 0 talks: flag as unpopular
+    const bottom3 = sorted.slice(-3);
+    const zeroTalks = scored.filter(s => s.talks === 0);
+    const unpopularSet = new Set([
+      ...bottom3.map(s => s.npc.config.id),
+      ...zeroTalks.map(s => s.npc.config.id),
+    ]);
+
+    // Don't flag NPCs that are also in top 3
+    for (const { npc } of top3) {
+      unpopularSet.delete(npc.config.id);
+    }
+
+    for (const npc of PartyAI.npcs) {
+      npc.unpopular = unpopularSet.has(npc.config.id);
+    }
   }
 
   // ── Update (called every frame) ─────────────────────────────
@@ -328,14 +435,28 @@ export class PartyAI {
     // Process scripted events
     PartyAI.processEvents();
 
+    // Process random events (roll every 30s after 20s warmup)
+    PartyAI.processRandomEvents(delta);
+
     // Update each NPC
     for (const npc of PartyAI.npcs) {
-      // Update bubble timers
+      // Update bubble timers and cooldown
       PartyAI.updateBubble(npc, delta);
+      if (npc.bubbleCooldown > 0) npc.bubbleCooldown -= delta;
 
       // Skip updates for passed out NPCs
       if (npc.state === 'passed_out') {
         PartyAI.updatePassedOut(npc, delta);
+        continue;
+      }
+
+      // Blocked waiting for a tile to free up
+      if (npc.waitTimer > 0) {
+        npc.waitTimer -= delta;
+        if (npc.waitTimer <= 0) {
+          // Retry movement
+          PartyAI.startNextTileMove(npc);
+        }
         continue;
       }
 
@@ -386,6 +507,518 @@ export class PartyAI {
     }
   }
 
+  // ── Random events processing ─────────────────────────────────
+
+  private static getRandomEvents(): RandomEventConfig[] {
+    return [
+      {
+        id: 'cops_pull_up',
+        chance: 0.15,
+        minTime: 20000,
+        maxTime: 150000,
+        handler: () => PartyAI.randomEvent_CopsPullUp(),
+      },
+      {
+        id: 'fight_breaks_out',
+        chance: 0.15,
+        minTime: 30000,
+        maxTime: 160000,
+        handler: () => PartyAI.randomEvent_FightBreaksOut(),
+      },
+      {
+        id: 'cannonball',
+        chance: 0.20,
+        minTime: 40000,
+        maxTime: 140000,
+        handler: () => PartyAI.randomEvent_Cannonball(),
+      },
+      {
+        id: 'bart_breaks_tv',
+        chance: 0.20,
+        minTime: 50000,
+        maxTime: 150000,
+        handler: () => PartyAI.randomEvent_BartBreaksTV(),
+      },
+      {
+        id: 'dj_banger',
+        chance: 0.20,
+        minTime: 25000,
+        maxTime: 130000,
+        handler: () => PartyAI.randomEvent_DJBanger(),
+      },
+      {
+        id: 'ex_shows_up',
+        chance: 0.10,
+        minTime: 60000,
+        maxTime: 160000,
+        handler: () => PartyAI.randomEvent_ExShowsUp(),
+      },
+    ];
+  }
+
+  private static processRandomEvents(delta: number): void {
+    if (!PartyAI.scene || PartyAI.randomEventActive) return;
+    if (PartyAI.randomEventsFired.size >= PartyAI.maxRandomEvents) return;
+    if (PartyAI.elapsedTime < 20000) return; // 20s warmup
+
+    PartyAI.randomEventsRollTimer += delta;
+    if (PartyAI.randomEventsRollTimer < 30000) return; // roll every 30s
+    PartyAI.randomEventsRollTimer = 0;
+
+    const events = PartyAI.getRandomEvents();
+    // Shuffle so we don't always check in same order
+    const shuffled = events.sort(() => Math.random() - 0.5);
+
+    for (const evt of shuffled) {
+      if (PartyAI.randomEventsFired.has(evt.id)) continue;
+      if (PartyAI.elapsedTime < evt.minTime || PartyAI.elapsedTime > evt.maxTime) continue;
+      if (Math.random() > evt.chance) continue;
+
+      // Fire this event
+      PartyAI.randomEventsFired.add(evt.id);
+      PartyAI.randomEventActive = true;
+      evt.handler();
+      break; // only one event per roll
+    }
+  }
+
+  // ── Random Event: Cops Pull Up ──────────────────────────────
+
+  private static randomEvent_CopsPullUp(): void {
+    const scene = PartyAI.scene!;
+
+    // Create red and blue flashing rectangles on screen edges
+    const cam = scene.cameras.main;
+    const redBar = scene.add.rectangle(
+      cam.scrollX, cam.scrollY + cam.height / 2,
+      40, cam.height, 0xff0000
+    ).setAlpha(0).setDepth(400).setScrollFactor(0).setOrigin(0, 0.5);
+
+    const blueBar = scene.add.rectangle(
+      cam.scrollX + cam.width - 40, cam.scrollY + cam.height / 2,
+      40, cam.height, 0x0044ff
+    ).setAlpha(0).setDepth(400).setScrollFactor(0).setOrigin(0, 0.5);
+
+    // Position relative to camera viewport
+    redBar.setPosition(0, cam.height / 2);
+    blueBar.setPosition(cam.width - 40, cam.height / 2);
+
+    // Flash alternating lights
+    let flashCount = 0;
+    const flashTimer = scene.time.addEvent({
+      delay: 150,
+      repeat: 19, // 3 seconds of flashing
+      callback: () => {
+        flashCount++;
+        const isEven = flashCount % 2 === 0;
+        redBar.setAlpha(isEven ? 0.6 : 0);
+        blueBar.setAlpha(isEven ? 0 : 0.6);
+      },
+    });
+
+    // Someone yells COPS
+    const randomNPC = pick(PartyAI.npcs.filter(n => n.state !== 'passed_out'));
+    if (randomNPC) {
+      PartyAI.showBubble(randomNPC, 'COPS!!');
+    }
+
+    // Freeze all NPCs for 3 seconds
+    const savedStates: { npc: PartyNPC; state: PartyState; timer: number }[] = [];
+    for (const npc of PartyAI.npcs) {
+      if (npc.state !== 'passed_out') {
+        savedStates.push({ npc, state: npc.state, timer: npc.stateTimer });
+        PartyAI.stopDanceTween(npc);
+        npc.state = 'idle';
+        npc.stateTimer = 5000; // hold idle long enough
+        npc.targetWaypoint = null;
+      }
+    }
+
+    // After 3 seconds: false alarm
+    scene.time.delayedCall(3000, () => {
+      flashTimer.destroy();
+      redBar.destroy();
+      blueBar.destroy();
+
+      // Show false alarm text
+      const nolan = PartyAI.npcs.find(n => n.config.id === 'nolan');
+      if (nolan && nolan.state !== 'passed_out') {
+        PartyAI.showBubble(nolan, 'It\'s just campus security driving by.');
+      }
+
+      // Restore NPC states
+      for (const saved of savedStates) {
+        if (saved.npc.state !== 'passed_out') {
+          saved.npc.state = saved.state;
+          saved.npc.stateTimer = saved.timer;
+        }
+      }
+
+      // After another 2 seconds someone reacts
+      scene.time.delayedCall(2000, () => {
+        const reactor = pick(PartyAI.npcs.filter(n => n.state !== 'passed_out'));
+        if (reactor) {
+          PartyAI.showBubble(reactor, 'BRO I ALMOST RAN 💀');
+        }
+        PartyAI.randomEventActive = false;
+      });
+    });
+  }
+
+  // ── Random Event: Fight Breaks Out ──────────────────────────
+
+  private static randomEvent_FightBreaksOut(): void {
+    const scene = PartyAI.scene!;
+
+    // Pick two random non-passed-out NPCs
+    const available = PartyAI.npcs.filter(n => n.state !== 'passed_out' && !n.config.isGirl);
+    if (available.length < 2) {
+      PartyAI.randomEventActive = false;
+      return;
+    }
+
+    const shuffled = [...available].sort(() => Math.random() - 0.5);
+    const fighter1 = shuffled[0];
+    const fighter2 = shuffled[1];
+
+    // Fighters face each other
+    PartyAI.stopDanceTween(fighter1);
+    PartyAI.stopDanceTween(fighter2);
+    fighter1.state = 'idle';
+    fighter1.stateTimer = 10000;
+    fighter1.targetWaypoint = null;
+    fighter2.state = 'idle';
+    fighter2.stateTimer = 10000;
+    fighter2.targetWaypoint = null;
+
+    // First exchange
+    PartyAI.showBubble(fighter1, 'WHAT DID YOU SAY?!');
+
+    scene.time.delayedCall(1500, () => {
+      PartyAI.showBubble(fighter2, 'BRO CHILL');
+    });
+
+    // Crowd gathers — nearby NPCs react
+    scene.time.delayedCall(2500, () => {
+      const bystanders = PartyAI.npcs.filter(
+        n => n !== fighter1 && n !== fighter2 && n.state !== 'passed_out'
+      );
+      const reacting = bystanders.slice(0, 3);
+      for (const b of reacting) {
+        PartyAI.showBubble(b, pick(['OH SHIT', 'WORLDSTAR!!', 'NO WAY', 'YOOO']));
+      }
+    });
+
+    // Camera shake
+    scene.time.delayedCall(2000, () => {
+      scene.cameras.main.shake(2000, 0.01);
+    });
+
+    // Someone breaks it up
+    scene.time.delayedCall(5000, () => {
+      const nolan = PartyAI.npcs.find(n => n.config.id === 'nolan');
+      const breaker = nolan && nolan.state !== 'passed_out'
+        ? nolan
+        : pick(PartyAI.npcs.filter(n => n !== fighter1 && n !== fighter2 && n.state !== 'passed_out'));
+
+      if (breaker) {
+        PartyAI.showBubble(breaker, 'AYO CHILL CHILL');
+      }
+
+      // Fighters scatter to random waypoints
+      scene.time.delayedCall(1500, () => {
+        PartyAI.startWandering(fighter1, pick(WAYPOINTS));
+        PartyAI.startWandering(fighter2, pick(WAYPOINTS));
+        PartyAI.randomEventActive = false;
+      });
+    });
+  }
+
+  // ── Random Event: Cannonball ────────────────────────────────
+
+  private static randomEvent_Cannonball(): void {
+    const scene = PartyAI.scene!;
+
+    // Pick a random NPC to do the cannonball
+    const available = PartyAI.npcs.filter(n => n.state !== 'passed_out');
+    if (available.length === 0) {
+      PartyAI.randomEventActive = false;
+      return;
+    }
+
+    const jumper = pick(available);
+    const hotTubWP = WAYPOINTS.find(w => w.name === 'hot_tub')!;
+
+    // Walk toward the hot tub
+    PartyAI.startWandering(jumper, hotTubWP);
+    PartyAI.showBubble(jumper, 'CANNONBALL!!!');
+
+    // After arrival (estimate ~4s), do the splash
+    scene.time.delayedCall(4000, () => {
+      // Big text
+      const cannonText = scene.add.text(
+        tileToPx(hotTubWP.x), tileToPx(hotTubWP.y) - 50,
+        'CANNONBALL!!!',
+        { ...BUBBLE_FONT, fontSize: '12px', color: '#00ccff' }
+      ).setOrigin(0.5).setDepth(25);
+
+      scene.tweens.add({
+        targets: cannonText,
+        y: cannonText.y - 40,
+        alpha: 0,
+        duration: 2000,
+        onComplete: () => cannonText.destroy(),
+      });
+
+      // Splash effect: 10 blue circles that expand and fade
+      for (let i = 0; i < 10; i++) {
+        const angle = (i / 10) * Math.PI * 2;
+        const splashX = tileToPx(hotTubWP.x) + Math.cos(angle) * 5;
+        const splashY = tileToPx(hotTubWP.y) + Math.sin(angle) * 5;
+
+        const circle = scene.add.circle(splashX, splashY, 3, 0x00aaff, 0.7)
+          .setDepth(22);
+
+        scene.tweens.add({
+          targets: circle,
+          radius: randomRange(20, 40),
+          alpha: 0,
+          x: splashX + Math.cos(angle) * randomRange(20, 50),
+          y: splashY + Math.sin(angle) * randomRange(20, 50),
+          duration: randomRange(800, 1500),
+          ease: 'Sine.easeOut',
+          onComplete: () => circle.destroy(),
+        });
+      }
+
+      // Camera shake for impact
+      scene.cameras.main.shake(500, 0.005);
+
+      // Nearby NPCs react
+      scene.time.delayedCall(800, () => {
+        const nearHotTub = PartyAI.npcs.filter(
+          n => n !== jumper && n.state !== 'passed_out' &&
+          Math.abs(n.tileX - hotTubWP.x) <= 5 && Math.abs(n.tileY - hotTubWP.y) <= 5
+        );
+        for (const n of nearHotTub.slice(0, 3)) {
+          PartyAI.showBubble(n, pick([
+            'BRO YOU SPLASHED MY PHONE',
+            'MY PHONE!!',
+            'DUDE WTF',
+            'YOU GOT MY SHIRT WET',
+          ]));
+        }
+
+        scene.time.delayedCall(2000, () => {
+          PartyAI.randomEventActive = false;
+        });
+      });
+    });
+  }
+
+  // ── Random Event: Bart Breaks TV ────────────────────────────
+
+  private static randomEvent_BartBreaksTV(): void {
+    const scene = PartyAI.scene!;
+
+    const bart = PartyAI.npcs.find(n => n.config.id === 'bart');
+    const nolan = PartyAI.npcs.find(n => n.config.id === 'nolan');
+
+    // If Bart is passed out, skip
+    if (!bart || bart.state === 'passed_out') {
+      PartyAI.randomEventActive = false;
+      return;
+    }
+
+    // Someone yells BART NO
+    const bystander = pick(PartyAI.npcs.filter(n => n !== bart && n.state !== 'passed_out'));
+    if (bystander) {
+      PartyAI.showBubble(bystander, 'BART NO');
+    }
+
+    // Crash — camera shake after 1 second
+    scene.time.delayedCall(1000, () => {
+      scene.cameras.main.shake(1500, 0.015);
+
+      // Crash text
+      const crashText = scene.add.text(
+        bart.sprite.x, bart.sprite.y - 50,
+        '*CRASH*',
+        { ...BUBBLE_FONT, fontSize: '14px', color: '#ff4444' }
+      ).setOrigin(0.5).setDepth(25);
+
+      scene.tweens.add({
+        targets: crashText,
+        y: crashText.y - 30,
+        alpha: 0,
+        duration: 1500,
+        onComplete: () => crashText.destroy(),
+      });
+    });
+
+    scene.time.delayedCall(2500, () => {
+      const reactor = pick(PartyAI.npcs.filter(n => n !== bart && n !== nolan && n.state !== 'passed_out'));
+      if (reactor) {
+        PartyAI.showBubble(reactor, '...was that the TV?');
+      }
+    });
+
+    scene.time.delayedCall(4000, () => {
+      if (nolan && nolan.state !== 'passed_out') {
+        PartyAI.showBubble(nolan, 'THAT WAS A $2000 TV BART');
+      }
+    });
+
+    scene.time.delayedCall(6000, () => {
+      PartyAI.showBubble(bart, 'my bad...');
+
+      scene.time.delayedCall(2000, () => {
+        PartyAI.randomEventActive = false;
+      });
+    });
+  }
+
+  // ── Random Event: DJ Drops a Banger ─────────────────────────
+
+  private static randomEvent_DJBanger(): void {
+    const scene = PartyAI.scene!;
+
+    // Screen tint: purple overlay that pulses
+    const overlay = scene.add.rectangle(
+      0, 0,
+      scene.cameras.main.width, scene.cameras.main.height,
+      0x8040a0, 0
+    ).setOrigin(0, 0).setDepth(400).setScrollFactor(0);
+
+    // Pulse the tint
+    let pulseCount = 0;
+    const pulseTween = scene.tweens.add({
+      targets: overlay,
+      alpha: 0.08,
+      duration: 400,
+      yoyo: true,
+      repeat: 12, // ~10 seconds of pulsing
+      ease: 'Sine.easeInOut',
+      onRepeat: () => { pulseCount++; },
+      onComplete: () => {
+        overlay.destroy();
+      },
+    });
+
+    // All non-passed-out NPCs start dancing
+    const dancers: PartyNPC[] = [];
+    for (const npc of PartyAI.npcs) {
+      if (npc.state !== 'passed_out') {
+        PartyAI.stopDanceTween(npc);
+        npc.targetWaypoint = null;
+        PartyAI.enterDancing(npc);
+        dancers.push(npc);
+      }
+    }
+
+    // Multiple NPCs yell
+    const shouters = dancers.sort(() => Math.random() - 0.5).slice(0, 4);
+    const shouts = ['THIS IS MY SONG!!', 'YOOO THIS SONG', 'TURN IT UP!!', 'OH SHIT THIS SLAPS'];
+    for (let i = 0; i < shouters.length; i++) {
+      scene.time.delayedCall(i * 800, () => {
+        if (shouters[i].state !== 'passed_out') {
+          PartyAI.showBubble(shouters[i], shouts[i % shouts.length]);
+        }
+      });
+    }
+
+    // After 10 seconds, unlock
+    scene.time.delayedCall(10000, () => {
+      if (!pulseTween.isDestroyed()) {
+        pulseTween.stop();
+      }
+      overlay.destroy();
+      PartyAI.randomEventActive = false;
+    });
+  }
+
+  // ── Random Event: Ex Shows Up ───────────────────────────────
+
+  private static randomEvent_ExShowsUp(): void {
+    const scene = PartyAI.scene!;
+
+    // Spawn a girl NPC near the entrance (bottom-left yard area)
+    const entranceX = 3;
+    const entranceY = 18;
+    const exSprite = scene.add.sprite(
+      tileToPx(entranceX), tileToPx(entranceY),
+      'npc_bikini2', 0
+    ).setScale(SCALE).setDepth(9);
+
+    // Someone notices
+    const noticer = pick(PartyAI.npcs.filter(n => n.state !== 'passed_out'));
+    if (noticer) {
+      PartyAI.showBubble(noticer, 'Is that... oh no.');
+    }
+
+    // JP's internal monologue (show as bubble on player sprite)
+    scene.time.delayedCall(2000, () => {
+      if (PartyAI.playerSprite && PartyAI.scene) {
+        const mindBubble = scene.add.text(
+          PartyAI.playerSprite.x, PartyAI.playerSprite.y - 50,
+          'This is bad.',
+          { ...BUBBLE_FONT, color: '#ffaaaa' }
+        ).setOrigin(0.5, 1).setDepth(25);
+
+        scene.tweens.add({
+          targets: mindBubble,
+          alpha: 0,
+          delay: 2500,
+          duration: 500,
+          onComplete: () => mindBubble.destroy(),
+        });
+      }
+    });
+
+    // Girl walks toward player area briefly
+    scene.tweens.add({
+      targets: exSprite,
+      x: tileToPx(entranceX + 6),
+      duration: 3000,
+      ease: 'Linear',
+    });
+
+    // Someone tells her to leave
+    scene.time.delayedCall(5000, () => {
+      const bouncer = PartyAI.npcs.find(n => n.config.id === 'terrell' && n.state !== 'passed_out')
+        ?? pick(PartyAI.npcs.filter(n => n.state !== 'passed_out'));
+      if (bouncer) {
+        PartyAI.showBubble(bouncer, 'Nah you gotta go.');
+      }
+    });
+
+    // Girl leaves
+    scene.time.delayedCall(7000, () => {
+      scene.tweens.add({
+        targets: exSprite,
+        x: tileToPx(-3),
+        alpha: 0,
+        duration: 3000,
+        ease: 'Linear',
+        onComplete: () => {
+          exSprite.destroy();
+        },
+      });
+
+      // Aftermath
+      scene.time.delayedCall(2000, () => {
+        const commenter = pick(PartyAI.npcs.filter(n => n.state !== 'passed_out'));
+        if (commenter) {
+          PartyAI.showBubble(commenter, 'That was awkward...');
+        }
+
+        scene.time.delayedCall(2000, () => {
+          PartyAI.randomEventActive = false;
+        });
+      });
+    });
+  }
+
   // ── State transitions ───────────────────────────────────────
 
   private static transitionState(npc: PartyNPC): void {
@@ -420,6 +1053,12 @@ export class PartyAI {
     cumulative += npc.config.drinkRate * 0.2;
     if (roll < cumulative) {
       PartyAI.enterDrinking(npc);
+      return;
+    }
+
+    // Unpopular NPC: 20% chance to wander toward the player instead
+    if (npc.unpopular && PartyAI.playerSprite && Math.random() < 0.2) {
+      PartyAI.enterWanderingTowardPlayer(npc);
       return;
     }
 
@@ -465,9 +1104,10 @@ export class PartyAI {
       });
     }
 
-    // Occasionally show a line while dancing
-    if (Math.random() < 0.4) {
+    // Occasionally show a line while dancing (only if not on cooldown)
+    if (Math.random() < 0.25 && npc.bubbleCooldown <= 0) {
       PartyAI.showBubble(npc, pick(npc.config.lines));
+      npc.bubbleCooldown = randomRange(10000, 20000);
     }
   }
 
@@ -475,8 +1115,11 @@ export class PartyAI {
     npc.state = 'talking';
     npc.stateTimer = randomRange(3000, 6000);
 
-    // Show a speech bubble with a random line
-    PartyAI.showBubble(npc, pick(npc.config.lines));
+    // Only say something if cooldown cleared
+    if (npc.bubbleCooldown <= 0) {
+      PartyAI.showBubble(npc, pick(npc.config.lines));
+      npc.bubbleCooldown = randomRange(8000, 18000); // 8-18s before next line
+    }
 
     // Check if another NPC is nearby — if so, make them respond
     const nearby = PartyAI.npcs.find(
@@ -517,15 +1160,39 @@ export class PartyAI {
     // Increment drinks
     npc.drinksHad++;
 
-    // Chance to say something while drinking
-    if (Math.random() < 0.3) {
+    // Chance to say something while drinking (only if not on cooldown)
+    if (Math.random() < 0.2 && npc.bubbleCooldown <= 0) {
       PartyAI.showBubble(npc, pick(npc.config.lines));
+      npc.bubbleCooldown = randomRange(8000, 16000);
     }
   }
 
   private static enterWanderingRandom(npc: PartyNPC): void {
     const wp = pick(WAYPOINTS);
     PartyAI.startWandering(npc, wp);
+  }
+
+  private static enterWanderingTowardPlayer(npc: PartyNPC): void {
+    if (!PartyAI.playerSprite) {
+      PartyAI.enterWanderingRandom(npc);
+      return;
+    }
+
+    // Find the waypoint closest to the player's current position
+    const playerTileX = Math.round((PartyAI.playerSprite.x - SCALED_TILE / 2) / SCALED_TILE);
+    const playerTileY = Math.round((PartyAI.playerSprite.y - SCALED_TILE / 2) / SCALED_TILE);
+
+    let bestWp = WAYPOINTS[0];
+    let bestDist = Infinity;
+    for (const wp of WAYPOINTS) {
+      const dist = Math.abs(wp.x - playerTileX) + Math.abs(wp.y - playerTileY);
+      if (dist < bestDist) {
+        bestDist = dist;
+        bestWp = wp;
+      }
+    }
+
+    PartyAI.startWandering(npc, bestWp);
   }
 
   private static startWandering(npc: PartyNPC, waypoint: Waypoint): void {
@@ -562,10 +1229,42 @@ export class PartyAI {
       return;
     }
 
-    // Use door-aware routing to pick the next tile
-    const next = getNextMoveToward(npc.tileX, npc.tileY, npc.targetWaypoint.x, npc.targetWaypoint.y);
-    let nextTileX = next.x;
-    let nextTileY = next.y;
+    // Use door-aware routing to get preferred next tile
+    const preferred = getNextMoveToward(npc.tileX, npc.tileY, npc.targetWaypoint.x, npc.targetWaypoint.y);
+
+    // Try preferred tile, then perpendicular alternatives, then wait
+    const candidates: { x: number; y: number }[] = [preferred];
+
+    // Add perpendicular step as fallback
+    if (preferred.x !== npc.tileX) {
+      // Preferred is horizontal — add vertical alternatives
+      candidates.push({ x: npc.tileX, y: npc.tileY + 1 });
+      candidates.push({ x: npc.tileX, y: npc.tileY - 1 });
+    } else {
+      // Preferred is vertical — add horizontal alternatives
+      candidates.push({ x: npc.tileX + 1, y: npc.tileY });
+      candidates.push({ x: npc.tileX - 1, y: npc.tileY });
+    }
+
+    let chosen: { x: number; y: number } | null = null;
+    for (const c of candidates) {
+      if (!PartyAI.isTileOccupied(c.x, c.y, npc.config.id)) {
+        chosen = c;
+        break;
+      }
+    }
+
+    if (!chosen) {
+      // All candidate tiles are blocked — wait 150-300ms then retry
+      npc.waitTimer = randomRange(150, 300);
+      return;
+    }
+
+    const nextTileX = chosen.x;
+    const nextTileY = chosen.y;
+
+    // Claim the new tile, release old
+    PartyAI.claimTile(npc, nextTileX, nextTileY);
 
     npc.moveStartX = npc.sprite.x;
     npc.moveStartY = npc.sprite.y;
@@ -580,7 +1279,6 @@ export class PartyAI {
       npc.sprite.setFlipX(true);
     }
 
-    // Update tile position (we claim the new tile immediately for proximity checks)
     npc.tileX = nextTileX;
     npc.tileY = nextTileY;
   }
@@ -762,6 +1460,8 @@ export class PartyAI {
   static destroy(): void {
     if (!PartyAI.scene) return;
 
+    PartyAI.occupiedTiles.clear();
+
     for (const npc of PartyAI.npcs) {
       // Stop dance tweens
       PartyAI.stopDanceTween(npc);
@@ -784,8 +1484,12 @@ export class PartyAI {
 
     PartyAI.npcs = [];
     PartyAI.scene = null;
+    PartyAI.playerSprite = null;
     PartyAI.active = false;
     PartyAI.elapsedTime = 0;
     PartyAI.nextEventIndex = 0;
+    PartyAI.randomEventsFired.clear();
+    PartyAI.randomEventsRollTimer = 0;
+    PartyAI.randomEventActive = false;
   }
 }

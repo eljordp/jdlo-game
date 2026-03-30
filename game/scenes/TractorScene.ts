@@ -7,6 +7,9 @@ import { SCALED_TILE, GAME_WIDTH, GAME_HEIGHT } from '../config';
 import { Analytics } from '../systems/Analytics';
 import { MoodSystem } from '../systems/MoodSystem';
 import { InventorySystem } from '../systems/InventorySystem';
+import { GameIntelligence } from '../systems/GameIntelligence';
+import { CasinoSystem } from '../systems/CasinoSystem';
+import { DMSystem } from '../systems/DMSystem';
 
 export class TractorScene extends BaseChapterScene {
   private phoneExaminedFirst = false;
@@ -29,6 +32,17 @@ export class TractorScene extends BaseChapterScene {
 
   create() {
     super.create();
+
+    // GameIntelligence — track player behavior
+    GameIntelligence.init(this, this.player);
+    GameIntelligence.watch('ch4_tractor',       13, 9,  true);  // required: work
+    GameIntelligence.watch('ch4_phone',         8,  9);
+    GameIntelligence.watch('ch4_ai_discovery',  6,  5,  true);  // required: discovers AI
+    GameIntelligence.watch('ch4_lunch',         3,  9);
+    GameIntelligence.watch('ch4_paycheck',      30, 19, true);  // required: story beat
+    GameIntelligence.watch('ch4_snake',         30, 14);
+    GameIntelligence.attachDebugPanel(this);
+
     // Tractor at 13,5
     this.addNavArrow(13, 4, 'Tractor');
     // AI discovery / computer area at 5,4 (evolve) and dialogue trigger at 6,4
@@ -52,6 +66,7 @@ export class TractorScene extends BaseChapterScene {
 
   // Juan shakes head if you looked at phone first
   protected handleNPCDialogue(npcId: string, dialogue: DialogueLine[]): void {
+    GameIntelligence.onNPCTalked(npcId);
     if (npcId === 'ch4_coworker' && this.phoneExaminedFirst) {
       const chapterDialogue = this.getChapterDialogue();
       const lines = chapterDialogue.npcs['ch4_phone_first'];
@@ -84,9 +99,32 @@ export class TractorScene extends BaseChapterScene {
 
   // Override to add tractor mini-game and post-evolution cutscene
   protected handleInteractable(interactable: { id: string; type: string; consumed?: boolean }) {
+    GameIntelligence.onInteracted(interactable.id);
     // Track if phone was examined before tractor
     if (interactable.id === 'ch4_phone' && !this.tractorPlayed) {
       this.phoneExaminedFirst = true;
+    }
+
+    // Phone — show story dialogue first, then phone apps on revisit
+    if (interactable.id === 'ch4_phone') {
+      Analytics.trackInteraction(interactable.id);
+      if (interactable.consumed) {
+        // Story already seen — go straight to apps
+        this.showPhoneApps();
+      } else {
+        // First time — play story dialogue, then show apps
+        const chapterDialogue = this.getChapterDialogue();
+        const lines = chapterDialogue.npcs['ch4_phone'];
+        if (lines) {
+          this.frozen = true;
+          this.dialogue.show(lines, () => {
+            this.interactions.consume(interactable.id);
+            this.frozen = false;
+            this.showPhoneApps();
+          });
+        }
+      }
+      return;
     }
 
     if (interactable.id === 'ch4_tractor' || interactable.id === 'ch4_crash') {
@@ -116,6 +154,7 @@ export class TractorScene extends BaseChapterScene {
         { speaker: 'Juan', text: 'Ha! He\'s learning.' },
         { speaker: 'JP\'s Mind', text: 'These guys are real. No games. Just work and eat.' },
       ], () => {
+        InventorySystem.addItem('tamales', 1);
         MoodSystem.setMood('vibing', 60);
         this.frozen = false;
       });
@@ -132,6 +171,7 @@ export class TractorScene extends BaseChapterScene {
         { speaker: 'JP\'s Mind', text: 'But this one doesn\'t come with a court date.' },
         { speaker: 'Narrator', text: 'He deposits it. First clean money in a long time.' },
       ], () => {
+        InventorySystem.addItem('paycheck', 1);
         MoodSystem.changeMorale(15);
         this.frozen = false;
       });
@@ -151,6 +191,78 @@ export class TractorScene extends BaseChapterScene {
     }
 
     super.handleInteractable(interactable);
+  }
+
+  // ─── PHONE APPS (Ch5: DMs + Crypto only — no casino, he's working) ───
+  private showPhoneApps() {
+    this.frozen = true;
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+
+    const phoneBg = this.add.rectangle(cx, cy, 240, 300, 0x1a1a2e)
+      .setScrollFactor(0).setDepth(300);
+    const phoneBorder = this.add.rectangle(cx, cy, 242, 302, 0x555577, 0)
+      .setStrokeStyle(2, 0x555577)
+      .setScrollFactor(0).setDepth(299);
+    const notch = this.add.rectangle(cx, cy - 142, 60, 8, 0x0d0d1a)
+      .setScrollFactor(0).setDepth(301);
+    const timeText = this.add.text(cx, cy - 122, '12:31 PM', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#888899',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+
+    const apps = ['DMs', 'Crypto', 'Close'];
+    const appColors = [0x3a2a4a, 0x1a0a2a, 0x333344];
+    const hoverColors = [0x5a3a6a, 0x3a1a5a, 0x555566];
+    const labelColors = ['#ffffff', '#bb66ff', '#ffffff'];
+    const buttons: Phaser.GameObjects.Rectangle[] = [];
+    const labels: Phaser.GameObjects.Text[] = [];
+
+    apps.forEach((app, i) => {
+      const y = cy - 50 + i * 48;
+      const btn = this.add.rectangle(cx, y, 200, 36, appColors[i])
+        .setScrollFactor(0).setDepth(301).setInteractive({ useHandCursor: true });
+      const label = this.add.text(cx, y, app, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: labelColors[i],
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(302);
+
+      btn.on('pointerover', () => btn.setFillStyle(hoverColors[i]));
+      btn.on('pointerout', () => btn.setFillStyle(appColors[i]));
+
+      btn.on('pointerdown', () => {
+        cleanup();
+        if (app === 'DMs') DMSystem.openDMs(this, (l, cb) => this.dialogue.show(l, cb), () => this.showPhoneApps());
+        else if (app === 'Crypto') CasinoSystem.openCrypto(this, () => { this.showPhoneApps(); });
+        else this.frozen = false;
+      });
+
+      buttons.push(btn);
+      labels.push(label);
+    });
+
+    const cleanup = () => {
+      phoneBg.destroy(); phoneBorder.destroy(); notch.destroy(); timeText.destroy();
+      buttons.forEach(b => b.destroy());
+      labels.forEach(l => l.destroy());
+    };
+
+    // Keyboard: 1-3 to pick
+    const keys = [
+      this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ONE),
+      this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.TWO),
+      this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.THREE),
+    ];
+    const handlers: (() => void)[] = [];
+    keys.forEach((key, i) => {
+      const handler = () => {
+        keys.forEach((k, j) => k.off('down', handlers[j]));
+        cleanup();
+        if (i === 0) DMSystem.openDMs(this, (l, cb) => this.dialogue.show(l, cb), () => this.showPhoneApps());
+        else if (i === 1) CasinoSystem.openCrypto(this, () => { this.showPhoneApps(); });
+        else this.frozen = false;
+      };
+      handlers.push(handler);
+      key.on('down', handler);
+    });
   }
 
   private playTractorMinigame() {

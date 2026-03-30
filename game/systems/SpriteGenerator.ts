@@ -1430,31 +1430,7 @@ function generateAllNPCs(scene: Phaser.Scene) {
     }
   );
 
-  // Bikini Girl 1 — tan, dark hair, blue bikini top
-  generateNPC32(
-    scene,
-    'npc_bikini1',
-    0x302018, // dark brown hair
-    'long',
-    0x4090d0, // blue bikini top
-    0x50a0e0,
-    0x4090d0, // matching bottom
-    0xd0a870, // tan skin
-    0xb08850
-  );
-
-  // Bikini Girl 2 — lighter skin, dark hair, pink bikini
-  generateNPC32(
-    scene,
-    'npc_bikini2',
-    0x201010, // black hair
-    'long',
-    0xd04080, // pink bikini
-    0xe050a0,
-    0xd04080,
-    0xf0c8a0, // lighter skin
-    0xd0a880
-  );
+  // npc_bikini1 and npc_bikini2 are drawn with full makeTexture below (detailed female sprites)
 
   // Business NPC — suit, professional
   generateNPC32(
@@ -2027,49 +2003,54 @@ function generateAllNPCs(scene: Phaser.Scene) {
   });
 
   // Bikini Girl 1 — blue bikini, brown hair, sleepy/chill expression — 32x32
+  // Bikini Girl 1 — tan skin, long dark hair, red bikini, curvy, sandals — 32x32
   makeTexture(scene, 'npc_bikini1', CHAR_SIZE, CHAR_SIZE, (g) => {
-    const skin = 0xf0c890;
-    const skinS = 0xd0a870;
-    const skinH = 0xf8d8a0;
-    const hair = 0x604020;
-    const hairH = 0x785030;
-    const bikini = 0x40a0c0;
-    const bikiniL = 0x50b0d0;
+    const skin = 0xd0a070;       // tan skin
+    const skinS = 0xb88858;      // tan shadow
+    const skinH = 0xe0b880;      // tan highlight
+    const hair = 0x1a1010;       // dark/near-black hair
+    const hairH = 0x302018;      // dark hair highlight
+    const bikini = 0xc02030;     // red bikini
+    const bikiniL = 0xd83848;    // red bikini highlight
 
-    // === HAIR — long, flowing brown, past shoulders ===
-    px(g, 10, 0, hair, 12, 1);       // top
+    // === HAIR — long, dark, flowing past shoulders ===
+    px(g, 10, 0, hair, 12, 1);       // top of head
     px(g, 8, 1, hair, 16, 2);        // crown
     px(g, 7, 3, hair, 18, 2);        // sides of head
     px(g, 6, 4, hair, 3, 2);         // left framing face
     px(g, 23, 4, hair, 3, 2);        // right framing face
-    px(g, 5, 5, 0x151010, 3, 10);   // left hair flowing down
-    px(g, 24, 5, 0x151010, 3, 10);  // right hair flowing down
-    px(g, 5, 15, hair, 2, 5);        // left strand past shoulder
-    px(g, 25, 15, hair, 2, 5);       // right strand past shoulder
-    px(g, 4, 18, hair, 2, 3);        // left wispy ends
-    px(g, 26, 18, hair, 2, 3);       // right wispy ends
-    // Hair highlights
+    px(g, 5, 5, hair, 3, 10);        // left hair flowing down
+    px(g, 24, 5, hair, 3, 10);       // right hair flowing down
+    px(g, 5, 15, hair, 2, 6);        // left strand past shoulder
+    px(g, 25, 15, hair, 2, 6);       // right strand past shoulder
+    px(g, 4, 19, hair, 2, 3);        // left wispy ends
+    px(g, 26, 19, hair, 2, 3);       // right wispy ends
+    // Hair highlights (subtle sheen)
     px(g, 12, 1, hairH, 3, 1);
     px(g, 10, 2, hairH, 2, 1);
     px(g, 19, 2, hairH, 2, 1);
 
-    // === FACE — rounder, softer, pretty ===
-    px(g, 9, 4, skin, 14, 8);        // face (wider, rounder like K)
+    // === FACE — rounder, softer, pretty, tan ===
+    px(g, 9, 4, skin, 14, 8);        // face
     px(g, 10, 3, skinH, 12, 1);      // forehead highlight
-    px(g, 10, 12, skinS, 12, 1);     // chin shadow
+    px(g, 10, 12, skinS, 12, 1);     // chin shadow/jawline
 
-    // === EYES — closed/sleepy with lashes ===
-    px(g, 10, 6, 0x604020, 5, 1);    // left top lash (long)
-    px(g, 18, 6, 0x604020, 5, 1);    // right top lash (long)
-    px(g, 10, 5, 0x604020, 1, 1);    // left outer lash flick
-    px(g, 23, 5, 0x604020, 1, 1);    // right outer lash flick
-    px(g, 11, 7, 0x806050, 4, 1);    // left closed eye line
-    px(g, 19, 7, 0x806050, 4, 1);    // right closed eye line
+    // === EYES — big, pretty, with lashes ===
+    px(g, 10, 6, 0x1a1010, 5, 1);    // left top lash (long)
+    px(g, 18, 6, 0x1a1010, 5, 1);    // right top lash (long)
+    px(g, 10, 5, 0x1a1010, 1, 1);    // left outer lash flick
+    px(g, 23, 5, 0x1a1010, 1, 1);    // right outer lash flick
+    px(g, 11, 7, 0xffffff, 4, 2);    // left eye white
+    px(g, 19, 7, 0xffffff, 4, 2);    // right eye white
+    px(g, 12, 7, 0x402820, 2, 2);    // left iris (warm brown)
+    px(g, 20, 7, 0x402820, 2, 2);    // right iris
+    px(g, 13, 7, 0x1a1010, 1, 1);    // left pupil
+    px(g, 21, 7, 0x1a1010, 1, 1);    // right pupil
 
     // === NOSE + LIPS ===
     px(g, 15, 9, skinS, 2, 1);       // small nose
-    px(g, 13, 10, 0xd08080, 6, 1);   // lips — soft pink
-    px(g, 14, 10, 0xe09090, 4, 1);   // lip highlight center
+    px(g, 13, 10, 0xc06060, 6, 1);   // lips — warm rose
+    px(g, 14, 10, 0xd07070, 4, 1);   // lip highlight center
 
     // Ears
     px(g, 7, 7, skin, 1, 2);
@@ -2078,7 +2059,7 @@ function generateAllNPCs(scene: Phaser.Scene) {
     // === NECK ===
     px(g, 14, 12, skin, 4, 2);       // neck
 
-    // === BIKINI TOP — rounded cups with strap ===
+    // === BIKINI TOP — red, rounded cups with strap ===
     // Shoulder straps
     px(g, 12, 13, bikiniL, 1, 2);    // left strap
     px(g, 19, 13, bikiniL, 1, 2);    // right strap
@@ -2094,13 +2075,12 @@ function generateAllNPCs(scene: Phaser.Scene) {
     px(g, 19, 17, bikiniL, 3, 1);    // right cup underline
     // Center strap between cups
     px(g, 14, 15, bikiniL, 4, 1);
-    // Skin around top
+    // Skin around top (bare sides)
     px(g, 8, 14, skin, 2, 4);        // left side skin
     px(g, 22, 14, skin, 2, 4);       // right side skin
     px(g, 14, 16, skin, 4, 1);       // center gap skin
 
     // === TORSO — hourglass: shoulders > narrow waist > wider hips ===
-    // Upper torso (wider, shoulders)
     px(g, 9, 18, skin, 14, 1);       // upper midriff
     // Narrow waist
     px(g, 11, 19, skin, 10, 1);      // waist narrowing
@@ -2111,7 +2091,7 @@ function generateAllNPCs(scene: Phaser.Scene) {
     px(g, 10, 21, skin, 12, 1);      // hips widening
     px(g, 9, 22, skin, 14, 1);       // full hips
 
-    // === ARMS (skinny, bare) ===
+    // === ARMS (skinny, bare, tan) ===
     px(g, 5, 15, skin, 2, 5);        // left upper arm
     px(g, 25, 15, skin, 2, 5);       // right upper arm
     px(g, 4, 20, skin, 2, 2);        // left lower arm
@@ -2119,80 +2099,86 @@ function generateAllNPCs(scene: Phaser.Scene) {
     px(g, 4, 22, skinS, 2, 1);       // left hand
     px(g, 26, 22, skinS, 2, 1);      // right hand
 
-    // === BIKINI BOTTOM ===
+    // === BIKINI BOTTOM — red ===
     px(g, 10, 23, bikini, 12, 1);    // waistband
     px(g, 11, 24, bikini, 4, 1);     // left side
     px(g, 17, 24, bikini, 4, 1);     // right side
 
     // === LEGS — shapely: wider thigh, thinner ankle ===
-    // Thighs (wider)
     px(g, 9, 24, skin, 5, 1);        // left thigh
     px(g, 18, 24, skin, 5, 1);       // right thigh
     px(g, 10, 25, skin, 4, 1);       // left mid-thigh
     px(g, 18, 25, skin, 4, 1);       // right mid-thigh
-    // Calves (narrowing)
     px(g, 10, 26, skin, 4, 1);       // left upper calf
     px(g, 19, 26, skin, 4, 1);       // right upper calf
     px(g, 11, 27, skinS, 3, 1);      // left lower calf
     px(g, 19, 27, skinS, 3, 1);      // right lower calf
-    // Ankles (thinnest)
     px(g, 11, 28, skinS, 2, 1);      // left ankle
     px(g, 20, 28, skinS, 2, 1);      // right ankle
 
-    // === FEET ===
-    px(g, 10, 29, skinS, 4, 1);      // left foot
-    px(g, 19, 29, skinS, 4, 1);      // right foot
-    px(g, 10, 30, skinS, 4, 1);      // left sole
-    px(g, 19, 30, skinS, 4, 1);      // right sole
+    // === SANDALS — tan leather ===
+    px(g, 10, 29, 0xc09060, 4, 1);   // left sandal
+    px(g, 19, 29, 0xc09060, 4, 1);   // right sandal
+    px(g, 10, 30, 0xb08050, 4, 1);   // left sole
+    px(g, 19, 30, 0xb08050, 4, 1);   // right sole
   });
 
-  // Bikini Girl 2 — pink bikini, dark hair, smiling/active expression — 32x32
+  // Bikini Girl 2 — light/fair skin, blonde hair, blue bikini, curvy, sandals — 32x32
   makeTexture(scene, 'npc_bikini2', CHAR_SIZE, CHAR_SIZE, (g) => {
-    const skin = 0xf0c890;
-    const skinS = 0xd0a870;
-    const skinH = 0xf8d8a0;
-    const hair = 0x302020;
-    const hairH = 0x402828;
-    const bikini = 0xd06080;
-    const bikiniL = 0xe07090;
+    const skin = 0xf0d8c0;       // light/fair skin
+    const skinS = 0xd8c0a8;      // fair skin shadow
+    const skinH = 0xf8e8d8;      // fair skin highlight
+    const hair = 0xe0c060;       // blonde hair
+    const hairH = 0xf0d880;      // blonde highlight
+    const hairS = 0xc8a848;      // blonde shadow
+    const bikini = 0x3080d0;     // blue bikini
+    const bikiniL = 0x4090e0;    // blue bikini highlight
 
-    // === HAIR — long, dark, flowing past shoulders ===
-    px(g, 10, 0, hair, 12, 1);       // top
+    // === HAIR — blonde, shoulder-length, slightly wavy/layered ===
+    px(g, 10, 0, hair, 12, 1);       // top of head
     px(g, 8, 1, hair, 16, 2);        // crown
     px(g, 7, 3, hair, 18, 2);        // sides of head
     px(g, 6, 4, hair, 3, 2);         // left framing face
     px(g, 23, 4, hair, 3, 2);        // right framing face
-    px(g, 5, 5, 0x201818, 3, 10);   // left hair flowing down
-    px(g, 24, 5, 0x201818, 3, 10);  // right hair flowing down
-    px(g, 5, 15, hair, 2, 5);        // left strand past shoulder
-    px(g, 25, 15, hair, 2, 5);       // right strand past shoulder
-    px(g, 4, 18, hair, 2, 3);        // left wispy ends
-    px(g, 26, 18, hair, 2, 3);       // right wispy ends
-    // Hair highlights
-    px(g, 12, 1, hairH, 3, 1);
-    px(g, 19, 2, hairH, 2, 1);
+    px(g, 5, 5, hairS, 3, 8);        // left hair flowing down
+    px(g, 24, 5, hairS, 3, 8);       // right hair flowing down
+    // Side-swept bangs (different from bikini1)
+    px(g, 8, 3, hairH, 6, 1);        // bangs swept right
+    px(g, 10, 4, hairH, 4, 1);       // bangs lower layer
+    // Shorter than bikini1 — ends at shoulders
+    px(g, 5, 13, hair, 2, 4);        // left strand to shoulder
+    px(g, 25, 13, hair, 2, 4);       // right strand to shoulder
+    px(g, 4, 16, hair, 2, 2);        // left wispy ends
+    px(g, 26, 16, hair, 2, 2);       // right wispy ends
+    // Blonde highlights
+    px(g, 12, 1, hairH, 4, 1);
+    px(g, 10, 2, hairH, 2, 1);
+    px(g, 19, 2, hairH, 3, 1);
 
-    // === FACE — rounder, softer, pretty ===
-    px(g, 9, 4, skin, 14, 8);        // face (wider, rounder like K)
+    // === FACE — rounder, softer, fair-skinned ===
+    px(g, 9, 4, skin, 14, 8);        // face
     px(g, 10, 3, skinH, 12, 1);      // forehead highlight
     px(g, 10, 12, skinS, 12, 1);     // chin shadow
+    // Rosy cheeks
+    px(g, 10, 9, 0xf0b0a0, 2, 1);   // left blush
+    px(g, 20, 9, 0xf0b0a0, 2, 1);   // right blush
 
-    // === EYES — big, open, with lashes ===
-    px(g, 10, 6, 0x302020, 5, 1);    // left top lash (long)
-    px(g, 18, 6, 0x302020, 5, 1);    // right top lash (long)
-    px(g, 10, 5, 0x302020, 1, 1);    // left outer lash flick
-    px(g, 23, 5, 0x302020, 1, 1);    // right outer lash flick
+    // === EYES — big, bright blue, with lashes ===
+    px(g, 10, 6, 0x806040, 5, 1);    // left top lash
+    px(g, 18, 6, 0x806040, 5, 1);    // right top lash
+    px(g, 10, 5, 0x806040, 1, 1);    // left outer lash flick
+    px(g, 23, 5, 0x806040, 1, 1);    // right outer lash flick
     px(g, 11, 7, 0xffffff, 4, 2);    // left eye white
     px(g, 19, 7, 0xffffff, 4, 2);    // right eye white
-    px(g, 12, 7, 0x206020, 2, 2);    // left iris (green)
-    px(g, 20, 7, 0x206020, 2, 2);    // right iris
-    px(g, 13, 7, 0x1a1010, 1, 1);    // left pupil
-    px(g, 21, 7, 0x1a1010, 1, 1);    // right pupil
+    px(g, 12, 7, 0x4080c0, 2, 2);    // left iris (blue)
+    px(g, 20, 7, 0x4080c0, 2, 2);    // right iris
+    px(g, 13, 7, 0x1a1a30, 1, 1);    // left pupil
+    px(g, 21, 7, 0x1a1a30, 1, 1);    // right pupil
 
     // === NOSE + LIPS (smiling) ===
     px(g, 15, 9, skinS, 2, 1);       // small nose
-    px(g, 12, 10, 0xd08080, 8, 1);   // wide smile
-    px(g, 13, 10, 0xe09090, 6, 1);   // smile highlight center
+    px(g, 12, 10, 0xd08888, 8, 1);   // wide smile
+    px(g, 13, 10, 0xe09898, 6, 1);   // smile highlight center
     px(g, 11, 10, skinS, 1, 1);      // left smile crease
     px(g, 20, 10, skinS, 1, 1);      // right smile crease
 
@@ -2203,7 +2189,7 @@ function generateAllNPCs(scene: Phaser.Scene) {
     // === NECK ===
     px(g, 14, 12, skin, 4, 2);       // neck
 
-    // === BIKINI TOP — rounded cups with strap ===
+    // === BIKINI TOP — blue, rounded cups with strap ===
     // Shoulder straps
     px(g, 12, 13, bikiniL, 1, 2);    // left strap
     px(g, 19, 13, bikiniL, 1, 2);    // right strap
@@ -2219,13 +2205,12 @@ function generateAllNPCs(scene: Phaser.Scene) {
     px(g, 19, 17, bikiniL, 3, 1);    // right cup underline
     // Center strap between cups
     px(g, 14, 15, bikiniL, 4, 1);
-    // Skin around top
+    // Skin around top (bare sides)
     px(g, 8, 14, skin, 2, 4);        // left side skin
     px(g, 22, 14, skin, 2, 4);       // right side skin
     px(g, 14, 16, skin, 4, 1);       // center gap skin
 
     // === TORSO — hourglass: shoulders > narrow waist > wider hips ===
-    // Upper torso (wider, shoulders)
     px(g, 9, 18, skin, 14, 1);       // upper midriff
     // Narrow waist
     px(g, 11, 19, skin, 10, 1);      // waist narrowing
@@ -2236,7 +2221,7 @@ function generateAllNPCs(scene: Phaser.Scene) {
     px(g, 10, 21, skin, 12, 1);      // hips widening
     px(g, 9, 22, skin, 14, 1);       // full hips
 
-    // === ARMS (skinny, bare) ===
+    // === ARMS (skinny, bare, fair) ===
     px(g, 5, 15, skin, 2, 5);        // left upper arm
     px(g, 25, 15, skin, 2, 5);       // right upper arm
     px(g, 4, 20, skin, 2, 2);        // left lower arm
@@ -2244,31 +2229,28 @@ function generateAllNPCs(scene: Phaser.Scene) {
     px(g, 4, 22, skinS, 2, 1);       // left hand
     px(g, 26, 22, skinS, 2, 1);      // right hand
 
-    // === BIKINI BOTTOM ===
+    // === BIKINI BOTTOM — blue ===
     px(g, 10, 23, bikini, 12, 1);    // waistband
     px(g, 11, 24, bikini, 4, 1);     // left side
     px(g, 17, 24, bikini, 4, 1);     // right side
 
     // === LEGS — shapely: wider thigh, thinner ankle ===
-    // Thighs (wider)
     px(g, 9, 24, skin, 5, 1);        // left thigh
     px(g, 18, 24, skin, 5, 1);       // right thigh
     px(g, 10, 25, skin, 4, 1);       // left mid-thigh
     px(g, 18, 25, skin, 4, 1);       // right mid-thigh
-    // Calves (narrowing)
     px(g, 10, 26, skin, 4, 1);       // left upper calf
     px(g, 19, 26, skin, 4, 1);       // right upper calf
     px(g, 11, 27, skinS, 3, 1);      // left lower calf
     px(g, 19, 27, skinS, 3, 1);      // right lower calf
-    // Ankles (thinnest)
     px(g, 11, 28, skinS, 2, 1);      // left ankle
     px(g, 20, 28, skinS, 2, 1);      // right ankle
 
-    // === SANDALS ===
-    px(g, 10, 29, 0xc09060, 4, 1);   // left sandal
-    px(g, 19, 29, 0xc09060, 4, 1);   // right sandal
-    px(g, 10, 30, 0xb08050, 4, 1);   // left sole
-    px(g, 19, 30, 0xb08050, 4, 1);   // right sole
+    // === SANDALS — white/cream ===
+    px(g, 10, 29, 0xe0d0c0, 4, 1);   // left sandal
+    px(g, 19, 29, 0xe0d0c0, 4, 1);   // right sandal
+    px(g, 10, 30, 0xd0c0b0, 4, 1);   // left sole
+    px(g, 19, 30, 0xd0c0b0, 4, 1);   // right sole
   });
 
   // Narrator / Professor — older, grey hair, wise

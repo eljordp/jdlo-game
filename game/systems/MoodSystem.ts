@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { GameIntelligence } from './GameIntelligence';
 
 // ── Mood Types ───────────────────────────────────────────────────
 
@@ -53,7 +54,48 @@ export class MoodSystem {
 
   static setMood(mood: Mood, durationSeconds?: number): void {
     const config = MOOD_CONFIGS[mood];
-    const duration = (durationSeconds ?? config.defaultDuration) * 1000;
+    const baseDurationMs = (durationSeconds ?? config.defaultDuration) * 1000;
+
+    // ── Adaptive duration boost based on real player data ────────
+    let duration = baseDurationMs;
+
+    if (mood !== 'sober' && baseDurationMs > 0) {
+      const agg = GameIntelligence.getAggregate();
+      const moodAvg = agg.moodDuration;
+      const avgForThisMood = moodAvg[mood];
+      let boost = 1;
+
+      // If players barely experience this mood, extend it
+      if (avgForThisMood !== undefined) {
+        if (avgForThisMood < 8) {
+          boost = 2;
+          GameIntelligence.logAdaptation('mood_boost', `${mood} duration boosted 2x (avg was ${Math.round(avgForThisMood)}s)`);
+        } else if (avgForThisMood < 15) {
+          boost = 1.5;
+          GameIntelligence.logAdaptation('mood_boost', `${mood} duration boosted 1.5x (avg was ${Math.round(avgForThisMood)}s)`);
+        }
+      }
+
+      // If sober dominates (4x any non-sober mood), boost all non-sober moods
+      const soberAvg = moodAvg['sober'];
+      if (soberAvg !== undefined) {
+        const nonSoberMoods = Object.entries(moodAvg).filter(([m]) => m !== 'sober');
+        const soberDominates = nonSoberMoods.length > 0 &&
+          nonSoberMoods.some(([, avg]) => soberAvg > avg * 4);
+
+        if (soberDominates) {
+          const soberBoost = 1.3;
+          if (soberBoost > boost) {
+            GameIntelligence.logAdaptation('mood_boost', `${mood} boosted 1.3x (sober avg ${Math.round(soberAvg)}s dominates)`);
+          }
+          boost = Math.max(boost, soberBoost);
+        }
+      }
+
+      // Cap at 3x original duration
+      boost = Math.min(boost, 3);
+      duration = baseDurationMs * boost;
+    }
 
     // If already in this mood, extend instead of resetting
     if (this.currentMood === mood && mood !== 'sober') {
@@ -66,6 +108,7 @@ export class MoodSystem {
 
     this.currentMood = mood;
     this.remainingMs = duration;
+    GameIntelligence.onMoodChanged(mood);
 
     // Apply morale change
     this.changeMorale(config.moraleChange);
@@ -209,51 +252,51 @@ export class MoodSystem {
   private static updateFadedEffects(scene: Phaser.Scene, player: Phaser.GameObjects.Sprite, delta: number): void {
     const cam = scene.cameras.main;
 
-    // Camera wobble: dreamy +-3px oscillation, slower wave
+    // Camera wobble: dreamy +-6px oscillation, stronger wave
     this.wobbleTime += delta * 0.002;
-    this.wobbleOffset = Math.sin(this.wobbleTime) * 3;
-    cam.setFollowOffset(this.wobbleOffset, Math.cos(this.wobbleTime * 0.7) * 1.5);
+    this.wobbleOffset = Math.sin(this.wobbleTime) * 6;
+    cam.setFollowOffset(this.wobbleOffset, Math.cos(this.wobbleTime * 0.7) * 3);
 
     // Green/purple tint overlay that pulses slowly
     if (!this.fadedTint || !this.fadedTint.active) {
       this.fadedTint = scene.add.rectangle(
         cam.width / 2, cam.height / 2, cam.width, cam.height,
-        0x40c060, 0.06,
+        0x60a080, 0.14,
       ).setScrollFactor(0).setDepth(300).setBlendMode(Phaser.BlendModes.ADD);
     }
     this.fadedTintTime += delta * 0.001;
-    this.fadedTint.setAlpha(0.04 + Math.sin(this.fadedTintTime) * 0.02);
+    this.fadedTint.setAlpha(0.10 + Math.sin(this.fadedTintTime) * 0.08);
 
     // Vignette: 4 dark edge rectangles
     if (!this.fadedVignette || this.fadedVignette.length === 0 || !this.fadedVignette[0].active) {
-      const thickness = 40;
-      const top = scene.add.rectangle(cam.width / 2, thickness / 2, cam.width, thickness, 0x000000, 0.08)
+      const thickness = 60;
+      const top = scene.add.rectangle(cam.width / 2, thickness / 2, cam.width, thickness, 0x000000, 0.18)
         .setScrollFactor(0).setDepth(301);
-      const bottom = scene.add.rectangle(cam.width / 2, cam.height - thickness / 2, cam.width, thickness, 0x000000, 0.08)
+      const bottom = scene.add.rectangle(cam.width / 2, cam.height - thickness / 2, cam.width, thickness, 0x000000, 0.18)
         .setScrollFactor(0).setDepth(301);
-      const left = scene.add.rectangle(thickness / 2, cam.height / 2, thickness, cam.height, 0x000000, 0.08)
+      const left = scene.add.rectangle(thickness / 2, cam.height / 2, thickness, cam.height, 0x000000, 0.18)
         .setScrollFactor(0).setDepth(301);
-      const right = scene.add.rectangle(cam.width - thickness / 2, cam.height / 2, thickness, cam.height, 0x000000, 0.08)
+      const right = scene.add.rectangle(cam.width - thickness / 2, cam.height / 2, thickness, cam.height, 0x000000, 0.18)
         .setScrollFactor(0).setDepth(301);
       this.fadedVignette = [top, bottom, left, right];
     }
 
-    // Smoke trail: bigger, greener, more opaque, faster spawn
+    // Smoke trail: bigger puffs, more opaque, faster spawn, drifts higher
     this.smokeTrailTimer += delta;
-    if (this.smokeTrailTimer > 250) {
+    if (this.smokeTrailTimer > 180) {
       this.smokeTrailTimer = 0;
 
       const puff = scene.add.circle(
         player.x + (Math.random() * 6 - 3),
         player.y + 5,
-        3 + Math.random() * 2,
+        4 + Math.random() * 3,
         0x90b090,
-        0.5,
+        0.65,
       ).setDepth(player.depth - 1);
 
       scene.tweens.add({
         targets: puff,
-        y: puff.y - 15 - Math.random() * 10,
+        y: puff.y - 22 - Math.random() * 14,
         x: puff.x + (Math.random() * 8 - 4),
         alpha: 0,
         scaleX: 2,
