@@ -11,6 +11,7 @@ import { GameIntelligence } from '../systems/GameIntelligence';
 import { CasinoSystem } from '../systems/CasinoSystem';
 import { DMSystem } from '../systems/DMSystem';
 import { SoundEffects } from '../systems/SoundEffects';
+import { BasketballSystem } from '../systems/BasketballSystem';
 import { GameStats } from '../systems/GameStats';
 import { AchievementSystem } from '../systems/AchievementSystem';
 import { BalanceSystem } from '../systems/BalanceSystem';
@@ -1568,9 +1569,28 @@ export class HomeScene extends BaseChapterScene {
       Analytics.trackInteraction(interactable.id);
       this.trackForPhoneCall(interactable.id);
       this.frozen = true;
+      if (this.basketballPlayed) {
+        this.dialogue.show([
+          { speaker: 'Pops', text: 'One game was enough for these knees, mijo.' },
+        ], () => { this.frozen = false; });
+        return;
+      }
       this.dialogue.show([
-        { speaker: 'JP', text: 'Hoop\'s out here waiting. Nobody to run it with right now.' },
-      ], () => { this.frozen = false; });
+        { speaker: 'Pops', text: 'Grab the ball. First to five.' },
+      ], () => {
+        BasketballSystem.play(this, this.getPlayerTexture(), (won) => {
+          this.basketballPlayed = true;
+          this.dialogue.show(
+            won
+              ? [
+                  { speaker: 'Pops', text: 'Ok, ok. You still got it.' },
+                  { speaker: 'Pops', text: 'Run it back after dinner.' },
+                ]
+              : [{ speaker: 'Pops', text: 'Still my driveway, mijo.' }],
+            () => { this.frozen = false; }
+          );
+        });
+      });
       return;
     }
 
