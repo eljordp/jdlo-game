@@ -11,6 +11,9 @@ import { GameIntelligence } from '../systems/GameIntelligence';
 import { CasinoSystem } from '../systems/CasinoSystem';
 import { DMSystem } from '../systems/DMSystem';
 import { SoundEffects } from '../systems/SoundEffects';
+import { GameStats } from '../systems/GameStats';
+import { AchievementSystem } from '../systems/AchievementSystem';
+import { BalanceSystem } from '../systems/BalanceSystem';
 
 export class HomeScene extends BaseChapterScene {
   private interactionCount = 0;
@@ -50,6 +53,14 @@ export class HomeScene extends BaseChapterScene {
   private secretNPCSpawned = false;
   private secretNPCInteracted = false;
   private secretNPCSprite: Phaser.GameObjects.Sprite | null = null;
+
+  // Interactive scene states
+  private fitChecked = false;
+  private stashGamePlayed = false;
+  private bmwScenePlayed = false;
+
+  // Basketball 1v1 minigame
+  private basketballPlayed = false;
 
   constructor() {
     super({ key: 'HomeScene' });
@@ -1552,42 +1563,14 @@ export class HomeScene extends BaseChapterScene {
       return;
     }
 
-    // Basketball — quick shoot animation
+    // Basketball — 1v1 minigame
     if (interactable.id === 'ch0_basketball') {
       Analytics.trackInteraction(interactable.id);
       this.trackForPhoneCall(interactable.id);
       this.frozen = true;
-
-      // Ball arc animation
-      const courtX = 20 * SCALED_TILE + SCALED_TILE / 2;
-      const courtY = 28 * SCALED_TILE;
-      const ball = this.add.circle(this.player.x, this.player.y - 20, 8, 0xf08030)
-        .setDepth(12);
-      // Arc to hoop
-      this.tweens.add({
-        targets: ball,
-        x: courtX,
-        y: courtY - 40,
-        duration: 600,
-        ease: 'Quad.easeOut',
-        onComplete: () => {
-          // Drop into hoop
-          this.tweens.add({
-            targets: ball,
-            y: courtY,
-            duration: 200,
-            ease: 'Bounce.easeOut',
-            onComplete: () => {
-              ball.destroy();
-              const chapterDialogue = this.getChapterDialogue();
-              const lines = chapterDialogue.npcs['ch0_basketball'] || [
-                { speaker: 'Narrator', text: 'Swish.' },
-              ];
-              this.dialogue.show(lines, () => { this.frozen = false; });
-            },
-          });
-        },
-      });
+      this.dialogue.show([
+        { speaker: 'JP', text: 'Hoop\'s out here waiting. Nobody to run it with right now.' },
+      ], () => { this.frozen = false; });
       return;
     }
 
@@ -1675,16 +1658,17 @@ export class HomeScene extends BaseChapterScene {
       return;
     }
 
-    // Deep mirror reflection (replaces generic mirror dialogue)
+    // Fit Check mirror interaction (replaces generic mirror dialogue)
     if (interactable.id === 'ch0_mirror') {
       Analytics.trackInteraction(interactable.id);
-      this.frozen = true;
-      const chapterDialogue = this.getChapterDialogue();
-      const lines = chapterDialogue.npcs['ch0_mirror_deep'] || [
-        { speaker: 'Narrator', text: 'Jordi stares at himself. Really stares.' },
-        { speaker: 'JP\'s Mind', text: 'I don\'t know who this person is yet.' },
-      ];
-      this.dialogue.show(lines, () => { this.frozen = false; });
+      if (!this.fitChecked) {
+        this.playFitCheck();
+      } else {
+        this.frozen = true;
+        this.dialogue.show([
+          { speaker: 'JP\'s Mind', text: 'Fit already locked in.' },
+        ], () => { this.frozen = false; });
+      }
       this.trackForPhoneCall(interactable.id);
       return;
     }
@@ -1718,6 +1702,15 @@ export class HomeScene extends BaseChapterScene {
     // Papers — pickup (nightstand drawer)
     // Papers now discovered through bed (shoebox). Old standalone handler removed.
 
+    // Stash Hide minigame — bed re-interact after shoebox, before mom argues
+    if (interactable.id === 'ch0_bed' && this.bedLocked && !this.stashGamePlayed
+        && !this.momArgued && InventorySystem.hasItem('papers')) {
+      Analytics.trackInteraction(interactable.id);
+      this.playStashHide();
+      this.trackForPhoneCall(interactable.id);
+      return;
+    }
+
     // Bed — JP lies down, discovers shoebox underneath
     if (interactable.id === 'ch0_bed' && !this.bedLocked) {
       Analytics.trackInteraction(interactable.id);
@@ -1746,6 +1739,21 @@ export class HomeScene extends BaseChapterScene {
           });
         });
       });
+      this.trackForPhoneCall(interactable.id);
+      return;
+    }
+
+    // BMW Pull-Off cinematic
+    if (interactable.id === 'ch0_jp_car') {
+      Analytics.trackInteraction(interactable.id);
+      if (!this.bmwScenePlayed) {
+        this.playBMWPullOff();
+      } else {
+        this.frozen = true;
+        this.dialogue.show([
+          { speaker: 'JP\'s Mind', text: 'Not yet. But soon.' },
+        ], () => { this.frozen = false; });
+      }
       this.trackForPhoneCall(interactable.id);
       return;
     }
@@ -4443,5 +4451,969 @@ export class HomeScene extends BaseChapterScene {
 
     // Start first round
     startRound(false);
+  }
+
+  // ═══════════════════════════════════════════════════════════════════
+  // SCENE 1: FIT CHECK (Mirror Outfit Picker)
+  // ═══════════════════════════════════════════════════════════════════
+
+  private playFitCheck() {
+    this.fitChecked = true;
+    this.frozen = true;
+    GameStats.increment('minigamesPlayed');
+    const objects: Phaser.GameObjects.GameObject[] = [];
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+
+    // Dark overlay
+    const overlay = this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.85)
+      .setScrollFactor(0).setDepth(300);
+    objects.push(overlay);
+
+    // Mirror frame — gold border
+    const mirrorFrame = this.add.rectangle(cx, cy - 80, 240, 340, 0xc8a040)
+      .setScrollFactor(0).setDepth(301).setStrokeStyle(4, 0xf0d060);
+    objects.push(mirrorFrame);
+
+    // Mirror interior — darker
+    const mirrorInner = this.add.rectangle(cx, cy - 80, 220, 320, 0x1a1a2e)
+      .setScrollFactor(0).setDepth(302);
+    objects.push(mirrorInner);
+
+    // Mirror shine line
+    const shine = this.add.rectangle(cx - 90, cy - 200, 4, 60, 0xffffff, 0.15)
+      .setScrollFactor(0).setDepth(303).setAngle(15);
+    objects.push(shine);
+
+    // Title
+    const title = this.add.text(cx, cy - 270, 'FIT CHECK', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '18px', color: '#f0c040',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(310);
+    objects.push(title);
+
+    // JP reflection sprite — pixel art with rectangles
+    // Head
+    const head = this.add.circle(cx, cy - 180, 20, 0xd4a870)
+      .setScrollFactor(0).setDepth(305);
+    objects.push(head);
+    // Hair
+    const hair = this.add.rectangle(cx, cy - 198, 36, 10, 0x101010)
+      .setScrollFactor(0).setDepth(306);
+    objects.push(hair);
+    // Body (shirt — will change color)
+    const bodyShirt = this.add.rectangle(cx, cy - 130, 44, 60, 0x101010)
+      .setScrollFactor(0).setDepth(305);
+    objects.push(bodyShirt);
+    // Pants (will change color)
+    const bodyPants = this.add.rectangle(cx, cy - 60, 44, 40, 0x303040)
+      .setScrollFactor(0).setDepth(305);
+    objects.push(bodyPants);
+    // Shoes
+    const shoeL = this.add.rectangle(cx - 12, cy - 36, 16, 10, 0x202020)
+      .setScrollFactor(0).setDepth(305);
+    objects.push(shoeL);
+    const shoeR = this.add.rectangle(cx + 12, cy - 36, 16, 10, 0x202020)
+      .setScrollFactor(0).setDepth(305);
+    objects.push(shoeR);
+    // Chain accessory (hidden by default)
+    const chain = this.add.rectangle(cx, cy - 155, 6, 14, 0xc0c0c0)
+      .setScrollFactor(0).setDepth(306).setAlpha(0);
+    objects.push(chain);
+    // Shades accessory (hidden by default)
+    const shades = this.add.rectangle(cx, cy - 185, 30, 8, 0x101010)
+      .setScrollFactor(0).setDepth(307).setAlpha(0);
+    objects.push(shades);
+
+    // Reaction text (big, hidden initially)
+    const reactionText = this.add.text(cx, cy + 60, '', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '14px', color: '#ffffff',
+      align: 'center',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(310).setAlpha(0);
+    objects.push(reactionText);
+
+    // Outfit definitions
+    const outfits = [
+      { name: 'All Black', emoji: '\uD83D\uDDA4', shirt: 0x101010, pants: 0x101010, shoes: 0x101010,
+        chain: true, shades: false, reaction: 'THIS THE ONE \uD83D\uDD25', fire: true, mood: null as string | null, color: '#ff4444' },
+      { name: 'Fresh Whites', emoji: '\u2601\uFE0F', shirt: 0xf0f0f0, pants: 0x80a0c0, shoes: 0xf0f0f0,
+        chain: false, shades: false, reaction: 'Clean.', fire: true, mood: null, color: '#ffffff' },
+      { name: 'Street', emoji: '\uD83D\uDD25', shirt: 0x505060, pants: 0x606050, shoes: 0x303030,
+        chain: false, shades: false, reaction: 'Valid.', fire: false, mood: null, color: '#f0c040' },
+      { name: 'Drip', emoji: '\uD83D\uDC8E', shirt: 0x202040, pants: 0x101020, shoes: 0x101010,
+        chain: true, shades: true, reaction: 'Too much drip\nfor one room \uD83D\uDC8E', fire: true, mood: 'confident', color: '#a060ff' },
+      { name: 'Bummy', emoji: '\uD83D\uDE34', shirt: 0x808080, pants: 0x808080, shoes: 0x909090,
+        chain: false, shades: false, reaction: 'Nah take that off', fire: false, mood: 'bummy', color: '#666666' },
+    ];
+
+    // Outfit cards at bottom
+    const cardY = cy + 160;
+    const cardSpacing = 220;
+    const startX = cx - (cardSpacing * (outfits.length - 1)) / 2;
+
+    outfits.forEach((outfit, i) => {
+      const cardX = startX + i * cardSpacing;
+      const cardBg = this.add.rectangle(cardX, cardY, 180, 80, 0x1a1a2e)
+        .setScrollFactor(0).setDepth(305).setStrokeStyle(2, 0x3a3a5e)
+        .setInteractive({ useHandCursor: true });
+      objects.push(cardBg);
+
+      const cardLabel = this.add.text(cardX, cardY - 12, outfit.emoji + ' ' + outfit.name, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#ffffff',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(306);
+      objects.push(cardLabel);
+
+      const cardHint = this.add.text(cardX, cardY + 16, 'TAP', {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#888888',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(306);
+      objects.push(cardHint);
+
+      // Hover
+      cardBg.on('pointerover', () => cardBg.setStrokeStyle(2, 0xf0c040));
+      cardBg.on('pointerout', () => cardBg.setStrokeStyle(2, 0x3a3a5e));
+
+      // Select outfit
+      cardBg.on('pointerdown', () => {
+        SoundEffects.playConfirm();
+
+        // Update sprite colors
+        bodyShirt.setFillStyle(outfit.shirt);
+        bodyPants.setFillStyle(outfit.pants);
+        shoeL.setFillStyle(outfit.shoes);
+        shoeR.setFillStyle(outfit.shoes);
+        chain.setAlpha(outfit.chain ? 1 : 0);
+        shades.setAlpha(outfit.shades ? 1 : 0);
+
+        // Reaction text pop
+        reactionText.setText(outfit.reaction).setColor(outfit.color).setAlpha(0).setScale(0.5);
+        this.tweens.add({
+          targets: reactionText,
+          alpha: 1,
+          scale: 1,
+          duration: 300,
+          ease: 'Back.easeOut',
+        });
+
+        // Fire outfit effects
+        if (outfit.fire) {
+          SoundEffects.crowdReact();
+          this.cameras.main.shake(250, 0.005);
+        }
+
+        // Mood effects
+        if (outfit.mood === 'confident') {
+          MoodSystem.setMood('locked_in', 60);
+        }
+
+        // Bummy roast
+        if (outfit.mood === 'bummy') {
+          SoundEffects.fumble();
+          this.time.delayedCall(800, () => {
+            this.dialogue.show([
+              { speaker: 'JP\'s Mind', text: 'Bro. We are NOT leaving the house like this.' },
+              { speaker: 'JP\'s Mind', text: 'This is giving "I gave up" energy.' },
+            ], () => {
+              // Reset to default
+              bodyShirt.setFillStyle(0x101010);
+              bodyPants.setFillStyle(0x303040);
+              shoeL.setFillStyle(0x202020);
+              shoeR.setFillStyle(0x202020);
+              chain.setAlpha(0);
+              shades.setAlpha(0);
+              reactionText.setAlpha(0);
+            });
+          });
+          return;
+        }
+
+        // Lock in after 1.5s
+        this.time.delayedCall(1500, () => {
+          // "Fit locked in" confirmation
+          const lockText = this.add.text(cx, cy + 100, 'Fit locked in \u2713', {
+            fontFamily: '"Press Start 2P", monospace', fontSize: '12px', color: '#40c060',
+          }).setOrigin(0.5).setScrollFactor(0).setDepth(310).setAlpha(0);
+          objects.push(lockText);
+          this.tweens.add({
+            targets: lockText,
+            alpha: 1,
+            duration: 300,
+          });
+
+          SoundEffects.playConfirm();
+          GameStats.increment('minigamesWon');
+
+          // Close after another 1.5s
+          this.time.delayedCall(1500, () => {
+            for (const obj of objects) {
+              if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
+            }
+            this.dialogue.show([
+              { speaker: 'Narrator', text: 'JP steps back from the mirror. Ready.' },
+            ], () => { this.frozen = false; });
+          });
+        });
+      });
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════════════════
+  // SCENE 2: STASH HIDE (Stealth Minigame)
+  // ═══════════════════════════════════════════════════════════════════
+
+  private playStashHide() {
+    this.stashGamePlayed = true;
+    this.frozen = true;
+    GameStats.increment('minigamesPlayed');
+    const objects: Phaser.GameObjects.GameObject[] = [];
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+
+    // Grid config
+    const gridSize = 8;
+    const cellSize = 64;
+    const gridW = gridSize * cellSize;
+    const gridH = gridSize * cellSize;
+    const gridX = cx - gridW / 2;
+    const gridY = cy - gridH / 2 + 20;
+
+    // Dark overlay
+    objects.push(this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.88)
+      .setScrollFactor(0).setDepth(300));
+
+    // Title
+    objects.push(this.add.text(cx, gridY - 60, 'STASH HIDE', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '16px', color: '#f0c040',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(310));
+
+    // Instructions
+    objects.push(this.add.text(cx, gridY - 35, 'Hide items before Mom finds them! Arrow keys + SPACE', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#aaaacc',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(310));
+
+    // Draw grid
+    for (let r = 0; r < gridSize; r++) {
+      for (let c = 0; c < gridSize; c++) {
+        const cellColor = (r + c) % 2 === 0 ? 0x1a1a2e : 0x151528;
+        const cell = this.add.rectangle(
+          gridX + c * cellSize + cellSize / 2,
+          gridY + r * cellSize + cellSize / 2,
+          cellSize - 2, cellSize - 2, cellColor
+        ).setScrollFactor(0).setDepth(301);
+        objects.push(cell);
+      }
+    }
+
+    // Room layout labels
+    const roomLabels = [
+      { text: 'JP ROOM', x: 1, y: 1 },
+      { text: 'HALLWAY', x: 4, y: 3 },
+      { text: 'KITCHEN', x: 6, y: 1 },
+      { text: 'LIVING RM', x: 6, y: 6 },
+    ];
+    for (const label of roomLabels) {
+      const lt = this.add.text(
+        gridX + label.x * cellSize + cellSize / 2,
+        gridY + label.y * cellSize + cellSize / 2,
+        label.text,
+        { fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#333355' }
+      ).setOrigin(0.5).setScrollFactor(0).setDepth(302);
+      objects.push(lt);
+    }
+
+    // Hiding spots (room coords)
+    const hideSpots = [
+      { r: 0, c: 0, label: 'Under Bed' },
+      { r: 1, c: 2, label: 'Speaker' },
+      { r: 2, c: 0, label: 'Poster' },
+    ];
+
+    // Draw hiding spot glows
+    for (const spot of hideSpots) {
+      const glow = this.add.rectangle(
+        gridX + spot.c * cellSize + cellSize / 2,
+        gridY + spot.r * cellSize + cellSize / 2,
+        cellSize - 8, cellSize - 8, 0x40c060, 0.3
+      ).setScrollFactor(0).setDepth(303);
+      objects.push(glow);
+      // Pulse
+      this.tweens.add({
+        targets: glow,
+        alpha: 0.1,
+        duration: 800,
+        yoyo: true,
+        repeat: -1,
+      });
+
+      const spotLabel = this.add.text(
+        gridX + spot.c * cellSize + cellSize / 2,
+        gridY + spot.r * cellSize + cellSize / 2,
+        spot.label,
+        { fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#40c060' }
+      ).setOrigin(0.5).setScrollFactor(0).setDepth(304);
+      objects.push(spotLabel);
+    }
+
+    // Mom patrol path
+    const momPath = [
+      { r: 3, c: 4 }, { r: 3, c: 5 }, { r: 3, c: 6 }, { r: 3, c: 7 }, // hallway right
+      { r: 2, c: 7 }, { r: 1, c: 7 }, { r: 1, c: 6 }, // kitchen
+      { r: 2, c: 6 }, { r: 3, c: 6 }, { r: 4, c: 6 }, { r: 5, c: 6 }, { r: 6, c: 6 }, // living room
+      { r: 6, c: 5 }, { r: 5, c: 5 }, { r: 4, c: 5 }, { r: 3, c: 5 }, { r: 3, c: 4 }, // back to hallway
+    ];
+    // Door tile — if Mom reaches here, game over
+    const doorTile = { r: 3, c: 2 };
+
+    // Draw mom patrol path as dots
+    for (const p of momPath) {
+      const dot = this.add.circle(
+        gridX + p.c * cellSize + cellSize / 2,
+        gridY + p.r * cellSize + cellSize / 2,
+        3, 0xff4040, 0.25
+      ).setScrollFactor(0).setDepth(302);
+      objects.push(dot);
+    }
+
+    // Draw door marker
+    const doorMarker = this.add.rectangle(
+      gridX + doorTile.c * cellSize + cellSize / 2,
+      gridY + doorTile.r * cellSize + cellSize / 2,
+      cellSize - 8, cellSize - 8, 0xff4040, 0.15
+    ).setScrollFactor(0).setDepth(302);
+    objects.push(doorMarker);
+    const doorLabel = this.add.text(
+      gridX + doorTile.c * cellSize + cellSize / 2,
+      gridY + doorTile.r * cellSize + cellSize / 2,
+      'DOOR',
+      { fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#ff4040' }
+    ).setOrigin(0.5).setScrollFactor(0).setDepth(303);
+    objects.push(doorLabel);
+
+    // Player dot
+    let playerR = 1;
+    let playerC = 1;
+    const playerDot = this.add.circle(
+      gridX + playerC * cellSize + cellSize / 2,
+      gridY + playerR * cellSize + cellSize / 2,
+      14, 0x4080ff
+    ).setScrollFactor(0).setDepth(308);
+    objects.push(playerDot);
+    const playerLabel = this.add.text(0, 0, 'JP', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(309);
+    objects.push(playerLabel);
+
+    // Mom dot
+    let momIdx = 0;
+    let momR = momPath[0].r;
+    let momC = momPath[0].c;
+    const momDot = this.add.circle(
+      gridX + momC * cellSize + cellSize / 2,
+      gridY + momR * cellSize + cellSize / 2,
+      14, 0xff4040
+    ).setScrollFactor(0).setDepth(308);
+    objects.push(momDot);
+    const momLabel = this.add.text(0, 0, 'MOM', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(309);
+    objects.push(momLabel);
+
+    // Game state
+    let itemsHidden = 0;
+    let timeLeft = 30;
+    let gameOver = false;
+    let isHiding = false;
+
+    // Timer bar
+    const timerBg = this.add.rectangle(cx, gridY - 12, 300, 12, 0x333333)
+      .setScrollFactor(0).setDepth(310);
+    objects.push(timerBg);
+    const timerBar = this.add.rectangle(cx - 150, gridY - 12, 300, 10, 0x40c060)
+      .setOrigin(0, 0.5).setScrollFactor(0).setDepth(311);
+    objects.push(timerBar);
+
+    // Counter
+    const counterText = this.add.text(cx + 200, gridY - 60, 'ITEMS: 0/3', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#40c060',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(310);
+    objects.push(counterText);
+
+    // Warning flash overlay
+    const warningFlash = this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0xff0000, 0)
+      .setScrollFactor(0).setDepth(320);
+    objects.push(warningFlash);
+
+    // Update positions helper
+    const updatePositions = () => {
+      playerDot.setPosition(
+        gridX + playerC * cellSize + cellSize / 2,
+        gridY + playerR * cellSize + cellSize / 2
+      );
+      playerLabel.setPosition(playerDot.x, playerDot.y);
+      momDot.setPosition(
+        gridX + momC * cellSize + cellSize / 2,
+        gridY + momR * cellSize + cellSize / 2
+      );
+      momLabel.setPosition(momDot.x, momDot.y);
+    };
+
+    // Check distance between mom and player
+    const checkProximity = () => {
+      const dist = Math.abs(momR - playerR) + Math.abs(momC - playerC);
+      if (dist <= 2) {
+        SoundEffects.playAlert();
+        warningFlash.setAlpha(0.15);
+        this.time.delayedCall(200, () => { if (!gameOver) warningFlash.setAlpha(0); });
+      }
+    };
+
+    // End game
+    const endGame = (won: boolean) => {
+      if (gameOver) return;
+      gameOver = true;
+      timerEvent.remove();
+      momMoveEvent.remove();
+
+      // Remove keyboard listeners
+      upKey.removeAllListeners();
+      downKey.removeAllListeners();
+      leftKey.removeAllListeners();
+      rightKey.removeAllListeners();
+      spaceKey.removeAllListeners();
+
+      if (won) {
+        SoundEffects.success();
+        MoodSystem.changeMorale(15);
+        GameStats.increment('minigamesWon');
+
+        const winText = this.add.text(cx, cy, 'Clean. She\'ll never\nfind it. \uD83E\uDEE1', {
+          fontFamily: '"Press Start 2P", monospace', fontSize: '16px', color: '#40c060',
+          align: 'center',
+        }).setOrigin(0.5).setScrollFactor(0).setDepth(330).setAlpha(0).setScale(0.5);
+        objects.push(winText);
+        this.tweens.add({
+          targets: winText,
+          alpha: 1,
+          scale: 1,
+          duration: 500,
+          ease: 'Back.easeOut',
+        });
+      } else {
+        SoundEffects.playPoliceSiren();
+        this.cameras.main.shake(400, 0.008);
+
+        const loseText = this.add.text(cx, cy, 'MOM: JORDAN!', {
+          fontFamily: '"Press Start 2P", monospace', fontSize: '20px', color: '#ff4040',
+          align: 'center',
+        }).setOrigin(0.5).setScrollFactor(0).setDepth(330).setAlpha(0).setScale(0.5);
+        objects.push(loseText);
+        this.tweens.add({
+          targets: loseText,
+          alpha: 1,
+          scale: 1.2,
+          duration: 400,
+          ease: 'Back.easeOut',
+        });
+      }
+
+      this.time.delayedCall(2500, () => {
+        for (const obj of objects) {
+          if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
+        }
+        const resultLines = won
+          ? [{ speaker: 'JP\'s Mind', text: 'She\'ll never know.' }]
+          : [
+              { speaker: 'Mom', text: 'What is THIS under the speaker?!' },
+              { speaker: 'JP\'s Mind', text: '...caught.' },
+            ];
+        this.dialogue.show(resultLines, () => { this.frozen = false; });
+      });
+    };
+
+    // Timer countdown
+    const timerEvent = this.time.addEvent({
+      delay: 1000,
+      repeat: 29,
+      callback: () => {
+        if (gameOver) return;
+        timeLeft--;
+        timerBar.setDisplaySize(300 * (timeLeft / 30), 10);
+        if (timeLeft <= 10) timerBar.setFillStyle(0xff4040);
+        else if (timeLeft <= 20) timerBar.setFillStyle(0xf0c040);
+        if (timeLeft <= 0) endGame(false);
+      },
+    });
+
+    // Mom movement
+    const momMoveEvent = this.time.addEvent({
+      delay: 1500,
+      repeat: -1,
+      callback: () => {
+        if (gameOver) return;
+        momIdx = (momIdx + 1) % momPath.length;
+        momR = momPath[momIdx].r;
+        momC = momPath[momIdx].c;
+        updatePositions();
+        checkProximity();
+
+        // Check if mom reached door while items still need hiding
+        if (momR === doorTile.r && momC === doorTile.c && itemsHidden < 3) {
+          // Mom moves towards player room — 50% chance to enter
+          if (Math.random() < 0.5) {
+            endGame(false);
+          }
+        }
+      },
+    });
+
+    // Player movement — arrow keys
+    const upKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
+    const downKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
+    const leftKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
+    const rightKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
+    const spaceKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
+    const movePlayer = (dr: number, dc: number) => {
+      if (gameOver || isHiding) return;
+      const newR = playerR + dr;
+      const newC = playerC + dc;
+      if (newR >= 0 && newR < gridSize && newC >= 0 && newC < gridSize) {
+        playerR = newR;
+        playerC = newC;
+        updatePositions();
+        SoundEffects.playFootstep();
+      }
+    };
+
+    upKey.on('down', () => movePlayer(-1, 0));
+    downKey.on('down', () => movePlayer(1, 0));
+    leftKey.on('down', () => movePlayer(0, -1));
+    rightKey.on('down', () => movePlayer(0, 1));
+
+    // Space to hide item
+    spaceKey.on('down', () => {
+      if (gameOver || isHiding) return;
+      // Check if on a hide spot that hasn't been used
+      const spotIdx = hideSpots.findIndex(s => s.r === playerR && s.c === playerC);
+      if (spotIdx === -1) return;
+      // Check if this spot already used (simple: mark with a property)
+      if ((hideSpots[spotIdx] as any)._used) return;
+
+      isHiding = true;
+      (hideSpots[spotIdx] as any)._used = true;
+
+      // Hiding animation — player dot pulses
+      this.tweens.add({
+        targets: playerDot,
+        scaleX: 1.5,
+        scaleY: 1.5,
+        alpha: 0.5,
+        duration: 500,
+        yoyo: true,
+        onComplete: () => {
+          isHiding = false;
+          itemsHidden++;
+          counterText.setText('ITEMS: ' + itemsHidden + '/3');
+          SoundEffects.playPickup();
+
+          // Show checkmark on spot
+          const check = this.add.text(
+            gridX + hideSpots[spotIdx].c * cellSize + cellSize / 2,
+            gridY + hideSpots[spotIdx].r * cellSize + cellSize / 2,
+            '\u2713',
+            { fontFamily: '"Press Start 2P", monospace', fontSize: '18px', color: '#40ff60' }
+          ).setOrigin(0.5).setScrollFactor(0).setDepth(315);
+          objects.push(check);
+
+          if (itemsHidden >= 3) {
+            endGame(true);
+          }
+        },
+      });
+    });
+
+    // Touch controls — tap quadrants to move
+    const tapMove = (pointer: Phaser.Input.Pointer) => {
+      if (gameOver || isHiding) return;
+      const px = pointer.x;
+      const py = pointer.y;
+      const pdx = px - playerDot.x;
+      const pdy = py - playerDot.y;
+      // If tap is near player, treat as space
+      if (Math.abs(pdx) < cellSize && Math.abs(pdy) < cellSize) {
+        spaceKey.emit('down');
+        return;
+      }
+      if (Math.abs(pdx) > Math.abs(pdy)) {
+        movePlayer(0, pdx > 0 ? 1 : -1);
+      } else {
+        movePlayer(pdy > 0 ? 1 : -1, 0);
+      }
+    };
+    this.input.on('pointerdown', tapMove);
+
+    // ESC to quit
+    const escKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+    escKey.once('down', () => {
+      if (gameOver) return;
+      gameOver = true;
+      timerEvent.remove();
+      momMoveEvent.remove();
+      upKey.removeAllListeners();
+      downKey.removeAllListeners();
+      leftKey.removeAllListeners();
+      rightKey.removeAllListeners();
+      spaceKey.removeAllListeners();
+      this.input.off('pointerdown', tapMove);
+      for (const obj of objects) {
+        if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
+      }
+      this.frozen = false;
+    });
+
+    updatePositions();
+  }
+
+  // ═══════════════════════════════════════════════════════════════════
+  // SCENE 3: BMW PULL-OFF (Cinematic Flex)
+  // ═══════════════════════════════════════════════════════════════════
+
+  private playBMWPullOff() {
+    this.bmwScenePlayed = true;
+    this.frozen = true;
+    GameStats.increment('minigamesPlayed');
+    const objects: Phaser.GameObjects.GameObject[] = [];
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+
+    // Dark background
+    objects.push(this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x000000, 1)
+      .setScrollFactor(0).setDepth(300));
+
+    // Letterbox bars
+    const letterboxH = 80;
+    const topBar = this.add.rectangle(cx, letterboxH / 2, GAME_WIDTH, letterboxH, 0x000000)
+      .setScrollFactor(0).setDepth(350);
+    objects.push(topBar);
+    const bottomBar = this.add.rectangle(cx, GAME_HEIGHT - letterboxH / 2, GAME_WIDTH, letterboxH, 0x000000)
+      .setScrollFactor(0).setDepth(350);
+    objects.push(bottomBar);
+
+    // Slide bars in
+    topBar.setY(-letterboxH / 2);
+    bottomBar.setY(GAME_HEIGHT + letterboxH / 2);
+    SoundEffects.playCinematicSwoosh();
+    this.tweens.add({ targets: topBar, y: letterboxH / 2, duration: 500, ease: 'Quad.easeOut' });
+    this.tweens.add({ targets: bottomBar, y: GAME_HEIGHT - letterboxH / 2, duration: 500, ease: 'Quad.easeOut' });
+
+    // Dashboard background
+    const dashY = cy + 60;
+    objects.push(this.add.rectangle(cx, dashY, 800, 280, 0x1a1a1a)
+      .setScrollFactor(0).setDepth(301));
+    // Dashboard top trim
+    objects.push(this.add.rectangle(cx, dashY - 140, 800, 4, 0x333333)
+      .setScrollFactor(0).setDepth(302));
+
+    // Steering wheel (left side)
+    const wheelCx = cx - 200;
+    const wheelCy = dashY + 40;
+    // Outer ring
+    const wheelOuter = this.add.circle(wheelCx, wheelCy, 80, undefined, 0)
+      .setScrollFactor(0).setDepth(305).setStrokeStyle(12, 0x303030);
+    objects.push(wheelOuter);
+    // Inner hub
+    objects.push(this.add.circle(wheelCx, wheelCy, 20, 0x252525)
+      .setScrollFactor(0).setDepth(305));
+    // BMW logo placeholder
+    objects.push(this.add.text(wheelCx, wheelCy, 'BMW', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#4080c0',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(306));
+    // Spokes
+    for (let a = 0; a < 3; a++) {
+      const angle = (a * 120) * Math.PI / 180;
+      const sx = wheelCx + Math.cos(angle) * 20;
+      const sy = wheelCy + Math.sin(angle) * 20;
+      const ex = wheelCx + Math.cos(angle) * 74;
+      const ey = wheelCy + Math.sin(angle) * 74;
+      const spoke = this.add.line(0, 0, sx, sy, ex, ey, 0x303030)
+        .setScrollFactor(0).setDepth(304).setLineWidth(4);
+      objects.push(spoke);
+    }
+
+    // Speedometer (right side)
+    const speedCx = cx + 200;
+    const speedCy = dashY - 20;
+    // Speedo background circle
+    objects.push(this.add.circle(speedCx, speedCy, 100, 0x0a0a0a)
+      .setScrollFactor(0).setDepth(303).setStrokeStyle(3, 0x333333));
+    // Speed markings
+    for (let i = 0; i <= 8; i++) {
+      const angle = (-210 + i * 30) * Math.PI / 180;
+      const ix = speedCx + Math.cos(angle) * 78;
+      const iy = speedCy + Math.sin(angle) * 78;
+      const ox = speedCx + Math.cos(angle) * 88;
+      const oy = speedCy + Math.sin(angle) * 88;
+      objects.push(this.add.line(0, 0, ix, iy, ox, oy, 0x555555)
+        .setScrollFactor(0).setDepth(304).setLineWidth(2));
+      // Speed number
+      const numX = speedCx + Math.cos(angle) * 65;
+      const numY = speedCy + Math.sin(angle) * 65;
+      objects.push(this.add.text(numX, numY, String(i * 20), {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#555555',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(304));
+    }
+
+    // Needle — starts at 0 (angle -210 degrees)
+    let needleAngle = -210;
+    const needleLen = 70;
+    const needleEndX = () => speedCx + Math.cos(needleAngle * Math.PI / 180) * needleLen;
+    const needleEndY = () => speedCy + Math.sin(needleAngle * Math.PI / 180) * needleLen;
+    const needle = this.add.line(0, 0, speedCx, speedCy, needleEndX(), needleEndY(), 0xff6020)
+      .setScrollFactor(0).setDepth(306).setLineWidth(3);
+    objects.push(needle);
+    // Needle center cap
+    objects.push(this.add.circle(speedCx, speedCy, 8, 0xff6020)
+      .setScrollFactor(0).setDepth(307));
+
+    // MPH text
+    const mphText = this.add.text(speedCx, speedCy + 40, '0', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '14px', color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(306);
+    objects.push(mphText);
+    objects.push(this.add.text(speedCx, speedCy + 58, 'MPH', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#555555',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(306));
+
+    // RPM counter text
+    const rpmText = this.add.text(cx, dashY - 130, '', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '11px', color: '#ff6020',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(310);
+    objects.push(rpmText);
+
+    // Center screen (infotainment)
+    const screenX = cx;
+    const screenY = dashY - 40;
+    objects.push(this.add.rectangle(screenX, screenY, 160, 80, 0x0a1520)
+      .setScrollFactor(0).setDepth(303).setStrokeStyle(2, 0x1a3a5a));
+
+    // Music equalizer bars (inside center screen)
+    const eqBars: Phaser.GameObjects.Rectangle[] = [];
+    const eqBarCount = 8;
+    const eqBarWidth = 12;
+    const eqStartX = screenX - ((eqBarCount * (eqBarWidth + 4)) / 2) + eqBarWidth / 2;
+    for (let i = 0; i < eqBarCount; i++) {
+      const bar = this.add.rectangle(
+        eqStartX + i * (eqBarWidth + 4),
+        screenY + 30,
+        eqBarWidth, 4, 0x4080ff
+      ).setOrigin(0.5, 1).setScrollFactor(0).setDepth(305).setAlpha(0);
+      objects.push(bar);
+      eqBars.push(bar);
+    }
+
+    // Narrative text
+    const narrativeText = this.add.text(cx, letterboxH + 30, '', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '11px', color: '#aaaacc',
+      align: 'center',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(340);
+    objects.push(narrativeText);
+
+    // Road lines container (for pull-off)
+    const roadLines: Phaser.GameObjects.Rectangle[] = [];
+
+    // Update needle position helper
+    const updateNeedle = (angleDeg: number) => {
+      needleAngle = angleDeg;
+      const ex = speedCx + Math.cos(angleDeg * Math.PI / 180) * needleLen;
+      const ey = speedCy + Math.sin(angleDeg * Math.PI / 180) * needleLen;
+      needle.setTo(speedCx, speedCy, ex, ey);
+      // Calculate MPH from angle (-210 = 0mph, 30 = 160mph)
+      const mph = Math.round(((angleDeg + 210) / 240) * 160);
+      mphText.setText(String(Math.max(0, mph)));
+    };
+
+    // ── SEQUENCE ──
+
+    // Step 1: "JP sits in the BMW."
+    narrativeText.setText('JP sits in the BMW.');
+    this.time.delayedCall(1500, () => {
+      // Step 2: Engine start — needle twitches
+      SoundEffects.playCarDrive();
+      narrativeText.setText('');
+
+      // Engine idle — needle bouncing slightly
+      const idleTween = this.tweens.addCounter({
+        from: -210,
+        to: -195,
+        duration: 400,
+        yoyo: true,
+        repeat: -1,
+        onUpdate: (tween) => {
+          updateNeedle(tween.getValue() ?? -210);
+        },
+      });
+
+      this.time.delayedCall(1200, () => {
+        // Step 3: Phone connects — music bars appear
+        SoundEffects.playConfirm();
+        narrativeText.setText('Phone connected.');
+
+        // Activate EQ bars
+        for (const bar of eqBars) bar.setAlpha(1);
+        const eqTimer = this.time.addEvent({
+          delay: 150,
+          repeat: -1,
+          callback: () => {
+            for (const bar of eqBars) {
+              const h = 4 + Math.random() * 50;
+              bar.setDisplaySize(eqBarWidth, h);
+            }
+          },
+        });
+
+        this.time.delayedCall(1500, () => {
+          // Step 4: Rev prompt
+          narrativeText.setText('SPACE to rev');
+          rpmText.setText('2K');
+          let revCount = 0;
+
+          const revHandler = () => {
+            if (revCount >= 3) return;
+            revCount++;
+            SoundEffects.playImpact();
+            this.cameras.main.shake(100, 0.003);
+
+            if (revCount === 1) {
+              rpmText.setText('4K');
+              idleTween.stop();
+              updateNeedle(-170);
+            } else if (revCount === 2) {
+              rpmText.setText('6K');
+              updateNeedle(-130);
+            } else if (revCount === 3) {
+              rpmText.setText('REDLINE');
+              rpmText.setColor('#ff2020');
+              updateNeedle(-90);
+              narrativeText.setText('');
+
+              // Remove rev listener
+              spaceKey.off('down', revHandler);
+              this.input.off('pointerdown', revHandler);
+
+              // Step 5: "Let's ride."
+              this.time.delayedCall(600, () => {
+                narrativeText.setText('"Let\'s ride."');
+                this.cameras.main.shake(300, 0.006);
+                SoundEffects.playImpact();
+
+                // Step 6: Pull-off — needle sweeps, road lines streak
+                this.time.delayedCall(1000, () => {
+                  narrativeText.setText('');
+                  SoundEffects.playCinematicSwoosh();
+                  SoundEffects.playRoadWind();
+
+                  // Sweep needle to max
+                  this.tweens.addCounter({
+                    from: -90,
+                    to: 30,
+                    duration: 1200,
+                    ease: 'Quad.easeIn',
+                    onUpdate: (tween) => updateNeedle(tween.getValue() ?? -210),
+                  });
+
+                  // Road lines streaking across bottom
+                  const roadTimer = this.time.addEvent({
+                    delay: 80,
+                    repeat: 24,
+                    callback: () => {
+                      const lineY = GAME_HEIGHT - letterboxH - 20 - Math.random() * 100;
+                      const roadLine = this.add.rectangle(
+                        GAME_WIDTH + 40, lineY, 60 + Math.random() * 40, 4, 0xffffff, 0.7
+                      ).setScrollFactor(0).setDepth(320);
+                      objects.push(roadLine);
+                      roadLines.push(roadLine);
+                      this.tweens.add({
+                        targets: roadLine,
+                        x: -100,
+                        duration: 300,
+                        onComplete: () => roadLine.setAlpha(0),
+                      });
+                    },
+                  });
+
+                  // Speed blur — screen tint
+                  const speedBlur = this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0xffffff, 0)
+                    .setScrollFactor(0).setDepth(315);
+                  objects.push(speedBlur);
+                  this.tweens.add({
+                    targets: speedBlur,
+                    alpha: 0.08,
+                    duration: 600,
+                    yoyo: true,
+                  });
+
+                  // Step 7: Hold on speedo maxed
+                  this.time.delayedCall(2000, () => {
+                    eqTimer.remove();
+                    roadTimer.remove();
+
+                    // Step 8: Fade to black
+                    const fadeBlack = this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0)
+                      .setScrollFactor(0).setDepth(340);
+                    objects.push(fadeBlack);
+                    this.tweens.add({
+                      targets: fadeBlack,
+                      alpha: 1,
+                      duration: 1000,
+                      onComplete: () => {
+                        // "But not today. Not yet."
+                        const endText = this.add.text(cx, cy, 'But not today.\nNot yet.', {
+                          fontFamily: '"Press Start 2P", monospace', fontSize: '16px', color: '#aaaacc',
+                          align: 'center', lineSpacing: 12,
+                        }).setOrigin(0.5).setScrollFactor(0).setDepth(360).setAlpha(0);
+                        objects.push(endText);
+                        this.tweens.add({
+                          targets: endText,
+                          alpha: 1,
+                          duration: 800,
+                        });
+
+                        GameStats.increment('minigamesWon');
+
+                        // Step 9: Back to game after 2.5s
+                        this.time.delayedCall(2500, () => {
+                          for (const obj of objects) {
+                            if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
+                          }
+                          this.dialogue.show([
+                            { speaker: 'JP\'s Mind', text: 'One day I\'m gonna drive and not come back.' },
+                            { speaker: 'JP\'s Mind', text: 'But not until I\'m ready.' },
+                          ], () => { this.frozen = false; });
+                        });
+                      },
+                    });
+                  });
+                });
+              });
+            }
+          };
+
+          const spaceKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+          spaceKey.on('down', revHandler);
+          this.input.on('pointerdown', revHandler);
+
+          // ESC to skip
+          const escKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+          escKey.once('down', () => {
+            spaceKey.off('down', revHandler);
+            this.input.off('pointerdown', revHandler);
+            eqTimer.remove();
+            idleTween.stop();
+            for (const obj of objects) {
+              if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
+            }
+            this.frozen = false;
+          });
+        });
+      });
+    });
   }
 }
