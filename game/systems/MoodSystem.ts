@@ -49,6 +49,7 @@ export class MoodSystem {
 
   // Track which scene we initialized for (to clean up on scene change)
   private static activeScene: Phaser.Scene | null = null;
+  private static baseCamZoom: number = 1;
 
   // ── Public API ─────────────────────────────────────────────────
 
@@ -200,6 +201,8 @@ export class MoodSystem {
       this.warmTint = null;
       this.fadedTint = null;
       this.fadedVignette = null;
+      // Capture the scene's intended zoom before any effect touches it
+      this.baseCamZoom = scene.cameras.main.zoom;
     }
 
     const delta = scene.game.loop.delta;
@@ -252,38 +255,47 @@ export class MoodSystem {
   private static updateFadedEffects(scene: Phaser.Scene, player: Phaser.GameObjects.Sprite, delta: number): void {
     const cam = scene.cameras.main;
 
-    // Camera wobble: dreamy +-6px oscillation, stronger wave
-    this.wobbleTime += delta * 0.002;
-    this.wobbleOffset = Math.sin(this.wobbleTime) * 6;
-    cam.setFollowOffset(this.wobbleOffset, Math.cos(this.wobbleTime * 0.7) * 3);
+    // Camera wobble: heavy dreamy sway, unmistakable
+    this.wobbleTime += delta * 0.0026;
+    this.wobbleOffset = Math.sin(this.wobbleTime) * 14;
+    cam.setFollowOffset(this.wobbleOffset, Math.cos(this.wobbleTime * 0.7) * 8);
 
-    // Green/purple tint overlay that pulses slowly
+    // Slow zoom breathe on top of the sway
+    cam.setZoom(this.baseCamZoom + Math.sin(this.wobbleTime * 0.5) * 0.02);
+
+    // Green tint overlay that pulses slowly
     if (!this.fadedTint || !this.fadedTint.active) {
       this.fadedTint = scene.add.rectangle(
         cam.width / 2, cam.height / 2, cam.width, cam.height,
-        0x60a080, 0.14,
+        0x50b878, 0.22,
       ).setScrollFactor(0).setDepth(300).setBlendMode(Phaser.BlendModes.ADD);
     }
     this.fadedTintTime += delta * 0.001;
-    this.fadedTint.setAlpha(0.10 + Math.sin(this.fadedTintTime) * 0.08);
+    this.fadedTint.setAlpha(0.20 + Math.sin(this.fadedTintTime) * 0.10);
 
-    // Vignette: 4 dark edge rectangles
+    // Vignette: two rings of dark edge rectangles closing in
     if (!this.fadedVignette || this.fadedVignette.length === 0 || !this.fadedVignette[0].active) {
-      const thickness = 60;
-      const top = scene.add.rectangle(cam.width / 2, thickness / 2, cam.width, thickness, 0x000000, 0.18)
-        .setScrollFactor(0).setDepth(301);
-      const bottom = scene.add.rectangle(cam.width / 2, cam.height - thickness / 2, cam.width, thickness, 0x000000, 0.18)
-        .setScrollFactor(0).setDepth(301);
-      const left = scene.add.rectangle(thickness / 2, cam.height / 2, thickness, cam.height, 0x000000, 0.18)
-        .setScrollFactor(0).setDepth(301);
-      const right = scene.add.rectangle(cam.width - thickness / 2, cam.height / 2, thickness, cam.height, 0x000000, 0.18)
-        .setScrollFactor(0).setDepth(301);
-      this.fadedVignette = [top, bottom, left, right];
+      this.fadedVignette = [];
+      const rings: Array<[number, number, number]> = [[120, 0, 0.32], [70, 120, 0.16]];
+      for (const [thickness, inset, alpha] of rings) {
+        const w = cam.width - inset * 2;
+        const h = cam.height - inset * 2;
+        this.fadedVignette.push(
+          scene.add.rectangle(cam.width / 2, inset + thickness / 2, w, thickness, 0x000000, alpha)
+            .setScrollFactor(0).setDepth(301),
+          scene.add.rectangle(cam.width / 2, cam.height - inset - thickness / 2, w, thickness, 0x000000, alpha)
+            .setScrollFactor(0).setDepth(301),
+          scene.add.rectangle(inset + thickness / 2, cam.height / 2, thickness, h, 0x000000, alpha)
+            .setScrollFactor(0).setDepth(301),
+          scene.add.rectangle(cam.width - inset - thickness / 2, cam.height / 2, thickness, h, 0x000000, alpha)
+            .setScrollFactor(0).setDepth(301),
+        );
+      }
     }
 
     // Smoke trail: bigger puffs, more opaque, faster spawn, drifts higher
     this.smokeTrailTimer += delta;
-    if (this.smokeTrailTimer > 180) {
+    if (this.smokeTrailTimer > 120) {
       this.smokeTrailTimer = 0;
 
       const puff = scene.add.circle(
@@ -440,10 +452,11 @@ export class MoodSystem {
     // Crossfaded: screen breathing (zoom in/out subtly)
     if (crossfaded) {
       this.bounceTime += delta * 0.001;
-      const breathZoom = 1 + Math.sin(this.bounceTime) * 0.008;
+      const breathZoom = this.baseCamZoom + Math.sin(this.bounceTime) * 0.012;
       scene.cameras.main.setZoom(breathZoom);
-    } else if (scene.cameras.main.zoom !== 1 && !crossfaded) {
-      scene.cameras.main.setZoom(1);
+    } else if (this.currentMood !== 'faded' && scene.cameras.main.zoom !== this.baseCamZoom) {
+      // faded drives its own zoom breathe; otherwise restore the scene's real baseline
+      scene.cameras.main.setZoom(this.baseCamZoom);
     }
   }
 
@@ -535,7 +548,7 @@ export class MoodSystem {
     this.drunkWobbleAngle = 0;
     if (this.activeScene) {
       this.activeScene.cameras.main.setRotation(0);
-      this.activeScene.cameras.main.setZoom(1);
+      this.activeScene.cameras.main.setZoom(this.baseCamZoom);
     }
 
     // Reset player origin if vibing
