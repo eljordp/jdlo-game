@@ -12,6 +12,7 @@ import { GameIntelligence } from '../systems/GameIntelligence';
 import { SoundEffects } from '../systems/SoundEffects';
 import { MusicSystem } from '../systems/MusicSystem';
 import { SubstanceSystem } from '../systems/SubstanceSystem';
+import { ChoiceLedger } from '../systems/ChoiceLedger';
 
 export class JailScene extends BaseChapterScene {
   private currentDay = 1;
@@ -1472,6 +1473,7 @@ export class JailScene extends BaseChapterScene {
 
           // Track pushup outcome for reactive NPC dialogue
           if (diff > 10) this.pushupDominated = true;
+          if (diff <= 0) MoodSystem.changeMorale(-10); // losing in the yard costs pride
           this.trainingComplete = true;
 
           // Sound on result
@@ -2452,6 +2454,7 @@ export class JailScene extends BaseChapterScene {
 
     // === PLAYER ACTIONS ===
     const doSwing = () => {
+      ChoiceLedger.record('jail_fight', 'Fought');
       state = 'player-action';
       inputEnabled = false;
       dodgeActive = false;
@@ -2543,6 +2546,7 @@ export class JailScene extends BaseChapterScene {
     };
 
     const doWalkAway = () => {
+      ChoiceLedger.record('jail_fight', 'Walked away');
       state = 'player-action';
       inputEnabled = false;
       dodgeActive = false;

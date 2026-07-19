@@ -19,6 +19,8 @@ import { GameIntelligence } from '../systems/GameIntelligence';
 import { BalanceSystem } from '../systems/BalanceSystem';
 import { AchievementSystem } from '../systems/AchievementSystem';
 import { GameStats } from '../systems/GameStats';
+import { PauseMenu } from '../systems/PauseMenu';
+import { AffinitySystem } from '../systems/AffinitySystem';
 import type { MapData } from '../data/maps';
 
 type NPCObject = {
@@ -209,6 +211,12 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     // Interaction keys
     this.input.keyboard!.on('keydown-SPACE', () => this.handleInteract());
     this.input.keyboard!.on('keydown-ENTER', () => this.handleInteract());
+    // Pause menu — STATS / FRIENDS / CHOICES / BAG
+    this.input.keyboard!.on('keydown-P', () => {
+      if (this.frozen || PauseMenu.open_) return;
+      this.frozen = true;
+      PauseMenu.open(this, () => { this.frozen = false; });
+    });
     this.input.on('pointerdown', () => this.handleInteract());
 
     // A tighter camera lets rooms, materials, and character acting read like a
@@ -1679,6 +1687,8 @@ export abstract class BaseChapterScene extends Phaser.Scene {
       this.talkedToNpcs.add(_npcId);
       this.removeNpcIndicator(_npcId);
       GameStats.increment('npcsTalkedTo');
+      // Talking to someone for the first time warms the relationship
+      AffinitySystem.adjust(_npcId, 1);
     }
 
     // Mood-reactive NPC dialogue: if faded, 30% chance NPCs comment on it

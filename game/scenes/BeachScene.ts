@@ -15,6 +15,7 @@ import { GameIntelligence } from '../systems/GameIntelligence';
 import { DMSystem } from '../systems/DMSystem';
 import { CasinoSystem } from '../systems/CasinoSystem';
 import { SoundEffects } from '../systems/SoundEffects';
+import { ChoiceLedger } from '../systems/ChoiceLedger';
 import { GameStats } from '../systems/GameStats';
 import { AchievementSystem } from '../systems/AchievementSystem';
 
@@ -978,6 +979,7 @@ export class BeachScene extends BaseChapterScene {
         { speaker: 'Narrator', text: 'The line goes quiet.' },
       ], () => {
         this.showYesNoChoice('Drive to the farm?', 'Take the BMW', 'Not yet', () => {
+          ChoiceLedger.record('farm_call', 'Took the BMW');
           this.plugCalled = true;
           this.dialogue.show([
             { speaker: 'JP\'s Mind', text: 'One run. Make the money back.' },
@@ -985,6 +987,7 @@ export class BeachScene extends BaseChapterScene {
             { speaker: 'Narrator', text: 'The BMW keys are by the door.' },
           ], () => { this.frozen = false; });
         }, () => {
+          ChoiceLedger.record('farm_call', 'Hesitated first');
           this.choiceHesitated = true;
           this.choiceSequenceStarted = false;
           this.dialogue.show([
@@ -2424,6 +2427,7 @@ export class BeachScene extends BaseChapterScene {
       const no = isKids ? 'No thanks!' : 'Nah I\'m good';
       this.showYesNoChoice(prompt, yes, no, () => {
         // YES — escalates to blackout
+        ChoiceLedger.record('party_blow', 'Took it');
         this.partyLevel = 3;
         this.dialogue.show(isKids ? [
           { speaker: 'Narrator', text: 'JP pours the ENTIRE Pixy Stix in his mouth.' },
@@ -2471,6 +2475,7 @@ export class BeachScene extends BaseChapterScene {
         });
       }, () => {
         // NO — refusing never blocks the story.
+        ChoiceLedger.record('party_blow', 'Turned it down');
         this.dialogue.show([
           { speaker: 'JP', text: 'Nah I\'m good.' },
           { speaker: '???', text: 'Suit yourself.' },
@@ -2914,6 +2919,8 @@ export class BeachScene extends BaseChapterScene {
 
   private endBeerPong(jpScore: number, oppScore: number, objects: Phaser.GameObjects.GameObject[]) {
     const won = jpScore > oppScore;
+    // House rules: $20 on the table. Losing costs real money.
+    if (won) BalanceSystem.earn(20); else BalanceSystem.spend(20);
 
     const lines: DialogueLine[] = won ? [
       { speaker: 'Narrator', text: `JP sinks ${jpScore} cups. The table erupts.` },

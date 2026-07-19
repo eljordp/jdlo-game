@@ -15,6 +15,7 @@ import { BasketballSystem } from '../systems/BasketballSystem';
 import { GameStats } from '../systems/GameStats';
 import { AchievementSystem } from '../systems/AchievementSystem';
 import { BalanceSystem } from '../systems/BalanceSystem';
+import { AffinitySystem } from '../systems/AffinitySystem';
 
 export class HomeScene extends BaseChapterScene {
   private interactionCount = 0;
@@ -1621,6 +1622,8 @@ export class HomeScene extends BaseChapterScene {
       ], () => {
         BasketballSystem.play(this, this.getPlayerTexture(), (won) => {
           this.basketballPlayed = true;
+          // Playing with Pops warms the relationship, win or lose
+          AffinitySystem.adjust('ch0_pops', 1);
           this.dialogue.show(
             won
               ? [
