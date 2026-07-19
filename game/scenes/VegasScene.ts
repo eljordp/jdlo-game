@@ -510,9 +510,31 @@ export class VegasScene extends Phaser.Scene {
         this.addTween({ targets: light, alpha: 0.2, duration: 250 + (i % 5) * 90, yoyo: true, repeat: -1 });
       }
     } else {
-      for (let i = 0; i < 8; i++) {
-        const laser = this.addObj(this.add.rectangle(GAME_WIDTH / 2, 185, GAME_WIDTH * 0.92, 3, i % 2 ? color : 0x33bbee, 0.35).setAngle(-34 + i * 10));
-        this.addTween({ targets: laser, angle: laser.angle + 18, alpha: 0.08, duration: 900 + i * 70, yoyo: true, repeat: -1 });
+      // Marquee's signature: the giant LED wall behind the booth, whole panels
+      // strobing patterns while lasers cut over the crowd.
+      const panelColors = [color, 0xffffff, 0x8844ff, 0x22ccee];
+      for (let row = 0; row < 4; row++) {
+        for (let col = 0; col < 10; col++) {
+          const px = GAME_WIDTH / 2 - 315 + col * 70;
+          const py = 140 + row * 48;
+          const panel = this.addObj(this.add.rectangle(px, py, 62, 40,
+            panelColors[(row + col) % panelColors.length], 0.5));
+          this.addTween({
+            targets: panel,
+            alpha: { from: 0.15, to: 0.85 },
+            duration: 350 + ((row * 10 + col) % 7) * 120,
+            yoyo: true,
+            repeat: -1,
+            delay: ((col + row) % 5) * 140,
+          });
+        }
+      }
+      // DJ booth silhouette in front of the wall
+      this.addObj(this.add.rectangle(GAME_WIDTH / 2, 330, 190, 55, 0x0a0a12));
+      this.addObj(this.add.sprite(GAME_WIDTH / 2, 305, 'npc_generic', 0).setScale(SCALE * 1.1).setTint(0x111122));
+      for (let i = 0; i < 4; i++) {
+        const laser = this.addObj(this.add.rectangle(GAME_WIDTH / 2, 185, GAME_WIDTH * 0.92, 3, i % 2 ? color : 0x33bbee, 0.3).setAngle(-24 + i * 16));
+        this.addTween({ targets: laser, angle: laser.angle + 14, alpha: 0.08, duration: 900 + i * 70, yoyo: true, repeat: -1 });
       }
     }
     this.addMovingCrowd(GAME_HEIGHT - 230, 19, 1.08);
@@ -567,8 +589,9 @@ export class VegasScene extends Phaser.Scene {
         this.addTween({ targets: svj, x: GAME_WIDTH + 150, duration: 4300, delay: 900, repeat: -1, ease: 'Linear' });
         this.showText('LAS VEGAS', 115, { size: '20px', color: '#f0c040', delay: 250 });
         this.showText('Not a future vision. This trip happened.', 165, { size: '12px', color: '#c4c4d4', delay: 900 });
-        this.showText('Every stop was party, women, owners—and somebody talking business.', 220, { size: '11px', color: '#aaaacc', delay: 1500 });
-        this.showContinue(3000);
+        this.showText('Tony. Patrick. Dan. Same crew every time — and it\'s always lit.', 220, { size: '11px', color: '#e8d8b0', delay: 1500 });
+        this.showText('Every stop was party, women, owners—and somebody talking business.', 270, { size: '10px', color: '#aaaacc', delay: 2200 });
+        this.showContinue(3400);
         break;
       }
       case 1: {
@@ -577,16 +600,18 @@ export class VegasScene extends Phaser.Scene {
         this.addDealExchange(GAME_WIDTH - 225, 425, 'NUMBER SAVED', 'npc-business');
         this.showText('DAYCLUB', 92, { size: '20px', color: '#ffffff', delay: 200 });
         this.showText('Pool. Cabanas. Bottles. Music in full daylight.', 135, { size: '11px', color: '#17445c', delay: 700 });
-        this.showText('A bottle-service introduction turned into a business conversation before sunset.', 185, { size: '10px', color: '#17445c', delay: 1300 });
-        this.showContinue(3400);
+        this.showText('"We are NOT sleeping this weekend." — Tony, correct as always.', 185, { size: '10px', color: '#0e3346', delay: 1300 });
+        this.showText('A bottle-service introduction turned into a business conversation before sunset.', 235, { size: '10px', color: '#17445c', delay: 2000 });
+        this.showContinue(3700);
         break;
       }
       case 2: {
         this.makeNightclub('MARQUEE', 0x22ccee);
         this.addDealExchange(GAME_WIDTH - 190, 255, 'TERMS TALKED', 'npc_female');
-        this.showText('The room moved like one body.', 155, { size: '12px', delay: 650 });
-        this.showText('Women dancing. Owners talking numbers. Contacts changing hands between songs.', 205, { size: '10px', color: '#aaaacc', delay: 1300 });
-        this.showContinue(3600);
+        this.showText('The LED wall swallowed the whole room.', 420, { size: '12px', delay: 650 });
+        this.showText('Patrick disappeared into the crowd in the first five minutes. Standard.', 465, { size: '10px', color: '#88bbcc', delay: 1300 });
+        this.showText('Women dancing. Owners talking numbers. Contacts changing hands between songs.', 510, { size: '10px', color: '#aaaacc', delay: 2000 });
+        this.showContinue(3900);
         break;
       }
       case 3: {
@@ -602,9 +627,10 @@ export class VegasScene extends Phaser.Scene {
         this.makeStripClub();
         this.addDealExchange(GAME_WIDTH - 205, 420, 'DEAL MOVING', 'npc-business');
         this.showText('AFTER HOURS', 100, { size: '18px', color: '#ff4d86', delay: 250 });
-        this.showText('The night did not slow down. It changed buildings.', 150, { size: '11px', delay: 850 });
-        this.showText('Dancers working. Owners talking. Cash, smoke, drinks—and business still moving at the table.', 205, { size: '10px', color: '#d8a6b7', delay: 1450 });
-        this.showContinue(3900);
+        this.showText('"One more stop." — Dan. It was never one more stop.', 150, { size: '11px', color: '#e0a8bc', delay: 850 });
+        this.showText('The night did not slow down. It changed buildings.', 200, { size: '11px', delay: 1450 });
+        this.showText('Dancers working. Owners talking. Cash, smoke, drinks—and business still moving at the table.', 255, { size: '10px', color: '#d8a6b7', delay: 2050 });
+        this.showContinue(4200);
         break;
       }
       case 5: {
@@ -628,14 +654,18 @@ export class VegasScene extends Phaser.Scene {
         for (let x = 40; x < GAME_WIDTH; x += 90) {
           this.addObj(this.add.rectangle(x, GAME_HEIGHT - 105, 60, 45 + Math.random() * 80, 0x2b2432));
         }
-        const jp = this.addObj(this.add.sprite(cx - 42, GAME_HEIGHT - 145, 'player-ch6', 0).setScale(CHAR_SCALE * 1.3));
-        const malachi = this.addObj(this.add.sprite(cx + 42, GAME_HEIGHT - 145, 'npc_malachi', 0).setScale(SCALE * 1.3));
-        this.addTween({ targets: [jp, malachi], y: GAME_HEIGHT - 149, duration: 1100, yoyo: true, repeat: -1 });
+        // The whole crew watches it come up. Nobody says much.
+        const jp = this.addObj(this.add.sprite(cx - 96, GAME_HEIGHT - 145, 'player-ch6', 0).setScale(CHAR_SCALE * 1.3));
+        const tony = this.addObj(this.add.sprite(cx - 32, GAME_HEIGHT - 145, 'npc-friend', 0).setScale(SCALE * 1.3));
+        const patrick = this.addObj(this.add.sprite(cx + 32, GAME_HEIGHT - 145, 'npc_higo', 0).setScale(SCALE * 1.3));
+        const dan = this.addObj(this.add.sprite(cx + 96, GAME_HEIGHT - 145, 'npc-tech', 0).setScale(SCALE * 1.3));
+        this.addTween({ targets: [jp, tony, patrick, dan], y: GAME_HEIGHT - 149, duration: 1100, yoyo: true, repeat: -1 });
         this.showText('SUNRISE', 105, { size: '18px', color: '#ffd469', delay: 250 });
-        this.showText('The point was not that JP had become one of them overnight.', 165, { size: '11px', delay: 900 });
-        this.showText('The point was that the ceiling moved again.', 220, { size: '12px', color: '#f0c040', delay: 1650 });
-        this.showText('Now he knew those rooms were real.', 275, { size: '11px', color: '#d4c4d6', delay: 2400 });
-        this.showContinue(4400);
+        this.showText('Tony, Patrick, Dan — quiet for the first time all weekend.', 160, { size: '10px', color: '#d4c4d6', delay: 900 });
+        this.showText('The point was not that JP had become one of them overnight.', 215, { size: '11px', delay: 1650 });
+        this.showText('The point was that the ceiling moved again.', 270, { size: '12px', color: '#f0c040', delay: 2400 });
+        this.showText('Now he knew those rooms were real.', 325, { size: '11px', color: '#d4c4d6', delay: 3100 });
+        this.showContinue(5000);
         break;
       }
       default: {
@@ -646,466 +676,4 @@ export class VegasScene extends Phaser.Scene {
     }
   }
 
-  private playLegacyStep() {
-    const cx = GAME_WIDTH / 2;
-    const cy = GAME_HEIGHT / 2;
-
-    switch (this.currentStep) {
-      // ================================================================
-      // STEP 0 — The Strip at Night
-      // ================================================================
-      case 0: {
-        this.makeStrip();
-
-        // JP and Malachi walking right along the road, small scale
-        const jpY = GAME_HEIGHT - 140;
-        const jp = this.addObj(
-          this.add.sprite(200, jpY, 'player-ch6', 6).setScale(CHAR_SCALE * 1.3)
-        );
-        const malachi = this.addObj(
-          this.add.sprite(120, jpY, 'npc_malachi', 0).setScale(SCALE * 1.3)
-        );
-
-        // Walking animation — move them right slowly
-        this.addTween({
-          targets: jp,
-          x: 340,
-          duration: 4000,
-          ease: 'Linear',
-        });
-        this.addTween({
-          targets: malachi,
-          x: 260,
-          duration: 4000,
-          ease: 'Linear',
-        });
-
-        // Slight bob to simulate walking
-        for (const char of [jp, malachi]) {
-          this.addTween({
-            targets: char,
-            y: jpY - 3,
-            duration: 300,
-            yoyo: true,
-            repeat: -1,
-            ease: 'Sine.easeInOut',
-          });
-        }
-
-        this.showText('Las Vegas. 270 miles from LA.', 120, { size: '16px', delay: 300 });
-        this.showText('A whole different world.', 180, { size: '13px', color: '#888899', delay: 1200 });
-
-        this.showContinue(2500);
-        break;
-      }
-
-      // ================================================================
-      // STEP 1 — Casino Floor
-      // ================================================================
-      case 1: {
-        this.cameras.main.fadeOut(600, 0, 0, 0);
-        this.cameras.main.once('camerafadeoutcomplete', () => {
-          this.clearAll();
-
-          const { tableX, tableY } = this.makeCasinoFloor();
-
-          // NPCs around the table
-          this.addObj(
-            this.add.sprite(tableX - 80, tableY - 80, 'npc_suit', 0).setScale(SCALE * 1.3)
-          );
-          this.addObj(
-            this.add.sprite(tableX + 80, tableY - 80, 'npc-business', 0).setScale(SCALE * 1.3)
-          );
-          this.addObj(
-            this.add.sprite(tableX + 120, tableY + 80, 'npc_suit', 4).setScale(SCALE * 1.3)
-          );
-
-          // JP and Malachi watching from nearby
-          this.addObj(
-            this.add.sprite(tableX - 180, tableY + 100, 'player-ch6', 6).setScale(CHAR_SCALE * 1.3)
-          );
-          this.addObj(
-            this.add.sprite(tableX - 240, tableY + 100, 'npc_malachi', 0).setScale(SCALE * 1.3)
-          );
-
-          this.cameras.main.fadeIn(600, 0, 0, 0);
-
-          this.showText('Malachi', 100, { size: '12px', color: '#f0c040', delay: 400 });
-          this.showText('"This is where the real money moves."', 140, { delay: 600 });
-
-          this.time.delayedCall(1800, () => {
-            this.showText('JP', 200, { size: '12px', color: '#f0c040' });
-            this.showText('"And they invited us."', 240, { delay: 200 });
-          });
-
-          this.showContinue(3000);
-        });
-        break;
-      }
-
-      // ================================================================
-      // STEP 2 — The Meeting
-      // ================================================================
-      case 2: {
-        this.cameras.main.fadeOut(600, 0, 0, 0);
-        this.cameras.main.once('camerafadeoutcomplete', () => {
-          this.clearAll();
-
-          const tableY = this.makeConferenceRoom();
-
-          // Suited NPCs on far side of table (in chairs)
-          this.addObj(
-            this.add.sprite(cx - 100, tableY - 60, 'npc_suit', 0).setScale(SCALE * 1.3)
-          );
-          this.addObj(
-            this.add.sprite(cx + 100, tableY - 60, 'npc-business', 0).setScale(SCALE * 1.3)
-          );
-          this.addObj(
-            this.add.sprite(cx, tableY - 60, 'npc_suit', 0).setScale(SCALE * 1.3)
-          );
-
-          // JP and Malachi on near side
-          this.addObj(
-            this.add.sprite(cx - 60, tableY + 80, 'player-ch6', 2).setScale(CHAR_SCALE * 1.3)
-          );
-          this.addObj(
-            this.add.sprite(cx + 60, tableY + 80, 'npc_malachi', 0).setScale(SCALE * 1.3)
-          );
-
-          this.cameras.main.fadeIn(600, 0, 0, 0);
-
-          this.showText('Big Player', 80, { size: '12px', color: '#f0c040', delay: 400 });
-          this.showText('"That system is working.\nWhat else can you see?"', 120, { delay: 600 });
-
-          this.time.delayedCall(2200, () => {
-            this.showText('Big Player', 200, { size: '12px', color: '#f0c040' });
-            this.showText('"What else can you do?"', 240, { delay: 200 });
-          });
-
-          this.time.delayedCall(3800, () => {
-            this.showText('JP', 310, { size: '12px', color: '#f0c040' });
-            this.showText('"What do you need?"', 350, { delay: 200 });
-          });
-
-          this.time.delayedCall(5200, () => {
-            this.showText('Big Player', 420, { size: '12px', color: '#f0c040' });
-            this.showText('"Someone who sees the whole system.\nNot just pieces."', 460, { delay: 200 });
-          });
-
-          this.showContinue(6500);
-        });
-        break;
-      }
-
-      // ================================================================
-      // STEP 3 — The Handshake / access becomes real
-      // ================================================================
-      case 3: {
-        this.cameras.main.fadeOut(400, 0, 0, 0);
-        this.cameras.main.once('camerafadeoutcomplete', () => {
-          this.clearAll();
-
-          // Same conference room — tighter framing
-          this.addObj(
-            this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x141420)
-          );
-
-          // Subtle overhead light
-          this.addObj(
-            this.add.circle(cx, 100, 120, 0xffeedd, 0.06)
-          );
-
-          // Table closer — wider, fills more of the screen
-          const tableRect = this.addObj(this.add.rectangle(cx, cy + 20, 600, 60, 0x4a3020));
-          this.addObj(this.add.rectangle(cx, cy + 8, 580, 4, 0x5c3c28).setAlpha(0.5));
-
-          this.cameras.main.fadeIn(400, 0, 0, 0);
-
-          this.showText('The conversation moves.', cy - 140, { size: '16px', delay: 400 });
-
-          // === DEAL MOMENT: Table golden glow pulse + brief white flash ===
-          this.time.delayedCall(1200, () => {
-            // Golden glow pulse on table
-            const tableGlow = this.addObj(
-              this.add.rectangle(cx, cy + 20, 620, 70, 0xf0c040).setAlpha(0)
-            );
-            this.addTween({
-              targets: tableGlow,
-              alpha: { from: 0, to: 0.25 },
-              duration: 600,
-              yoyo: true,
-              ease: 'Sine.easeInOut',
-            });
-
-            // Brief white flash across whole screen
-            const flash = this.addObj(
-              this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0xffffff).setAlpha(0).setDepth(150)
-            );
-            this.addTween({
-              targets: flash,
-              alpha: { from: 0, to: 0.15 },
-              duration: 200,
-              yoyo: true,
-              ease: 'Quad.easeOut',
-            });
-          });
-
-          this.time.delayedCall(2000, () => {
-            const ownershipLine = this.add.text(cx, cy - 40, 'Everybody in the room\nowns something.', {
-              fontFamily: '"Press Start 2P", monospace',
-              fontSize: '18px',
-              color: '#ffffff',
-              align: 'center',
-              lineSpacing: 14,
-            }).setOrigin(0.5).setAlpha(0).setDepth(100);
-            this.textObjects.push(ownershipLine);
-
-            this.addTween({
-              targets: ownershipLine,
-              alpha: 1,
-              duration: 1500,
-              ease: 'Sine.easeIn',
-            });
-          });
-
-          // 2s pause, then the follow-up in gold
-          this.time.delayedCall(5500, () => {
-            const nowLine = this.add.text(cx, cy + 50, "Tonight, JP is not outside\nlooking in.", {
-              fontFamily: '"Press Start 2P", monospace',
-              fontSize: '14px',
-              color: '#f0c040',
-              align: 'center',
-              lineSpacing: 10,
-            }).setOrigin(0.5).setAlpha(0).setDepth(100);
-            this.textObjects.push(nowLine);
-
-            this.addTween({
-              targets: nowLine,
-              alpha: 1,
-              duration: 1000,
-              ease: 'Sine.easeIn',
-            });
-          });
-
-          // Another pause, then final line
-          this.time.delayedCall(8000, () => {
-            const closingLine = this.add.text(cx, cy + 120, 'Talking real work with people\nwho do this every day.', {
-              fontFamily: '"Press Start 2P", monospace',
-              fontSize: '13px',
-              color: '#f0c040',
-              align: 'center',
-              lineSpacing: 10,
-            }).setOrigin(0.5).setAlpha(0).setDepth(100);
-            this.textObjects.push(closingLine);
-
-            this.addTween({
-              targets: closingLine,
-              alpha: 1,
-              duration: 1000,
-              ease: 'Sine.easeIn',
-            });
-          });
-
-          // Slow subtle zoom for weight
-          this.addTween({
-            targets: this.cameras.main,
-            zoom: 1.02,
-            duration: 12000,
-            ease: 'Sine.easeInOut',
-          });
-
-          // Hold 3 seconds after last line before allowing advance
-          this.showContinue(12000);
-        });
-        break;
-      }
-
-      // ================================================================
-      // STEP 4 — Walking Out
-      // ================================================================
-      case 4: {
-        // Reset camera zoom before fade
-        this.cameras.main.zoom = 1;
-        this.cameras.main.fadeOut(800, 0, 0, 0);
-        this.cameras.main.once('camerafadeoutcomplete', () => {
-          this.clearAll();
-
-          // Dark exterior
-          this.addObj(
-            this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x0c0c18)
-          );
-
-          // Neon glow from buildings — colored rectangles along the top (neon returns)
-          const glowColors = [0xff2244, 0x3388ff, 0xf0c040, 0x33dd66, 0xff44aa];
-          for (let i = 0; i < 8; i++) {
-            const gx = 100 + i * 160;
-            const color = glowColors[i % glowColors.length];
-            // Building shape
-            const bh = 200 + Math.random() * 150;
-            this.addObj(
-              this.add.rectangle(gx, GAME_HEIGHT / 2 - bh / 2 + 100, 80, bh, 0x10101c)
-            );
-            // Neon edge glow
-            const glow = this.addObj(
-              this.add.rectangle(gx, GAME_HEIGHT / 2 - bh / 2 + 130, 4, bh * 0.6, color).setAlpha(0.5)
-            );
-            this.addTween({
-              targets: glow,
-              alpha: { from: 0.3, to: 0.7 },
-              duration: 1500 + Math.random() * 1000,
-              yoyo: true,
-              repeat: -1,
-              ease: 'Sine.easeInOut',
-            });
-            // Neon reflection on ground
-            const ref = this.addObj(
-              this.add.rectangle(gx, GAME_HEIGHT - 40, 30, 6, color).setAlpha(0.08)
-            );
-            this.addTween({
-              targets: ref,
-              alpha: { from: 0.04, to: 0.12 },
-              duration: 1500 + Math.random() * 1000,
-              yoyo: true,
-              repeat: -1,
-              ease: 'Sine.easeInOut',
-            });
-          }
-
-          // Ground
-          this.addObj(
-            this.add.rectangle(cx, GAME_HEIGHT - 60, GAME_WIDTH, 120, 0x1a1a24)
-          );
-
-          // JP and Malachi walking — start left, move right
-          const walkY = GAME_HEIGHT - 120;
-          const jp = this.addObj(
-            this.add.sprite(300, walkY, 'player-ch6', 6).setScale(CHAR_SCALE * 1.3)
-          ) as Phaser.GameObjects.Sprite;
-          const malachi = this.addObj(
-            this.add.sprite(220, walkY, 'npc_malachi', 0).setScale(SCALE * 1.3)
-          );
-
-          // Walk slowly — then JP pauses and looks back
-          this.addTween({
-            targets: jp,
-            x: 480,
-            duration: 5000,
-            ease: 'Linear',
-            onComplete: () => {
-              // JP pauses — Malachi keeps walking
-              // Turn JP to face left (look back)
-              if (jp && jp.active) {
-                (jp as Phaser.GameObjects.Sprite).setFrame(4);
-                // Hold the look-back for 1.5s, then turn and keep walking
-                this.time.delayedCall(1500, () => {
-                  if (jp && jp.active) {
-                    (jp as Phaser.GameObjects.Sprite).setFrame(6);
-                    this.addTween({
-                      targets: jp,
-                      x: 600,
-                      duration: 3000,
-                      ease: 'Linear',
-                    });
-                  }
-                });
-              }
-            },
-          });
-          this.addTween({
-            targets: malachi,
-            x: 520,
-            duration: 8000,
-            ease: 'Linear',
-          });
-          // Walking bob
-          for (const char of [jp, malachi]) {
-            this.addTween({
-              targets: char,
-              y: walkY - 3,
-              duration: 300,
-              yoyo: true,
-              repeat: -1,
-              ease: 'Sine.easeInOut',
-            });
-          }
-
-          this.cameras.main.fadeIn(800, 0, 0, 0);
-
-          this.showText('Malachi', 100, { size: '12px', color: '#f0c040', delay: 600 });
-          this.showText('"You know what\'s crazy?\nA year ago you were in a cell."', 140, { delay: 800 });
-
-          this.time.delayedCall(2800, () => {
-            this.showText('JP', 240, { size: '12px', color: '#f0c040' });
-            this.showText('"I know."', 280, { delay: 200 });
-          });
-
-          this.time.delayedCall(4200, () => {
-            this.showText('Malachi', 350, { size: '12px', color: '#f0c040' });
-            this.showText('"Now look at us."', 390, { delay: 200 });
-          });
-
-          this.time.delayedCall(6000, () => {
-            this.showText("JP's Mind", 470, { size: '12px', color: '#f0c040' });
-            this.showText('"He\'s right. But I\'m not done yet."', 510, {
-              color: '#aaaacc',
-              delay: 300,
-            });
-          });
-
-          // === TRANSITION: Neon fades, stars appear, fade to warm golden ===
-          this.time.delayedCall(8500, () => {
-            if (this.scene.isActive()) {
-              // Fade neon elements down
-              for (const obj of this.sceneObjects) {
-                if (obj && obj.active) {
-                  this.tweens.add({
-                    targets: obj,
-                    alpha: 0,
-                    duration: 2000,
-                    ease: 'Sine.easeOut',
-                  });
-                }
-              }
-
-              // Stars appearing
-              for (let s = 0; s < 20; s++) {
-                const star = this.add.circle(
-                  Math.random() * GAME_WIDTH,
-                  Math.random() * (GAME_HEIGHT * 0.5),
-                  1 + Math.random(),
-                  0xffffff,
-                  0
-                ).setDepth(90);
-                this.tweens.add({
-                  targets: star,
-                  alpha: { from: 0, to: 0.4 + Math.random() * 0.4 },
-                  duration: 1500,
-                  delay: Math.random() * 1000,
-                  ease: 'Sine.easeIn',
-                });
-              }
-
-              // Warm golden overlay fading in
-              const goldenOverlay = this.add.rectangle(
-                cx, cy, GAME_WIDTH, GAME_HEIGHT, 0xc89830
-              ).setAlpha(0).setDepth(180);
-              this.tweens.add({
-                targets: goldenOverlay,
-                alpha: 0.6,
-                duration: 2500,
-                delay: 1500,
-                ease: 'Sine.easeIn',
-                onComplete: () => {
-                  this.scene.start('HomeReturnScene');
-                },
-              });
-            }
-          });
-
-          this.showContinue(7500);
-        });
-        break;
-      }
-    }
-  }
 }

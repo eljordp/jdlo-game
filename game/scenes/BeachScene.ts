@@ -42,6 +42,9 @@ export class BeachScene extends BaseChapterScene {
   private darkWebDone = false;
   private lunaTraded = false;
   private plugCalled = false;
+  private choiceSequenceStarted = false;
+  private choiceDinnerSeen = false;
+  private choiceHesitated = false;
   private bagsReturned = false;
   private bmwLeft = false;
   private smokeSeshDone = false;
@@ -107,23 +110,39 @@ export class BeachScene extends BaseChapterScene {
     const netLeftX = 15 * SCALED_TILE + SCALED_TILE / 2;
     const netRightX = 19 * SCALED_TILE + SCALED_TILE / 2;
     const netY = 25 * SCALED_TILE + SCALED_TILE / 2;
-    const poleHeight = 20;
+    const poleHeight = 54;
+    const courtLeft = 13.6 * SCALED_TILE;
+    const courtRight = 20.4 * SCALED_TILE;
+    const courtTop = 23.85 * SCALED_TILE;
+    const courtBottom = 26.65 * SCALED_TILE;
+    const courtColor = 0xf4ead3;
+    this.add.rectangle((courtLeft + courtRight) / 2, courtTop, courtRight - courtLeft, 3, courtColor, 0.82).setDepth(0.62);
+    this.add.rectangle((courtLeft + courtRight) / 2, courtBottom, courtRight - courtLeft, 3, courtColor, 0.82).setDepth(0.62);
+    this.add.rectangle(courtLeft, (courtTop + courtBottom) / 2, 3, courtBottom - courtTop, courtColor, 0.82).setDepth(0.62);
+    this.add.rectangle(courtRight, (courtTop + courtBottom) / 2, 3, courtBottom - courtTop, courtColor, 0.82).setDepth(0.62);
+    this.add.rectangle((courtLeft + courtRight) / 2, (courtTop + courtBottom) / 2, 3, courtBottom - courtTop, courtColor, 0.48).setDepth(0.62);
     // Left pole
-    this.add.rectangle(netLeftX, netY - poleHeight / 2, 2, poleHeight, 0x4a3020).setDepth(5);
+    this.add.rectangle(netLeftX, netY - poleHeight / 2, 6, poleHeight, 0x6a4a30).setDepth(5)
+      .setStrokeStyle(2, 0x36291f);
     // Right pole
-    this.add.rectangle(netRightX, netY - poleHeight / 2, 2, poleHeight, 0x4a3020).setDepth(5);
+    this.add.rectangle(netRightX, netY - poleHeight / 2, 6, poleHeight, 0x6a4a30).setDepth(5)
+      .setStrokeStyle(2, 0x36291f);
     // Net (horizontal line between poles, slightly sagging via two segments)
     const netWidth = netRightX - netLeftX;
     const netTopY = netY - poleHeight + 4;
     // Top rope
-    this.add.rectangle(netLeftX + netWidth / 2, netTopY, netWidth, 1, 0xffffff).setDepth(5).setAlpha(0.8);
-    // Bottom rope (slight sag — 3px lower in the middle)
-    this.add.rectangle(netLeftX + netWidth / 2, netTopY + 6, netWidth, 1, 0xcccccc).setDepth(5).setAlpha(0.6);
+    this.add.rectangle(netLeftX + netWidth / 2, netTopY, netWidth, 3, 0xffffff).setDepth(5).setAlpha(0.9);
+    // Bottom rope and mesh now read at gameplay scale instead of as a tiny line.
+    this.add.rectangle(netLeftX + netWidth / 2, netTopY + 28, netWidth, 2, 0xe9e2d6).setDepth(5).setAlpha(0.72);
+    for (let row = 1; row < 4; row++) {
+      this.add.rectangle(netLeftX + netWidth / 2, netTopY + row * 7, netWidth, 1, 0xf4f0e8)
+        .setDepth(5).setAlpha(0.46);
+    }
     // Vertical net lines
     const netSegments = 6;
     for (let i = 1; i < netSegments; i++) {
       const segX = netLeftX + (netWidth / netSegments) * i;
-      this.add.rectangle(segX, netTopY + 3, 1, 6, 0xdddddd).setDepth(5).setAlpha(0.5);
+      this.add.rectangle(segX, netTopY + 14, 1, 28, 0xf4f0e8).setDepth(5).setAlpha(0.55);
     }
 
     // === NOLAN'S MASTER BEDROOM — LED lights + gaming vibes ===
@@ -235,10 +254,10 @@ export class BeachScene extends BaseChapterScene {
         .setDepth(0.33);
     };
 
-    addRug(6.3, 5.1, 5.3, 3.5, 0x8e5f45, 0xe0c79a);   // living room conversation zone
-    addRug(17.6, 5.2, 4.8, 3.0, 0x445e70, 0xc8b88d);  // JP and K's room
-    addRug(28.3, 6.1, 4.6, 2.2, 0xb56c3d, 0xf0d2a2);  // kitchen/dining zone
-    addRug(27.4, 14.1, 6.4, 2.3, 0x4b3568, 0xc96aa0); // Nolan's LED room
+    addRug(6.2, 5.0, 4.45, 2.65, 0x8e5f45, 0xe0c79a);  // living room conversation zone
+    addRug(17.6, 5.2, 3.8, 2.25, 0x445e70, 0xc8b88d); // JP and K's room
+    addRug(28.6, 6.1, 3.5, 1.55, 0xb56c3d, 0xf0d2a2); // kitchen/dining zone
+    addRug(27.4, 14.1, 4.9, 1.75, 0x4b3568, 0xc96aa0); // Nolan's LED room
 
     // Furniture clusters visually close the unused corners without creating
     // invisible collision. The actual interactables stay on top and usable.
@@ -256,6 +275,62 @@ export class BeachScene extends BaseChapterScene {
     this.collisionTiles.add('6,5');
     this.collisionTiles.add('17,5');
     this.collisionTiles.add('29,6');
+
+    // Living room sectional, end table and record shelf. These occupy the
+    // perimeter instead of floating in the center, shrinking the room without
+    // changing story coordinates.
+    this.add.rectangle(6.1 * tile, 3.45 * tile, 3.35 * tile, 0.72 * tile, 0x7f5f4d).setDepth(1.12)
+      .setStrokeStyle(5, 0x4b372e);
+    this.add.rectangle(4.55 * tile, 4.55 * tile, 0.72 * tile, 2.05 * tile, 0x7f5f4d).setDepth(1.12)
+      .setStrokeStyle(5, 0x4b372e);
+    for (const x of [5.05, 6.1, 7.15]) {
+      this.add.rectangle(x * tile, 3.43 * tile, 0.82 * tile, 0.48 * tile, 0xa98469).setDepth(1.14);
+    }
+    for (const y of [4.0, 4.95]) {
+      this.add.rectangle(4.55 * tile, y * tile, 0.48 * tile, 0.72 * tile, 0xa98469).setDepth(1.14);
+    }
+    this.add.rectangle(10.45 * tile, 4.75 * tile, 0.5 * tile, 2.8 * tile, 0x4a3528).setDepth(1.1)
+      .setStrokeStyle(3, 0x2b211c);
+    for (const y of [3.8, 4.55, 5.3]) {
+      this.add.rectangle(10.45 * tile, y * tile, 0.42 * tile, 5, 0x9a6b42).setDepth(1.13);
+      for (const x of [-0.12, 0, 0.12]) {
+        this.add.rectangle((10.45 + x) * tile, y * tile - 10, 5, 18, x < 0 ? 0x7f3651 : 0x345d70).setDepth(1.12);
+      }
+    }
+    for (const cell of ['5,3', '6,3', '7,3', '4,4', '4,5', '10,4', '10,5']) {
+      this.collisionTiles.add(cell);
+    }
+
+    // JP and K's room: headboard storage, dresser and a believable compact
+    // shower nook instead of one uninterrupted bedroom floor.
+    this.add.rectangle(14.7 * tile, 1.78 * tile, 2.1 * tile, 22, 0x513d31).setDepth(1.06);
+    this.add.rectangle(14.0 * tile, 6.85 * tile, 1.25 * tile, 0.7 * tile, 0x6c513b).setDepth(1.1)
+      .setStrokeStyle(3, 0x35271f);
+    for (const x of [13.7, 14.0, 14.3]) {
+      this.add.rectangle(x * tile, 6.85 * tile, 3, 0.62 * tile, 0xa27c58).setDepth(1.12);
+    }
+    this.add.rectangle(21.75 * tile, 6.45 * tile, 4, 2.65 * tile, 0x9fd4dc, 0.48).setDepth(1.05);
+    this.add.rectangle(22.45 * tile, 6.45 * tile, 1.25 * tile, 4, 0x9fd4dc, 0.52).setDepth(1.05);
+    this.add.circle(22.1 * tile, 5.35 * tile, 8, 0xbfdfe4, 0.6).setDepth(1.08);
+
+    // Kitchen wall counters, upper cabinets, sink, range and stools establish
+    // a proper galley. The usable fridge/food/bong/table objects remain on top.
+    this.add.rectangle(28.8 * tile, 2.15 * tile, 7.7 * tile, 0.72 * tile, 0xb68a61).setDepth(1.07)
+      .setStrokeStyle(4, 0x694b36);
+    for (const x of [25.6, 27.2, 28.8, 30.4, 32.0]) {
+      this.add.rectangle(x * tile, 1.55 * tile, 1.3 * tile, 0.72 * tile, 0xe4d2b8).setDepth(1.06)
+        .setStrokeStyle(3, 0x96785c);
+    }
+    this.add.rectangle(28.15 * tile, 2.12 * tile, 0.95 * tile, 0.42 * tile, 0x68777b).setDepth(1.1);
+    this.add.rectangle(28.15 * tile, 1.85 * tile, 5, 22, 0xaab7b9).setDepth(1.12);
+    for (const x of [30.2, 30.55, 30.9, 31.25]) {
+      this.add.circle(x * tile, 2.08 * tile, 7, 0x272b2d).setDepth(1.1);
+    }
+    for (const x of [27.3, 28.9, 30.5]) {
+      this.add.circle(x * tile, 7.05 * tile, 17, 0x6e4a35).setDepth(1.1)
+        .setStrokeStyle(4, 0x3c2d25);
+      this.add.rectangle(x * tile, 7.05 * tile + 20, 6, 29, 0x3c2d25).setDepth(1.08);
+    }
 
     // Clothes resale / delivery prep shelf beside JP's rug. This is period
     // detail tied to his actual mix of clothes, laptop work and street runs.
@@ -369,6 +444,130 @@ export class BeachScene extends BaseChapterScene {
       this.add.rectangle(px, py + 10, 5, 45, 0x3f4a45).setDepth(2);
       this.add.circle(px, py - 14, 9, 0xf6d884, 0.85).setDepth(2.1);
       this.add.rectangle(px, py - 14, 20, 4, 0x343e3a).setDepth(2.2);
+    }
+
+    // Tall palms break the road/paseo into recognizable coastal silhouettes.
+    // Their footprints stay off the main route so the visuals never become
+    // another invisible blocker.
+    for (const palm of [
+      { x: 5.8, y: 22.55, lean: -7 },
+      { x: 12.1, y: 23.15, lean: 6 },
+      { x: 27.9, y: 22.6, lean: -5 },
+      { x: 34.2, y: 23.1, lean: 7 },
+    ]) {
+      const trunk = this.add.rectangle(palm.x * tile, palm.y * tile - 38, 9, 82, 0x9a633b)
+        .setAngle(palm.lean).setDepth(2.35).setStrokeStyle(2, 0x69452f);
+      for (let band = -22; band <= 22; band += 14) {
+        this.add.rectangle(trunk.x, trunk.y + band, 11, 3, 0xc48a56, 0.7)
+          .setAngle(palm.lean).setDepth(2.36);
+      }
+      const crownX = palm.x * tile + palm.lean * 0.7;
+      const crownY = palm.y * tile - 80;
+      for (const frond of [
+        { x: -26, y: -7, a: -18 }, { x: 26, y: -7, a: 18 },
+        { x: -19, y: 10, a: 22 }, { x: 19, y: 10, a: -22 },
+        { x: 0, y: -20, a: 0 }, { x: 0, y: 18, a: 90 },
+      ]) {
+        this.add.ellipse(crownX + frond.x, crownY + frond.y, 52, 13, 0x39794b)
+          .setAngle(frond.a).setDepth(2.42).setStrokeStyle(2, 0x285d3a);
+      }
+      this.add.circle(crownX, crownY, 13, 0x4b8c55).setDepth(2.43);
+    }
+
+    // Bike rack and cruisers on the paseo — small lived-in coastal details.
+    const rackX = 18.7 * tile;
+    const rackY = 23.0 * tile;
+    for (const offset of [-18, 18]) {
+      this.add.circle(rackX + offset, rackY, 13, 0x313d44, 0.18).setDepth(2.15)
+        .setStrokeStyle(3, 0x45545c);
+    }
+    this.add.rectangle(rackX, rackY - 8, 38, 4, 0x607078).setDepth(2.16);
+    this.add.rectangle(rackX, rackY - 18, 4, 22, 0x607078).setDepth(2.16);
+    this.add.rectangle(rackX - 2, rackY - 23, 22, 3, 0x607078).setAngle(-12).setDepth(2.16);
+
+    // Cover the repeated water-tile grid with broad Pacific bands, then keep
+    // subtle moving foam so the shoreline feels alive even when JP stands still.
+    this.add.rectangle(20 * tile, 29.4 * tile, 40 * tile, 5.2 * tile, 0x28739f, 0.82)
+      .setDepth(0.42);
+    this.add.rectangle(20 * tile, 28.05 * tile, 40 * tile, 0.82 * tile, 0x3e91b8, 0.7)
+      .setDepth(0.44);
+    this.add.rectangle(20 * tile, 30.25 * tile, 40 * tile, 1.1 * tile, 0x1d5f8f, 0.5)
+      .setDepth(0.44);
+    for (let row = 0; row < 4; row++) {
+      for (let segment = 0; segment < 10; segment++) {
+        const wave = this.add.ellipse(
+          (segment * 4.3 - 1.5) * tile,
+          (27.35 + row * 0.82) * tile,
+          2.8 * tile,
+          9,
+          row === 0 ? 0xf4f8ee : 0x96d5dd,
+          row === 0 ? 0.78 : 0.34,
+        ).setDepth(0.49 + row * 0.01);
+        this.tweens.add({
+          targets: wave,
+          x: wave.x + 18,
+          alpha: row === 0 ? 0.42 : 0.18,
+          duration: 1700 + row * 370 + segment * 35,
+          yoyo: true,
+          repeat: -1,
+          delay: segment * 70,
+          ease: 'Sine.easeInOut',
+        });
+      }
+    }
+
+    // Beach clusters give the open sand distinct little stories instead of
+    // filling every tile with noise. Existing usable surfboards/towels/cooler
+    // remain the interaction layer; these are visual context around them.
+    const addUmbrella = (x: number, y: number, colorA: number, colorB: number) => {
+      this.add.rectangle(x * tile, y * tile + 28, 5, 54, 0x7b5a3c).setDepth(1.75);
+      const canopy = this.add.circle(x * tile, y * tile, 36, colorA).setDepth(1.8)
+        .setStrokeStyle(4, 0xf2e5cf);
+      this.add.triangle(x * tile, y * tile, -30, 2, 0, -31, 0, 2, colorB).setDepth(1.81);
+      this.add.triangle(x * tile, y * tile, 30, 2, 0, -31, 0, 2, colorA).setDepth(1.82);
+      canopy.setAlpha(0.96);
+    };
+    addUmbrella(7.0, 25.15, 0xd54b42, 0xf4d56a);
+    addUmbrella(25.8, 25.45, 0x2b91aa, 0xf4e3b5);
+    addUmbrella(33.3, 24.85, 0xd16c91, 0xf4d56a);
+
+    for (const towel of [
+      { x: 5.8, y: 26.0, c: 0x2f8aa5, a: -8 },
+      { x: 8.25, y: 26.1, c: 0xf0c94e, a: 9 },
+      { x: 24.6, y: 26.15, c: 0xd8655b, a: -5 },
+      { x: 27.0, y: 26.0, c: 0x4c9b72, a: 7 },
+      { x: 34.6, y: 25.85, c: 0x6856a7, a: -10 },
+    ]) {
+      this.add.rectangle(towel.x * tile, towel.y * tile, 52, 25, towel.c, 0.9)
+        .setAngle(towel.a).setDepth(0.72).setStrokeStyle(2, 0xf5e8cf, 0.7);
+    }
+
+    // Boards and a cooler at the edge of the court establish usable beach
+    // activity without crowding the volleyball route.
+    for (const board of [
+      { x: 11.0, y: 24.8, c: 0x48a4b0, a: -22 },
+      { x: 11.5, y: 25.0, c: 0xe66c4d, a: -11 },
+      { x: 29.7, y: 25.0, c: 0xf1c75b, a: 17 },
+    ]) {
+      this.add.ellipse(board.x * tile, board.y * tile, 18, 82, board.c)
+        .setAngle(board.a).setDepth(1.12).setStrokeStyle(3, 0xf2ead7);
+      this.add.rectangle(board.x * tile, board.y * tile, 3, 66, 0xf2ead7, 0.75)
+        .setAngle(board.a).setDepth(1.13);
+    }
+    this.add.rectangle(22.7 * tile, 24.9 * tile, 48, 34, 0x3d83ad).setDepth(1.15)
+      .setStrokeStyle(4, 0xe8f0e8);
+    this.add.rectangle(22.7 * tile, 24.58 * tile, 50, 9, 0xf0f2e8).setDepth(1.17);
+
+    // Footprints and wind marks stop the sand from reading as one tiled plane.
+    for (let i = 0; i < 30; i++) {
+      const x = (1.2 + ((i * 7.3) % 37.2)) * tile;
+      const y = (24.0 + ((i * 1.17) % 2.75)) * tile;
+      if (i % 3 === 0) {
+        this.add.ellipse(x, y, 6, 11, 0x987b5d, 0.22).setAngle(i % 2 ? 18 : -18).setDepth(0.68);
+      } else {
+        this.add.rectangle(x, y, 18 + (i % 4) * 6, 2, 0x9d8060, 0.18)
+          .setAngle((i % 5) - 2).setDepth(0.67);
+      }
     }
 
     const signX = 35.6 * tile;
@@ -710,7 +909,7 @@ export class BeachScene extends BaseChapterScene {
         fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#888888',
       }).setOrigin(0.5).setScrollFactor(0).setDepth(301));
 
-      const portfolioValue = this.add.text(cx, cy - 130, 'ALL IN', {
+      const portfolioValue = this.add.text(cx, cy - 130, '~$40K', {
         fontFamily: '"Press Start 2P", monospace', fontSize: '18px', color: '#22ff88',
       }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
       appObjects.push(portfolioValue);
@@ -725,10 +924,10 @@ export class BeachScene extends BaseChapterScene {
       }).setOrigin(0, 0.5).setScrollFactor(0).setDepth(301);
       appObjects.push(lunaPrice);
 
-      appObjects.push(this.add.text(cx, cy - 25, 'FIRST TRADE', {
+      appObjects.push(this.add.text(cx, cy - 25, '~$1K  →  ~$5K  →  ~$40K', {
         fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#888899',
       }).setOrigin(0.5).setScrollFactor(0).setDepth(301));
-      appObjects.push(this.add.text(cx, cy + 15, 'JP moved his whole\nportfolio into one coin.', {
+      appObjects.push(this.add.text(cx, cy + 15, 'First time trading.\nWhole portfolio in one coin.', {
         fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#ffffff',
         align: 'center', lineSpacing: 8,
       }).setOrigin(0.5).setScrollFactor(0).setDepth(301));
@@ -736,7 +935,7 @@ export class BeachScene extends BaseChapterScene {
       this.cameras.main.shake(300, 0.005);
 
       this.time.delayedCall(1400, () => {
-        // The win disappears. Exact money stays private; the emotional fact is zero.
+        // Preserve the real scale without pretending this is an account statement.
         portfolioValue.setText('$0.00');
         portfolioValue.setColor('#ff3333');
         lunaPrice.setText('-99.99%');
@@ -751,10 +950,11 @@ export class BeachScene extends BaseChapterScene {
             appObjects.forEach((object) => object.destroy());
 
             this.dialogue.show([
-              { speaker: 'JP\'s Mind', text: 'It was my first time trading.' },
-              { speaker: 'JP\'s Mind', text: 'LUNA kept going up. I thought I understood it.' },
-              { speaker: 'Narrator', text: 'JP full-ported his whole portfolio.' },
-              { speaker: 'Narrator', text: 'Then LUNA went to zero.' },
+              { speaker: 'JP\'s Mind', text: 'I put in about a thousand.' },
+              { speaker: 'JP\'s Mind', text: 'It became about five. Then around forty.' },
+              { speaker: 'JP\'s Mind', text: 'First time trading. I thought I understood it.' },
+              { speaker: 'Narrator', text: 'JP moved the whole portfolio into LUNA.' },
+              { speaker: 'Narrator', text: 'Then it went to zero.' },
               { speaker: 'JP\'s Mind', text: '...' },
               { speaker: 'JP\'s Mind', text: 'Everything I had. Gone.' },
               { speaker: 'JP\'s Mind', text: 'I am not starting over from zero.' },
@@ -770,31 +970,141 @@ export class BeachScene extends BaseChapterScene {
     }});
   }
 
-  // ─── PLUG CALL (auto after LUNA + K both done) ───────────────────
+  // ─── THE CHOICE ──────────────────────────────────────────────────
+  // LUNA supplies the pressure, but the weed turn belongs to the player.
+  // The phone only starts buzzing automatically; JP must answer and choose.
   private maybeAutoPlugCall() {
-    if (!this.lunaTraded || !this.kGoodbyeDone || this.plugCalled) return;
-    this.plugCalled = true;
+    if (!this.lunaTraded || !this.kGoodbyeDone || this.plugCalled || this.choiceSequenceStarted) return;
+    this.choiceSequenceStarted = true;
 
     this.time.delayedCall(1000, () => {
       if (!this.scene.isActive()) return;
-      this.frozen = true;
+      SoundEffects.playVibrate();
       this.dialogue.show([
-        { speaker: 'Narrator', text: 'JP pulls out his phone. Calls his plug.' },
-        { speaker: 'Plug', text: 'Ayy.' },
-        { speaker: 'JP', text: 'I need one.' },
-        { speaker: 'Plug', text: 'You got the bread though?' },
-        { speaker: 'JP', text: 'Not anymore.' },
-        { speaker: 'Plug', text: 'Then why are you calling me?' },
-        { speaker: 'JP', text: 'Front me. I can move it.' },
-        { speaker: 'Plug', text: '...' },
-        { speaker: 'Plug', text: 'One. Don\'t make me chase you.' },
-        { speaker: 'JP', text: 'On my way.' },
-        { speaker: 'JP\'s Mind', text: 'One run. Make the money back.' },
-        { speaker: 'JP\'s Mind', text: 'Then I\'m done.' },
-        { speaker: 'Narrator', text: 'Go get in the BMW.' },
+        { speaker: 'Narrator', text: 'JP\'s phone vibrates across the desk.' },
+        { speaker: 'Narrator', text: 'Nikki\'s mom.' },
+        { speaker: 'JP\'s Mind', text: 'Why is she calling me?' },
+        { speaker: 'Narrator', text: 'Use the phone when you\'re ready.' },
+      ]);
+    });
+  }
+
+  private playChoiceCall() {
+    if (this.plugCalled) return;
+    this.frozen = true;
+
+    const playCall = () => {
+      SoundEffects.playVibrate();
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'Later. The phone lights up again.' },
+        { speaker: 'Nikki\'s Mom', text: 'Come up to the farm.' },
+        { speaker: 'JP', text: 'For what?' },
+        { speaker: 'Nikki\'s Mom', text: 'Business.' },
+        { speaker: 'Nikki\'s Mom', text: 'My husband does not know I\'m calling you.' },
+        { speaker: 'Nikki\'s Mom', text: this.choiceHesitated ? 'I need an answer tonight.' : 'If you\'re serious, come alone.' },
+        { speaker: 'Narrator', text: 'The line goes quiet.' },
       ], () => {
-        this.frozen = false;
+        this.showYesNoChoice('Drive to the farm?', 'Take the BMW', 'Not yet', () => {
+          this.plugCalled = true;
+          this.dialogue.show([
+            { speaker: 'JP\'s Mind', text: 'One run. Make the money back.' },
+            { speaker: 'JP\'s Mind', text: 'Then I\'m done.' },
+            { speaker: 'Narrator', text: 'The BMW keys are by the door.' },
+          ], () => { this.frozen = false; });
+        }, () => {
+          this.choiceHesitated = true;
+          this.choiceSequenceStarted = false;
+          this.dialogue.show([
+            { speaker: 'Narrator', text: 'JP leaves the keys where they are.' },
+            { speaker: 'JP\'s Mind', text: 'Not yet.' },
+            { speaker: 'Narrator', text: 'The phone stays on the table.' },
+          ], () => { this.frozen = false; });
+        });
       });
+    };
+
+    if (this.choiceDinnerSeen) {
+      playCall();
+      return;
+    }
+
+    this.choiceDinnerSeen = true;
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+    const dinnerObjects: Phaser.GameObjects.GameObject[] = [];
+
+    // A real room, in the game's own pixel language — warm and ordinary on purpose.
+    const dinnerBg = this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x000000, 1)
+      .setScrollFactor(0).setDepth(480);
+    const wall = this.add.rectangle(cx, cy - 80, 580, 230, 0xcfc0a8)
+      .setScrollFactor(0).setDepth(481);
+    const floor = this.add.rectangle(cx, cy + 125, 580, 180, 0x8a6544)
+      .setScrollFactor(0).setDepth(481);
+    dinnerObjects.push(dinnerBg, wall, floor);
+    for (let i = 1; i < 5; i++) {
+      dinnerObjects.push(this.add.rectangle(cx, cy + 35 + i * 36, 580, 2, 0x6f4e33)
+        .setScrollFactor(0).setDepth(481));
+    }
+
+    // Dusk window, framed photo, wall lamp — a home, not a void
+    dinnerObjects.push(this.add.rectangle(cx - 175, cy - 105, 92, 74, 0x2c3e5c)
+      .setScrollFactor(0).setDepth(482).setStrokeStyle(5, 0xe6dbc5));
+    dinnerObjects.push(this.add.circle(cx - 195, cy - 90, 12, 0xe8945a, 0.9)
+      .setScrollFactor(0).setDepth(482));
+    dinnerObjects.push(this.add.rectangle(cx - 175, cy - 105, 3, 74, 0xe6dbc5)
+      .setScrollFactor(0).setDepth(483));
+    dinnerObjects.push(this.add.rectangle(cx + 165, cy - 110, 44, 34, 0x7a5a3a)
+      .setScrollFactor(0).setDepth(482).setStrokeStyle(3, 0x4a3520));
+    dinnerObjects.push(this.add.rectangle(cx + 165, cy - 110, 32, 22, 0xb8cfd8)
+      .setScrollFactor(0).setDepth(483));
+    dinnerObjects.push(this.add.circle(cx, cy - 150, 10, 0xf5deb0)
+      .setScrollFactor(0).setDepth(482));
+    dinnerObjects.push(this.add.circle(cx, cy - 20, 230, 0xf2b65a, 0.10)
+      .setScrollFactor(0).setDepth(487));
+
+    // Table set for four — plates, food, glasses
+    dinnerObjects.push(this.add.rectangle(cx, cy + 42, 320, 96, 0x70442d)
+      .setScrollFactor(0).setDepth(484).setStrokeStyle(5, 0x3b251b));
+    dinnerObjects.push(this.add.rectangle(cx, cy + 42, 320, 12, 0x8a5a3d)
+      .setScrollFactor(0).setDepth(484));
+    for (const px of [-105, -35, 35, 105]) {
+      dinnerObjects.push(this.add.circle(cx + px, cy + 42, 13, 0xf1ece0)
+        .setScrollFactor(0).setDepth(485).setStrokeStyle(2, 0xc9c0ae));
+      dinnerObjects.push(this.add.circle(cx + px, cy + 42, 7, px % 2 === 0 ? 0xb0622f : 0x7a8f3f)
+        .setScrollFactor(0).setDepth(485));
+      dinnerObjects.push(this.add.rectangle(cx + px + 22, cy + 30, 7, 13, 0xd8e6ec, 0.9)
+        .setScrollFactor(0).setDepth(485));
+    }
+    dinnerObjects.push(this.add.circle(cx, cy + 42, 16, 0xc9803a)
+      .setScrollFactor(0).setDepth(485).setStrokeStyle(2, 0x8f5722));
+
+    // The four of them — real sprites, not silhouettes. Parents behind, kids in front.
+    const dinnerMom = this.add.sprite(cx - 55, cy - 8, 'npc_waitress', 0)
+      .setScale(3).setScrollFactor(0).setDepth(483);
+    const dinnerDad = this.add.sprite(cx + 55, cy - 8, 'npc_suit', 0)
+      .setScale(3).setScrollFactor(0).setDepth(483);
+    const dinnerJP = this.add.sprite(cx - 55, cy + 92, this.getPlayerTexture(), 0)
+      .setScale(3).setScrollFactor(0).setDepth(486);
+    const dinnerNikki = this.add.sprite(cx + 55, cy + 92, 'npc_female', 0)
+      .setScale(3).setScrollFactor(0).setDepth(486);
+    dinnerObjects.push(dinnerMom, dinnerDad, dinnerJP, dinnerNikki);
+
+    const title = this.add.text(cx, cy - 200, 'EARLIER THAT NIGHT', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#a89878',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(487);
+    dinnerObjects.push(title);
+
+    this.dialogue.show([
+      { speaker: 'Narrator', text: 'JP sits beside Nikki at dinner with her parents.' },
+      { speaker: 'Nikki', text: 'You barely touched your food.' },
+      { speaker: 'JP', text: 'I\'m good. Just had a bad day.' },
+      { speaker: 'Nikki\'s Mom', text: 'Eat. You can figure tomorrow out tomorrow.' },
+      { speaker: 'Nikki\'s Dad', text: 'So what are you doing next?' },
+      { speaker: 'JP', text: 'Still figuring that out.' },
+      { speaker: 'Narrator', text: 'Warm food. Normal conversation. Nothing looked like a beginning.' },
+    ], () => {
+      dinnerObjects.forEach((object) => object.destroy());
+      playCall();
     });
   }
 
@@ -806,55 +1116,109 @@ export class BeachScene extends BaseChapterScene {
     const black = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0)
       .setScrollFactor(0).setDepth(500);
 
-    this.tweens.add({ targets: black, alpha: 1, duration: 800, onComplete: () => {
-      const timeText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'Later...', {
-        fontFamily: '"Press Start 2P", monospace', fontSize: '14px', color: '#f0c040',
-      }).setOrigin(0.5).setScrollFactor(0).setDepth(501).setAlpha(0);
+    this.tweens.add({
+      targets: black,
+      alpha: 1,
+      duration: 800,
+      onComplete: () => {
+        const cx = GAME_WIDTH / 2;
+        const cy = GAME_HEIGHT / 2;
+        const driveObjects: Phaser.GameObjects.GameObject[] = [];
 
-      this.tweens.add({ targets: timeText, alpha: 1, duration: 600, hold: 1500, yoyo: true, onComplete: () => {
-        timeText.destroy();
+        const sky = this.add.rectangle(cx, cy - 120, GAME_WIDTH, GAME_HEIGHT * 0.55, 0x08101c)
+          .setScrollFactor(0).setDepth(501);
+        const road = this.add.rectangle(cx, cy + 100, GAME_WIDTH, 210, 0x24262b)
+          .setScrollFactor(0).setDepth(502);
+        const shoulder = this.add.rectangle(cx, cy - 5, GAME_WIDTH, 14, 0x6f5639)
+          .setScrollFactor(0).setDepth(503);
+        driveObjects.push(sky, road, shoulder);
 
-        // JP returns — the first front, before the operation grows.
-        this.bagsReturned = true;
-        this.player.setPosition(7 * SCALED_TILE + SCALED_TILE / 2, 5 * SCALED_TILE + SCALED_TILE / 2);
-
-        // Spawn bag sprites in living room
-        const bagPositions = [{ x: 4, y: 4 }];
-        for (const pos of bagPositions) {
-          const bag = this.add.rectangle(
-            pos.x * SCALED_TILE + SCALED_TILE / 2,
-            pos.y * SCALED_TILE + SCALED_TILE / 2,
-            28, 36, 0x111111
-          ).setDepth(4);
-          // Tie at top
-          this.add.circle(
-            pos.x * SCALED_TILE + SCALED_TILE / 2,
-            pos.y * SCALED_TILE + SCALED_TILE / 2 - 18,
-            4, 0x333333
-          ).setDepth(5);
+        for (let x = 0; x < GAME_WIDTH + 100; x += 125) {
+          driveObjects.push(this.add.rectangle(x, cy + 100, 66, 6, 0xe8d47c, 0.82)
+            .setScrollFactor(0).setDepth(503));
+        }
+        for (const x of [90, 230, 710, 870]) {
+          const trunk = this.add.rectangle(x, cy - 70, 12, 125, 0x513d2c)
+            .setScrollFactor(0).setDepth(503);
+          const crown = this.add.circle(x, cy - 145, 62, 0x172f27)
+            .setScrollFactor(0).setDepth(503);
+          driveObjects.push(trunk, crown);
         }
 
-        this.tweens.add({ targets: black, alpha: 0, duration: 600, onComplete: () => {
-          black.destroy();
-          this.dialogue.show([
-            { speaker: 'Narrator', text: 'JP pulls up. Pops the trunk.' },
-            { speaker: 'JP', text: 'Aye. Keep the door open.' },
-            { speaker: 'Nolan', text: '...what is in that bag?' },
-            { speaker: 'JP', text: 'A way back.' },
-            { speaker: 'Big Bart', text: 'YOOO IS THAT—' },
-            { speaker: 'JP', text: 'BART. Keep your voice down.' },
-            { speaker: 'Big Bart', text: '*whisper* YOOOO IS THAT—' },
-            { speaker: 'Narrator', text: 'One fronted bag on the living-room floor.' },
-            { speaker: 'JP\'s Mind', text: 'It did not look like a life yet.' },
-            { speaker: 'JP\'s Mind', text: 'It looked like a way to stop being at zero.' },
-          ], () => {
-            this.frozen = false;
-            // Spawn kitchen table sesh interactable
-            this.spawnDynamicInteractable('ch1_kitchen_sesh', 28, 6, 'item-weed-bag');
-          });
-        }});
-      }});
-    }});
+        const farmSign = this.add.text(cx, cy - 205, 'NORTH COUNTY — FARM ROAD', {
+          fontFamily: '"Press Start 2P", monospace', fontSize: '11px', color: '#d8c69b',
+        }).setOrigin(0.5).setScrollFactor(0).setDepth(504);
+        const car = this.add.sprite(-120, cy + 55, 'car-bmw335i')
+          .setScale(SCALE * 1.4).setScrollFactor(0).setDepth(505);
+        const headlight = this.add.triangle(-55, cy + 55, 0, -18, 160, -55, 160, 55, 0xf4dc91, 0.16)
+          .setScrollFactor(0).setDepth(504);
+        driveObjects.push(farmSign, car, headlight);
+        SoundEffects.playCarDrive();
+
+        this.tweens.add({
+          targets: [car, headlight],
+          x: `+=${cx + 120}`,
+          duration: 2200,
+          ease: 'Quad.easeOut',
+          onComplete: () => {
+            this.dialogue.show([
+              { speaker: 'Narrator', text: 'The 335i climbs past the city lights.' },
+              { speaker: 'Narrator', text: 'Farm road. No streetlights. Nobody to explain this to.' },
+              { speaker: 'Nikki\'s Mom', text: this.choiceHesitated ? 'I almost called somebody else.' : 'You understand this stays between us.' },
+              ...(this.choiceHesitated ? [{ speaker: 'JP', text: 'I came.' }] : []),
+              ...(!this.choiceHesitated ? [{ speaker: 'JP', text: 'I got you.' }] : []),
+              { speaker: 'Narrator', text: 'She sets one bag beside the trunk.' },
+              { speaker: 'Nikki\'s Mom', text: 'Bring me back my money.' },
+              { speaker: 'JP', text: 'I will.' },
+              { speaker: 'Narrator', text: 'The trunk closes.' },
+            ], () => {
+              driveObjects.forEach((object) => object.destroy());
+
+              // JP returns — the first front, before the operation grows.
+              this.bagsReturned = true;
+              this.player.setPosition(7 * SCALED_TILE + SCALED_TILE / 2, 5 * SCALED_TILE + SCALED_TILE / 2);
+
+              const bagPositions = [{ x: 4, y: 4 }];
+              for (const pos of bagPositions) {
+                this.add.rectangle(
+                  pos.x * SCALED_TILE + SCALED_TILE / 2,
+                  pos.y * SCALED_TILE + SCALED_TILE / 2,
+                  28, 36, 0x111111,
+                ).setDepth(4);
+                this.add.circle(
+                  pos.x * SCALED_TILE + SCALED_TILE / 2,
+                  pos.y * SCALED_TILE + SCALED_TILE / 2 - 18,
+                  4, 0x333333,
+                ).setDepth(5);
+              }
+
+              this.tweens.add({
+                targets: black,
+                alpha: 0,
+                duration: 600,
+                onComplete: () => {
+                  black.destroy();
+                  this.dialogue.show([
+                    { speaker: 'Narrator', text: 'JP pulls up. Pops the trunk.' },
+                    { speaker: 'Nolan', text: '...what is in that bag?' },
+                    { speaker: 'JP', text: 'A way back.' },
+                    { speaker: 'Big Bart', text: 'YOOO IS THAT—' },
+                    { speaker: 'JP', text: 'BART. Keep your voice down.' },
+                    { speaker: 'Big Bart', text: '*whisper* YOOOO IS THAT—' },
+                    { speaker: 'Narrator', text: 'One fronted bag on the living-room floor.' },
+                    { speaker: 'JP\'s Mind', text: 'It did not look like a life yet.' },
+                    { speaker: 'JP\'s Mind', text: 'It looked like a way to stop being at zero.' },
+                  ], () => {
+                    this.frozen = false;
+                    this.spawnDynamicInteractable('ch1_kitchen_sesh', 28, 6, 'item-weed-bag');
+                  });
+                },
+              });
+            });
+          },
+        });
+      },
+    });
   }
 
   // NPC reactive behaviors
@@ -1446,7 +1810,8 @@ export class BeachScene extends BaseChapterScene {
         this.dialogue.show([{ speaker: 'JP\'s Mind', text: 'Check the computer first.' }], () => { this.frozen = false; });
       } else if (!this.plugCalled) {
         this.kGoodbyeDone = true; // treat K scene as done
-        this.maybeAutoPlugCall();
+        this.choiceSequenceStarted = true;
+        this.playChoiceCall();
       } else {
         this.showPhoneApps();
       }
@@ -1967,6 +2332,70 @@ export class BeachScene extends BaseChapterScene {
       const cupY = pos.y * SCALED_TILE + SCALED_TILE / 2 + Phaser.Math.Between(-5, 5);
       this.add.rectangle(cupX, cupY, 8, 12, 0xe03030).setDepth(3);
       this.add.rectangle(cupX, cupY - 6, 10, 2, 0xf04040).setDepth(3); // rim
+    }
+
+    // ── FOOD + DRINK STATIONS ──
+    // The party should look supplied, not like NPCs appeared in an empty map.
+    const barX = 31.4 * SCALED_TILE;
+    const barY = 6.9 * SCALED_TILE;
+    this.add.rectangle(barX, barY, 3.4 * SCALED_TILE, 0.48 * SCALED_TILE, 0x4b3025)
+      .setDepth(3.2).setStrokeStyle(3, 0x241a16);
+    for (let i = 0; i < 9; i++) {
+      const bottleX = barX - 68 + i * 17;
+      const bottleColor = [0x8d4f2e, 0x3d7c52, 0xd8b14a, 0x6f4d88][i % 4];
+      this.add.rectangle(bottleX, barY - 21 - (i % 2) * 4, 8, 27 + (i % 2) * 8, bottleColor)
+        .setDepth(3.25).setStrokeStyle(1, 0xe9d7aa, 0.45);
+      this.add.rectangle(bottleX, barY - 39 - (i % 2) * 4, 4, 8, 0xd9c9a5).setDepth(3.26);
+    }
+    this.add.rectangle(barX + 88, barY - 3, 44, 34, 0x3f82a1).setDepth(3.23)
+      .setStrokeStyle(4, 0xf2efe1);
+
+    // Pizza and wings left open on the kitchen island.
+    for (const tray of [
+      { x: 27.4, y: 6.3, label: 'PIZZA', color: 0xc98a48 },
+      { x: 28.8, y: 6.3, label: 'WINGS', color: 0xa95837 },
+    ]) {
+      this.add.rectangle(tray.x * SCALED_TILE, tray.y * SCALED_TILE, 58, 38, 0xd4b07a)
+        .setDepth(3.3).setStrokeStyle(3, 0x6d4a30);
+      this.add.rectangle(tray.x * SCALED_TILE, tray.y * SCALED_TILE + 3, 47, 25, tray.color).setDepth(3.31);
+      this.add.text(tray.x * SCALED_TILE, tray.y * SCALED_TILE, tray.label, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '5px', color: '#fff1cc',
+      }).setOrigin(0.5).setDepth(3.32);
+    }
+
+    // Weed table beside the yard smoke circle: rolling tray, jars and papers.
+    const smokeTableX = 9.6 * SCALED_TILE;
+    const smokeTableY = 18.6 * SCALED_TILE;
+    this.add.rectangle(smokeTableX, smokeTableY, 1.8 * SCALED_TILE, 0.58 * SCALED_TILE, 0x5b3c2c)
+      .setDepth(3.15).setStrokeStyle(3, 0x2c2019);
+    this.add.rectangle(smokeTableX - 18, smokeTableY - 3, 33, 17, 0x9b7654).setDepth(3.2)
+      .setStrokeStyle(2, 0xcfb991);
+    for (const x of [-41, 9, 31]) {
+      this.add.circle(smokeTableX + x, smokeTableY - 8, 8, 0x54764b).setDepth(3.22)
+        .setStrokeStyle(2, 0xb9d0a2);
+    }
+    this.add.rectangle(smokeTableX - 2, smokeTableY + 5, 38, 3, 0xf5eee0).setAngle(-7).setDepth(3.23);
+
+    // Towels, heels and sandals make the hot-tub deck look actively used.
+    for (const item of [
+      { x: 35.1, y: 3.0, w: 34, h: 15, c: 0xf2d1d8, a: -12 },
+      { x: 38.8, y: 6.0, w: 38, h: 16, c: 0x78b7ca, a: 8 },
+      { x: 35.3, y: 6.1, w: 16, h: 7, c: 0x18181d, a: 18 },
+      { x: 39.0, y: 2.9, w: 16, h: 7, c: 0xd4a45e, a: -22 },
+    ]) {
+      this.add.rectangle(item.x * SCALED_TILE, item.y * SCALED_TILE, item.w, item.h, item.c)
+        .setAngle(item.a).setDepth(3.12);
+    }
+
+    // A little accumulating mess tells the party's level at a glance.
+    for (let i = 0; i < 18; i++) {
+      const messX = (2.5 + ((i * 3.7) % 34)) * SCALED_TILE;
+      const messY = (7.6 + ((i * 2.1) % 11.4)) * SCALED_TILE;
+      if (i % 2 === 0) {
+        this.add.rectangle(messX, messY, 7, 11, 0xd93636, 0.9).setAngle((i * 17) % 70 - 35).setDepth(2.8);
+      } else {
+        this.add.rectangle(messX, messY, 14, 8, 0xd8c7a1, 0.75).setAngle((i * 23) % 80 - 40).setDepth(2.75);
+      }
     }
 
     // ── SMOKE HAZE (party fog) ──
@@ -3353,9 +3782,9 @@ export class BeachScene extends BaseChapterScene {
     const cy = GAME_HEIGHT / 2;
     const hasLuna = this.lunaTraded;
 
-    const cryptoVal = hasLuna ? '$0.00' : '$1,200';
-    const netWorthVal = hasLuna ? '-$3,200' : '-$2,000';
-    const netColor = '#ff4444';
+    const cryptoVal = hasLuna ? '$0' : '~$40K';
+    const netWorthVal = hasLuna ? '$0' : '~$40K';
+    const netColor = hasLuna ? '#ff4444' : '#22ff88';
 
     const screen = this.add.rectangle(cx, cy, 320, 360, 0x0a0a0a)
       .setScrollFactor(0).setDepth(300);
@@ -3368,9 +3797,9 @@ export class BeachScene extends BaseChapterScene {
     }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
 
     const lines = [
-      { label: 'Crypto', value: cryptoVal, color: hasLuna ? '#ff4444' : '#22ff88' },
-      { label: 'Cash', value: '$200', color: '#ffffff' },
-      { label: 'Debt', value: '-$3,400', color: '#ff4444' },
+      { label: 'Started', value: '~$1K', color: '#ffffff' },
+      { label: 'Peak', value: '~$40K', color: '#22ff88' },
+      { label: 'Current', value: cryptoVal, color: hasLuna ? '#ff4444' : '#22ff88' },
     ];
 
     const elements: Phaser.GameObjects.GameObject[] = [screen, border, header];

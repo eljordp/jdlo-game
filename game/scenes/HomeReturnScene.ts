@@ -156,16 +156,11 @@ export class HomeReturnScene extends BaseChapterScene {
 
     // Play the full Pops dialogue from story.ts
     this.dialogue.show([...baseDialogue, ...popsEcho], () => {
-      // Emotional peak — extra lines after the story dialogue
-      this.time.delayedCall(400, () => {
+      // Emotional peak — one line after the story dialogue. The pause does the work.
+      this.time.delayedCall(2400, () => {
         this.dialogue.show(
-          [{ speaker: 'Pops', text: 'I don\'t need to understand every screen.' }],
+          [{ speaker: 'Pops', text: 'I just needed you home.' }],
           () => {
-            // Long pause — let it sit
-            this.time.delayedCall(2000, () => {
-              this.dialogue.show(
-                [{ speaker: 'Pops', text: 'I just needed you home.' }],
-                () => {
                   // Camera flash white — like a memory being sealed
                   const flash = this.add.rectangle(
                     GAME_WIDTH / 2, GAME_HEIGHT / 2,
@@ -196,9 +191,6 @@ export class HomeReturnScene extends BaseChapterScene {
                       });
                     },
                   });
-                }
-              );
-            });
           }
         );
       });

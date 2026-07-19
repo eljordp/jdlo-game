@@ -289,10 +289,9 @@ export class WrongCrowdScene extends BaseChapterScene {
         // Bad thoughts sequence
         const thoughts = [
           { text: 'JP wakes up. Can\'t sleep again.', delay: 0 },
-          { text: 'Something feels off tonight.', delay: 1500 },
-          { text: 'Like something bad is about to happen.', delay: 3000 },
-          { text: 'Phone buzzes. It\'s the buyer.\n"You coming or not?"', delay: 4800 },
-          { text: '...fuck it.', delay: 6500 },
+          { text: 'Third night this week he\'s seen this hour.', delay: 1800 },
+          { text: 'Phone buzzes. It\'s the buyer.\n"You coming or not?"', delay: 3800 },
+          { text: '...fuck it.', delay: 5500 },
         ];
 
         for (const thought of thoughts) {
@@ -373,7 +372,7 @@ export class WrongCrowdScene extends BaseChapterScene {
   protected getObjectiveHint(): string {
     if (this.raidTriggered) return 'Run.';
     if (this.joseGrabbed) return 'Make the drop. Get out.';
-    if (this.interactionCount >= 4) return "It's 3 AM. Something's not right.";
+    if (this.interactionCount >= 4) return "It's 3 AM. Finish it and get home.";
     return 'Grab the weed. Get in the 335i. Make the drop.';
   }
 
@@ -500,7 +499,7 @@ export class WrongCrowdScene extends BaseChapterScene {
         { speaker: 'Lookout', text: '...' },
         { speaker: 'Narrator', text: 'He doesn\'t blink. Just stares.' },
         { speaker: 'Lookout', text: 'Straight back. Don\'t look around.' },
-        { speaker: 'JP\'s Mind', text: 'Something\'s off. But you\'re already here.' },
+        { speaker: 'JP\'s Mind', text: 'Too late to turn around now.' },
       ], () => {
         // Lookout steps back
         if (lookout) {
@@ -893,7 +892,7 @@ export class WrongCrowdScene extends BaseChapterScene {
         { text: 'Pass the park. Pass the school. Everything closed.', delay: 4000, size: '10px', color: '#808090' },
         { text: 'Red light. Nobody else on the road.', delay: 5800, size: '10px', color: '#808090' },
         { text: 'Rearview mirror — that black sedan again.', delay: 7200, size: '11px', color: '#aa6666' },
-        { text: '...probably nothing.', delay: 8800, size: '10px', color: '#666677' },
+        { text: 'Green light.', delay: 8800, size: '10px', color: '#666677' },
       ];
 
       for (let i = 0; i < driveLines.length; i++) {

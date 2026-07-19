@@ -417,8 +417,10 @@ export class CourtScene extends Phaser.Scene {
 
         this.showText('Everyone in the house got taken in.', cy - 200, { color: '#888899' });
         this.showText('Charged with attempted murder.', cy + 160, { delay: 800 });
+        // The one thing JP says. No explanation. The incident stays his.
+        this.showText('"I never tried to hurt anyone."', cy + 220, { size: '11px', color: '#ffffff', delay: 2400 });
 
-        this.showContinue(2500);
+        this.showContinue(3800);
         break;
       }
 
