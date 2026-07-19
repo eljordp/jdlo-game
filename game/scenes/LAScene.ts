@@ -1,6 +1,8 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, SCALE, CHAR_SCALE } from '../config';
 import { MusicSystem } from '../systems/MusicSystem';
+import { ChoiceLedger } from '../systems/ChoiceLedger';
+import { SoundEffects } from '../systems/SoundEffects';
 
 /**
  * Cinematic LA scene with pixel art animations.
@@ -65,6 +67,47 @@ export class LAScene extends Phaser.Scene {
     const tw = this.tweens.add(config);
     this.activeTweens.push(tw);
     return tw;
+  }
+
+  // Vegas invite on rent week — the player owns this one. JP went.
+  private showVegasChoice() {
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT - 150;
+
+    const yesBg = this.addObj(this.add.rectangle(cx - 110, cy, 190, 42, 0x30a040)
+      .setInteractive({ useHandCursor: true }));
+    const yesText = this.addObj(this.add.text(cx - 110, cy, 'Book the flight', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#ffffff',
+    }).setOrigin(0.5));
+    const noBg = this.addObj(this.add.rectangle(cx + 110, cy, 190, 42, 0xa03030)
+      .setInteractive({ useHandCursor: true }));
+    const noText = this.addObj(this.add.text(cx + 110, cy, 'Stay and stack', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#ffffff',
+    }).setOrigin(0.5));
+
+    const spaceKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    const nKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.N);
+    const cleanup = () => {
+      yesBg.destroy(); yesText.destroy(); noBg.destroy(); noText.destroy();
+      spaceKey.off('down', onYes); nKey.off('down', onNo);
+    };
+    const onYes = () => {
+      cleanup();
+      ChoiceLedger.record('vegas_invite', 'Booked the flight');
+      SoundEffects.playConfirm();
+      this.showText('Booked. Rent figures itself out. It always has to.', GAME_HEIGHT - 190, { size: '10px', color: '#f0c040' });
+      this.showContinue(1400);
+    };
+    const onNo = () => {
+      cleanup();
+      ChoiceLedger.record('vegas_invite', 'Stayed and stacked');
+      this.showText('The phone goes face-down. The group chat goes crazy without him.', GAME_HEIGHT - 190, { size: '10px', color: '#aaaacc' });
+      this.showContinue(1400);
+    };
+    yesBg.on('pointerdown', onYes);
+    noBg.on('pointerdown', onNo);
+    spaceKey.on('down', onYes);
+    nKey.on('down', onNo);
   }
 
   private showText(
@@ -769,7 +812,14 @@ export class LAScene extends Phaser.Scene {
           { size: '18px', color: '#f0c040', baseDelay: 600 + 5 * 1500 + 500, lineGap: 0 }
         );
 
-        this.showContinue(600 + 5 * 1500 + 2500);
+        // The pressure decision LA actually ends with: Dan calls about Vegas.
+        // Rent week. The account says no. The ceiling says go.
+        this.time.delayedCall(600 + 5 * 1500 + 3200, () => {
+          if (!this.scene.isActive()) return;
+          this.showText('Phone buzz. Dan: "Vegas this weekend. Tony and Patrick are in."', GAME_HEIGHT - 260, { size: '10px', color: '#e8d8b0' });
+          this.showText('Rent is due Friday.', GAME_HEIGHT - 225, { size: '9px', color: '#aa8899', delay: 700 });
+          this.time.delayedCall(1600, () => this.showVegasChoice());
+        });
         break;
       }
 

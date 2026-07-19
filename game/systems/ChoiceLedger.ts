@@ -86,6 +86,14 @@ export const CHOICE_DEFS: ChoiceDef[] = [
     jpLine: 'JP added the stop. One of those nights, the door got kicked in.',
   },
   {
+    id: 'vegas_invite',
+    chapter: 'LA',
+    prompt: 'Vegas invite on rent week',
+    options: ['Booked the flight', 'Stayed and stacked'],
+    jpReal: 'Booked the flight', // canon: the trip happened — always lit with Tony, Patrick, Dan
+    jpLine: 'JP booked it. Rent week or not — those rooms don\'t invite you twice.',
+  },
+  {
     id: 'jail_fight',
     chapter: 'Locked Up',
     prompt: 'Getting tested inside',

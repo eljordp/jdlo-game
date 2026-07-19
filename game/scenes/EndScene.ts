@@ -917,21 +917,9 @@ export class EndScene extends Phaser.Scene {
       delay: callbackDelay + 3000,
     });
 
-    // One quiet handle \u2014 the story continues off-screen
+    // No handle here \u2014 the post-credits scene carries the one and only CTA.
     const ctaY = 640;
     const ctaDelay = callbackDelay + 4500;
-
-    const igHandle = this.add.text(GAME_WIDTH / 2, ctaY, '@jdlo', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '10px',
-      color: '#6688cc',
-    }).setOrigin(0.5).setAlpha(0).setInteractive({ useHandCursor: true });
-
-    igHandle.on('pointerdown', () => window.open('https://instagram.com/jdlo', '_blank'));
-    igHandle.on('pointerover', () => igHandle.setColor('#88aaee'));
-    igHandle.on('pointerout', () => igHandle.setColor('#6688cc'));
-
-    this.tweens.add({ targets: igHandle, alpha: 1, duration: 800, delay: ctaDelay });
 
     // Share button
     const shareBtn = this.add.text(GAME_WIDTH / 2, ctaY + 60, '[ SHARE YOUR JOURNEY ]', {
