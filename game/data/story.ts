@@ -500,6 +500,10 @@ export const chapter3OutroText: string[] = [
 
 export const chapter4IntroText: string[] = [
   'Caymus Vineyards',
+  // The month nobody claps for. Shown once, never explained.
+  'First month out: a 7-Eleven register by day.',
+  'And a floor at 4 AM, shaking through the last of a habit that followed him out.',
+  'Nobody watched him kick it. He kicked it.',
   'Most people don\'t make it out of that situation.',
   'Jordan did. Now he\'s got dirt under his nails and an early shift.',
   'But he\'s free. And that\'s enough to start.',
@@ -2298,6 +2302,8 @@ const ch3Day3Extras: Record<string, DialogueLine[]> = {
   ch3_transformation: [
     { speaker: 'JP\'s Mind', text: 'JP looks in the mirror one last time.' },
     { speaker: 'JP\'s Mind', text: 'Six months ago he couldn\'t look at himself.' },
+    { speaker: 'JP\'s Mind', text: 'My whole life I did things so somebody would see me do them.' },
+    { speaker: 'JP\'s Mind', text: 'Nobody watched a single pushup in here. I did them anyway.' },
     { speaker: 'JP\'s Mind', text: 'Now he sees someone he respects.' },
   ],
   ch3_mirror_day2: [

@@ -1415,6 +1415,8 @@ export class BeachScene extends BaseChapterScene {
                   { speaker: 'JP\'s Mind', text: 'These people don\'t actually mess with me.' },
                   { speaker: 'JP\'s Mind', text: 'They mess with the bags. The free food. The DoorDash runs at 2am.' },
                   { speaker: 'JP\'s Mind', text: 'I\'m just the trapper with a credit card.' },
+                  { speaker: 'JP\'s Mind', text: 'Sheltered my whole life. Never learned how to impress anybody for real.' },
+                  { speaker: 'JP\'s Mind', text: 'I didn\'t even feel good doing none of it. I was just alone, misled, and wanted to look cool.' },
                   { speaker: 'JP\'s Mind', text: 'K texted me four times.' },
                   { speaker: 'JP\'s Mind', text: 'I can\'t even look at my phone right now.' },
                   { speaker: 'Narrator', text: 'Walk south to the street.' },
