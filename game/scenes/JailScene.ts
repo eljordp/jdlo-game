@@ -1245,351 +1245,227 @@ export class JailScene extends BaseChapterScene {
     });
   }
 
+  // Three-set yard strategy: read the rival, manage your reputation.
+  // No meters. Each set he telegraphs his condition; you pick your move.
   private playPushupMinigame() {
     this.frozen = true;
+    const objects: Phaser.GameObjects.GameObject[] = [];
     let jpCount = 0;
     let rivalCount = 0;
-    let timeLeft = 15;
-    let active = true;
-    const rivalInterval = 1.2; // seconds per pushup — steady, no burnouts
-    let rivalTimer = 0;
-    // STRAIN system, same language as the Ch1 weights: pacing beats mashing
-    let strainLevel = 0;
-    let lockout = false;
-    const objects: Phaser.GameObjects.GameObject[] = [];
+    let energy = 100;
+    let setIndex = 0;
 
-    // Darken background
+    const SETS = [
+      { rival: 12, tell: 'Set 1. He\'s fresh. Fast pace, clean reps.', pushBonus: 4 },
+      { rival: 9, tell: 'Set 2. He\'s breathing through his mouth now.', pushBonus: 6 },
+      { rival: 6, tell: 'Set 3. His arms are shaking. Pride\'s doing his reps.', pushBonus: 9 },
+    ];
+    const MATCH_COST = 25;
+    const PUSH_COST = 35;
+
     const overlay = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.6)
       .setScrollFactor(0).setDepth(300);
     objects.push(overlay);
 
-    // Title
     const title = this.add.text(GAME_WIDTH / 2, 70, 'PUSHUP CONTEST', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '22px',
-      color: '#f0c040',
+      fontFamily: '"Press Start 2P", monospace', fontSize: '22px', color: '#f0c040',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
     objects.push(title);
 
-    // Instructions
-    const instructions = this.add.text(GAME_WIDTH / 2, 110, 'SPACE for pushups. Burn out in the red and the yard sees you collapse.', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '14px',
-      color: '#ffffff',
+    const tellText = this.add.text(GAME_WIDTH / 2, 115, '', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#aaaacc',
+      wordWrap: { width: 640 }, align: 'center',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
-    objects.push(instructions);
+    objects.push(tellText);
 
-    // Timer (centered)
-    const timer = this.add.text(GAME_WIDTH / 2, 145, '15s', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '16px',
-      color: '#aaaacc',
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
-    objects.push(timer);
-
-    // --- LEFT SIDE: JP ---
-    const jpLabel = this.add.text(GAME_WIDTH / 2 - 200, 190, 'JP', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '16px',
-      color: '#f0c040',
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
-    objects.push(jpLabel);
-
-    const jpCounter = this.add.text(GAME_WIDTH / 2 - 200, GAME_HEIGHT / 2 - 40, '0', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '48px',
-      color: '#ffffff',
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
-    objects.push(jpCounter);
-
-    const jpSprite = this.add.sprite(GAME_WIDTH / 2 - 200, GAME_HEIGHT / 2 + 80, this.getPlayerTexture(), 0)
-      .setScale(6).setScrollFactor(0).setDepth(301);
+    // The two of them, down in the dirt
+    const jpSprite = this.add.sprite(GAME_WIDTH / 2 - 200, GAME_HEIGHT / 2 + 60, this.getPlayerTexture(), 0)
+      .setScale(7, 3).setScrollFactor(0).setDepth(301);
     objects.push(jpSprite);
-
-    // --- RIGHT SIDE: INMATE ---
-    const rivalLabel = this.add.text(GAME_WIDTH / 2 + 200, 190, 'INMATE', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '16px',
-      color: '#ff6666',
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
-    objects.push(rivalLabel);
-
-    const rivalCounter = this.add.text(GAME_WIDTH / 2 + 200, GAME_HEIGHT / 2 - 40, '0', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '48px',
-      color: '#ffffff',
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
-    objects.push(rivalCounter);
-
-    const rivalSprite = this.add.sprite(GAME_WIDTH / 2 + 200, GAME_HEIGHT / 2 + 80, 'npc_inmate3', 0)
-      .setScale(6).setScrollFactor(0).setDepth(301);
+    const rivalSprite = this.add.sprite(GAME_WIDTH / 2 + 200, GAME_HEIGHT / 2 + 60, 'npc_inmate3', 0)
+      .setScale(7, 3).setScrollFactor(0).setDepth(301);
     objects.push(rivalSprite);
 
-    // VS divider
-    const vsText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'VS', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '14px',
-      color: '#555555',
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
-    objects.push(vsText);
-
-    // Catching up warning text (hidden by default)
-    const warningText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 160, '', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '12px',
-      color: '#ff4444',
+    const jpCounter = this.add.text(GAME_WIDTH / 2 - 200, GAME_HEIGHT / 2 - 40, '0', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '36px', color: '#ffffff',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(302);
-    objects.push(warningText);
+    objects.push(jpCounter);
+    const rivalCounter = this.add.text(GAME_WIDTH / 2 + 200, GAME_HEIGHT / 2 - 40, '0', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '36px', color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(302);
+    objects.push(rivalCounter);
 
-    // Crowd reaction text (hidden by default)
+    objects.push(this.add.text(GAME_WIDTH / 2 - 200, GAME_HEIGHT / 2 - 80, 'JP', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#888888',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(302));
+    objects.push(this.add.text(GAME_WIDTH / 2 + 200, GAME_HEIGHT / 2 - 80, 'INMATE', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#888888',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(302));
+
     const crowdText = this.add.text(GAME_WIDTH / 2, 50, '', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '10px',
-      color: '#f0c040',
+      fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#f0c040',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(302).setAlpha(0);
     objects.push(crowdText);
 
-    // STRAIN meter under JP's counter
-    objects.push(this.add.rectangle(GAME_WIDTH / 2 - 200, GAME_HEIGHT / 2 + 5, 160, 12, 0x222230)
-      .setScrollFactor(0).setDepth(302));
-    const strainFill = this.add.rectangle(GAME_WIDTH / 2 - 278, GAME_HEIGHT / 2 + 5, 4, 8, 0x40c060)
-      .setOrigin(0, 0.5).setScrollFactor(0).setDepth(303);
-    objects.push(strainFill);
-    const strainTicker = this.time.addEvent({
-      delay: 100,
-      loop: true,
-      callback: () => {
-        if (!active) return;
-        strainLevel = Math.max(0, strainLevel - 1.6);
-        strainFill.width = Math.max(4, strainLevel * 1.56);
-        strainFill.setFillStyle(strainLevel > 75 ? 0xff4040 : strainLevel > 45 ? 0xf0c040 : 0x40c060);
-      },
-    });
-    objects.push(strainTicker as unknown as Phaser.GameObjects.GameObject);
-
-    // JP pushup handler — pace it or the yard watches you collapse
-    const doPushup = () => {
-      if (!active || lockout) return;
-      strainLevel += 14;
-      if (strainLevel > 100) {
-        lockout = true;
-        strainLevel = 50;
-        jpCount = Math.max(0, jpCount - 2);
-        jpCounter.setText(String(jpCount));
-        jpCounter.setColor('#ff4444');
-        crowdText.setText('"HE\'S GASSED!"');
-        crowdText.setAlpha(1);
-        this.tweens.add({ targets: crowdText, alpha: 0, duration: 1200, delay: 500 });
-        this.tweens.add({ targets: jpSprite, scaleY: 1.2, duration: 200, yoyo: true });
-        this.time.delayedCall(1500, () => {
-          lockout = false;
-          jpCounter.setColor('#ffffff');
-        });
-        return;
-      }
-      jpCount++;
-      jpCounter.setText(String(jpCount));
-
-      // Escalating squish — gets more exaggerated as count goes up
-      const intensity = Math.min(jpCount / 30, 1); // 0→1 over 30 pushups
-      const squishY = 3 - intensity * 1.5;   // 3 → 1.5
-      const squishX = 7 + intensity * 2;     // 7 → 9
-      this.tweens.add({
-        targets: jpSprite,
-        scaleY: squishY,
-        scaleX: squishX,
-        duration: 80,
-        yoyo: true,
-        ease: 'Power1',
-      });
-
-      // Counter pulse
-      this.tweens.add({
-        targets: jpCounter,
-        scale: 1.2,
-        duration: 60,
-        yoyo: true,
-      });
-
-      // Sweat particles every 3rd pushup
-      if (jpCount % 3 === 0) {
-        for (let s = 0; s < 2; s++) {
-          const sweatX = (GAME_WIDTH / 2 - 200) + Phaser.Math.Between(-20, 20);
-          const sweatY = GAME_HEIGHT / 2 + 60;
-          const sweat = this.add.circle(sweatX, sweatY, 3, 0x4488ff)
-            .setScrollFactor(0).setDepth(303).setAlpha(0.8);
-          objects.push(sweat);
-          this.tweens.add({
-            targets: sweat,
-            y: sweatY + 40 + Phaser.Math.Between(0, 20),
-            x: sweatX + Phaser.Math.Between(-10, 10),
-            alpha: 0,
-            duration: 500,
-            ease: 'Quad.easeIn',
-            onComplete: () => sweat.destroy(),
-          });
-        }
-      }
-
-      // Crowd reactions based on lead/deficit
-      const diff = jpCount - rivalCount;
-      if (diff >= 5) {
-        crowdText.setText('THE YARD IS WATCHING');
-        crowdText.setColor('#f0c040');
-        crowdText.setAlpha(1);
-        // Pulse effect
-        this.tweens.add({
-          targets: crowdText,
-          scale: 1.15,
-          duration: 200,
-          yoyo: true,
-          ease: 'Sine.easeInOut',
-        });
-      } else if (diff <= -3) {
-        crowdText.setText('COME ON!');
-        crowdText.setColor('#ff4444');
-        crowdText.setAlpha(1);
-        this.tweens.add({
-          targets: crowdText,
-          alpha: 0,
-          duration: 400,
-          delay: 200,
-        });
-      }
+    const crowdSay = (msg: string) => {
+      crowdText.setText(msg);
+      crowdText.setAlpha(1);
+      this.tweens.add({ targets: crowdText, alpha: 0, duration: 1200, delay: 700 });
     };
 
-    // Listen for space mashing
-    const spaceKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-    const pushupListener = () => doPushup();
-    spaceKey.on('down', pushupListener);
+    const buttonObjs: Phaser.GameObjects.GameObject[] = [];
+    const clearButtons = () => {
+      for (const b of buttonObjs) b.destroy();
+      buttonObjs.length = 0;
+    };
 
-    // Also support touch/click mashing
-    const pointerListener = () => doPushup();
-    this.input.on('pointerdown', pointerListener);
+    // Quick tick animation for a set's reps landing on the counters
+    const animateSet = (jpAdd: number, rivalAdd: number, onDone: () => void) => {
+      let step = 0;
+      const steps = Math.max(jpAdd, rivalAdd);
+      const tick = this.time.addEvent({
+        delay: 110,
+        repeat: Math.max(0, steps - 1),
+        callback: () => {
+          step++;
+          if (step <= jpAdd) {
+            jpCount++;
+            jpCounter.setText(String(jpCount));
+            this.tweens.add({ targets: jpSprite, scaleY: 2.2, duration: 50, yoyo: true });
+          }
+          if (step <= rivalAdd) {
+            rivalCount++;
+            rivalCounter.setText(String(rivalCount));
+            this.tweens.add({ targets: rivalSprite, scaleY: 2.2, duration: 50, yoyo: true });
+          }
+          if (step >= steps) { this.time.delayedCall(500, onDone); }
+        },
+      });
+      objects.push(tick as unknown as Phaser.GameObjects.GameObject);
+    };
 
-    // Rival pushup timer (every 600ms)
-    const rivalEvent = this.time.addEvent({
-      delay: rivalInterval * 1000,
-      loop: true,
-      callback: () => {
-        if (!active) return;
-        rivalCount++;
-        rivalCounter.setText(String(rivalCount));
+    const offerChoices = () => {
+      const set = SETS[setIndex];
+      tellText.setText(set.tell + (energy < 40 ? '  (JP\'s own arms aren\'t sure.)' : ''));
 
-        // Rival squish animation
-        this.tweens.add({
-          targets: rivalSprite,
-          scaleY: 3,
-          scaleX: 7,
-          duration: 80,
-          yoyo: true,
-          ease: 'Power1',
-        });
+      const defs: Array<{ label: string; color: number; pick: () => void }> = [
+        {
+          label: 'MATCH HIS PACE',
+          color: 0x2a6a8a,
+          pick: () => {
+            const gassed = energy < MATCH_COST;
+            energy = Math.max(0, energy - MATCH_COST);
+            const reps = gassed ? Math.max(1, set.rival - 5) : set.rival;
+            if (gassed) crowdSay('"HE\'S SLOWING DOWN."');
+            animateSet(reps, set.rival, nextSet);
+          },
+        },
+        {
+          label: 'PUSH AHEAD',
+          color: 0xa03030,
+          pick: () => {
+            const gassed = energy < PUSH_COST;
+            energy = Math.max(0, energy - PUSH_COST);
+            // Pushing raises the temperature either way — the yard keeps score
+            AffinitySystem.adjust('ch3_fighter1', -1);
+            const reps = gassed ? Math.max(1, set.rival - 3) : set.rival + set.pushBonus;
+            crowdSay(gassed ? '"HE\'S WRITING CHECKS HIS ARMS CAN\'T CASH."' : '"OHHH HE\'S GOING!"');
+            animateSet(reps, set.rival, nextSet);
+          },
+        },
+        {
+          label: 'STOP CLEAN',
+          color: 0x4a5058,
+          pick: () => {
+            energy = Math.min(100, energy + 15);
+            crowdSay('"SMART. LIVE TO LIFT TOMORROW."');
+            animateSet(Math.max(2, set.rival - 7), set.rival, nextSet);
+          },
+        },
+      ];
 
-        // Check if rival is catching up
-        if (rivalCount > jpCount && active) {
-          warningText.setText("HE'S CATCHING UP!");
-          warningText.setAlpha(1);
-          this.tweens.add({
-            targets: warningText,
-            alpha: 0,
-            duration: 500,
-            delay: 300,
-          });
+      defs.forEach((def, i) => {
+        const bx = GAME_WIDTH / 2 + (i - 1) * 250;
+        const by = GAME_HEIGHT / 2 + 180;
+        const bg = this.add.rectangle(bx, by, 230, 52, def.color)
+          .setScrollFactor(0).setDepth(303).setInteractive({ useHandCursor: true });
+        const label = this.add.text(bx, by, def.label, {
+          fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#ffffff',
+        }).setOrigin(0.5).setScrollFactor(0).setDepth(304);
+        bg.on('pointerover', () => bg.setAlpha(0.85));
+        bg.on('pointerout', () => bg.setAlpha(1));
+        bg.on('pointerdown', () => { clearButtons(); def.pick(); });
+        buttonObjs.push(bg, label);
+        objects.push(bg, label);
+      });
+    };
+
+    const nextSet = () => {
+      setIndex++;
+      if (setIndex >= SETS.length) { finish(); return; }
+      offerChoices();
+    };
+
+    const finish = () => {
+      tellText.setText('');
+      title.setText('DONE.');
+
+      let message = '';
+      const diff = jpCount - rivalCount;
+      if (diff > 10) {
+        message = 'Destroyed. The yard is watching.';
+        jpCounter.setColor('#f0c040');
+      } else if (diff > 0) {
+        message = 'JP wins. Respect earned.';
+        jpCounter.setColor('#40c040');
+      } else if (diff === 0) {
+        message = 'Dead even. Mutual respect.';
+        jpCounter.setColor('#aaaacc');
+        rivalCounter.setColor('#aaaacc');
+      } else {
+        message = 'Inmate wins. JP nods. Next time.';
+        rivalCounter.setColor('#ff6666');
+      }
+
+      const result = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 220, message, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '11px', color: '#aaaacc',
+        wordWrap: { width: 600 }, align: 'center',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+      objects.push(result);
+
+      const scoreResult = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 250, `JP: ${jpCount}  |  INMATE: ${rivalCount}`, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#666666',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+      objects.push(scoreResult);
+
+      // Track pushup outcome for reactive NPC dialogue
+      if (diff > 10) {
+        this.pushupDominated = true;
+        // Public domination breeds a grudge — the yard keeps score
+        AffinitySystem.adjust('ch3_fighter1', -3);
+      }
+      if (diff <= 0) MoodSystem.changeMorale(-10); // losing in the yard costs pride
+      this.trainingComplete = true;
+
+      if (diff > 0) {
+        SoundEffects.crowdReact();
+        MoodSystem.setMood('locked_in', 45);
+      } else if (diff < 0) {
+        SoundEffects.fumble();
+      }
+
+      this.time.delayedCall(3000, () => {
+        for (const obj of objects) {
+          if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
         }
-      },
-    });
+        this.frozen = false;
+        this.refreshObjectiveHint();
+      });
+    };
 
-    // Countdown timer
-    const timerEvent = this.time.addEvent({
-      delay: 1000,
-      repeat: 14,
-      callback: () => {
-        timeLeft--;
-        timer.setText(`${timeLeft}s`);
-
-        if (timeLeft <= 3) {
-          timer.setColor('#ff4444');
-        }
-
-        if (timeLeft <= 0) {
-          active = false;
-          rivalEvent.remove();
-          spaceKey.off('down', pushupListener);
-          this.input.off('pointerdown', pointerListener);
-
-          // Show result
-          instructions.setText('TIME!');
-          timer.setVisible(false);
-          warningText.setText('');
-
-          // Result message based on comparison
-          let message = '';
-          const diff = jpCount - rivalCount;
-          if (diff > 10) {
-            message = 'Destroyed. The yard is watching.';
-            jpCounter.setColor('#f0c040');
-          } else if (diff > 0) {
-            message = 'JP wins. Respect earned.';
-            jpCounter.setColor('#40c040');
-          } else if (diff === 0) {
-            message = 'Dead even. Mutual respect.';
-            jpCounter.setColor('#aaaacc');
-            rivalCounter.setColor('#aaaacc');
-          } else {
-            message = 'Inmate wins. JP nods. Next time.';
-            rivalCounter.setColor('#ff6666');
-          }
-
-          const result = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 220, message, {
-            fontFamily: '"Press Start 2P", monospace',
-            fontSize: '11px',
-            color: '#aaaacc',
-            wordWrap: { width: 600 },
-            align: 'center',
-          }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
-          objects.push(result);
-
-          const scoreResult = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 250, `JP: ${jpCount}  |  INMATE: ${rivalCount}`, {
-            fontFamily: '"Press Start 2P", monospace',
-            fontSize: '10px',
-            color: '#666666',
-          }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
-          objects.push(scoreResult);
-
-          // Track pushup outcome for reactive NPC dialogue
-          if (diff > 10) {
-            this.pushupDominated = true;
-            // Public domination breeds a grudge — the yard keeps score
-            AffinitySystem.adjust('ch3_fighter1', -3);
-          }
-          if (diff <= 0) MoodSystem.changeMorale(-10); // losing in the yard costs pride
-          this.trainingComplete = true;
-
-          // Sound on result
-          if (diff > 0) {
-            SoundEffects.crowdReact();
-          } else if (diff < 0) {
-            SoundEffects.fumble();
-          }
-
-          // Locked in on pushup win
-          if (diff > 0) {
-            MoodSystem.setMood('locked_in', 45);
-          }
-
-          // Clean up after 3 seconds
-          this.time.delayedCall(3000, () => {
-            for (const obj of objects) {
-              if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
-            }
-            this.frozen = false;
-            this.refreshObjectiveHint();
-          });
-        }
-      },
-    });
+    offerChoices();
   }
+
 
   private playDiceMinigame() {
     this.frozen = true;
