@@ -149,6 +149,11 @@ export class InteractionSystem {
     }));
   }
 
+  /** Resolve an interaction by its stable map id (used by Director QA). */
+  getById(id: string): Interactable | null {
+    return this.interactables.find((item) => item.id === id && !item.consumed) ?? null;
+  }
+
   init(interactables: Interactable[]): void {
     // Clean up any previous state
     this.destroy();

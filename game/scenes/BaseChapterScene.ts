@@ -1044,9 +1044,7 @@ export abstract class BaseChapterScene extends Phaser.Scene {
       return true;
     }
 
-    const visual = this.interactions.getVisuals().find((item) => item.id === targetId);
-    if (!visual) return false;
-    const interactable = this.interactions.checkInteraction(visual.x, visual.y);
+    const interactable = this.interactions.getById(targetId);
     if (!interactable) return false;
     this.handleInteractable(interactable);
     return true;
