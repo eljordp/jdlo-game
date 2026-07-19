@@ -176,6 +176,73 @@ export class TractorScene extends BaseChapterScene {
         fontFamily: '"Press Start 2P", monospace', fontSize: '5px', color: '#f1dfb6',
       }).setOrigin(0.5).setDepth(2.3);
     }
+
+    this.createVineyardShiftMotion();
+  }
+
+  private createVineyardShiftMotion() {
+    const tile = SCALED_TILE;
+
+    // Field hands move inside the rows instead of standing as scenery. They
+    // remain non-interactive background crew so Ernesto, Juan and Eliseo keep
+    // their authored dialogue and reliable collision positions.
+    const rowWorkers = [
+      { texture: 'npc_farmer', x: 6.2, fromY: 12.6, toY: 16.2, duration: 7600, delay: 700 },
+      { texture: 'npc_jose', x: 28.1, fromY: 16.2, toY: 12.7, duration: 8400, delay: 2600 },
+    ];
+    rowWorkers.forEach((worker, index) => {
+      const sprite = this.add.sprite(worker.x * tile, worker.fromY * tile, worker.texture)
+        .setScale(1.62)
+        .setDepth(2.42)
+        .setAlpha(0.86)
+        .setTint(index === 0 ? 0xd7b77c : 0xc49a72);
+      if (index === 1) sprite.setFlipX(true);
+      this.tweens.add({
+        targets: sprite,
+        y: worker.toY * tile,
+        duration: worker.duration,
+        delay: worker.delay,
+        hold: 1000,
+        yoyo: true,
+        repeat: -1,
+        repeatDelay: 1600,
+        ease: 'Sine.easeInOut',
+      });
+    });
+
+    // A small crew member makes repeated crate runs along the main work lane.
+    // The load and worker share a container so the movement reads as one job.
+    const crateRun = this.add.container(23.5 * tile, 9.72 * tile).setDepth(2.48).setAlpha(0.92);
+    const carrier = this.add.sprite(-0.55 * tile, 0, 'npc_generic').setScale(1.6).setTint(0xb98b62);
+    const crateA = this.add.sprite(0.12 * tile, 5, 'item-storage-box').setScale(1.35).setTint(0x8a5837);
+    const crateB = this.add.sprite(0.55 * tile, 5, 'item-storage-box').setScale(1.35).setTint(0x9d6941);
+    crateRun.add([carrier, crateA, crateB]);
+    this.tweens.add({
+      targets: crateRun,
+      x: 32.2 * tile,
+      duration: 6600,
+      hold: 1300,
+      yoyo: true,
+      repeat: -1,
+      repeatDelay: 3600,
+      ease: 'Sine.easeInOut',
+    });
+
+    // Irrigation catches the light in sequence, making the rows feel active
+    // without using oversized water effects that would hide the tile paths.
+    for (const [index, x] of [15.2, 20.1, 31.8].entries()) {
+      const water = this.add.circle(x * tile, 17.15 * tile, 7, 0x64bfd1, 0.16).setDepth(2.18);
+      this.tweens.add({
+        targets: water,
+        alpha: 0.7,
+        scale: 1.45,
+        duration: 780,
+        delay: index * 540,
+        yoyo: true,
+        repeat: -1,
+        repeatDelay: 2100,
+      });
+    }
   }
 
   protected getObjectiveHint(): string {

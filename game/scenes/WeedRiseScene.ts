@@ -248,6 +248,80 @@ export class WeedRiseScene extends BaseChapterScene {
       });
     });
 
+    // A third car behaves like an arrival instead of more looping traffic:
+    // it pulls up, sits long enough for the player to notice, then leaves.
+    // Keeping it decorative preserves the road collision and route logic.
+    const arrival = this.add.container(38 * tile, 15.45 * tile).setDepth(2.52).setAlpha(0.9);
+    const arrivalCar = this.add.sprite(0, 0, 'item-car').setScale(SCALE * 0.86).setTint(0x344d63);
+    const headlightA = this.add.circle(-20, -13, 5, 0xf3d58a, 0.48);
+    const headlightB = this.add.circle(-20, 13, 5, 0xf3d58a, 0.48);
+    arrival.add([headlightA, headlightB, arrivalCar]);
+    this.tweens.add({
+      targets: arrival,
+      x: 28.4 * tile,
+      duration: 2800,
+      hold: 3200,
+      yoyo: true,
+      repeat: -1,
+      repeatDelay: 6800,
+      ease: 'Sine.easeInOut',
+    });
+
+    // Sidewalk movement makes the route feel inhabited. These figures are
+    // intentionally non-interactive composites: they suggest people coming
+    // and going without adding fake names or blocking the player's path.
+    const sidewalkPeople = [
+      { texture: 'npc_generic', fromX: 1.6, toX: 10.5, y: 17.55, tint: 0x8ba2ae, duration: 7600, delay: 400 },
+      { texture: 'npc_female', fromX: 34.2, toX: 25.4, y: 18.05, tint: 0xb88391, duration: 8900, delay: 2300 },
+    ];
+    sidewalkPeople.forEach((person, index) => {
+      const walker = this.add.sprite(person.fromX * tile, person.y * tile, person.texture)
+        .setScale(SCALE * 0.78)
+        .setTint(person.tint)
+        .setDepth(2.58)
+        .setAlpha(0.86);
+      if (index === 1) walker.setFlipX(true);
+      this.tweens.add({
+        targets: walker,
+        x: person.toX * tile,
+        duration: person.duration,
+        delay: person.delay,
+        hold: 900,
+        yoyo: true,
+        repeat: -1,
+        repeatDelay: 1200,
+        ease: 'Linear',
+        onYoyo: () => walker.setFlipX(!walker.flipX),
+        onRepeat: () => walker.setFlipX(!walker.flipX),
+      });
+    });
+
+    // Two strangers keep meeting at the same curb, pausing, and separating.
+    // Nothing is labeled or explained; repetition is the story detail.
+    const curbMeet = [
+      { texture: 'npc_kid', fromX: 12.8, toX: 16.3, tint: 0x768ea0, delay: 0 },
+      { texture: 'npc_generic', fromX: 20.5, toX: 17.0, tint: 0x9d806d, delay: 220 },
+    ];
+    curbMeet.forEach((person, index) => {
+      const figure = this.add.sprite(person.fromX * tile, 17.45 * tile, person.texture)
+        .setScale(SCALE * 0.76)
+        .setTint(person.tint)
+        .setDepth(2.61)
+        .setAlpha(0.9)
+        .setFlipX(index === 0);
+      this.tweens.add({
+        targets: figure,
+        x: person.toX * tile,
+        duration: 1900,
+        delay: person.delay,
+        hold: 1500,
+        yoyo: true,
+        repeat: -1,
+        repeatDelay: 5400,
+        ease: 'Sine.easeInOut',
+      });
+    });
+
     // Dumpsters, mailboxes and stacked delivery clutter fill the dead edges of
     // the parking lot while preserving the central driving path.
     for (const [x, y] of [[3, 12], [33, 16], [25, 12]] as Array<[number, number]>) {
