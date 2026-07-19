@@ -28,6 +28,7 @@ export class JailScene extends BaseChapterScene {
   private faithDone = false;
   private pushupDominated = false; // won by 10+
   private diceBroke = false; // went to 0 in dice
+  private crewSaveUsed = false; // the crew steps in once per fight, if earned
   private shirtOff = false;
   private guardPatrolTimer?: Phaser.Time.TimerEvent;
   private inmatePatrolTimers: Phaser.Time.TimerEvent[] = [];
@@ -1250,8 +1251,11 @@ export class JailScene extends BaseChapterScene {
     let rivalCount = 0;
     let timeLeft = 15;
     let active = true;
-    const rivalInterval = 0.6; // seconds per pushup
+    const rivalInterval = 1.2; // seconds per pushup — steady, no burnouts
     let rivalTimer = 0;
+    // STRAIN system, same language as the Ch1 weights: pacing beats mashing
+    let strainLevel = 0;
+    let lockout = false;
     const objects: Phaser.GameObjects.GameObject[] = [];
 
     // Darken background
@@ -1268,7 +1272,7 @@ export class JailScene extends BaseChapterScene {
     objects.push(title);
 
     // Instructions
-    const instructions = this.add.text(GAME_WIDTH / 2, 110, 'MASH SPACE!', {
+    const instructions = this.add.text(GAME_WIDTH / 2, 110, 'SPACE for pushups. Burn out in the red and the yard sees you collapse.', {
       fontFamily: '"Press Start 2P", monospace',
       fontSize: '14px',
       color: '#ffffff',
@@ -1345,9 +1349,44 @@ export class JailScene extends BaseChapterScene {
     }).setOrigin(0.5).setScrollFactor(0).setDepth(302).setAlpha(0);
     objects.push(crowdText);
 
-    // JP pushup handler
+    // STRAIN meter under JP's counter
+    objects.push(this.add.rectangle(GAME_WIDTH / 2 - 200, GAME_HEIGHT / 2 + 5, 160, 12, 0x222230)
+      .setScrollFactor(0).setDepth(302));
+    const strainFill = this.add.rectangle(GAME_WIDTH / 2 - 278, GAME_HEIGHT / 2 + 5, 4, 8, 0x40c060)
+      .setOrigin(0, 0.5).setScrollFactor(0).setDepth(303);
+    objects.push(strainFill);
+    const strainTicker = this.time.addEvent({
+      delay: 100,
+      loop: true,
+      callback: () => {
+        if (!active) return;
+        strainLevel = Math.max(0, strainLevel - 1.6);
+        strainFill.width = Math.max(4, strainLevel * 1.56);
+        strainFill.setFillStyle(strainLevel > 75 ? 0xff4040 : strainLevel > 45 ? 0xf0c040 : 0x40c060);
+      },
+    });
+    objects.push(strainTicker as unknown as Phaser.GameObjects.GameObject);
+
+    // JP pushup handler — pace it or the yard watches you collapse
     const doPushup = () => {
-      if (!active) return;
+      if (!active || lockout) return;
+      strainLevel += 14;
+      if (strainLevel > 100) {
+        lockout = true;
+        strainLevel = 50;
+        jpCount = Math.max(0, jpCount - 2);
+        jpCounter.setText(String(jpCount));
+        jpCounter.setColor('#ff4444');
+        crowdText.setText('"HE\'S GASSED!"');
+        crowdText.setAlpha(1);
+        this.tweens.add({ targets: crowdText, alpha: 0, duration: 1200, delay: 500 });
+        this.tweens.add({ targets: jpSprite, scaleY: 1.2, duration: 200, yoyo: true });
+        this.time.delayedCall(1500, () => {
+          lockout = false;
+          jpCounter.setColor('#ffffff');
+        });
+        return;
+      }
       jpCount++;
       jpCounter.setText(String(jpCount));
 
@@ -2494,6 +2533,22 @@ export class JailScene extends BaseChapterScene {
           });
 
           showText(`Inmate swings! JP takes ${damage} damage!`, () => {
+            // Recurring-character consequence: if JP shared the commissary,
+            // the crew doesn't let him take a real beating. Generosity is armor.
+            if (jpHP > 0 && jpHP <= 30 && !this.crewSaveUsed
+                && ChoiceLedger.get('commissary_share') === 'Shared it') {
+              this.crewSaveUsed = true;
+              state = 'player-action';
+              inputEnabled = false;
+              showText('Mikey pulls the inmate off. Chris steps between them.', () => {
+                showText('"He eats with us. Walk it off."', () => {
+                  showText('The yard goes back to minding its business.', () => {
+                    endBattle(true);
+                  });
+                });
+              });
+              return;
+            }
             if (jpHP <= 0) { endBattle(false); return; }
             state = 'menu';
             inputEnabled = true;
