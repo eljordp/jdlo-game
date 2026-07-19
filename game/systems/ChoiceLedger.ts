@@ -27,21 +27,23 @@ export const CHOICE_DEFS: ChoiceDef[] = [
     jpReal: 'Took the BMW',
     jpLine: 'JP drove up the same night.',
   },
+  // jpReal sources: STORY_TRUTH_LEDGER + JP's canon answers in
+  // docs/CHAPTER_WALKTHROUGH_AUDIT.md ("JP'S ANSWERS — CANON").
   {
     id: 'party_blow',
     chapter: 'Santa Barbara',
     prompt: 'The offer at the party',
     options: ['Turned it down', 'Took it'],
-    jpReal: null,
-    jpLine: '',
+    jpReal: 'Took it', // JP-approved SB arc: drinks -> smoke -> blow -> blackout
+    jpLine: "JP didn't turn it down. That night ended in a blackout.",
   },
   {
     id: 'pops_call',
     chapter: 'Wrong Crowd',
     prompt: "Pops calling at 1 AM",
     options: ['Answered', 'Let it ring'],
-    jpReal: null,
-    jpLine: '',
+    jpReal: 'Let it ring', // canon: 3 missed calls, one voicemail, no callback
+    jpLine: 'JP let it ring. All three times.',
   },
   {
     id: 'jose_text',
@@ -56,8 +58,32 @@ export const CHOICE_DEFS: ChoiceDef[] = [
     chapter: 'Caymus',
     prompt: 'The phone on the tractor',
     options: ['Ignored it', 'Looked'],
+    jpReal: 'Looked', // ledger-locked: the phone distraction crash IS the Caymus beat
+    jpLine: 'JP looked. The crash was real.',
+  },
+  {
+    id: 'rise_orders',
+    chapter: 'Weed Rise',
+    prompt: 'The orders kept coming',
+    options: ['Took every order', 'Set a limit'],
+    jpReal: 'Took every order', // canon: "I stopped keeping track of when that happened"
+    jpLine: 'JP took every order. Limits came later, the hard way.',
+  },
+  {
+    id: 'rise_route',
+    chapter: 'Weed Rise',
+    prompt: 'Planning the route',
+    options: ['Urgent stop first', 'Closest stop first'],
     jpReal: null,
     jpLine: '',
+  },
+  {
+    id: 'rise_extra_stop',
+    chapter: 'Weed Rise',
+    prompt: 'The late text: one more stop',
+    options: ['Added the stop', 'Ignored it'],
+    jpReal: 'Added the stop', // canon: 3:33 AM — "you coming or not?" He went.
+    jpLine: 'JP added the stop. One of those nights, the door got kicked in.',
   },
   {
     id: 'jail_fight',
@@ -72,8 +98,8 @@ export const CHOICE_DEFS: ChoiceDef[] = [
     chapter: 'Come Up',
     prompt: 'The prospect who ghosted',
     options: ['Kept sending', 'Moved on'],
-    jpReal: null,
-    jpLine: '',
+    jpReal: 'Kept sending', // ledger tone-control: "he keeps sending after being ghosted"
+    jpLine: 'JP kept sending. He still does.',
   },
   {
     id: 'price_hold',
