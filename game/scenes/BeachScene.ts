@@ -1078,8 +1078,8 @@ export class BeachScene extends BaseChapterScene {
       { speaker: 'Nikki\'s Dad', text: 'So what are you doing next?' },
       { speaker: 'JP', text: 'Still figuring that out.' },
       { speaker: 'Nikki', text: 'Dad. He just got here, let him eat.' },
-      { speaker: 'Nikki', text: 'For the record, I transfer to Davis in the fall. SOMEBODY at this table has a plan.' },
-      { speaker: 'Narrator', text: 'She says it at her dad, but she\'s watching JP when she says it.' },
+      { speaker: 'Nikki', text: 'You turn every dinner into an interview.' },
+      { speaker: 'Narrator', text: 'She gives JP a look. He tries not to laugh.' },
       { speaker: 'Narrator', text: 'Warm food. Normal conversation. Nothing looked like a beginning.' },
     ], () => {
       dinnerObjects.forEach((object) => object.destroy());

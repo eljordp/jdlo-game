@@ -76,12 +76,12 @@ export class LAScene extends Phaser.Scene {
 
     const yesBg = this.addObj(this.add.rectangle(cx - 110, cy, 190, 42, 0x30a040)
       .setInteractive({ useHandCursor: true }));
-    const yesText = this.addObj(this.add.text(cx - 110, cy, 'Book the flight', {
+    const yesText = this.addObj(this.add.text(cx - 110, cy, 'Book it  [SPACE]', {
       fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#ffffff',
     }).setOrigin(0.5));
     const noBg = this.addObj(this.add.rectangle(cx + 110, cy, 190, 42, 0xa03030)
       .setInteractive({ useHandCursor: true }));
-    const noText = this.addObj(this.add.text(cx + 110, cy, 'Stay and stack', {
+    const noText = this.addObj(this.add.text(cx + 110, cy, 'Stay home  [N]', {
       fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#ffffff',
     }).setOrigin(0.5));
 
@@ -95,7 +95,7 @@ export class LAScene extends Phaser.Scene {
       cleanup();
       ChoiceLedger.record('vegas_invite', 'Booked the flight');
       SoundEffects.playConfirm();
-      this.showText('Booked. Rent figures itself out. It always has to.', GAME_HEIGHT - 190, { size: '10px', color: '#f0c040' });
+      this.showText('Booked. Rent is still due Friday.', GAME_HEIGHT - 190, { size: '10px', color: '#f0c040' });
       this.showContinue(1400);
     };
     const onNo = () => {
@@ -816,8 +816,14 @@ export class LAScene extends Phaser.Scene {
         // Rent week. The account says no. The ceiling says go.
         this.time.delayedCall(600 + 5 * 1500 + 3200, () => {
           if (!this.scene.isActive()) return;
-          this.showText('Phone buzz. Dan: "Vegas this weekend. Tony and Patrick are in."', GAME_HEIGHT - 260, { size: '10px', color: '#e8d8b0' });
-          this.showText('Rent is due Friday.', GAME_HEIGHT - 225, { size: '9px', color: '#aa8899', delay: 700 });
+
+          // Turn the reflection into a clean decision beat instead of stacking
+          // the call and buttons over the closing quote.
+          for (const text of this.textObjects) text.destroy();
+          this.textObjects = [];
+          this.addObj(this.add.rectangle(cx, cy + 80, 700, 160, 0x080812, 0.92));
+          this.showText('Phone buzz. Dan: "Vegas this weekend. Tony and Patrick are in."', cy + 45, { size: '10px', color: '#e8d8b0' });
+          this.showText('Rent is due Friday.', cy + 85, { size: '9px', color: '#aa8899', delay: 700 });
           this.time.delayedCall(1600, () => this.showVegasChoice());
         });
         break;

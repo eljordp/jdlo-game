@@ -392,7 +392,7 @@ export default function DirectorPanel({
             )}
             {targets.map((target) => <option key={`required:${target.type}:${target.id}`} value={target.id}>{target.label}</option>)}
           </select>
-          <button type="button" onClick={() => run("Marked requirement complete", (scene) => { scene.requiredDone = true; scene.refreshObjectiveHint?.(); })} className="director-btn w-full">Mark complete</button>
+          <button type="button" onClick={() => run("QA override: marked gate complete without playing its prerequisites", (scene) => { scene.requiredDone = true; scene.refreshObjectiveHint?.(); })} className="director-btn w-full">QA OVERRIDE — MARK GATE COMPLETE</button>
         </section>
 
         {sceneMinigames.length > 0 && (

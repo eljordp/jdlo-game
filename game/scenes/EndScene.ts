@@ -204,7 +204,7 @@ export class EndScene extends Phaser.Scene {
     const btnDelay = gradeDelay + 1600;
 
     // CONTINUE button (goes to narrative end)
-    const continueBtn = this.add.text(cx - 160, btnY, '[ CONTINUE ]', {
+    const continueBtn = this.add.text(cx, btnY, '[ CONTINUE ]', {
       fontFamily: '"Press Start 2P", monospace',
       fontSize: '12px',
       color: '#f0c040',
@@ -224,42 +224,6 @@ export class EndScene extends Phaser.Scene {
       repeat: -1,
       delay: btnDelay + 1000,
     });
-
-    // SHARE button
-    const shareBtn = this.add.text(cx + 60, btnY, '[ SHARE CARD ]', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '10px',
-      color: '#6688cc',
-    }).setOrigin(0.5).setDepth(d + 5).setAlpha(0).setInteractive({ useHandCursor: true });
-    this.statsElements.push(shareBtn);
-
-    shareBtn.on('pointerover', () => shareBtn.setColor('#88aaee'));
-    shareBtn.on('pointerout', () => shareBtn.setColor('#6688cc'));
-    shareBtn.on('pointerdown', () => {
-      this.showShareCard(stats, grade.letter, grade.color);
-    });
-
-    this.tweens.add({ targets: shareBtn, alpha: 1, duration: 800, delay: btnDelay + 200 });
-
-    // PLAY AGAIN
-    const playAgain = this.add.text(cx + 240, btnY, '[ PLAY AGAIN ]', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '10px',
-      color: '#555577',
-    }).setOrigin(0.5).setDepth(d + 5).setAlpha(0).setInteractive({ useHandCursor: true });
-    this.statsElements.push(playAgain);
-
-    playAgain.on('pointerover', () => playAgain.setColor('#8888aa'));
-    playAgain.on('pointerout', () => playAgain.setColor('#555577'));
-    playAgain.on('pointerdown', () => {
-      GameStats.reset();
-      this.cameras.main.fadeOut(1000, 0, 0, 0);
-      this.cameras.main.once('camerafadeoutcomplete', () => {
-        this.scene.start('IntroScene');
-      });
-    });
-
-    this.tweens.add({ targets: playAgain, alpha: 1, duration: 800, delay: btnDelay + 400 });
 
     // SPACE to continue
     this.input.keyboard!.on('keydown-SPACE', () => {
@@ -917,68 +881,9 @@ export class EndScene extends Phaser.Scene {
       delay: callbackDelay + 3000,
     });
 
-    // No handle here \u2014 the post-credits scene carries the one and only CTA.
-    const ctaY = 640;
-    const ctaDelay = callbackDelay + 4500;
-
-    // Share button
-    const shareBtn = this.add.text(GAME_WIDTH / 2, ctaY + 60, '[ SHARE YOUR JOURNEY ]', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '11px',
-      color: '#f0c040',
-    }).setOrigin(0.5).setAlpha(0).setInteractive({ useHandCursor: true });
-
-    shareBtn.on('pointerdown', () => {
-      this.shareGame();
-    });
-    shareBtn.on('pointerover', () => shareBtn.setColor('#ffdd66'));
-    shareBtn.on('pointerout', () => shareBtn.setColor('#f0c040'));
-
-    this.tweens.add({ targets: shareBtn, alpha: 1, duration: 800, delay: ctaDelay + 1500 });
-
-    // Play again
-    const restart = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 40, 'SPACE to play again', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '9px',
-      color: '#333355',
-    }).setOrigin(0.5).setAlpha(0);
-
-    this.tweens.add({
-      targets: restart,
-      alpha: 1,
-      duration: 1000,
-      delay: 6000,
-    });
-
-    this.tweens.add({
-      targets: restart,
-      alpha: 0.2,
-      duration: 1200,
-      yoyo: true,
-      repeat: -1,
-      delay: 7000,
-    });
-
-    // Track if player has interacted (space/tap to replay)
-    let playerInteracted = false;
-
-    this.input.keyboard!.on('keydown-SPACE', () => {
-      if (playerInteracted) return;
-      playerInteracted = true;
-      this.cameras.main.fadeOut(1000, 0, 0, 0);
-      this.cameras.main.once('camerafadeoutcomplete', () => {
-        this.scene.start('IntroScene');
-      });
-    });
-
-    this.input.on('pointerdown', () => {
-      // Mobile tap to replay (only if tapping empty area, not a link)
-    });
-
     // ── POST-CREDITS SEQUENCE ──────────────────────────────────────────
-    // If the player hasn't pressed space after 8 seconds, trigger cliffhanger
+    // Let the ending breathe, then deliver the post-credits payoff.
     this.time.delayedCall(8000, () => {
-      if (playerInteracted) return;
       this.startPostCredits();
     });
   }
