@@ -12,11 +12,13 @@ import { CasinoSystem } from '../systems/CasinoSystem';
 import { DMSystem } from '../systems/DMSystem';
 import { SoundEffects } from '../systems/SoundEffects';
 import { ChoiceLedger } from '../systems/ChoiceLedger';
+import { AffinitySystem } from '../systems/AffinitySystem';
 
 export class OperatorScene extends BaseChapterScene {
   private npcsTalkedTo = new Set<string>();
   private dashboardDone = false;
   private pitchDone = false;
+  private deePaidDeposit = false;
   private vacavilleTexted = false;
   private geraldTexted = false;
   private clockText?: Phaser.GameObjects.Text;
@@ -693,8 +695,18 @@ export class OperatorScene extends BaseChapterScene {
                 { speaker: 'JP\'s Mind', text: 'Real recognize real.' },
               ]
             : []),
+        // Dee doesn't do talk. She does deposits.
+        { speaker: 'Dee', text: 'Deposit\'s in your inbox. Half up front. That\'s how professionals work.' },
+        { speaker: 'Narrator', text: 'She\'s already walking off. Phone to her ear, next thing handled.' },
       ];
-      this.dialogue.show(deeLines);
+      this.dialogue.show(deeLines, () => {
+        if (!this.deePaidDeposit) {
+          this.deePaidDeposit = true;
+          BalanceSystem.earn(750);
+          SoundEffects.playCash();
+          AffinitySystem.adjust('ch6_client2', 1);
+        }
+      });
       return;
     }
 

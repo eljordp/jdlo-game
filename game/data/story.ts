@@ -877,6 +877,7 @@ export const chapter6NPCs: NPCData[] = [
     sprite: 'npc_dhl_client',
     dialogue: [
       { speaker: 'DHL Manager', text: 'We have a problem. Our warehouse team speaks four different languages.' },
+      { speaker: 'DHL Manager', text: 'My best packer trains every new hire by pointing. Twelve years here and nobody built him a tool.' },
       { speaker: 'DHL Manager', text: 'Instructions have to make sense across a working warehouse.' },
       { speaker: 'DHL Manager', text: 'We need a translator the team can actually use.' },
       { speaker: 'JP', text: '', choices: [
@@ -1407,16 +1408,19 @@ const ch1Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'I go through an ounce a week myself. The boys buy from me.' },
   ],
   ch1_girl3: [
-    { speaker: 'Girl', text: 'JP! Get in the hot tub!' },
+    // Bri films everything. She's building something too — hers just has a ring light.
+    { speaker: 'Bri', text: 'JP! Get in the hot tub! I need bodies in the background of this vlog.' },
     { speaker: 'JP', text: 'Maybe later.' },
-    { speaker: 'Girl', text: 'You always say that. You\'re so boring.' },
+    { speaker: 'Bri', text: 'Fine, stay mysterious. 40K followers are gonna see this house either way.' },
     { speaker: 'JP', text: '', choices: [
       { text: '"I got stuff to do."', next: [
-        { speaker: 'Girl', text: 'Stuff? Like what? Sitting in your room with all those bags?' },
+        { speaker: 'Bri', text: 'Stuff? Like what? Sitting in your room with all those bags?' },
+        { speaker: 'Bri', text: 'Whatever. Just stay OUT of my frame with all that. I\'m not getting demonetized for you.' },
         { speaker: 'JP', text: '...mind your business.' },
+        { speaker: 'JP\'s Mind', text: 'She\'s the only one here building something with a future. Annoying.' },
       ]},
       { text: '"Alright alright, I\'m coming."', next: [
-        { speaker: 'Girl', text: 'Finally! Someone get this man a drink.' },
+        { speaker: 'Bri', text: 'Finally! Someone get this man a drink. And JP — smile, you\'re content now.' },
       ]},
     ]},
   ],
