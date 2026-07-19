@@ -10,14 +10,18 @@ import { GameIntelligence } from '../systems/GameIntelligence';
 import { CasinoSystem } from '../systems/CasinoSystem';
 import { DMSystem } from '../systems/DMSystem';
 import { SoundEffects } from '../systems/SoundEffects';
+import { ChoiceLedger } from '../systems/ChoiceLedger';
 
 export class ComeUpScene extends BaseChapterScene {
   private typingPlayed = false;
+  private clientTriagePlayed = false;
   private clientReturned = false;
   private ghostMoved = false;
   private stickerTalked = false;
   private lateNightActive = false;
   private rejectionPlayed = false;
+  private birdLetterRead = false;
+  private joseTexted = false;
   private bankChecked = false;
   private timePassagePlayed = false;
   private popsCallDone = false;
@@ -428,9 +432,19 @@ export class ComeUpScene extends BaseChapterScene {
   // Override to add typing mini-game and payment cutscene
   protected handleInteractable(interactable: { id: string; type: string; consumed?: boolean }) {
     GameIntelligence.onInteracted(interactable.id);
-    if (interactable.id === 'ch5_stack' || interactable.id === 'ch5_github') {
+    if (interactable.id === 'ch5_stack' && !this.clientTriagePlayed) {
+      Analytics.trackInteraction(interactable.id);
+      SoundEffects.playVibrate();
+      this.clientTriagePlayed = true;
+      this.playClientTriage();
+      this.interactions.consume(interactable.id);
+      return;
+    }
+
+    if (interactable.id === 'ch5_github' && !this.typingPlayed) {
       Analytics.trackInteraction(interactable.id);
       SoundEffects.playBlip();
+      this.typingPlayed = true;
       this.playTypingMinigame();
       this.interactions.consume(interactable.id);
       return;
@@ -521,9 +535,23 @@ export class ComeUpScene extends BaseChapterScene {
     if (interactable.id === 'ch5_late_night') {
       Analytics.trackInteraction(interactable.id);
       this.frozen = true;
+      // Bird's letter sits on the desk — the inside checking on the outside.
+      // First visit only; the commissary choice echoes in his P.S.
+      const birdLetter: DialogueLine[] = this.birdLetterRead ? [] : [
+        { speaker: 'Narrator', text: 'Under the Red Bull can — an envelope. State-stamped. Bird.' },
+        { speaker: 'Bird', text: '"Heard from Mikey you out there building. Websites and all that."' },
+        { speaker: 'Bird', text: '"Third time I watched somebody leave and come back. Don\'t be the fourth. Don\'t waste it."' },
+        ...(ChoiceLedger.get('commissary_share') === 'Shared it'
+          ? [{ speaker: 'Bird', text: '"P.S. Nobody in here shares the bag no more. Block ain\'t been the same."' }]
+          : []),
+        { speaker: 'JP\'s Mind', text: 'Bird\'s still in there. I\'m out here.' },
+        { speaker: 'JP\'s Mind', text: 'That\'s the whole reason to keep typing.' },
+      ];
+      this.birdLetterRead = true;
       this.dialogue.show([
         { speaker: 'Narrator', text: 'Late night. Screen glowing in the dark.' },
         { speaker: 'Narrator', text: 'Red Bull can. Cold coffee. Stack of tutorials.' },
+        ...birdLetter,
         { speaker: 'JP\'s Mind', text: 'Everyone\'s asleep. This is when the real work happens.' },
         { speaker: 'JP\'s Mind', text: 'Nobody sees this part. They only see the finished site.' },
         { speaker: 'Narrator', text: 'He keeps typing.' },
@@ -609,6 +637,24 @@ export class ComeUpScene extends BaseChapterScene {
     // Phone — story first, then apps on revisit
     if (interactable.id === 'ch5_phone') {
       Analytics.trackInteraction(interactable.id);
+      // Jose closes his loop — the one who told JP not to disappear
+      // gets to see him show up somewhere better. First check only.
+      if (!this.joseTexted) {
+        this.joseTexted = true;
+        this.frozen = true;
+        this.dialogue.show([
+          { speaker: 'Narrator', text: 'One unread text. Jose.' },
+          { speaker: 'Jose', text: '"my mom needed a website for her cleaning business. googled it. YOUR name came up."' },
+          { speaker: 'Jose', text: '"you used to disappear on everybody. now i find you by searching. crazy."' },
+          { speaker: 'Jose', text: '"proud of you gang. for real."' },
+          { speaker: 'JP', text: '"Tell your mom I got her. Family rate."' },
+          { speaker: 'JP\'s Mind', text: 'Jose never stopped checking on me. Even when I gave him nothing back.' },
+        ], () => {
+          this.frozen = false;
+          this.showPhoneApps();
+        });
+        return;
+      }
       this.showPhoneApps();
       return;
     }
@@ -1016,6 +1062,134 @@ export class ComeUpScene extends BaseChapterScene {
       MoodSystem.changeMorale(10);
       this.frozen = false;
     });
+  }
+
+  private playClientTriage() {
+    this.frozen = true;
+    this.dialogue.show([
+      { speaker: 'Narrator', text: 'Three windows stay open on one tired screen.' },
+      { speaker: 'Paid Client', text: 'Checkout is broken. Customers cannot place an order.' },
+      { speaker: 'Prospect', text: 'Seen 11:42 PM.' },
+      { speaker: 'New Lead', text: 'I like it. Can you do it for less?' },
+      { speaker: 'JP\'s Mind', text: 'Fix what is paid, chase what might pay, or lower the number.' },
+      { speaker: 'JP\'s Mind', text: 'There is enough time for two. Not all three.' },
+    ], () => {
+      this.showWorkChoice('Paid checkout or silent prospect?', 'Fix checkout', 'Chase prospect', () => {
+        ChoiceLedger.record('ghost_chase', 'Moved on');
+        this.dialogue.show([
+          { speaker: 'Narrator', text: 'JP closes the prospect tab and traces the broken order button.' },
+          { speaker: 'Paid Client', text: 'Orders are coming through again. Thank you.' },
+          { speaker: 'Narrator', text: 'The prospect keeps watching every story and never replies.' },
+        ], () => this.playPricingDecision('client'));
+      }, () => {
+        ChoiceLedger.record('ghost_chase', 'Kept sending');
+        this.dialogue.show([
+          { speaker: 'JP', text: 'Following up in case this got buried.' },
+          { speaker: 'Narrator', text: 'Delivered. No answer.' },
+          { speaker: 'Paid Client', text: 'Any update? We are still losing orders.' },
+        ], () => this.playPricingDecision('prospect'));
+      });
+    });
+  }
+
+  private playPricingDecision(priority: 'client' | 'prospect') {
+    this.showWorkChoice('New lead wants the same work cheaper.', 'Hold price', 'Cut to close', () => {
+      ChoiceLedger.record('price_hold', 'Held the price');
+      this.dialogue.show([
+        { speaker: 'JP', text: 'That is the price for the scope.' },
+        { speaker: 'Narrator', text: 'The typing bubble appears, disappears, then never comes back.' },
+        { speaker: 'JP\'s Mind', text: priority === 'client'
+          ? 'One client stayed because the work came first.'
+          : 'I chased one maybe and let another maybe walk.' },
+        { speaker: 'Narrator', text: 'A clean no leaves the night quiet.' },
+      ], () => this.finishClientTriage());
+    }, () => {
+      ChoiceLedger.record('price_hold', 'Cut it to close');
+      this.dialogue.show([
+        { speaker: 'JP', text: 'I can make that work.' },
+        { speaker: 'New Lead', text: 'Perfect. One more thing — can you add booking too?' },
+        { speaker: 'Narrator', text: 'The price shrinks. The scope grows.' },
+        { speaker: 'JP\'s Mind', text: 'Back then, any yes felt safer than no client.' },
+      ], () => this.finishClientTriage());
+    });
+  }
+
+  private finishClientTriage() {
+    this.dialogue.show([
+      { speaker: 'Narrator', text: 'The code was not the hardest part.' },
+      { speaker: 'Narrator', text: 'The hard part was deciding what deserved the next hour.' },
+    ], () => {
+      this.frozen = false;
+      this.refreshObjectiveHint();
+    });
+  }
+
+  private showWorkChoice(
+    prompt: string,
+    leftLabel: string,
+    rightLabel: string,
+    onLeft: () => void,
+    onRight: () => void,
+  ) {
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+    const objects: Phaser.GameObjects.GameObject[] = [];
+    const add = <T extends Phaser.GameObjects.GameObject>(object: T): T => {
+      objects.push(object);
+      return object;
+    };
+
+    add(this.add.rectangle(cx, cy, GAME_WIDTH, 180, 0x070812, 0.94)
+      .setScrollFactor(0).setDepth(449).setStrokeStyle(2, 0x4a5872));
+    add(this.add.text(cx, cy - 54, prompt, {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '11px', color: '#f0c040',
+      align: 'center', wordWrap: { width: GAME_WIDTH - 180 },
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(451));
+    const leftBg = add(this.add.rectangle(cx - 150, cy + 6, 260, 48, 0x355d49)
+      .setScrollFactor(0).setDepth(450).setInteractive({ useHandCursor: true }));
+    add(this.add.text(cx - 150, cy + 6, leftLabel, {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(451));
+    const rightBg = add(this.add.rectangle(cx + 150, cy + 6, 260, 48, 0x4b5362)
+      .setScrollFactor(0).setDepth(450).setInteractive({ useHandCursor: true }));
+    add(this.add.text(cx + 150, cy + 6, rightLabel, {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(451));
+    add(this.add.text(cx, cy + 58, 'SPACE / ← left     N / → right', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#737b91',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(451));
+
+    const keyboard = this.input.keyboard!;
+    const spaceKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    const nKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.N);
+    const leftKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
+    const rightKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
+    let resolved = false;
+    const cleanup = () => {
+      objects.forEach(object => object.destroy());
+      spaceKey.off('down', chooseLeft); nKey.off('down', chooseRight);
+      leftKey.off('down', chooseLeft); rightKey.off('down', chooseRight);
+    };
+    const chooseLeft = () => {
+      if (resolved) return;
+      resolved = true;
+      cleanup();
+      SoundEffects.playConfirm();
+      onLeft();
+    };
+    const chooseRight = () => {
+      if (resolved) return;
+      resolved = true;
+      cleanup();
+      SoundEffects.playConfirm();
+      onRight();
+    };
+    leftBg.on('pointerdown', chooseLeft);
+    rightBg.on('pointerdown', chooseRight);
+    spaceKey.on('down', chooseLeft);
+    nKey.on('down', chooseRight);
+    leftKey.on('down', chooseLeft);
+    rightKey.on('down', chooseRight);
   }
 
   private playTypingMinigame() {

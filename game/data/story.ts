@@ -614,22 +614,24 @@ export const chapter5NPCs: NPCData[] = [
     y: 4,
     sprite: 'npc_client',
     dialogue: [
-      { speaker: 'Prospect', text: 'So you can really build me a website?' },
+      // The Meeting Guy — a composite everyone who's freelanced has met.
+      // Loves the idea. Loves the energy. Never, ever signs.
+      { speaker: 'Gerald', text: 'JP! My guy! I\'ve been telling EVERYBODY about this website idea.' },
+      { speaker: 'JP', text: 'I sent the mockup two weeks ago, Gerald.' },
+      { speaker: 'Gerald', text: 'And it\'s FIRE. Let\'s hop on a call Thursday to align on next steps.' },
       { speaker: 'JP', text: '', choices: [
-        { text: '"Yeah. I can do it."', next: [
-          { speaker: 'Prospect', text: 'You got a portfolio? Something I can look at?' },
-          { speaker: 'JP', text: 'Not much yet. Let me show you what I can make.' },
-          { speaker: 'Prospect', text: 'Send it over. I\'ll call you.' },
+        { text: '"We\'ve had four calls."', next: [
+          { speaker: 'Gerald', text: 'And every one of them was PRODUCTIVE. That\'s momentum, baby.' },
+          { speaker: 'JP\'s Mind', text: 'Four calls. Zero dollars. Infinite momentum.' },
         ]},
-        { text: '"I\'m still learning. But I\'ll make it work."', next: [
-          { speaker: 'Prospect', text: 'At least you\'re honest. Send me something.' },
-          { speaker: 'JP', text: 'Tonight.' },
+        { text: '"Thursday works."', next: [
+          { speaker: 'Gerald', text: 'Perfect. I just need to loop in my cousin first. He knows computers.' },
+          { speaker: 'JP\'s Mind', text: 'The cousin. There\'s always a cousin.' },
         ]},
       ]},
-      { speaker: 'Narrator', text: 'JP sends the mockup that night. Seen.' },
-      { speaker: 'Narrator', text: 'No call the next day. Or the day after.' },
-      { speaker: 'JP\'s Mind', text: 'He still watches every story.' },
-      { speaker: 'JP\'s Mind', text: 'Alright. Next.' },
+      { speaker: 'Narrator', text: 'Gerald will circle back. Gerald is always circling.' },
+      { speaker: 'JP\'s Mind', text: 'He still watches every story. Still fire emojis. Still no invoice signed.' },
+      { speaker: 'JP\'s Mind', text: 'Meetings are not money. Next.' },
     ],
   },
   {
@@ -709,8 +711,13 @@ export const chapter5NPCs: NPCData[] = [
     y: 8,
     sprite: 'npc_generic',
     dialogue: [
-      { speaker: 'Vacaville Appliance', text: 'The site is delivered. There are still things we need to sort out.' },
-      { speaker: 'JP', text: 'Send me the list. I\'ll tell you what is in scope and what is next.' },
+      // The scope-creeper. Good client, real money — and every delivered
+      // feature reveals three more he "assumed was included."
+      { speaker: 'Vacaville Appliance', text: 'Site looks great. Real quick though — can customers schedule repairs on it?' },
+      { speaker: 'JP', text: 'That wasn\'t in the scope we agreed on.' },
+      { speaker: 'Vacaville Appliance', text: 'Sure, sure. But it\'s a small thing, right? While you\'re in there.' },
+      { speaker: 'JP\'s Mind', text: '"While you\'re in there." The four most expensive words in this business.' },
+      { speaker: 'JP', text: 'Send me the list. I\'ll tell you what\'s in scope and what\'s next.' },
       { speaker: 'JP\'s Mind', text: 'Real client work is not a victory screen. It keeps asking questions.' },
     ],
   },

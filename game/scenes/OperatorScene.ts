@@ -17,6 +17,7 @@ export class OperatorScene extends BaseChapterScene {
   private npcsTalkedTo = new Set<string>();
   private dashboardDone = false;
   private pitchDone = false;
+  private vacavilleTexted = false;
   private clockText?: Phaser.GameObjects.Text;
   private dayNightOverlay?: Phaser.GameObjects.Rectangle;
   private hiddenRoomFound = false;
@@ -531,6 +532,32 @@ export class OperatorScene extends BaseChapterScene {
       return;
     }
 
+    // Dee — the client with her own voice. She remembers how you price.
+    // Player's Come Up pricing choice echoes here, word for word.
+    if (npcId === 'ch6_client2') {
+      const priced = ChoiceLedger.get('price_hold');
+      const deeLines: DialogueLine[] = [
+        { speaker: 'Dee', text: 'We need the full stack. Website, CRM, AI receptionist, booking system.' },
+        { speaker: 'JP', text: 'End of week.' },
+        { speaker: 'Dee', text: 'Our last vendor quoted eight weeks.' },
+        { speaker: 'JP', text: 'I\'m not your last vendor.' },
+        ...(priced === 'Cut it to close'
+          ? [
+              { speaker: 'Dee', text: 'And JP — I saw what you charged the print shop back then. That number was wrong.' },
+              { speaker: 'Dee', text: 'Bill me what it\'s worth. I don\'t hire people who don\'t value themselves.' },
+              { speaker: 'JP\'s Mind', text: 'She\'s right. She usually is.' },
+            ]
+          : priced === 'Held the price'
+            ? [
+                { speaker: 'Dee', text: 'And I heard you don\'t cut your number. Good. Neither do I.' },
+                { speaker: 'JP\'s Mind', text: 'Real recognize real.' },
+              ]
+            : []),
+      ];
+      this.dialogue.show(deeLines);
+      return;
+    }
+
     // Malachi impressed if you\'ve talked to 5+ people
     if (npcId === 'ch6_malachi' && this.npcsTalkedTo.size >= 5) {
       const chapterDialogue = this.getChapterDialogue();
@@ -737,8 +764,17 @@ export class OperatorScene extends BaseChapterScene {
     if (interactable.id === 'ch6_phone') {
       Analytics.trackInteraction(interactable.id);
       this.frozen = true;
+      // The scope-creeper never stops creeping — first phone check only
+      const vacavilleReturn: DialogueLine[] = this.vacavilleTexted ? [] : [
+        { speaker: 'Narrator', text: 'Text from Vacaville Appliance.' },
+        { speaker: 'Vacaville Appliance', text: 'Hey! Site\'s crushing it. Real quick — can we add financing applications? Small thing probably.' },
+        { speaker: 'JP\'s Mind', text: 'Two years later. Still "one small thing."' },
+        { speaker: 'JP\'s Mind', text: 'Good client though. Scope doc goes out tomorrow.' },
+      ];
+      this.vacavilleTexted = true;
       this.dialogue.show([
         { speaker: 'Narrator', text: 'JP pulls out his phone. Battery at 87%. 14 notifications.' },
+        ...vacavilleReturn,
         { speaker: 'JP\'s Mind', text: 'Let me check on a few things.' },
       ], () => {
         this.showPhoneApps();
