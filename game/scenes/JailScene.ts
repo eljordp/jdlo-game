@@ -71,6 +71,12 @@ export class JailScene extends BaseChapterScene {
     this.jailGateVisuals.clear();
     super.create();
 
+    // The facility is already one of the largest maps in the game; the old
+    // wide camera made six cells, intake, yard, and chapel read like one small
+    // board. A closer jail-specific lens makes each corridor a place the
+    // player has to move through and keeps later areas unknown from the bunk.
+    this.cameras.main.setZoom(1.32);
+
     // The shared house-sized props overwhelm a jail cell. Keep their
     // interactions/markers, but let the jail-specific furniture carry the art.
     for (const visual of this.interactions.getVisuals()) {
@@ -98,7 +104,8 @@ export class JailScene extends BaseChapterScene {
     // and release path even if a moving NPC temporarily occupies a corridor.
     this.openJailRoutes();
     this.createJailIdentity();
-    this.addNavArrow(4, 9, 'Cell door');
+    this.openStartingCellRoute();
+    this.addNavArrow(4, 9, 'COMMON AREA');
     this.addNavArrow(17, 17, 'Yard');
     this.addNavArrow(15, 26, 'Chapel');
 
@@ -113,15 +120,24 @@ export class JailScene extends BaseChapterScene {
   }
 
   private openJailRoutes() {
-    // Keep the marked security gates closed until the player uses them. Only
-    // the landing tiles and connecting corridors are forced open.
+    // Movement to the common area begins on a remote buzz, as it does in a
+    // housing unit. Yard and chapel remain controlled interaction gates.
     const guaranteedOpenTiles = [
+      '4,9',
       '4,10', '4,11', '4,12',
       '17,18',
       '15,27',
       '19,30', '20,30',
     ];
     guaranteedOpenTiles.forEach((tile) => this.collisionTiles.delete(tile));
+  }
+
+  private openStartingCellRoute() {
+    const gateVisual = this.jailGateVisuals.get('4,9');
+    if (gateVisual) {
+      gateVisual.x -= SCALED_TILE * 0.82;
+      gateVisual.setAlpha(0.18);
+    }
   }
 
   private createJailIdentity() {
@@ -783,9 +799,9 @@ export class JailScene extends BaseChapterScene {
     GameIntelligence.onInteracted(interactable.id);
 
     if (interactable.id === 'ch3_cell_door') {
-      this.openGate('4,9', 4, 12, [
-        { speaker: 'Narrator', text: 'BUZZ.' },
-        { speaker: 'Guard', text: 'Door is open. Keep moving.' },
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'The lock buzzed before count cleared.' },
+        { speaker: 'Guard', text: 'Common area. Keep moving.' },
       ]);
       return;
     }

@@ -512,9 +512,13 @@ export class MoodSystem {
   // ── Cleanup ────────────────────────────────────────────────────
 
   private static cleanupEffects(): void {
+    // A run can be reset from Menu after the previous scene has already torn
+    // its camera down. Keep cleanup idempotent across that handoff.
+    const camera = this.activeScene?.cameras?.main;
+
     // Reset camera wobble
-    if (this.activeScene) {
-      this.activeScene.cameras.main.setFollowOffset(0, 0);
+    if (camera) {
+      camera.setFollowOffset(0, 0);
     }
 
     // Destroy glow
@@ -546,9 +550,9 @@ export class MoodSystem {
 
     // Reset drunk wobble
     this.drunkWobbleAngle = 0;
-    if (this.activeScene) {
-      this.activeScene.cameras.main.setRotation(0);
-      this.activeScene.cameras.main.setZoom(this.baseCamZoom);
+    if (camera) {
+      camera.setRotation(0);
+      camera.setZoom(this.baseCamZoom);
     }
 
     // Reset player origin if vibing

@@ -3,6 +3,7 @@ import { GameSettings } from './GameSettings';
 export class SoundEffects {
   private static ctx: AudioContext | null = null;
   private static masterGain: GainNode | null = null;
+  private static compressor: DynamicsCompressorNode | null = null;
 
   private static getCtx(): AudioContext {
     if (!this.ctx) this.ctx = new AudioContext();
@@ -14,15 +15,31 @@ export class SoundEffects {
     if (!this.masterGain) {
       this.masterGain = ctx.createGain();
       this.masterGain.gain.value = GameSettings.sfxVolume;
-      this.masterGain.connect(ctx.destination);
+      const compressor = ctx.createDynamicsCompressor();
+      compressor.threshold.value = -18;
+      compressor.knee.value = 12;
+      compressor.ratio.value = 4;
+      compressor.attack.value = 0.006;
+      compressor.release.value = 0.18;
+      this.masterGain.connect(compressor);
+      compressor.connect(ctx.destination);
+      this.compressor = compressor;
     }
     return this.masterGain;
+  }
+
+  /** Resume Web Audio from a user gesture on browsers that block autoplay. */
+  static unlock(): void {
+    const ctx = this.getCtx();
+    if (ctx.state === 'suspended') void ctx.resume();
   }
 
   static setVolume(volume: number): void {
     const clamped = Math.max(0, Math.min(1, volume));
     GameSettings.setNumber('sfxVolume', clamped);
-    if (this.masterGain) this.masterGain.gain.value = clamped;
+    if (this.masterGain && this.ctx) {
+      this.masterGain.gain.setTargetAtTime(clamped, this.ctx.currentTime, 0.02);
+    }
   }
 
   /** Short high beep for menu selection */

@@ -615,13 +615,13 @@ const TRACKS: Record<string, TrackDef> = {
     ],
   },
 
-  // ── Vegas: glossy club pulse with a sunrise comedown in the harmony. ──
+  // ── Vegas: original 126-BPM tech-house pulse. No licensed recording. ──
   'vegas': {
     layers: [
       {
         notes: ['A1', 'A1', 'R', 'A1', 'C2', 'C2', 'R', 'E2',
                 'A1', 'A1', 'R', 'G2', 'E2', 'E2', 'R', 'G2'],
-        bpm: 124,
+        bpm: 126,
         gain: 0.018,
         wave: 'sine',
         filterFreq: 260,
@@ -632,7 +632,7 @@ const TRACKS: Record<string, TrackDef> = {
       {
         notes: ['A3', 'R', 'C4', 'R', 'E4', 'R', 'G4', 'R',
                 'A3', 'R', 'E4', 'R', 'D4', 'R', 'C4', 'R'],
-        bpm: 124,
+        bpm: 126,
         gain: 0.006,
         wave: 'sawtooth',
         filterFreq: 1150,
@@ -644,7 +644,7 @@ const TRACKS: Record<string, TrackDef> = {
       {
         notes: ['R', 'A5', 'R', 'R', 'R', 'E5', 'R', 'R',
                 'R', 'G5', 'R', 'R', 'R', 'E5', 'R', 'R'],
-        bpm: 124,
+        bpm: 126,
         gain: 0.003,
         wave: 'square',
         filterFreq: 2300,
@@ -721,6 +721,7 @@ type ActiveLayer = {
   oscillator: OscillatorNode;
   gain: GainNode;
   filter: BiquadFilterNode;
+  panner: StereoPannerNode;
   interval: ReturnType<typeof setInterval>;
   def: LayerDef;
 };
@@ -734,6 +735,10 @@ export class MusicSystem {
   private static muted = false;
   private static volume = 1;
   private static lastTrack = '';
+  private static masterGain: GainNode | null = null;
+  private static compressor: DynamicsCompressorNode | null = null;
+  private static rhythmIntervals: Array<ReturnType<typeof setInterval>> = [];
+  private static houseHatBuffer: AudioBuffer | null = null;
   // Beach-specific nodes
   private static beachNoise: AudioBufferSourceNode | null = null;
   private static beachGain: GainNode | null = null;
@@ -748,6 +753,31 @@ export class MusicSystem {
     if (!this.ctx) this.ctx = new AudioContext();
     if (this.ctx.state === 'suspended') this.ctx.resume();
     return this.ctx;
+  }
+
+  /** Resume Web Audio from a real user gesture (required by iOS/Safari). */
+  static unlock(): void {
+    const ctx = this.getCtx();
+    if (ctx.state === 'suspended') void ctx.resume();
+  }
+
+  /** One mastered output path keeps layered procedural tracks coherent. */
+  private static getOutput(ctx: AudioContext): GainNode {
+    if (!this.masterGain || !this.compressor) {
+      const master = ctx.createGain();
+      const compressor = ctx.createDynamicsCompressor();
+      master.gain.value = 0.92;
+      compressor.threshold.value = -22;
+      compressor.knee.value = 16;
+      compressor.ratio.value = 3.2;
+      compressor.attack.value = 0.012;
+      compressor.release.value = 0.28;
+      master.connect(compressor);
+      compressor.connect(ctx.destination);
+      this.masterGain = master;
+      this.compressor = compressor;
+    }
+    return this.masterGain;
   }
 
   // ── Play ────────────────────────────────────────────────────────────────
@@ -771,6 +801,9 @@ export class MusicSystem {
     // Santa Barbara gets wave noise underneath its oscillator layers
     if (trackName === 'santa-barbara') {
       this.startBeachNoise(ctx);
+    }
+    if (trackName === 'vegas') {
+      this.startHouseRhythm(ctx);
     }
 
     // Start each layer
@@ -803,6 +836,11 @@ export class MusicSystem {
       this.beachGain.gain.setValueAtTime(Math.max(this.beachGain.gain.value, 0.0001), now);
       this.beachGain.gain.exponentialRampToValueAtTime(0.0001, now + fadeSeconds);
     }
+    if (this.ambientGain) {
+      this.ambientGain.gain.cancelScheduledValues(now);
+      this.ambientGain.gain.setValueAtTime(Math.max(this.ambientGain.gain.value, 0.0001), now);
+      this.ambientGain.gain.exponentialRampToValueAtTime(0.0001, now + fadeSeconds);
+    }
 
     window.setTimeout(() => {
       if (this.currentTrack !== `transition:${fromTrack}->${trackName}`) return;
@@ -827,6 +865,12 @@ export class MusicSystem {
     const gain = ctx.createGain();
     gain.gain.value = 0; // start silent, first note will fade in
 
+    // Small alternating stereo positions create width without making the
+    // handheld-style melodies feel detached from the screen.
+    const panner = ctx.createStereoPanner();
+    const panPositions = [-0.18, 0.18, 0];
+    panner.pan.value = panPositions[this.activeLayers.length % panPositions.length];
+
     // Oscillator
     const osc = ctx.createOscillator();
     osc.type = def.wave;
@@ -835,7 +879,8 @@ export class MusicSystem {
 
     osc.connect(filter);
     filter.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(panner);
+    panner.connect(this.getOutput(ctx));
     osc.start();
 
     // Note sequencer
@@ -856,7 +901,10 @@ export class MusicSystem {
       } else {
         // Note — glide to frequency, fade in
         osc.frequency.setTargetAtTime(freq, now, attack * 0.5);
-        gain.gain.setTargetAtTime(def.gain * this.volume, now, attack * 0.3);
+        // Slight velocity variation stops long procedural loops from sounding
+        // like an unchanging test tone while preserving the written melody.
+        const velocity = 0.93 + Math.random() * 0.09;
+        gain.gain.setTargetAtTime(def.gain * this.volume * velocity, now, attack * 0.3);
       }
     };
 
@@ -865,7 +913,7 @@ export class MusicSystem {
 
     const interval = setInterval(tick, msPerBeat);
 
-    this.activeLayers.push({ oscillator: osc, gain, filter, interval, def });
+    this.activeLayers.push({ oscillator: osc, gain, filter, panner, interval, def });
   }
 
   // ── Beach wave noise (filtered white noise with volume swells) ──────────
@@ -898,7 +946,7 @@ export class MusicSystem {
     noise.connect(filter);
     filter.connect(smoothFilter);
     smoothFilter.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(this.getOutput(ctx));
     noise.start();
 
     this.beachNoise = noise;
@@ -945,7 +993,7 @@ export class MusicSystem {
     gain.gain.value = def.gain * this.volume;
     source.connect(filter);
     filter.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(this.getOutput(ctx));
     source.start();
 
     this.ambientNoise = source;
@@ -954,15 +1002,74 @@ export class MusicSystem {
     this.ambientBaseGain = def.gain;
   }
 
+  /** Original club rhythm: four-on-the-floor kick with offbeat hats. */
+  private static startHouseRhythm(ctx: AudioContext): void {
+    const output = this.getOutput(ctx);
+    const beatMs = (60 / 126) * 1000;
+
+    if (!this.houseHatBuffer || this.houseHatBuffer.sampleRate !== ctx.sampleRate) {
+      const buffer = ctx.createBuffer(1, Math.floor(ctx.sampleRate * 0.08), ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / data.length);
+      this.houseHatBuffer = buffer;
+    }
+
+    const kick = () => {
+      if (this.currentTrack !== 'vegas') return;
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(138, now);
+      osc.frequency.exponentialRampToValueAtTime(46, now + 0.13);
+      gain.gain.setValueAtTime(0.052 * this.volume, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+      osc.connect(gain);
+      gain.connect(output);
+      osc.start(now);
+      osc.stop(now + 0.21);
+    };
+
+    const hat = () => {
+      if (this.currentTrack !== 'vegas' || !this.houseHatBuffer) return;
+      const now = ctx.currentTime;
+      const source = ctx.createBufferSource();
+      const filter = ctx.createBiquadFilter();
+      const gain = ctx.createGain();
+      source.buffer = this.houseHatBuffer;
+      filter.type = 'highpass';
+      filter.frequency.value = 5200;
+      gain.gain.setValueAtTime(0.011 * this.volume, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.075);
+      source.connect(filter);
+      filter.connect(gain);
+      gain.connect(output);
+      source.start(now);
+      source.stop(now + 0.08);
+    };
+
+    let halfStep = 0;
+    const tick = () => {
+      if (halfStep % 2 === 0) kick();
+      else hat();
+      halfStep++;
+    };
+    tick();
+    this.rhythmIntervals.push(setInterval(tick, beatMs / 2));
+  }
+
   // ── Stop ────────────────────────────────────────────────────────────────
 
   static stop(): void {
+    for (const interval of this.rhythmIntervals) clearInterval(interval);
+    this.rhythmIntervals = [];
     // Stop all oscillator layers
     for (const layer of this.activeLayers) {
       clearInterval(layer.interval);
       try { layer.oscillator.stop(); } catch { /* already stopped */ }
       layer.gain.disconnect();
       layer.filter.disconnect();
+      layer.panner.disconnect();
     }
     this.activeLayers = [];
 
@@ -1004,11 +1111,19 @@ export class MusicSystem {
 
   static setVolume(vol: number): void {
     this.volume = Math.max(0, Math.min(1, vol));
+    const ctx = this.ctx;
     for (const layer of this.activeLayers) {
-      layer.gain.gain.value = layer.def.gain * this.volume;
+      if (ctx) layer.gain.gain.setTargetAtTime(layer.def.gain * this.volume, ctx.currentTime, 0.025);
+      else layer.gain.gain.value = layer.def.gain * this.volume;
     }
-    if (this.beachGain) this.beachGain.gain.value = 0.018 * this.volume;
-    if (this.ambientGain) this.ambientGain.gain.value = this.ambientBaseGain * this.volume;
+    if (this.beachGain) {
+      if (ctx) this.beachGain.gain.setTargetAtTime(0.018 * this.volume, ctx.currentTime, 0.025);
+      else this.beachGain.gain.value = 0.018 * this.volume;
+    }
+    if (this.ambientGain) {
+      if (ctx) this.ambientGain.gain.setTargetAtTime(this.ambientBaseGain * this.volume, ctx.currentTime, 0.025);
+      else this.ambientGain.gain.value = this.ambientBaseGain * this.volume;
+    }
   }
 
   static toggleMute(): boolean {

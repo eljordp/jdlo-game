@@ -22,6 +22,7 @@ import { HomeReturnScene } from "@/game/scenes/HomeReturnScene";
 import { TransitionScene } from "@/game/scenes/TransitionScene";
 import { GAME_WIDTH, GAME_HEIGHT } from "@/game/config";
 import { MusicSystem } from "@/game/systems/MusicSystem";
+import { SoundEffects } from "@/game/systems/SoundEffects";
 import DirectorPanel from "@/components/DirectorPanel";
 
 const SPEEDS = [
@@ -50,6 +51,8 @@ export const virtualInput = {
   navRightJustPressed: false,
   gameSpeed: 1,
 };
+
+const directionReleaseTimers: Partial<Record<'up' | 'down' | 'left' | 'right', ReturnType<typeof setTimeout>>> = {};
 
 // Kept separate from touch input so releasing a stick cannot cancel a finger
 // that is still holding the on-screen D-pad.
@@ -159,7 +162,7 @@ export default function GameCanvas() {
       setIsMobile(
         "ontouchstart" in window ||
         navigator.maxTouchPoints > 0 ||
-        window.innerWidth < 768
+        window.innerWidth < 900
       );
     };
     checkMobile();
@@ -325,13 +328,20 @@ export default function GameCanvas() {
 
   // D-pad handlers
   const pressDir = useCallback((dir: "up" | "down" | "left" | "right") => {
+    const pendingRelease = directionReleaseTimers[dir];
+    if (pendingRelease) clearTimeout(pendingRelease);
     virtualInput[dir] = true;
     const pulse = `${dir === "up" ? "navUp" : dir === "down" ? "navDown" : dir === "left" ? "navLeft" : "navRight"}JustPressed` as
       'navUpJustPressed' | 'navDownJustPressed' | 'navLeftJustPressed' | 'navRightJustPressed';
     virtualInput[pulse] = true;
   }, []);
   const releaseDir = useCallback((dir: "up" | "down" | "left" | "right") => {
-    virtualInput[dir] = false;
+    // Preserve a short pulse for quick taps so one touch cannot begin and end
+    // between Phaser frames. Holding still behaves continuously.
+    directionReleaseTimers[dir] = setTimeout(() => {
+      virtualInput[dir] = false;
+      delete directionReleaseTimers[dir];
+    }, 70);
   }, []);
   const pressAction = useCallback(() => {
     virtualInput.action = true;
@@ -350,6 +360,10 @@ export default function GameCanvas() {
   return (
     <div
       className="relative w-screen h-screen bg-black overflow-hidden select-none touch-none"
+      onPointerDown={() => {
+        MusicSystem.unlock();
+        SoundEffects.unlock();
+      }}
       onClick={() => {
         // Re-focus canvas so Phaser keyboard input works after clicking HTML buttons
         const canvas = containerRef.current?.querySelector('canvas');
@@ -378,10 +392,10 @@ export default function GameCanvas() {
         </button>
       </div>
 
-      <DirectorPanel gameRef={gameRef} onSpeedChange={applyDirectorSpeed} />
+      {!isMobile && <DirectorPanel gameRef={gameRef} onSpeedChange={applyDirectorSpeed} />}
 
-      {/* Bottom right — phone, inventory, emote buttons (always visible) */}
-      <div className="absolute bottom-3 right-3 z-20 flex gap-2">
+      {/* Desktop shortcuts. Phone gets larger dedicated touch controls below. */}
+      {!isMobile && <div className="absolute bottom-3 right-3 z-20 flex gap-2">
         <button
           onClick={() => {
             virtualInput.emoteJustPressed = true;
@@ -412,7 +426,7 @@ export default function GameCanvas() {
         >
           📱
         </button>
-      </div>
+      </div>}
 
       {/* Controls hint — desktop only */}
       {!isMobile && (
@@ -455,6 +469,7 @@ export default function GameCanvas() {
               />
               {/* Up */}
               <button
+                aria-label="Move up"
                 className="absolute flex items-center justify-center rounded-t-xl active:brightness-150 transition-all"
                 style={{
                   width: 60, height: 60,
@@ -462,14 +477,16 @@ export default function GameCanvas() {
                   backgroundColor: '#333333',
                   border: '2px solid #444444',
                 }}
-                onTouchStart={(e) => { e.preventDefault(); pressDir("up"); }}
-                onTouchEnd={() => releaseDir("up")}
-                onTouchCancel={() => releaseDir("up")}
+                onPointerDown={(e) => { e.preventDefault(); pressDir("up"); }}
+                onPointerUp={() => releaseDir("up")}
+                onPointerCancel={() => releaseDir("up")}
+                onPointerLeave={() => releaseDir("up")}
               >
                 <span className="text-white text-xl font-bold" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>&#9650;</span>
               </button>
               {/* Down */}
               <button
+                aria-label="Move down"
                 className="absolute flex items-center justify-center rounded-b-xl active:brightness-150 transition-all"
                 style={{
                   width: 60, height: 60,
@@ -477,14 +494,16 @@ export default function GameCanvas() {
                   backgroundColor: '#333333',
                   border: '2px solid #444444',
                 }}
-                onTouchStart={(e) => { e.preventDefault(); pressDir("down"); }}
-                onTouchEnd={() => releaseDir("down")}
-                onTouchCancel={() => releaseDir("down")}
+                onPointerDown={(e) => { e.preventDefault(); pressDir("down"); }}
+                onPointerUp={() => releaseDir("down")}
+                onPointerCancel={() => releaseDir("down")}
+                onPointerLeave={() => releaseDir("down")}
               >
                 <span className="text-white text-xl font-bold" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>&#9660;</span>
               </button>
               {/* Left */}
               <button
+                aria-label="Move left"
                 className="absolute flex items-center justify-center rounded-l-xl active:brightness-150 transition-all"
                 style={{
                   width: 60, height: 60,
@@ -492,14 +511,16 @@ export default function GameCanvas() {
                   backgroundColor: '#333333',
                   border: '2px solid #444444',
                 }}
-                onTouchStart={(e) => { e.preventDefault(); pressDir("left"); }}
-                onTouchEnd={() => releaseDir("left")}
-                onTouchCancel={() => releaseDir("left")}
+                onPointerDown={(e) => { e.preventDefault(); pressDir("left"); }}
+                onPointerUp={() => releaseDir("left")}
+                onPointerCancel={() => releaseDir("left")}
+                onPointerLeave={() => releaseDir("left")}
               >
                 <span className="text-white text-xl font-bold" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>&#9664;</span>
               </button>
               {/* Right */}
               <button
+                aria-label="Move right"
                 className="absolute flex items-center justify-center rounded-r-xl active:brightness-150 transition-all"
                 style={{
                   width: 60, height: 60,
@@ -507,9 +528,10 @@ export default function GameCanvas() {
                   backgroundColor: '#333333',
                   border: '2px solid #444444',
                 }}
-                onTouchStart={(e) => { e.preventDefault(); pressDir("right"); }}
-                onTouchEnd={() => releaseDir("right")}
-                onTouchCancel={() => releaseDir("right")}
+                onPointerDown={(e) => { e.preventDefault(); pressDir("right"); }}
+                onPointerUp={() => releaseDir("right")}
+                onPointerCancel={() => releaseDir("right")}
+                onPointerLeave={() => releaseDir("right")}
               >
                 <span className="text-white text-xl font-bold" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>&#9654;</span>
               </button>
@@ -518,6 +540,7 @@ export default function GameCanvas() {
 
           {/* A button — bottom right, large green circle (interact / advance dialogue) */}
           <button
+            aria-label="Interact"
             className="absolute z-30 flex items-center justify-center rounded-full active:brightness-150 transition-all"
             style={{
               width: 70, height: 70,
@@ -526,15 +549,17 @@ export default function GameCanvas() {
               border: '3px solid rgba(34, 204, 68, 0.6)',
               boxShadow: '0 2px 8px rgba(34, 204, 68, 0.3), inset 0 -2px 4px rgba(0,0,0,0.3)',
             }}
-            onTouchStart={(e) => { e.preventDefault(); pressAction(); }}
-            onTouchEnd={() => releaseAction()}
-            onTouchCancel={() => releaseAction()}
+            onPointerDown={(e) => { e.preventDefault(); pressAction(); }}
+            onPointerUp={() => releaseAction()}
+            onPointerCancel={() => releaseAction()}
+            onPointerLeave={() => releaseAction()}
           >
             <span className="text-white font-mono font-bold text-lg" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>A</span>
           </button>
 
           {/* B button — above-left of A, smaller red circle (cancel / back) */}
           <button
+            aria-label="Back"
             className="absolute z-30 flex items-center justify-center rounded-full active:brightness-150 transition-all"
             style={{
               width: 52, height: 52,
@@ -543,13 +568,14 @@ export default function GameCanvas() {
               border: '3px solid rgba(204, 34, 68, 0.6)',
               boxShadow: '0 2px 8px rgba(204, 34, 68, 0.3), inset 0 -2px 4px rgba(0,0,0,0.3)',
             }}
-            onTouchStart={(e) => { e.preventDefault(); pressCancel(); }}
+            onPointerDown={(e) => { e.preventDefault(); pressCancel(); }}
           >
             <span className="text-white font-mono font-bold text-sm" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>B</span>
           </button>
 
           {/* Phone button — top right area */}
           <button
+            aria-label="Open phone"
             className="absolute z-30 flex items-center justify-center rounded-lg active:brightness-150 transition-all"
             style={{
               width: 42, height: 42,
@@ -557,7 +583,7 @@ export default function GameCanvas() {
               backgroundColor: 'rgba(255,255,255,0.08)',
               border: '2px solid rgba(255,255,255,0.15)',
             }}
-            onTouchStart={(e) => {
+            onPointerDown={(e) => {
               e.preventDefault();
               virtualInput.phoneJustPressed = true;
               setTimeout(() => { virtualInput.phoneJustPressed = false; }, 100);
@@ -566,8 +592,28 @@ export default function GameCanvas() {
             <span className="text-white/60 text-lg">&#128241;</span>
           </button>
 
+          {/* Bag stays reachable on phones without crowding the A/B cluster. */}
+          <button
+            aria-label="Open bag"
+            className="absolute z-30 flex items-center justify-center rounded-lg active:brightness-150 transition-all"
+            style={{
+              width: 42, height: 42,
+              bottom: 148, right: 72,
+              backgroundColor: 'rgba(255,255,255,0.08)',
+              border: '2px solid rgba(255,255,255,0.15)',
+            }}
+            onPointerDown={(e) => {
+              e.preventDefault();
+              virtualInput.inventoryJustPressed = true;
+              setTimeout(() => { virtualInput.inventoryJustPressed = false; }, 100);
+            }}
+          >
+            <span className="text-white/60 text-lg">&#127890;</span>
+          </button>
+
           {/* Emote button — above phone */}
           <button
+            aria-label="Emote"
             className="absolute z-30 flex items-center justify-center rounded-lg active:brightness-150 transition-all"
             style={{
               width: 42, height: 42,
@@ -575,7 +621,7 @@ export default function GameCanvas() {
               backgroundColor: 'rgba(255,255,255,0.08)',
               border: '2px solid rgba(255,255,255,0.15)',
             }}
-            onTouchStart={(e) => {
+            onPointerDown={(e) => {
               e.preventDefault();
               virtualInput.emoteJustPressed = true;
               setTimeout(() => { virtualInput.emoteJustPressed = false; }, 100);
@@ -586,6 +632,7 @@ export default function GameCanvas() {
 
           {/* Pause/menu button — reachable without a keyboard */}
           <button
+            aria-label="Open menu"
             className="absolute z-30 flex items-center justify-center rounded-lg active:brightness-150 transition-all"
             style={{
               width: 54, height: 34,
@@ -593,9 +640,10 @@ export default function GameCanvas() {
               backgroundColor: 'rgba(255,255,255,0.08)',
               border: '2px solid rgba(255,255,255,0.15)',
             }}
-            onTouchStart={(e) => {
+            onPointerDown={(e) => {
               e.preventDefault();
               virtualInput.menuJustPressed = true;
+              setTimeout(() => { virtualInput.menuJustPressed = false; }, 100);
             }}
           >
             <span className="text-white/60 font-mono text-[9px]">MENU</span>

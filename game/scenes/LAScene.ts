@@ -340,10 +340,16 @@ export class LAScene extends Phaser.Scene {
           this.addObj(this.add.rectangle(px, GAME_HEIGHT - 345, 30, 6, 0x0a0a16));
         }
 
-        // Road — dark band at bottom
+        // Road — deep foreground band. The old 100px strip made the C8 read
+        // like a toy on the bottom edge instead of the subject of the shot.
         this.addObj(
-          this.add.rectangle(cx, GAME_HEIGHT - 60, GAME_WIDTH, 100, 0x181820)
+          this.add.rectangle(cx, GAME_HEIGHT - 72, GAME_WIDTH, 145, 0x181820)
         );
+        this.addObj(this.add.rectangle(cx, GAME_HEIGHT - 138, GAME_WIDTH, 4, 0x31313c));
+        this.addObj(this.add.rectangle(cx, GAME_HEIGHT - 10, GAME_WIDTH, 18, 0x0c0c12).setDepth(4));
+        for (let x = 20; x < GAME_WIDTH; x += 70) {
+          this.addObj(this.add.rectangle(x, GAME_HEIGHT - 14, 36, 4, 0x50505a).setDepth(5));
+        }
 
         // Road line dashes scrolling underneath the car
         for (let x = 0; x < GAME_WIDTH + 80; x += 80) {
@@ -355,6 +361,45 @@ export class LAScene extends Phaser.Scene {
             x: x - GAME_WIDTH - 80,
             duration: 4000,
             repeat: -1,
+            ease: 'Linear',
+          });
+        }
+
+        // Freeway sign establishes place at a glance and moves with the road.
+        const signPost = this.addObj(this.add.rectangle(180, GAME_HEIGHT - 210, 7, 130, 0x424750).setDepth(1));
+        const freewaySign = this.addObj(this.add.rectangle(230, GAME_HEIGHT - 260, 170, 72, 0x174b35)
+          .setStrokeStyle(4, 0xe9eee8).setDepth(2));
+        const freewayText = this.addObj(this.add.text(230, GAME_HEIGHT - 260, 'DTLA  2 MI\n110 NORTH', {
+          fontFamily: 'monospace', fontSize: '13px', color: '#ffffff', align: 'center',
+        }).setOrigin(0.5).setDepth(3));
+        this.addTween({
+          targets: [signPost, freewaySign, freewayText],
+          x: -240,
+          duration: 7200,
+          repeat: -1,
+          repeatDelay: 3600,
+          ease: 'Linear',
+          onRepeat: () => {
+            signPost.x = GAME_WIDTH + 80;
+            freewaySign.x = GAME_WIDTH + 130;
+            freewayText.x = GAME_WIDTH + 130;
+          },
+        });
+
+        // Opposing traffic supplies scale and parallax without stealing focus.
+        const trafficColors = [0x495d73, 0x8a3942, 0xd5d7dc, 0x2f343b];
+        for (let i = 0; i < 5; i++) {
+          const traffic = this.addObj(this.add.rectangle(-120 - i * 260, GAME_HEIGHT - 118, 78, 24, trafficColors[i % trafficColors.length])
+            .setDepth(1).setStrokeStyle(2, 0x11141a));
+          const tailA = this.addObj(this.add.circle(traffic.x - 27, traffic.y, 3, 0xff342a).setDepth(2));
+          const tailB = this.addObj(this.add.circle(traffic.x + 27, traffic.y, 3, 0xff342a).setDepth(2));
+          this.addTween({
+            targets: [traffic, tailA, tailB],
+            x: GAME_WIDTH + 180,
+            duration: 4200 + i * 550,
+            delay: i * 780,
+            repeat: -1,
+            repeatDelay: 1200,
             ease: 'Linear',
           });
         }
@@ -416,15 +461,15 @@ export class LAScene extends Phaser.Scene {
 
         // C8 Corvette cruising on the road
         const car = this.addObj(
-          this.add.sprite(cx + 100, GAME_HEIGHT - 60, 'car-corvette-c8').setScale(SCALE).setFlipX(true)
+          this.add.sprite(cx + 130, GAME_HEIGHT - 62, 'car-corvette-c8').setScale(SCALE * 1.62).setFlipX(true).setDepth(6)
         );
         // JP in driver seat (head visible through window)
         const jpHead = this.addObj(
-          this.add.sprite(cx + 110, GAME_HEIGHT - 68, 'player-ch7', 0).setScale(1).setDepth(2).setCrop(0, 0, 32, 14)
+          this.add.sprite(cx + 148, GAME_HEIGHT - 76, 'player-ch7', 0).setScale(1.35).setDepth(7).setCrop(0, 0, 32, 14)
         );
         // Higo in passenger seat
         const higoHead = this.addObj(
-          this.add.sprite(cx + 85, GAME_HEIGHT - 68, 'npc_higo', 0).setScale(1).setDepth(2).setCrop(0, 0, 32, 14)
+          this.add.sprite(cx + 108, GAME_HEIGHT - 76, 'npc_higo', 0).setScale(1.35).setDepth(7).setCrop(0, 0, 32, 14)
         );
         // Subtle bounce — car and passengers together
         this.addTween({
@@ -449,7 +494,7 @@ export class LAScene extends Phaser.Scene {
 
         // Headlight glow in front of car
         const headlight = this.addObj(
-          this.add.circle(cx - 90, GAME_HEIGHT - 58, 40, 0xf0e8c0, 0.08)
+          this.add.ellipse(cx - 65, GAME_HEIGHT - 58, 150, 42, 0xf0e8c0, 0.07).setDepth(5)
         );
         this.addTween({
           targets: headlight,
@@ -486,6 +531,47 @@ export class LAScene extends Phaser.Scene {
         const warmOverlay = this.addObj(
           this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0xfff0d0).setAlpha(0.08).setDepth(50)
         );
+
+        // Window wall with real city movement outside; the original room was
+        // a brown void around one table.
+        this.addObj(this.add.rectangle(cx, 170, 820, 190, 0x080b14).setStrokeStyle(8, 0x3d2b20));
+        for (let mullion = -3; mullion <= 3; mullion++) {
+          this.addObj(this.add.rectangle(cx + mullion * 115, 170, 5, 186, 0x3d2b20));
+        }
+        for (let i = 0; i < 26; i++) {
+          const cityLight = this.addObj(this.add.rectangle(250 + Math.random() * 780, 100 + Math.random() * 130, 4, 7, 0xf0c060)
+            .setAlpha(0.15 + Math.random() * 0.35));
+          this.addTween({ targets: cityLight, alpha: 0.08, duration: 900 + Math.random() * 1500, yoyo: true, repeat: -1 });
+        }
+
+        // Side booths and their own conversations make the restaurant feel
+        // open for business rather than staged exclusively for JP.
+        for (const side of [-1, 1]) {
+          const boothX = cx + side * 480;
+          this.addObj(this.add.rectangle(boothX, 365, 250, 82, 0x47271f).setStrokeStyle(3, 0x6b4030));
+          this.addObj(this.add.rectangle(boothX, 405, 235, 52, 0x312018));
+          const dinerA = this.addObj(this.add.sprite(boothX - 48, 330, side < 0 ? 'npc-business' : 'npc-friend', 0)
+            .setScale(SCALE * 0.95).setAlpha(0.82));
+          const dinerB = this.addObj(this.add.sprite(boothX + 48, 330, side < 0 ? 'npc-narrator' : 'npc-tech', 0)
+            .setScale(SCALE * 0.95).setAlpha(0.82));
+          this.addTween({ targets: [dinerA, dinerB], y: '-=2', duration: 900 + (side + 1) * 170, yoyo: true, repeat: -1 });
+        }
+
+        // A server continually crosses the floor with plates.
+        const server = this.addObj(this.add.sprite(70, 485, 'npc_generic', 6).setScale(SCALE).setDepth(3));
+        const servicePlate = this.addObj(this.add.ellipse(70, 462, 34, 10, 0xe8e0d0).setDepth(4));
+        this.addTween({
+          targets: [server, servicePlate],
+          x: GAME_WIDTH - 70,
+          duration: 6200,
+          yoyo: true,
+          repeat: -1,
+          hold: 800,
+          repeatDelay: 700,
+          ease: 'Sine.easeInOut',
+          onYoyo: () => server.setFrame(4),
+          onRepeat: () => server.setFrame(6),
+        });
 
         // Warm ambient light glows from ceiling
         const glowPositions = [200, 440, 640, 840, 1080];

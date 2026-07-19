@@ -432,6 +432,55 @@ export class OperatorScene extends BaseChapterScene {
     prop('item-tablet', 25.4, 5.3, 0.52);
     prop('item-bottle', 26.2, 5.35, 0.42, 0x7697a8);
 
+    // The workshop needs to look occupied from the doorway, not like a table
+    // waiting for a meeting. Large sample walls and two working participants
+    // make the room's purpose legible without filling its walkable center.
+    for (const side of [-1, 1]) {
+      const wallX = 24.5 + side * 2.65;
+      this.add.rectangle(px(wallX), px(4.25), 0.58 * tile, 1.3 * tile, 0x2d3239)
+        .setDepth(2.5)
+        .setStrokeStyle(2, 0x7d858d);
+      for (let sample = 0; sample < 3; sample++) {
+        this.add.rectangle(
+          px(wallX),
+          px(3.85 + sample * 0.4),
+          0.42 * tile,
+          0.22 * tile,
+          [0x8e5f45, 0x587a8e, 0xb99b55][sample],
+          0.9,
+        ).setDepth(2.55);
+      }
+      this.add.text(px(wallX), px(4.92), side < 0 ? 'SAMPLES' : 'PROOFS', {
+        fontFamily: 'monospace', fontSize: '6px', color: '#d4d8dc',
+      }).setOrigin(0.5).setDepth(2.57);
+    }
+
+    const workshopClient = this.add.sprite(px(22.55), px(6.35), 'npc-business', 0)
+      .setScale(SCALE * 0.94).setDepth(3.05);
+    const workshopOperator = this.add.sprite(px(26.45), px(6.35), 'npc_generic', 0)
+      .setScale(SCALE * 0.94).setDepth(3.05).setTint(0xb9c6d8);
+    this.tweens.add({
+      targets: [workshopClient, workshopOperator],
+      y: '-=2',
+      duration: 1150,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
+    });
+
+    // A live pointer crossing the scope display gives the meeting one clear
+    // motion cue while the surrounding office remains focused and calm.
+    const scopePointer = this.add.circle(px(23.55), 3.1 * tile, 5, 0xf0c040, 0.8).setDepth(2.6);
+    this.tweens.add({
+      targets: scopePointer,
+      x: px(25.45),
+      duration: 2400,
+      yoyo: true,
+      repeat: -1,
+      hold: 500,
+      ease: 'Sine.easeInOut',
+    });
+
     // Smaller client office: believable scale, one desk, a waiting couch,
     // framed work and storage. The mirror no longer hangs in an empty box.
     rect(35, 5.0, 4.4, 2.9, 0x4a3f50, 2.01);
@@ -444,6 +493,23 @@ export class OperatorScene extends BaseChapterScene {
     prop('item-tablet', 34.1, 5.35, 0.52);
     prop('item-couch', 36.2, 5.8, 0.68, 0x4b4f58);
     prop('item-storage-box', 36.3, 4.2, 0.52, 0x7c6652);
+
+    // The old gray void between buildings read as leftover map space. Turn it
+    // into a service road with curb, parking bays, and a safe crossing so the
+    // moving courier and DHL van have a believable route.
+    this.add.rectangle(px(20), px(10.75), 40 * tile, 3.0 * tile, 0x252932, 0.72).setDepth(1.65);
+    this.add.rectangle(px(20), px(9.35), 40 * tile, 5, 0x7b858c, 0.65).setDepth(1.7);
+    this.add.rectangle(px(20), px(12.15), 40 * tile, 5, 0x7b858c, 0.65).setDepth(1.7);
+    for (let laneX = 1.5; laneX < 40; laneX += 3.2) {
+      this.add.rectangle(px(laneX), px(10.75), 1.45 * tile, 4, 0xc7b96a, 0.55).setDepth(1.72);
+    }
+    for (let stripe = 0; stripe < 6; stripe++) {
+      this.add.rectangle(px(18.2 + stripe * 0.55), px(10.75), 0.28 * tile, 2.55 * tile, 0xe5e5dc, 0.72)
+        .setDepth(1.74);
+    }
+    this.add.text(px(20), px(12.0), 'CLIENTS   •   DELIVERIES   •   OPERATIONS', {
+      fontFamily: 'monospace', fontSize: '7px', color: '#9ba4ad', letterSpacing: 2,
+    }).setOrigin(0.5).setDepth(1.75).setAlpha(0.72);
 
     // Preserve the entrance at 9,9 and the open circulation spines through all
     // three offices while making the furniture physically meaningful.
