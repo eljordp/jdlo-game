@@ -80,8 +80,8 @@ export const CHOICE_DEFS: ChoiceDef[] = [
     chapter: 'Come Up',
     prompt: 'Naming the price',
     options: ['Held the price', 'Cut it to close'],
-    jpReal: null,
-    jpLine: '',
+    jpReal: 'Cut it to close',
+    jpLine: 'JP dropped it every time back then. Desperate. These days he holds.',
   },
   // Awaiting JP's real answer — hidden from the comparison until confirmed:
   {
@@ -92,14 +92,8 @@ export const CHOICE_DEFS: ChoiceDef[] = [
     jpReal: 'Shared it',
     jpLine: 'JP shared. The homies kept him loaded — he ran the ramen economy.',
   },
-  {
-    id: 'slack_dinner',
-    chapter: 'Operator Mode',
-    prompt: 'Slack blowing up at dinner',
-    options: ['Stayed present', 'Checked it'],
-    jpReal: null,
-    jpLine: '',
-  },
+  // Operator-era choice slot: 'slack_dinner' was cut (JP: weak beat).
+  // Replacement pending JP's pick — candidates in the audit doc.
 ];
 
 export class ChoiceLedger {
