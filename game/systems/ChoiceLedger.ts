@@ -89,8 +89,8 @@ export const CHOICE_DEFS: ChoiceDef[] = [
     chapter: 'Locked Up',
     prompt: 'The commissary run',
     options: ['Shared it', 'Kept it'],
-    jpReal: null,
-    jpLine: '',
+    jpReal: 'Shared it',
+    jpLine: 'JP shared. The homies kept him loaded — he ran the ramen economy.',
   },
   {
     id: 'slack_dinner',
