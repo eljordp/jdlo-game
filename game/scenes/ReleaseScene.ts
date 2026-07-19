@@ -623,7 +623,7 @@ export class ReleaseScene extends Phaser.Scene {
         });
 
         this.showText('The doors opened.', 100, { size: '14px', color: '#4a4a5a', delay: 500 });
-        this.showText('Jordi walked out a different person.', 150, { size: '14px', color: '#4a4a5a', delay: 1500 });
+        this.showText('JP walked out a different person.', 150, { size: '14px', color: '#4a4a5a', delay: 1500 });
         this.showText('Not because jail changed him.', cy + 350, { size: '12px', color: '#666688', delay: 3000 });
         this.showText('Because he changed himself.', cy + 390, { size: '12px', color: '#666688', delay: 4000 });
 
