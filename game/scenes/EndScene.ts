@@ -6,6 +6,7 @@ import { GameStats, type GameStatsData } from '../systems/GameStats';
 import { BalanceSystem } from '../systems/BalanceSystem';
 import { AchievementSystem } from '../systems/AchievementSystem';
 import { SoundEffects } from '../systems/SoundEffects';
+import { ChoiceLedger } from '../systems/ChoiceLedger';
 
 export class EndScene extends Phaser.Scene {
   private statsElements: Phaser.GameObjects.GameObject[] = [];
@@ -698,9 +699,96 @@ export class EndScene extends Phaser.Scene {
       onComplete: () => {
         this.statsElements.forEach(e => { try { e.destroy(); } catch { /* */ } });
         this.statsElements = [];
-        this.showNarrativeEnd();
+        this.showRunComparison();
       },
     });
+  }
+
+  // ═══════════════════════════════════════════════════════════════════
+  //  YOUR RUN vs JP — the documentary payoff. Player choices side by side
+  //  with what JP really did. Quiet. No grades, no shame. Just truth.
+  // ═══════════════════════════════════════════════════════════════════
+
+  private showRunComparison() {
+    const rows = ChoiceLedger.comparison();
+    if (rows.length === 0) {
+      this.showNarrativeEnd();
+      return;
+    }
+
+    const cx = GAME_WIDTH / 2;
+    const objects: Phaser.GameObjects.GameObject[] = [];
+    const bg = this.add.rectangle(cx, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x0a0a1a);
+    objects.push(bg);
+
+    const title = this.add.text(cx, 90, 'YOUR RUN vs JP', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '18px', color: '#f0c040',
+    }).setOrigin(0.5).setAlpha(0);
+    objects.push(title);
+    this.tweens.add({ targets: title, alpha: 1, duration: 800 });
+
+    const sub = this.add.text(cx, 130, 'You played it your way. He lived it his.', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#8888aa',
+    }).setOrigin(0.5).setAlpha(0);
+    objects.push(sub);
+    this.tweens.add({ targets: sub, alpha: 1, duration: 800, delay: 600 });
+
+    let y = 200;
+    let matches = 0;
+    rows.slice(0, 6).forEach((row, i) => {
+      const delay = 1400 + i * 900;
+      if (row.matched) matches++;
+
+      const prompt = this.add.text(cx, y, row.def.prompt.toUpperCase(), {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#666688',
+      }).setOrigin(0.5).setAlpha(0);
+      const you = this.add.text(cx - 20, y + 26, `YOU: ${row.playerPick}`, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '9px',
+        color: row.matched ? '#40c060' : '#ccccdd',
+      }).setOrigin(1, 0.5).setAlpha(0);
+      const jp = this.add.text(cx + 20, y + 26, row.def.jpLine, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#aaaacc',
+      }).setOrigin(0, 0.5).setAlpha(0);
+      objects.push(prompt, you, jp);
+      this.tweens.add({ targets: [prompt, you, jp], alpha: 1, duration: 600, delay });
+      y += 78;
+    });
+
+    const shown = Math.min(rows.length, 6);
+    const closerDelay = 1400 + shown * 900 + 600;
+    const closer = this.add.text(
+      cx, y + 30,
+      matches === shown
+        ? 'You made every choice he made.\nNow you know how it felt.'
+        : `You broke from his path ${shown - matches} time${shown - matches === 1 ? '' : 's'}.\nHe didn't get a second run.`,
+      {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#f0c040',
+        align: 'center', lineSpacing: 10,
+      },
+    ).setOrigin(0.5).setAlpha(0);
+    objects.push(closer);
+    this.tweens.add({ targets: closer, alpha: 1, duration: 1000, delay: closerDelay });
+
+    const cont = this.add.text(cx, GAME_HEIGHT - 70, '[ CONTINUE ]', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '11px', color: '#6688cc',
+    }).setOrigin(0.5).setAlpha(0).setInteractive({ useHandCursor: true });
+    objects.push(cont);
+    this.tweens.add({ targets: cont, alpha: 1, duration: 600, delay: closerDelay + 800 });
+
+    const advance = () => {
+      this.input.keyboard?.off('keydown-SPACE', advance);
+      this.tweens.add({
+        targets: objects,
+        alpha: 0,
+        duration: 600,
+        onComplete: () => {
+          objects.forEach(o => { try { o.destroy(); } catch { /* */ } });
+          this.showNarrativeEnd();
+        },
+      });
+    };
+    cont.on('pointerdown', advance);
+    this.input.keyboard?.on('keydown-SPACE', advance);
   }
 
   // ═══════════════════════════════════════════════════════════════════

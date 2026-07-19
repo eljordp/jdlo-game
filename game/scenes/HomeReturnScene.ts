@@ -3,6 +3,7 @@ import { homeMap, MapData } from '../data/maps';
 import { homeReturnDialogue } from '../data/story';
 import { GAME_WIDTH, GAME_HEIGHT, SCALED_TILE } from '../config';
 import type { DialogueLine } from '../systems/DialogueSystem';
+import { ChoiceLedger } from '../systems/ChoiceLedger';
 
 /**
  * Home Return — playable chapter. Same house from Ch1, but JP is different now.
@@ -144,8 +145,17 @@ export class HomeReturnScene extends BaseChapterScene {
       ease: 'Sine.easeIn',
     });
 
+    // Echo: Pops remembers the phone that night in Santa Barbara.
+    // The player's choice comes back here, one line, no lecture.
+    const popsEcho: DialogueLine[] =
+      ChoiceLedger.get('pops_call') === 'Answered'
+        ? [{ speaker: 'Pops', text: 'That night you picked up and said you were studying... I knew, mijo.' }]
+        : ChoiceLedger.get('pops_call') === 'Let it ring'
+          ? [{ speaker: 'Pops', text: 'Those nights you didn\'t pick up... I still called. Dads know.' }]
+          : [];
+
     // Play the full Pops dialogue from story.ts
-    this.dialogue.show(baseDialogue, () => {
+    this.dialogue.show([...baseDialogue, ...popsEcho], () => {
       // Emotional peak — extra lines after the story dialogue
       this.time.delayedCall(400, () => {
         this.dialogue.show(

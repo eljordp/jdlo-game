@@ -11,6 +11,7 @@ import { CasinoSystem } from '../systems/CasinoSystem';
 import { DMSystem } from '../systems/DMSystem';
 import { SoundEffects } from '../systems/SoundEffects';
 import { MusicSystem } from '../systems/MusicSystem';
+import { ChoiceLedger } from '../systems/ChoiceLedger';
 
 export class WrongCrowdScene extends BaseChapterScene {
   private raidTriggered = false;
@@ -609,7 +610,8 @@ export class WrongCrowdScene extends BaseChapterScene {
       return;
     }
 
-    // Pops missed call — emotional gut punch
+    // Pops missed call — emotional gut punch, and the player's call to make.
+    // Either way the night goes where it went; only the weight is different.
     if (interactable.id === 'ch2_pops_missed') {
       Analytics.trackInteraction(interactable.id);
       this.frozen = true;
@@ -618,11 +620,9 @@ export class WrongCrowdScene extends BaseChapterScene {
       this.dialogue.show([
         { speaker: 'Narrator', text: '3 missed calls from Pops. 11:42 PM. 12:15 AM. 1:30 AM.' },
         { speaker: 'Narrator', text: 'One voicemail: "Just checking on you, son. Call me back."' },
-        { speaker: 'JP\'s Mind', text: '...' },
-        { speaker: 'JP\'s Mind', text: 'He can never know about this.' },
+        { speaker: 'Narrator', text: 'The phone lights up in his hand. Pops. Calling again.' },
       ], () => {
-        MoodSystem.changeMorale(-15);
-        this.frozen = false;
+        this.showPopsCallChoice();
       });
       return;
     }
@@ -1022,6 +1022,84 @@ export class WrongCrowdScene extends BaseChapterScene {
         this.triggerRaid();
       });
     }
+  }
+
+  // The player answers or lets it ring. JP let it ring. Recorded for the
+  // end-screen comparison; the night ends the same either way.
+  private showPopsCallChoice() {
+    this.showTwoChoice('Pops is calling.', 'Answer', 'Let it ring', () => {
+      ChoiceLedger.record('pops_call', 'Answered');
+      SoundEffects.playConfirm();
+      this.dialogue.show([
+        { speaker: 'Pops', text: 'Son. You good? It\'s late.' },
+        { speaker: 'JP', text: 'I\'m good, Pops. Just up studying.' },
+        { speaker: 'Pops', text: '...alright. Get some sleep, mijo.' },
+        { speaker: 'JP\'s Mind', text: 'First time lying to him ever felt that easy.' },
+      ], () => {
+        MoodSystem.changeMorale(-10);
+        this.frozen = false;
+      });
+    }, () => {
+      ChoiceLedger.record('pops_call', 'Let it ring');
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'The screen goes dark.' },
+        { speaker: 'JP\'s Mind', text: '...' },
+        { speaker: 'JP\'s Mind', text: 'He can never know about this.' },
+      ], () => {
+        MoodSystem.changeMorale(-15);
+        this.frozen = false;
+      });
+    });
+  }
+
+  private showTwoChoice(
+    prompt: string,
+    yesLabel: string,
+    noLabel: string,
+    onYes: () => void,
+    onNo: () => void,
+  ) {
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+
+    const promptText = this.add.text(cx, cy - 35, prompt, {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '11px', color: '#f0c040',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(201);
+
+    const yesBg = this.add.rectangle(cx - 90, cy + 10, 150, 40, 0x30a040)
+      .setScrollFactor(0).setDepth(200).setInteractive({ useHandCursor: true });
+    const yesText = this.add.text(cx - 90, cy + 10, yesLabel, {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(201);
+
+    const noBg = this.add.rectangle(cx + 90, cy + 10, 150, 40, 0xa03030)
+      .setScrollFactor(0).setDepth(200).setInteractive({ useHandCursor: true });
+    const noText = this.add.text(cx + 90, cy + 10, noLabel, {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(201);
+
+    yesBg.on('pointerover', () => yesBg.setFillStyle(0x40c050));
+    yesBg.on('pointerout', () => yesBg.setFillStyle(0x30a040));
+    noBg.on('pointerover', () => noBg.setFillStyle(0xc04040));
+    noBg.on('pointerout', () => noBg.setFillStyle(0xa03030));
+
+    const spaceKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    const nKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.N);
+
+    const cleanup = () => {
+      promptText.destroy();
+      yesBg.destroy(); yesText.destroy();
+      noBg.destroy(); noText.destroy();
+      spaceKey.off('down', spaceHandler);
+      nKey.off('down', nHandler);
+    };
+    const spaceHandler = () => { cleanup(); onYes(); };
+    const nHandler = () => { cleanup(); onNo(); };
+
+    yesBg.on('pointerdown', () => { cleanup(); onYes(); });
+    noBg.on('pointerdown', () => { cleanup(); onNo(); });
+    spaceKey.on('down', spaceHandler);
+    nKey.on('down', nHandler);
   }
 
   private triggerRaid() {
