@@ -6,7 +6,7 @@ import { SoundEffects } from '../systems/SoundEffects';
 /**
  * Cinematic release scene — walking out of jail.
  * Mirrors CourtScene structure but reversed: dark -> light.
- * Sequence: cell door -> hallway -> doors open -> sunlight -> "I knew it" -> freedom
+ * Sequence: cell door -> hallway -> doors open -> sunlight -> gained faith -> freedom
  */
 export class ReleaseScene extends Phaser.Scene {
   private currentStep = 0;
@@ -552,14 +552,14 @@ export class ReleaseScene extends Phaser.Scene {
           }
         });
 
-        this.showText('The truth always prevails.', cy - 60, { size: '14px', color: '#4a4a5a', delay: 3500 });
+        this.showText('The doors opened. Faith came with him.', cy - 60, { size: '14px', color: '#4a4a5a', delay: 3500 });
 
         this.showContinue(5000);
         break;
       }
 
       // ===================================================================
-      // STEP 4 -- "I knew it. God showed." (stillness, weight)
+      // STEP 4 -- faith built inside, not vindication
       // ===================================================================
       case 4: {
         // Pure dark background -- stillness
@@ -567,16 +567,16 @@ export class ReleaseScene extends Phaser.Scene {
           this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x0a0a0e)
         );
 
-        // "I knew it." -- slow fade in
-        this.showText('I knew it.', cy - 30, {
+        // JP did not leave with proof that he had been right. He left with a
+        // faith he did not have when he entered.
+        this.showText('I gained faith in there.', cy - 30, {
           size: '18px',
           color: '#ffffff',
           delay: 500,
           fadeDuration: 1500,
         });
 
-        // "God showed." -- slow fade in, staggered
-        this.showText('God showed.', cy + 30, {
+        this.showText('I carried it out.', cy + 30, {
           size: '18px',
           color: '#ffffff',
           delay: 2000,

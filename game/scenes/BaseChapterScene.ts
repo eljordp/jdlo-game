@@ -1028,6 +1028,31 @@ export abstract class BaseChapterScene extends Phaser.Scene {
   }
 
   /**
+   * Director Mode entry point for testing a specific map target without
+   * walking the player into position. This intentionally routes through the
+   * chapter's real handlers so flags, callbacks, and required actions behave
+   * exactly like a normal interaction.
+   */
+  public directorTriggerTarget(targetId: string, targetType: 'npc' | 'interaction'): boolean {
+    if (this.dialogue.isActive()) return false;
+
+    if (targetType === 'npc') {
+      const npc = this.npcs.find((item) => item.id === targetId);
+      if (!npc || !npc.sprite.visible || !npc.sprite.active) return false;
+      SoundEffects.playBlip();
+      this.handleNPCDialogue(npc.id, npc.dialogue);
+      return true;
+    }
+
+    const visual = this.interactions.getVisuals().find((item) => item.id === targetId);
+    if (!visual) return false;
+    const interactable = this.interactions.checkInteraction(visual.x, visual.y);
+    if (!interactable) return false;
+    this.handleInteractable(interactable);
+    return true;
+  }
+
+  /**
    * Chapter title lookup for transition title cards.
    * Maps scene keys to their display title.
    */
@@ -1441,6 +1466,10 @@ export abstract class BaseChapterScene extends Phaser.Scene {
   }
 
   update(_time: number, _delta: number) {
+    // Dialogue uses a frame-driven typewriter. Without this call the box and
+    // speaker appear, but the actual line remains blank across every chapter.
+    this.dialogue.update(_time, _delta);
+
     // Update mood system every frame (particles, effects, timer)
     MoodSystem.update(this, this.player);
     SubstanceSystem.update(_delta);

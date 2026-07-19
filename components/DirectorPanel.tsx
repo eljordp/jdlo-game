@@ -36,6 +36,7 @@ type DirectorScene = Phaser.Scene & {
   requiredDone?: boolean;
   getChapterDialogue?: () => { npcs: Record<string, unknown[]> };
   refreshObjectiveHint?: () => void;
+  directorTriggerTarget?: (targetId: string, targetType: "npc" | "interaction") => boolean;
   [key: string]: unknown;
 };
 
@@ -67,6 +68,10 @@ const MINIGAMES: Record<string, Array<{ label: string; method: string }>> = {
     { label: "BMW Pull-Off", method: "playBMWPullOff" },
   ],
   BeachScene: [
+    { label: "LUNA Collapse", method: "playLunaTrade" },
+    { label: "The Choice", method: "playChoiceCall" },
+    { label: "Farm Drive", method: "triggerBMWDrive" },
+    { label: "Party Night", method: "triggerPartyNight" },
     { label: "Beer Pong", method: "playBeerPong" },
     { label: "Volleyball", method: "playVolleyballMinigame" },
     { label: "Arm Wrestle", method: "playArmWrestle" },
@@ -84,7 +89,9 @@ const MINIGAMES: Record<string, Array<{ label: string; method: string }>> = {
     { label: "Driving", method: "playDrivingCutscene" },
   ],
   JailScene: [
+    { label: "Old Habits", method: "playPhaseOneRelapseChoice" },
     { label: "Fight", method: "playBattleScene" },
+    { label: "Fight Complete", method: "directorMarkFightComplete" },
     { label: "Pushups", method: "playPushupMinigame" },
     { label: "Dice", method: "playDiceMinigame" },
     { label: "Final Montage", method: "playFinalMontage" },
@@ -249,6 +256,13 @@ export default function DirectorPanel({
     scene.frozen = false;
   });
 
+  const triggerTarget = () => run(`Triggered ${selectedTarget?.label ?? targetRef}`, (scene) => {
+    if (!selectedTarget) throw new Error("Choose a target first");
+    if (!scene.directorTriggerTarget) throw new Error("Direct target testing is unavailable in this scene");
+    const didTrigger = scene.directorTriggerTarget(selectedTarget.id, selectedTarget.type);
+    if (!didTrigger) throw new Error("Target is hidden, already consumed, or dialogue is still active");
+  });
+
   const loadDialogue = () => run("Loaded dialogue into the editor", (scene) => {
     const targetId = selectedTarget?.id;
     if (!targetId) return;
@@ -349,7 +363,10 @@ export default function DirectorPanel({
             {targets.length === 0 && <option value="">No map targets in this scene</option>}
             {targets.map((target) => <option key={`${target.type}:${target.id}`} value={`${target.type}:${target.id}`}>{target.label} · {target.x},{target.y}</option>)}
           </select>
-          <button type="button" disabled={!selectedTarget} onClick={teleport} className="director-btn w-full disabled:opacity-35">Warp beside target</button>
+          <div className="grid grid-cols-2 gap-2">
+            <button type="button" disabled={!selectedTarget} onClick={teleport} className="director-btn disabled:opacity-35">Warp beside target</button>
+            <button type="button" disabled={!selectedTarget} onClick={triggerTarget} className="director-btn disabled:opacity-35">Trigger target now</button>
+          </div>
         </section>
 
         <section className="space-y-2">

@@ -2337,8 +2337,10 @@ export class HomeScene extends BaseChapterScene {
       this.dialogue.show([
         { speaker: 'Nolan', text: 'Yooo JP! What\'s good bro?' },
         { speaker: 'JP', text: 'Nolan. What\'s up man?' },
-        { speaker: 'Nolan', text: 'Bro. Santa Barbara. I got a spot down here.' },
-        { speaker: 'Nolan', text: 'I\'m tryna see if you wanna move in with us.' },
+        { speaker: 'Nolan', text: 'Bro. Santa Barbara. Me and the boys got a spot by the beach.' },
+        { speaker: 'Nolan', text: 'We\'re all going to SBCC. Come down and move in with us.' },
+        { speaker: 'JP', text: 'School? For real?' },
+        { speaker: 'Nolan', text: 'School is the plan. Fresh start is the point.' },
       ], () => {
         // Choice: Yeah / Tell me more
         this.showYesNoChoice('Move in?', 'Yeah', 'Tell me more', () => {
@@ -2346,7 +2348,7 @@ export class HomeScene extends BaseChapterScene {
           this.dialogue.show([
             { speaker: 'JP', text: 'I\'m down. Who else is there?' },
             { speaker: 'Nolan', text: 'David, Cooper, Terrell, Big Bart. The whole crew bro.' },
-            { speaker: 'Nolan', text: 'We got the frat house locked down. Beach is right there.' },
+            { speaker: 'Nolan', text: 'Big house. Beach right there. You can figure the rest out down here.' },
             { speaker: 'JP', text: 'Say less. I\'m packing tonight.' },
             { speaker: 'Nolan', text: 'LET\'S GO! I\'ll send you the address.' },
           ], () => {
@@ -2356,12 +2358,12 @@ export class HomeScene extends BaseChapterScene {
         }, () => {
           // "Tell me more" — Nolan pitches it
           this.dialogue.show([
-            { speaker: 'Nolan', text: 'Alright listen. We got this house near campus right?' },
+            { speaker: 'Nolan', text: 'Alright listen. We got this big house near campus right?' },
             { speaker: 'Nolan', text: 'David\'s already down here. Cooper too.' },
             { speaker: 'Nolan', text: 'Terrell and Big Bart just locked in last week.' },
-            { speaker: 'Nolan', text: 'Bro it\'s the whole squad. Beach is five minutes away.' },
+            { speaker: 'Nolan', text: 'SBCC gives you something to start with. The beach is five minutes away.' },
             { speaker: 'Nolan', text: 'Parties every weekend. Girls everywhere.' },
-            { speaker: 'Nolan', text: 'And rent is split five ways so it\'s nothing.' },
+            { speaker: 'Nolan', text: 'Rent split with the boys. New city. Whole different life.' },
             { speaker: 'JP', text: '...' },
             { speaker: 'JP', text: 'I\'m in.' },
             { speaker: 'Nolan', text: 'THAT\'S WHAT I\'M TALKING ABOUT! Pack your shit bro.' },
@@ -3263,19 +3265,19 @@ export class HomeScene extends BaseChapterScene {
 
     // Wire up app clicks
     appButtons[0].on('pointerdown', () => showAppWindow('Safari — Coinbase', [
-      { speaker: 'Coinbase', text: 'Portfolio: $5,000 → $7,200  (+44%)' },
-      { text: 'BTC: $40,000   (+18%)' },
-      { text: 'ETH: $2,800    (+32%)' },
-      { text: 'SOL: $38.50    (+54%)' },
-      { text: 'LUNA: $5.20    (+12%)' },
-      { speaker: 'JP\'s Mind', text: '5K turned into 7 already. This is just the beginning.' },
+      { speaker: 'Coinbase', text: 'Portfolio: around $40K' },
+      { text: 'Started with: about $1K' },
+      { text: 'First milestone: about $5K' },
+      { text: 'Current: around $40K' },
+      { speaker: 'JP\'s Mind', text: 'One thousand turned into around forty.' },
+      { speaker: 'JP\'s Mind', text: 'First time trading. Felt like I figured it out.' },
       { speaker: 'JP\'s Mind', text: 'Pops would kill me if he knew.' },
     ]));
 
     appButtons[1].on('pointerdown', () => showAppWindow('Mail — Inbox (3)', [
-      { speaker: 'UC Davis Admissions', text: 'Congratulations! You have been accepted...' },
-      { speaker: 'Sac State', text: 'We are pleased to offer you admission...' },
-      { speaker: 'Sonoma State', text: 'Dear Jordan, Welcome to the Seawolf family...' },
+      { speaker: 'University of Oregon', text: 'Congratulations! You have been accepted...' },
+      { speaker: 'University of Hawai\'i', text: 'We are pleased to offer you admission...' },
+      { speaker: 'Arizona State', text: 'Dear Jordan, welcome to the incoming class...' },
       { speaker: 'JP\'s Mind', text: '$40K a year for something I can learn on YouTube? Nah.' },
     ]));
 

@@ -5,6 +5,8 @@ import { MusicSystem } from '../systems/MusicSystem';
 import { SoundEffects } from '../systems/SoundEffects';
 import { GameSettings } from '../systems/GameSettings';
 import { InventorySystem } from '../systems/InventorySystem';
+import { ChoiceLedger } from '../systems/ChoiceLedger';
+import { AffinitySystem } from '../systems/AffinitySystem';
 import { virtualInput } from '../../components/GameCanvas';
 
 type MenuState = 'main' | 'chapters' | 'settings';
@@ -461,6 +463,8 @@ export class MenuScene extends Phaser.Scene {
   private startPlay() {
     // New game — clear old save data
     InventorySystem.clearAll();
+    ChoiceLedger.reset();
+    AffinitySystem.reset();
     SaveSystem.clearSave();
 
     this.cameras.main.fadeOut(500, 0, 0, 0);

@@ -1808,8 +1808,13 @@ export class BeachScene extends BaseChapterScene {
       if (!this.lunaTraded) {
         this.frozen = true;
         this.dialogue.show([{ speaker: 'JP\'s Mind', text: 'Check the computer first.' }], () => { this.frozen = false; });
+      } else if (!this.kGoodbyeDone) {
+        this.frozen = true;
+        this.dialogue.show([
+          { speaker: 'JP\'s Mind', text: 'K is still asleep. She leaves for orientation soon.' },
+          { speaker: 'Narrator', text: 'Wake her before answering anybody else.' },
+        ], () => { this.frozen = false; });
       } else if (!this.plugCalled) {
-        this.kGoodbyeDone = true; // treat K scene as done
         this.choiceSequenceStarted = true;
         this.playChoiceCall();
       } else {

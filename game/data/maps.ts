@@ -836,7 +836,7 @@ export const tractorMap: MapData = {
     { x: 20, y: 27, action: 'scene', target: 'TransitionScene', data: { text: 'After the rows came the screen.', subtext: 'The work changed. The work ethic did not.', nextScene: 'ComeUpScene' } },
   ],
   interactables: [
-    { id: 'ch4_tractor', x: 13, y: 9, type: 'examine', glow: true, sprite: 'item-car' },
+    { id: 'ch4_tractor', x: 13, y: 9, type: 'examine', glow: true, sprite: 'tile-tractor' },
     { id: 'ch4_vines', x: 25, y: 14, type: 'examine', glow: false, sprite: 'item-plant' },
     { id: 'ch4_phone', x: 8, y: 9, type: 'examine', glow: true, sprite: 'item-phone' },
     { id: 'ch4_ai_discovery', x: 6, y: 5, type: 'evolve', glow: true, sprite: 'item-tablet' },
@@ -844,7 +844,7 @@ export const tractorMap: MapData = {
     { id: 'ch4_lunch', x: 3, y: 9, type: 'examine', glow: true, sprite: 'item-food' },
     { id: 'ch4_paycheck', x: 30, y: 19, type: 'examine', glow: true, sprite: 'item-money' },
     { id: 'ch4_d8_seat', x: 20, y: 6, type: 'examine', glow: false, sprite: 'item-car' },
-    { id: 'ch4_crash', x: 14, y: 17, type: 'examine', glow: false, sprite: 'item-car' },
+    { id: 'ch4_crash', x: 14, y: 17, type: 'examine', glow: false, sprite: 'tile-tractor' },
     { id: 'ch4_vineyard_row', x: 10, y: 14, type: 'examine', glow: false, sprite: 'item-plant' },
     { id: 'ch4_farmhouse',    x: 5,  y: 3,  type: 'examine', glow: false, sprite: 'item-nightstand' },
     { id: 'ch4_radio',        x: 3,  y: 4,  type: 'examine', glow: false, sprite: 'item-phone' },

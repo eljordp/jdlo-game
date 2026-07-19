@@ -11,10 +11,16 @@ import { GameSettings } from '../systems/GameSettings';
 import { GameIntelligence } from '../systems/GameIntelligence';
 import { SoundEffects } from '../systems/SoundEffects';
 import { MusicSystem } from '../systems/MusicSystem';
+import { SubstanceSystem } from '../systems/SubstanceSystem';
 
 export class JailScene extends BaseChapterScene {
   private currentDay = 1;
   private battleWon: boolean | null = null; // null = not fought, true/false = outcome
+  private phaseOneRelapseDone = false;
+  private phaseOneRefusedLastHit = false;
+  private sawBirdCycle = false;
+  private sawDeniedAppeal = false;
+  private phaseOneRealizationDone = false;
   private trainingComplete = false;
   private bookRead = false;
   private faithDone = false;
@@ -46,6 +52,11 @@ export class JailScene extends BaseChapterScene {
   create() {
     this.currentDay = 1;
     this.battleWon = null;
+    this.phaseOneRelapseDone = false;
+    this.phaseOneRefusedLastHit = false;
+    this.sawBirdCycle = false;
+    this.sawDeniedAppeal = false;
+    this.phaseOneRealizationDone = false;
     this.trainingComplete = false;
     this.bookRead = false;
     this.faithDone = false;
@@ -126,10 +137,14 @@ export class JailScene extends BaseChapterScene {
     // actual fronts and gates.
     for (const x of [6.5, 12.5]) {
       for (const segment of [{ y: 3.5, h: 3 }, { y: 7.5, h: 3 }, { y: 10.95, h: 2.1 }]) {
-        this.add.rectangle(x * tile, segment.y * tile, 0.9 * tile, segment.h * tile, 0x303038)
-          .setDepth(2.34).setStrokeStyle(3, 0x1d2226);
-        this.add.rectangle(x * tile, (segment.y - segment.h / 2 + 0.2) * tile, 0.62 * tile, 9, 0x151a1d)
+        this.add.rectangle(x * tile, segment.y * tile, 0.64 * tile, segment.h * tile, 0x41414d)
+          .setDepth(2.34).setStrokeStyle(3, 0x24242c);
+        this.add.rectangle(x * tile, (segment.y - segment.h / 2 + 0.2) * tile, 0.46 * tile, 7, 0x24242c)
           .setDepth(2.36);
+        for (let seam = -1; seam <= 1; seam++) {
+          this.add.rectangle(x * tile, (segment.y + seam * 0.65) * tile, 0.56 * tile, 2, 0x676773, 0.42)
+            .setDepth(2.35);
+        }
       }
     }
 
@@ -185,12 +200,12 @@ export class JailScene extends BaseChapterScene {
 
       if (isJpCell) {
         // Personal props line up with the usable Letter and Book interactions.
-        this.add.rectangle(4.1 * tile, 6.55 * tile, 32, 21, 0xe5dbc0).setDepth(1.22).setAngle(-4);
-        this.add.rectangle(5.0 * tile, 8.0 * tile, 34, 42, 0x31505f).setDepth(1.22)
+        this.add.rectangle(4.1 * tile, 6.55 * tile, 22, 14, 0xe5dbc0).setDepth(1.22).setAngle(-4);
+        this.add.rectangle(5.0 * tile, 8.0 * tile, 24, 31, 0x31505f).setDepth(1.22)
           .setStrokeStyle(3, 0x1b2b33).setAngle(5);
-        this.add.rectangle(5.0 * tile, 8.0 * tile, 4, 38, 0xd2b55b).setDepth(1.23).setAngle(5);
+        this.add.rectangle(5.0 * tile, 8.0 * tile, 3, 28, 0xd2b55b).setDepth(1.23).setAngle(5);
         this.add.text(5.0 * tile, 8.0 * tile, 'THE\nCOMPOUND\nEFFECT', {
-          fontFamily: 'monospace', fontSize: '5px', color: '#e7e0bd', align: 'center',
+          fontFamily: 'monospace', fontSize: '4px', color: '#e7e0bd', align: 'center',
         }).setOrigin(0.5).setDepth(1.24).setAngle(5);
       }
     }
@@ -560,6 +575,26 @@ export class JailScene extends BaseChapterScene {
   // NPC dialogue reacts to minigame outcomes
   protected handleNPCDialogue(npcId: string, dialogue: DialogueLine[]): void {
     GameIntelligence.onNPCTalked(npcId);
+    if (this.currentDay === 1 && npcId === 'ch3_smoker' && !this.phaseOneRelapseDone) {
+      this.playPhaseOneRelapseChoice();
+      return;
+    }
+
+    if (this.currentDay === 1 && npcId === 'ch3_bird') {
+      this.dialogue.show(dialogue, () => {
+        this.sawBirdCycle = true;
+        this.maybePlayPhaseOneRealization();
+      });
+      return;
+    }
+
+    if (this.currentDay === 1 && npcId === 'ch3_book_inmate') {
+      this.dialogue.show(dialogue, () => {
+        this.sawDeniedAppeal = true;
+        this.maybePlayPhaseOneRealization();
+      });
+      return;
+    }
     // Fighter reacts based on battle outcome
     if ((npcId === 'ch3_fighter1' || npcId === 'ch3_fighter2') && this.battleWon !== null && this.currentDay >= 2) {
       const chapterDialogue = this.getChapterDialogue();
@@ -595,9 +630,110 @@ export class JailScene extends BaseChapterScene {
     this.dialogue.show(dialogue);
   }
 
+  private playPhaseOneRelapseChoice() {
+    if (this.phaseOneRelapseDone) return;
+    this.frozen = true;
+    this.showYesNoChoice('The smoke reaches JP.', 'Take the hit', 'Walk away', () => {
+      this.phaseOneRelapseDone = true;
+      this.phaseOneRefusedLastHit = false;
+      SubstanceSystem.hit(2);
+      MoodSystem.setMood('faded', 35);
+      this.dialogue.show([
+        { speaker: 'Smoker', text: 'Knew you would.' },
+        { speaker: 'Narrator', text: 'For a few minutes, the walls feel farther away.' },
+        { speaker: 'JP\'s Mind', text: 'Same escape. Different walls.' },
+      ], () => {
+        this.frozen = false;
+        this.refreshObjectiveHint();
+      });
+    }, () => {
+      this.phaseOneRelapseDone = true;
+      this.phaseOneRefusedLastHit = true;
+      this.dialogue.show([
+        { speaker: 'Smoker', text: 'Now you saying no?' },
+        { speaker: 'Narrator', text: 'It is not the first offer JP took in here.' },
+        { speaker: 'Narrator', text: 'It is the first one he refuses.' },
+      ], () => {
+        this.frozen = false;
+        this.refreshObjectiveHint();
+      });
+    });
+  }
+
+  private maybePlayPhaseOneRealization() {
+    if (this.phaseOneRealizationDone
+      || !this.phaseOneRelapseDone
+      || this.battleWon === null
+      || !this.sawBirdCycle
+      || !this.sawDeniedAppeal) return;
+
+    this.phaseOneRealizationDone = true;
+    this.frozen = true;
+    this.dialogue.show([
+      { speaker: 'Narrator', text: 'Bird has been in three times.' },
+      { speaker: 'Narrator', text: 'Across the room, another man is holding a denied appeal.' },
+      { speaker: 'JP\'s Mind', text: this.phaseOneRefusedLastHit
+        ? 'Saying no once does not erase what I was doing all week.'
+        : 'The high took the edge off. Then it gave everything back worse.' },
+      { speaker: 'JP\'s Mind', text: 'Same habits. Same anger. Same place again.' },
+      { speaker: 'JP\'s Mind', text: 'I need to straighten up or I\'ll end up like the rest of them.' },
+      { speaker: 'Narrator', text: 'That is the first decision in here that feels different.' },
+    ], () => {
+      MoodSystem.setMood('locked_in', 35);
+      this.frozen = false;
+      this.refreshObjectiveHint();
+    });
+  }
+
+  /** Director-only state shortcut. The playable fight still owns the normal route. */
+  public directorMarkFightComplete() {
+    this.battleWon = true;
+    this.refreshObjectiveHint();
+    this.maybePlayPhaseOneRealization();
+  }
+
+  private showYesNoChoice(
+    prompt: string,
+    yesLabel: string,
+    noLabel: string,
+    onYes: () => void,
+    onNo: () => void,
+  ) {
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+    const promptText = this.add.text(cx, cy - 35, prompt, {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '11px', color: '#f0c040',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(321);
+    const yesBg = this.add.rectangle(cx - 95, cy + 12, 150, 42, 0x6f5734)
+      .setScrollFactor(0).setDepth(320).setInteractive({ useHandCursor: true });
+    const yesText = this.add.text(cx - 95, cy + 12, yesLabel, {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(321);
+    const noBg = this.add.rectangle(cx + 95, cy + 12, 150, 42, 0x4b5362)
+      .setScrollFactor(0).setDepth(320).setInteractive({ useHandCursor: true });
+    const noText = this.add.text(cx + 95, cy + 12, noLabel, {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(321);
+    const spaceKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    const nKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.N);
+    const cleanup = () => {
+      promptText.destroy(); yesBg.destroy(); yesText.destroy(); noBg.destroy(); noText.destroy();
+      spaceKey.off('down', chooseYes); nKey.off('down', chooseNo);
+    };
+    const chooseYes = () => { cleanup(); onYes(); };
+    const chooseNo = () => { cleanup(); onNo(); };
+    yesBg.on('pointerdown', chooseYes);
+    noBg.on('pointerdown', chooseNo);
+    spaceKey.on('down', chooseYes);
+    nKey.on('down', chooseNo);
+  }
+
   protected getObjectiveHint(): string {
     if (this.currentDay === 1) {
-      return this.battleWon === null ? 'Phase I — learn the rules. The common area is east.' : 'Return to your bunk.';
+      if (!this.phaseOneRelapseDone) return 'Phase I — old habits followed you inside. Find the common area.';
+      if (this.battleWon === null) return 'Phase I — trouble is waiting in the common area.';
+      if (!this.phaseOneRealizationDone) return 'Phase I — listen to Bird and the inmate waiting on an appeal.';
+      return 'Phase I — return to your bunk.';
     }
     if (this.currentDay === 2) {
       return this.trainingComplete ? 'Phase II — return to your bunk.' : 'Phase II — train in the yard.';
@@ -707,6 +843,14 @@ export class JailScene extends BaseChapterScene {
     }
 
     if (interactable.id === 'ch3_faith') {
+      if (this.currentDay < 3) {
+        this.dialogue.show([
+          { speaker: 'JP\'s Mind', text: this.currentDay === 1
+            ? 'My head is still too loud to sit here.'
+            : 'The routine is helping. I am not ready to call that faith yet.' },
+        ]);
+        return;
+      }
       Analytics.trackInteraction(interactable.id);
       this.interactions.consume(interactable.id);
       this.frozen = true;
@@ -738,6 +882,15 @@ export class JailScene extends BaseChapterScene {
     }
 
     if (interactable.id === 'ch3_book') {
+      if (this.currentDay < 3) {
+        this.dialogue.show([
+          { speaker: 'Narrator', text: 'The Compound Effect sits on the bunk.' },
+          { speaker: 'JP\'s Mind', text: this.currentDay === 1
+            ? 'I look at the cover and put it back.'
+            : 'Soon. Right now I am building the routine first.' },
+        ]);
+        return;
+      }
       Analytics.trackInteraction(interactable.id);
       this.frozen = true;
       SoundEffects.playPageTurn();
@@ -792,10 +945,14 @@ export class JailScene extends BaseChapterScene {
     const bedLines = chapterDialogue.npcs['ch3_bed'];
 
     if (this.currentDay === 1) {
-      if (this.battleWon === null) {
+      if (!this.phaseOneRelapseDone || this.battleWon === null || !this.phaseOneRealizationDone) {
         this.dialogue.show([
           { speaker: 'JP\'s Mind', text: 'I cannot sleep yet.' },
-          { speaker: 'JP\'s Mind', text: 'The first weeks are about learning what survives in here.' },
+          { speaker: 'JP\'s Mind', text: !this.phaseOneRelapseDone
+            ? 'I am still moving like I did outside.'
+            : this.battleWon === null
+              ? 'Too much anger still looking for somewhere to go.'
+              : 'Bird and the guy waiting on his appeal keep replaying in my head.' },
           { speaker: 'Narrator', text: 'Go east to the common area.' },
         ]);
         return;
@@ -2449,7 +2606,7 @@ export class JailScene extends BaseChapterScene {
           'Guard: "BREAK IT UP! Both of you, against the wall!"',
           'JP: "He started it."',
           'Guard: "I don\'t care who started it. You want more time?"',
-          "JP's Mind: Not worth it. Never again.",
+          "JP's Mind: Winning did not fix anything.",
           'The yard goes quiet. Everyone saw that.',
         ], () => {
           cleanupBattle();
@@ -2458,7 +2615,7 @@ export class JailScene extends BaseChapterScene {
         // Walked away
         showTextSequence([
           'JP turns his back and walks.',
-          "JP's Mind: That's the smart play.",
+          "JP's Mind: First good decision all week.",
           'The yard goes quiet. Everyone saw that.',
         ], () => {
           cleanupBattle();
@@ -2497,7 +2654,7 @@ export class JailScene extends BaseChapterScene {
           'JP hits the ground.',
           'Guard: "BREAK IT UP!"',
           'Guard: "Both of you. Against the wall. Now."',
-          "JP's Mind: That's the last time I fight in here.",
+          "JP's Mind: He gets up angrier than before.",
         ], () => {
           cleanupBattle();
         });
@@ -2557,6 +2714,7 @@ export class JailScene extends BaseChapterScene {
               closeBottom.destroy();
               this.frozen = false;
               this.refreshObjectiveHint();
+              this.maybePlayPhaseOneRealization();
             },
           });
         },

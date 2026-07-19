@@ -442,7 +442,7 @@ export const chapter2OutroText: string[] = [
 
 export const chapter3IntroText: string[] = [
   'Locked Up',
-  '"Jordan Lopez. Attempted murder. 13 years."',
+  'Faced 13 years. Took the plea: 1 year.',
   'A bed. A toilet. And time.',
   'Nothing but time.',
 ];
@@ -1084,25 +1084,6 @@ const ch0Extras: Record<string, DialogueLine[]> = {
     { speaker: 'Poster', text: '"THE ONLY PERSON YOU\'RE COMPETING WITH IS WHO YOU WERE YESTERDAY."' },
     { speaker: 'Narrator', text: 'JP put it up as a joke. But some mornings, it\'s the first thing he reads.' },
     { speaker: 'JP\'s Mind', text: 'Yesterday I did nothing. So the bar is low.' },
-  ],
-  ch0_nolan_call: [
-    { speaker: 'Narrator', text: 'JP\'s phone rings. It\'s Nolan.' },
-    { speaker: 'Nolan', text: 'Yo JP. You still stuck at home?' },
-    { speaker: 'JP', text: 'Doing nothing bro.' },
-    { speaker: 'Nolan', text: 'Come down to Santa Barbara. Me and the boys got a spot by the beach.' },
-    { speaker: 'Nolan', text: 'We\'re all going to SBCC. It\'s chill. Good vibes, good weather, good people.' },
-    { speaker: 'JP', text: 'School? For real?' },
-    { speaker: 'Nolan', text: 'Yeah bro. Figure it out down here. Better than sitting in your room.' },
-    { speaker: 'JP', text: '', choices: [
-      { text: '"I need to get out of here. I\'m in."', next: [
-        { speaker: 'Nolan', text: 'Let\'s go. I\'ll send you the address.' },
-      ]},
-      { text: '"Let me think about it."', next: [
-        { speaker: 'Nolan', text: 'Don\'t think too long. Room\'s almost gone.' },
-        { speaker: 'JP', text: '...alright. I\'m in.' },
-      ]},
-    ]},
-    { speaker: 'JP\'s Mind', text: 'Nolan wasn\'t offering anything shady. Just a fresh start. JP needed that.' },
   ],
   ch0_hidden_stash: [
     { speaker: 'Narrator', text: 'A bag tucked behind the desk. JP pockets it.' },
@@ -1837,7 +1818,8 @@ const ch3Day1NPCDialogue: Record<string, DialogueLine[]> = {
   ],
   ch3_bird: [
     { speaker: 'Bird', text: 'Ayo JP, I saved you a spot in the cell block. Top bunk.' },
-    { speaker: 'Bird', text: 'Food\'s trash but commissary hits different. I\'ll put you on.' },
+    { speaker: 'Bird', text: 'Third time in, you learn how to make this place feel normal.' },
+    { speaker: 'Bird', text: 'That is the problem though. I keep making it normal.' },
   ],
   ch3_og: [
     { speaker: 'OG Inmate', text: 'Fresh fish. What you in for?' },
@@ -1853,10 +1835,8 @@ const ch3Day1NPCDialogue: Record<string, DialogueLine[]> = {
   ch3_mind: [
     { speaker: 'JP\'s Mind', text: 'Look at where you are.' },
     { speaker: 'JP\'s Mind', text: 'Pops tried to tell you. Jose tried to tell you. You didn\'t listen.' },
-    { speaker: 'JP\'s Mind', text: 'Time you\'ll never get back. People who stopped picking up the phone. A reputation you gotta rebuild from scratch.' },
-    { speaker: 'JP\'s Mind', text: 'So what now? Feel sorry for yourself? Blame somebody?' },
-    { speaker: 'JP\'s Mind', text: 'Nah. That\'s done.' },
-    { speaker: 'JP\'s Mind', text: 'Stop being a bitch. Change everything.' },
+    { speaker: 'JP\'s Mind', text: 'I keep telling everybody I\'m fine.' },
+    { speaker: 'JP\'s Mind', text: 'I do not know what fine even means in here.' },
   ],
   ch3_fighter1: [
     { speaker: 'Fighter', text: 'You looking at something?' },
@@ -1890,12 +1870,12 @@ const ch3Day1NPCDialogue: Record<string, DialogueLine[]> = {
   ch3_pullups: [
     { speaker: 'Workout Inmate', text: '*doing pullups, grunting*' },
     { speaker: 'Workout Inmate', text: 'You work out?' },
-    { speaker: 'JP', text: 'Every day.' },
-    { speaker: 'Workout Inmate', text: 'Good. Keeps your head right in here.' },
+    { speaker: 'JP', text: 'Used to.' },
+    { speaker: 'Workout Inmate', text: 'Then start again when you mean it.' },
   ],
   ch3_book_inmate: [
-    { speaker: 'Inmate', text: 'Two years in here, man. Two years.' },
-    { speaker: 'Inmate', text: 'My lawyer says we got a shot at appeal but I don\'t even believe him anymore.' },
+    { speaker: 'Inmate', text: 'They denied my appeal this morning.' },
+    { speaker: 'Inmate', text: 'Two more years. Minimum.' },
     { speaker: 'Inmate', text: 'I keep replaying that night in my head. One stupid decision.' },
     { speaker: 'JP', text: '...' },
     { speaker: 'Inmate', text: 'You\'re smart not to talk much. Just do your time and get out.' },
@@ -1952,9 +1932,9 @@ const ch3Day2NPCDialogue: Record<string, DialogueLine[]> = {
     { speaker: 'Tattoo Guy', text: 'Smart man.' },
   ],
   ch3_smoker: [
-    { speaker: 'Smoker', text: 'JP still don\'t smoke huh? Disciplined.' },
-    { speaker: 'JP', text: 'Trying to be.' },
-    { speaker: 'Smoker', text: 'Keep that energy when you get out. Harder on the outside.' },
+    { speaker: 'Smoker', text: 'JP don\'t sit with us anymore.' },
+    { speaker: 'JP', text: 'I sat here long enough.' },
+    { speaker: 'Smoker', text: 'Do what you gotta do.' },
   ],
   ch3_pullups: [
     { speaker: 'Workout Inmate', text: 'JP! You hit a new PR yesterday. How many was that?' },
@@ -1977,7 +1957,7 @@ const ch3Day3NPCDialogue: Record<string, DialogueLine[]> = {
   ],
   ch3_chris: [
     { speaker: 'Chris', text: 'JP signed up for that psychology course. Getting college credit in here.' },
-    { speaker: 'Chris', text: 'I\'m proud of you, bro. Just keep the routine when the doors open.' },
+    { speaker: 'Chris', text: 'You got the worksheet from yesterday? I missed one.' },
   ],
   ch3_bird: [
     { speaker: 'Bird', text: 'JP, real talk. When you get out, don\'t come back to the bullshit.' },
@@ -1985,24 +1965,23 @@ const ch3Day3NPCDialogue: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'Bird\'s been in here three times. He knows what coming back looks like.' },
   ],
   ch3_og: [
-    { speaker: 'OG Inmate', text: 'Lopez. I been watching you.' },
-    { speaker: 'OG Inmate', text: 'You came in here scared. Now you keep your head up and your routine tight.' },
-    { speaker: 'OG Inmate', text: 'Don\'t ever forget what this place taught you. But don\'t ever come back.' },
+    { speaker: 'OG Inmate', text: 'Lopez. Release date coming up.' },
+    { speaker: 'OG Inmate', text: 'Do not let these walls follow you home.' },
   ],
   ch3_guard: [
     { speaker: 'Guard', text: 'Lopez. Your release date is coming up.' },
-    { speaker: 'Guard', text: 'In all my years, I\'ve seen maybe ten people actually change in here. You\'re one of them.' },
+    { speaker: 'Guard', text: 'Keep your paperwork clean until then.' },
   ],
   ch3_mind: [
-    { speaker: 'JP\'s Mind', text: 'I walked in here a kid who thought he was tough.' },
-    { speaker: 'JP\'s Mind', text: 'I\'m walking out a man who knows what strength actually is.' },
-    { speaker: 'JP\'s Mind', text: 'Discipline. Patience. Faith.' },
-    { speaker: 'JP\'s Mind', text: 'When these doors open, I\'m never looking back.' },
+    { speaker: 'JP\'s Mind', text: 'I walked in thinking anger was strength.' },
+    { speaker: 'JP\'s Mind', text: 'It was not.' },
+    { speaker: 'JP\'s Mind', text: 'Routine. Patience. Faith.' },
+    { speaker: 'JP\'s Mind', text: 'Now I have to carry those outside.' },
   ],
   ch3_fighter1: [
     { speaker: 'Fighter', text: 'JP, you\'re getting out soon right?' },
     { speaker: 'JP', text: 'Yeah.' },
-    { speaker: 'Fighter', text: 'Do something with it, man. For all of us who can\'t.' },
+    { speaker: 'Fighter', text: 'Then stay out of my way until you go.' },
   ],
   ch3_fighter2: [
     { speaker: 'Inmate', text: 'JP\'s leaving soon.' },
@@ -2010,7 +1989,7 @@ const ch3Day3NPCDialogue: Record<string, DialogueLine[]> = {
   ],
   ch3_dice1: [
     { speaker: 'Dice Player', text: 'JP quit playing dice weeks ago. Says he don\'t gamble anymore.' },
-    { speaker: 'Dice Player', text: 'Smarter than all of us.' },
+    { speaker: 'Dice Player', text: 'More soups for us.' },
   ],
   ch3_dice2: [
     { speaker: 'Dice Player 2', text: 'I tried to read one of JP\'s books. Couldn\'t finish the first chapter.' },
@@ -2025,7 +2004,7 @@ const ch3Day3NPCDialogue: Record<string, DialogueLine[]> = {
   ch3_smoker: [
     { speaker: 'Smoker', text: 'JP getting out. Good for you, man.' },
     { speaker: 'Smoker', text: 'I got three more years. Maybe I\'ll start reading too.' },
-    { speaker: 'JP', text: 'You should. Changed everything for me.' },
+    { speaker: 'JP', text: 'It gave me somewhere else to put my head.' },
   ],
   ch3_pullups: [
     { speaker: 'Workout Inmate', text: 'JP. Last workout together?' },
@@ -2059,10 +2038,11 @@ const ch3Day1Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'Noted.' },
   ],
   ch3_phone: [
-    { speaker: 'JP', text: 'JP calls his Pops.' },
-    { speaker: 'JP', text: 'I\'m okay. I\'m figuring it out.' },
-    { speaker: 'JP\'s Mind', text: 'Long pause.' },
-    { speaker: 'Pops', text: 'I\'m proud of you for staying strong, son.' },
+    { speaker: 'Narrator', text: 'JP calls Pops.' },
+    { speaker: 'JP', text: 'I\'m good.' },
+    { speaker: 'Pops', text: 'Do not lie to me, mijo.' },
+    { speaker: 'JP', text: '...' },
+    { speaker: 'Pops', text: 'Just make it through tonight. Call me tomorrow.' },
   ],
   ch3_bed: [
     { speaker: 'JP\'s Mind', text: 'First night. Can\'t sleep.' },
@@ -2266,7 +2246,7 @@ const ch3Day3Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'Tomorrow he won\'t need to count anymore.' },
   ],
   ch3_wall_2: [
-    { speaker: 'JP\'s Mind', text: 'These walls have heard a lot of prayers. JP\'s were answered.' },
+    { speaker: 'JP\'s Mind', text: 'These walls have heard a lot of prayers. Mine taught me how to keep going.' },
   ],
   ch3_wall_3: [
     { speaker: 'JP\'s Mind', text: 'Last time looking at these walls. Thank God.' },
@@ -2281,9 +2261,8 @@ const ch3Day3Extras: Record<string, DialogueLine[]> = {
   ],
   ch3_bed: [
     { speaker: 'JP\'s Mind', text: 'Last night. Tomorrow the doors open.' },
-    { speaker: 'JP\'s Mind', text: 'I knew it.' },
-    { speaker: 'JP\'s Mind', text: 'God showed.' },
-    { speaker: 'JP\'s Mind', text: 'The truth always prevails.' },
+    { speaker: 'JP\'s Mind', text: 'I do not know what comes next.' },
+    { speaker: 'JP\'s Mind', text: 'I have faith now.' },
   ],
   ch3_toilet: [
     { speaker: 'JP\'s Mind', text: 'Last time using this thing. That alone is worth celebrating.' },
@@ -2395,7 +2374,7 @@ const ch4Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'Thirty minutes. That\'s all I get. But thirty minutes a day adds up when you\'re hungry.' },
   ],
   ch4_paycheck: [
-    { speaker: 'JP\'s Mind', text: '$12/hr. Not much, but it\'s mine. Earned clean.' },
+    { speaker: 'JP\'s Mind', text: 'Around twenty an hour. Not much, but it\'s mine. Earned clean.' },
     { speaker: 'JP\'s Mind', text: 'Used to make more in a day on the block. But this doesn\'t come with handcuffs.' },
   ],
   ch4_d8_seat: [

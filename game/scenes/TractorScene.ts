@@ -67,6 +67,48 @@ export class TractorScene extends BaseChapterScene {
       fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#5a1f1d',
     }).setOrigin(0.5).setDepth(1.6);
 
+    // Working office / break room. The room used to be a large cream void;
+    // wall-hugging fixtures keep the floor navigable and make every station
+    // read as part of a real vineyard shift.
+    this.add.rectangle(6.1 * tile, 5.25 * tile, 2.5 * tile, 0.9 * tile, 0x6e553b).setDepth(1.2)
+      .setStrokeStyle(4, 0x3a2b20);
+    this.add.rectangle(6.1 * tile, 5.25 * tile + 22, 2.2 * tile, 8, 0x342b25).setDepth(1.18);
+    this.add.rectangle(5.45 * tile, 5.08 * tile, 42, 28, 0x202a31).setDepth(1.32)
+      .setStrokeStyle(3, 0x66767d);
+    this.add.rectangle(5.45 * tile, 5.08 * tile, 33, 19, 0x6ca1ad).setDepth(1.34);
+    this.add.rectangle(6.55 * tile, 5.13 * tile, 48, 12, 0x4b4b45).setDepth(1.32);
+    for (const x of [4.15, 4.65]) {
+      this.add.rectangle(x * tile, 4.85 * tile, 0.42 * tile, 1.65 * tile, 0x667176).setDepth(1.26)
+        .setStrokeStyle(3, 0x333b3e);
+      this.add.rectangle(x * tile, 4.55 * tile, 14, 4, 0x30383b).setDepth(1.28);
+    }
+    this.add.rectangle(8.75 * tile, 4.5 * tile, 1.15 * tile, 0.9 * tile, 0xe1d8bd).setDepth(1.25)
+      .setStrokeStyle(3, 0x855d35);
+    this.add.text(8.75 * tile, 4.5 * tile, 'SAFETY\nROWS', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '5px', color: '#5d4632', align: 'center',
+    }).setOrigin(0.5).setDepth(1.27);
+    this.add.rectangle(9.15 * tile, 6.05 * tile, 42, 50, 0x87735c).setDepth(1.2)
+      .setStrokeStyle(3, 0x4b3a2b);
+    this.add.rectangle(9.15 * tile, 5.82 * tile, 27, 18, 0x2c3437).setDepth(1.24);
+    this.add.circle(9.15 * tile, 6.34 * tile, 8, 0xc6c0ad).setDepth(1.24);
+
+    // Tractor service bay: curb, fuel tank, hose reel, wheel chocks and tools.
+    const bayX = 13.5 * tile;
+    const bayY = 5.15 * tile;
+    this.add.rectangle(bayX, bayY, 3.35 * tile, 3.3 * tile, 0x252b2e, 0.72).setDepth(0.88)
+      .setStrokeStyle(7, 0xb6aa82, 0.7);
+    this.add.rectangle(12.15 * tile, 3.9 * tile, 0.58 * tile, 1.35 * tile, 0xa9adb0).setDepth(1.2)
+      .setStrokeStyle(3, 0x4b5559);
+    this.add.circle(12.15 * tile, 3.55 * tile, 18, 0xb9bdbe).setDepth(1.22);
+    this.add.circle(14.85 * tile, 4.1 * tile, 24, 0x283238).setDepth(1.2)
+      .setStrokeStyle(6, 0x759096);
+    this.add.circle(14.85 * tile, 4.1 * tile, 10, 0x111719).setDepth(1.21);
+    this.add.rectangle(14.85 * tile, 4.75 * tile, 0.85 * tile, 0.72 * tile, 0xb0602f).setDepth(1.2)
+      .setStrokeStyle(3, 0x5b3422);
+    for (const x of [12.75, 14.25]) {
+      this.add.rectangle(x * tile, 6.35 * tile, 33, 12, 0xd2a423).setDepth(1.18).setAngle(x < 13 ? -18 : 18);
+    }
+
     // Barrel/work room in the outbuilding. Cylinders have hoops and cast
     // shadows, so this no longer reads as another empty square building.
     for (const x of [19, 20, 21]) {
@@ -106,6 +148,20 @@ export class TractorScene extends BaseChapterScene {
       const glint = this.add.circle(right - 15, 17.2 * tile, 5, 0x58b7cf, 0.2).setDepth(1.4);
       this.tweens.add({ targets: glint, alpha: 0.85, duration: 1400, yoyo: true, repeat: -1 });
     }
+
+    // Picking bins, hose manifolds and pallet stacks make the field edges feel
+    // operational instead of decorative.
+    for (const bin of [{ x: 25.2, y: 10.15 }, { x: 27.0, y: 10.15 }, { x: 31.5, y: 19.2 }]) {
+      this.add.rectangle(bin.x * tile, bin.y * tile, 1.45 * tile, 0.78 * tile, 0x6f3b2c).setDepth(1.42)
+        .setStrokeStyle(4, 0x3c281f);
+      for (const slat of [-0.42, 0, 0.42]) {
+        this.add.rectangle((bin.x + slat) * tile, bin.y * tile, 5, 0.7 * tile, 0xb8794b).setDepth(1.44);
+      }
+    }
+    this.add.rectangle(35.4 * tile, 10.1 * tile, 0.9 * tile, 1.1 * tile, 0x9da8a8).setDepth(1.38)
+      .setStrokeStyle(4, 0x4b575a);
+    this.add.circle(35.4 * tile, 10.1 * tile, 20, 0x2d3b3f).setDepth(1.41)
+      .setStrokeStyle(5, 0x68878e);
 
     // Field signage helps the player read the two vineyard blocks.
     for (const marker of [{ x: 3.2, label: 'BLOCK 4' }, { x: 23.2, label: 'CABERNET' }]) {
@@ -235,7 +291,7 @@ export class TractorScene extends BaseChapterScene {
       this.interactions.consume(interactable.id);
       this.frozen = true;
       this.dialogue.show([
-        { speaker: 'Narrator', text: 'Paycheck. $487.32 after taxes.' },
+        { speaker: 'Narrator', text: 'Paycheck. Around twenty an hour.' },
         { speaker: 'JP\'s Mind', text: 'Two weeks of work for what I used to make in a night.' },
         { speaker: 'JP\'s Mind', text: 'But this one doesn\'t come with a court date.' },
         { speaker: 'Narrator', text: 'He deposits it. First clean money in a long time.' },

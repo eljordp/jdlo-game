@@ -36,7 +36,22 @@ Do not add an explanation, disclaimer, or second line.
 - Santa Barbara should be unmistakably Santa Barbara: coast, Spanish-revival
   materials, palms, social motion, beach life, and a lived-in house.
 - LUNA was JP's first time trading. He put his full portfolio into it and it
-  went effectively to zero. That loss helps cause the move into selling weed.
+  went effectively to zero. The truthful dramatic scale is roughly $1K to
+  roughly $5K to roughly $40K and then zero. These figures establish the rise
+  and loss; they are not meant to read like audited account statements. That
+  loss helps cause the move into selling weed.
+- The schools discussed were Oregon, Hawai'i, and ASU. JP attended De La Salle.
+  The family argument may use a rounded forty-thousand-a-year college cost when
+  a number is needed; do not manufacture itemized tuition figures.
+- Nolan's Santa Barbara call is one scene, not two competing scripts. School at
+  SBCC and the idea of a fresh start are the respectable frame; the beach
+  house, parties, girls, and social pull are the energy underneath it.
+- The Choice starts at a normal dinner with JP physically seated beside his
+  homegirl, whose in-game composite name is Nikki, and her parents. Later
+  Nikki's mom contacts JP without her
+  husband knowing, calls him to the farm, and JP drives his BMW there to pick
+  up the first bag and begin selling. Nikki is intentionally not the real name;
+  her parents remain role labels. Do not restore the private real name.
 - The dramatic chapter order is intentionally weed rise → jail → Caymus. It is
   selected for impact, even if life periods are compressed or reordered.
 - Build a real weed-rise chapter. The loop is supply, calls, weighing,
@@ -47,13 +62,22 @@ Do not add an explanation, disclaimer, or second line.
 - JP faced thirteen years and accepted a plea for one year. He had a lawyer,
   not a public defender.
 - Jail unfolds as phases across the sentence, not three literal days: survival
-  and fighting, discipline and training, then books/classes/faith. Mikey,
-  Chris, and Bird provide continuity. Faith is part of the changed routine.
+  and old habits including drugs and fighting, discipline and training, then
+  books/classes/faith. The turn is earned after JP sees Bird on his third time
+  inside and another man living with a denied appeal: JP realizes he must
+  straighten up or he will end up like the rest of them. Mikey, Chris, and Bird
+  provide continuity. Faith is part of the changed routine.
 - Named jail material includes *The Compound Effect*, *The Intelligent
   Investor*, psychology coursework, anger management, and JP's return to faith.
+- JP gained faith in jail. Release is not vindication: never write "God showed
+  me," "I knew it," or "the truth always prevails." He carries faith out while
+  the future remains uncertain.
 - The tractor callback appears only at Caymus.
 - Caymus is the post-jail dramatic chapter. It carries physical work, Spanish,
   vineyard routine, machinery, restlessness, and the arrival of ChatGPT/AI.
+- Caymus paid around twenty dollars an hour. Use the rounded rate, not invented
+  paycheck decimals.
+- Pops is Mexican and "mijo" is natural family language for him.
 - JP is self-taught. He did not go to school for this work. The game should show
   tutorials, AI, failed builds, repetition, and delivery instead of having
   every NPC announce that he is gifted.
@@ -72,6 +96,19 @@ Do not add an explanation, disclaimer, or second line.
   and deals or introductions happening throughout the chaos.
 - Vegas deals should be shown as meetings, introductions, follow-ups, and work
   moving forward—not an invented signed contract victory screen.
+- Home Return keeps Mom's apology and the sister's teasing "CEO" / JP's "COO.
+  Close enough" exchange. The joke is self-aware, not a documentary claim.
+- The ending should land on the cost of never returning to zero and the drive
+  that survives it, then leave forward pull. It is not a sales funnel or a
+  résumé victory lap.
+
+## Choice and consequence rule
+
+The player may affect tone, trust, optional access, later callbacks, and how JP
+reaches a fixed event. Choices must not rewrite established documentary facts:
+LUNA still collapses, JP still enters the weed rise, the legal consequence and
+jail still occur, and the confirmed work remains confirmed. A hesitation can
+change a later line; it cannot invent a false alternate life.
 
 ## Required versus optional
 
