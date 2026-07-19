@@ -43,6 +43,7 @@ export class OperatorScene extends BaseChapterScene {
   create() {
     super.create();
     this.createOperatorWorkplaces();
+    this.createDhlOperationsCenter();
     this.buildDensityPass();
 
     // GameIntelligence — track player behavior
@@ -467,6 +468,110 @@ export class OperatorScene extends BaseChapterScene {
     });
   }
 
+  private createDhlOperationsCenter() {
+    const tile = SCALED_TILE;
+    const px = (value: number) => value * tile + tile / 2;
+
+    // This is a DHL operations visit, not JP's office. The existing downtown
+    // shop becomes a compact scan / sort / stage floor so the relationship is
+    // visible as serious logistics work instead of one client on the sidewalk.
+    const centerX = px(30.5);
+    this.add.rectangle(centerX, 14.25 * tile, 9.2 * tile, 30, 0xd8b600)
+      .setDepth(2.44)
+      .setStrokeStyle(3, 0x9a7900);
+    this.add.text(centerX, 14.25 * tile, 'DHL  OPERATIONS', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#251d00',
+    }).setOrigin(0.5).setDepth(2.48);
+
+    // The floor is deliberately divided into three large readable functions.
+    const floorY = px(15.55);
+    this.add.rectangle(px(28.15), floorY, 3.0 * tile, 1.65 * tile, 0x3b3730, 0.9).setDepth(2.08);
+    this.add.rectangle(px(31.15), floorY, 2.6 * tile, 1.65 * tile, 0x49443a, 0.9).setDepth(2.08);
+    this.add.rectangle(px(33.75), floorY, 2.0 * tile, 1.65 * tile, 0x343942, 0.9).setDepth(2.08);
+    for (const [x, label] of [[28.15, 'SCAN'], [31.15, 'SORT'], [33.75, 'STAGE']] as Array<[number, string]>) {
+      this.add.text(px(x), px(15.03), label, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '5px', color: '#f2d447',
+      }).setOrigin(0.5).setDepth(2.5).setAlpha(0.9);
+    }
+
+    // Scan station: terminal, scale and a live green confirmation light.
+    this.add.rectangle(px(27.35), px(15.8), 1.15 * tile, 0.7 * tile, 0x24272d)
+      .setDepth(2.55)
+      .setStrokeStyle(2, 0x626873);
+    this.add.rectangle(px(27.35), px(15.62), 0.72 * tile, 0.33 * tile, 0x173e45).setDepth(2.58);
+    const scanLight = this.add.circle(px(27.7), px(15.45), 5, 0x52d273).setDepth(2.62);
+    this.tweens.add({ targets: scanLight, alpha: 0.3, duration: 650, yoyo: true, repeat: -1 });
+    this.add.rectangle(px(28.55), px(15.95), 0.9 * tile, 0.5 * tile, 0x6f6b63).setDepth(2.54);
+
+    // Sorting conveyor: one large functional object beats a scatter of props.
+    const beltX = px(31.0);
+    const beltY = px(15.75);
+    this.add.rectangle(beltX, beltY, 2.45 * tile, 0.72 * tile, 0x222831)
+      .setDepth(2.5)
+      .setStrokeStyle(3, 0x69727e);
+    for (let roller = -4; roller <= 4; roller++) {
+      this.add.rectangle(beltX + roller * 19, beltY, 5, 0.58 * tile, 0x5e6873).setDepth(2.52);
+    }
+    const parcel = this.add.rectangle(beltX - tile, beltY - 4, 0.52 * tile, 0.42 * tile, 0xa97742)
+      .setDepth(2.63)
+      .setStrokeStyle(2, 0xd4a35d);
+    this.tweens.add({
+      targets: parcel,
+      x: beltX + tile,
+      duration: 2400,
+      repeat: -1,
+      repeatDelay: 700,
+      ease: 'Linear',
+      onRepeat: () => { parcel.x = beltX - tile; },
+    });
+
+    // Dispatch staging: palletized cartons and dock markings form a single
+    // recognizable cluster while the center aisle and south door stay open.
+    for (const [x, y, shade] of [
+      [33.55, 15.55, 0x9a6d3d], [34.35, 15.55, 0x825c35],
+      [33.55, 16.15, 0x76512f], [34.35, 16.15, 0xa87842],
+    ] as Array<[number, number, number]>) {
+      this.add.rectangle(px(x), px(y), 0.66 * tile, 0.5 * tile, shade)
+        .setDepth(2.55)
+        .setStrokeStyle(2, 0x533821);
+      this.add.rectangle(px(x), px(y) - 5, 0.5 * tile, 3, 0xf0c040, 0.8).setDepth(2.58);
+    }
+    this.add.rectangle(px(33.95), px(16.48), 1.8 * tile, 5, 0xf0c040, 0.8).setDepth(2.52);
+    this.add.text(px(33.95), px(16.6), 'DISPATCH', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '4px', color: '#d7dbe0',
+    }).setOrigin(0.5).setDepth(2.54);
+
+    // A floor worker moves a parcel between scan and sort. The manager stays
+    // interactable and paces inside the operation instead of on the road.
+    const floorWorker = this.add.sprite(px(28.9), px(16.45), 'npc_generic', 0)
+      .setScale(SCALE * 0.92)
+      .setTint(0xe4c517)
+      .setDepth(3.1);
+    const workerParcel = this.add.rectangle(px(28.9), px(16.45) - tile * 0.42, tile * 0.38, tile * 0.28, 0x9b7042)
+      .setDepth(3.2);
+    this.tweens.add({
+      targets: [floorWorker, workerParcel],
+      x: px(32.15),
+      duration: 3300,
+      yoyo: true,
+      repeat: -1,
+      hold: 900,
+      repeatDelay: 700,
+      ease: 'Sine.easeInOut',
+    });
+
+    const dhlManager = this.npcs.find(npc => npc.id === 'ch6_dhl');
+    if (dhlManager) {
+      this.collisionTiles.delete('30,12');
+      dhlManager.sprite.setPosition(px(29.25), px(16.45));
+      this.collisionTiles.add('29,16');
+    }
+
+    for (const [x, y] of [[27, 15], [28, 15], [30, 15], [31, 15], [32, 15], [34, 15], [34, 16]] as Array<[number, number]>) {
+      this.collisionTiles.add(`${x},${y}`);
+    }
+  }
+
   // --- NPC Patrol System ---
   private startNPCPatrols() {
     // Helper: make an NPC walk back and forth on X axis
@@ -561,8 +666,8 @@ export class OperatorScene extends BaseChapterScene {
     // Manza — walks between buildings (row 12, cols 28-38)
     patrolX('ch6_manza', 28, 38, 6000, 3500);
 
-    // DHL client — paces near his office (row 12, cols 26-33)
-    patrolX('ch6_dhl', 26, 33, 5500, 2500);
+    // DHL manager — checks the scan/sort line inside the operations floor.
+    patrolX('ch6_dhl', 29, 32, 5500, 2500);
 
     // Gym bro — moves between equipment (col 5, rows 38-41)
     patrolY('ch6_gym_bro', 38, 41, 4500, 2000);
