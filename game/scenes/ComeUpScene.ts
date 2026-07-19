@@ -15,6 +15,7 @@ import { ChoiceLedger } from '../systems/ChoiceLedger';
 export class ComeUpScene extends BaseChapterScene {
   private typingPlayed = false;
   private clientTriagePlayed = false;
+  private websiteRescuePlayed = false;
   private clientReturned = false;
   private ghostMoved = false;
   private stickerTalked = false;
@@ -432,6 +433,14 @@ export class ComeUpScene extends BaseChapterScene {
   // Override to add typing mini-game and payment cutscene
   protected handleInteractable(interactable: { id: string; type: string; consumed?: boolean }) {
     GameIntelligence.onInteracted(interactable.id);
+    if (interactable.id === 'ch5_first_site' && !this.websiteRescuePlayed) {
+      Analytics.trackInteraction(interactable.id);
+      this.websiteRescuePlayed = true;
+      this.playWebsiteRescue();
+      this.interactions.consume(interactable.id);
+      return;
+    }
+
     if (interactable.id === 'ch5_stack' && !this.clientTriagePlayed) {
       Analytics.trackInteraction(interactable.id);
       SoundEffects.playVibrate();
@@ -1089,6 +1098,61 @@ export class ComeUpScene extends BaseChapterScene {
           { speaker: 'Paid Client', text: 'Any update? We are still losing orders.' },
         ], () => this.playPricingDecision('prospect'));
       });
+    });
+  }
+
+  private playWebsiteRescue() {
+    this.frozen = true;
+    SoundEffects.playAlert();
+    this.dialogue.show([
+      { speaker: 'Client (text)', text: 'The order button is gone on my phone.' },
+      { speaker: 'Narrator', text: 'Desktop looks fine. The client screenshot is real.' },
+      { speaker: 'JP\'s Mind', text: 'Do not guess. Find where it actually breaks.' },
+    ], () => {
+      this.showWorkChoice('What comes first?', 'Reproduce it', 'Rewrite the page', () => {
+        this.dialogue.show([
+          { speaker: 'Narrator', text: 'JP narrows the browser to the client\'s screen size.' },
+          { speaker: 'Narrator', text: 'The fixed-width cart pushes checkout past the edge.' },
+          { speaker: 'JP\'s Mind', text: 'Found it. One constraint, not the whole site.' },
+        ], () => this.playWebsiteFixDecision(true));
+      }, () => {
+        this.dialogue.show([
+          { speaker: 'Narrator', text: 'JP rebuilds the product card. The page looks cleaner.' },
+          { speaker: 'Client (text)', text: 'Button is still gone.' },
+          { speaker: 'JP\'s Mind', text: 'I changed what I could see instead of finding what broke.' },
+        ], () => this.playWebsiteFixDecision(false));
+      });
+    });
+  }
+
+  private playWebsiteFixDecision(reproduced: boolean) {
+    this.showWorkChoice('Checkout is wider than the phone.', 'Fix the layout', 'Hide overflow', () => {
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'The cart becomes fluid. The button returns at every screen size.' },
+        { speaker: 'Client (text)', text: 'It works. Just got an order.' },
+        { speaker: 'JP\'s Mind', text: reproduced
+          ? 'Reproduce. Trace. Fix the cause.'
+          : 'The first hour was wasted. The lesson was not.' },
+      ], () => this.finishWebsiteRescue());
+    }, () => {
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'The page stops scrolling sideways. The checkout is still clipped.' },
+        { speaker: 'Client (text)', text: 'I still cannot press it.' },
+        { speaker: 'JP\'s Mind', text: 'Hiding the symptom is not fixing the site.' },
+        { speaker: 'Narrator', text: 'JP goes back, removes the fixed width, and tests it again.' },
+      ], () => this.finishWebsiteRescue());
+    });
+  }
+
+  private finishWebsiteRescue() {
+    SoundEffects.playConfirm();
+    this.dialogue.show([
+      { speaker: 'Narrator', text: 'Ugly or not, the site takes the order.' },
+      { speaker: 'JP\'s Mind', text: 'Working beats impressive.' },
+    ], () => {
+      MoodSystem.changeMorale(4);
+      this.frozen = false;
+      this.refreshObjectiveHint();
     });
   }
 
