@@ -3398,8 +3398,11 @@ export class HomeScene extends BaseChapterScene {
   private playLiftingMinigame() {
     const objects: Phaser.GameObjects.GameObject[] = [];
     let reps = 0;
-    let timeLeft = 15;
+    let timeLeft = 20;
     let gameOver = false;
+    // Form system: pacing beats mashing. Greed tears your form.
+    let formLevel = 0;
+    let lockout = false;
 
     // Dark overlay
     objects.push(this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.75)
@@ -3411,8 +3414,8 @@ export class HomeScene extends BaseChapterScene {
     }).setOrigin(0.5).setScrollFactor(0).setDepth(310));
 
     // Instructions
-    objects.push(this.add.text(GAME_WIDTH / 2, 70, 'MASH SPACE to curl!', {
-      fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#aaaacc',
+    objects.push(this.add.text(GAME_WIDTH / 2, 70, 'SPACE to curl. Pace it — red form tears, and torn form costs reps.', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#aaaacc',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(310));
 
     // Exit button
@@ -3448,8 +3451,30 @@ export class HomeScene extends BaseChapterScene {
     }).setOrigin(0.5).setScrollFactor(0).setDepth(310);
     objects.push(repLabel);
 
+    // Form meter — the actual skill. Fills per rep, drains when you breathe.
+    objects.push(this.add.text(GAME_WIDTH / 2 - 130, GAME_HEIGHT / 2 - 55, 'FORM', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#888888',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(310));
+    objects.push(this.add.rectangle(GAME_WIDTH / 2 + 20, GAME_HEIGHT / 2 - 55, 208, 16, 0x222230)
+      .setScrollFactor(0).setDepth(309));
+    const formFill = this.add.rectangle(GAME_WIDTH / 2 - 82, GAME_HEIGHT / 2 - 55, 4, 12, 0x40c060)
+      .setOrigin(0, 0.5).setScrollFactor(0).setDepth(310);
+    objects.push(formFill);
+
+    const formTicker = this.time.addEvent({
+      delay: 100,
+      loop: true,
+      callback: () => {
+        if (gameOver) return;
+        formLevel = Math.max(0, formLevel - 1.6);
+        formFill.width = Math.max(4, formLevel * 2);
+        formFill.setFillStyle(formLevel > 75 ? 0xff4040 : formLevel > 45 ? 0xf0c040 : 0x40c060);
+      },
+    });
+    objects.push(formTicker as unknown as Phaser.GameObjects.GameObject);
+
     // Timer
-    const timerText = this.add.text(GAME_WIDTH - 100, 40, '15', {
+    const timerText = this.add.text(GAME_WIDTH - 100, 40, '20', {
       fontFamily: '"Press Start 2P", monospace', fontSize: '20px', color: '#ffffff',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(310);
     objects.push(timerText);
@@ -3457,7 +3482,7 @@ export class HomeScene extends BaseChapterScene {
     // Countdown timer
     const countdown = this.time.addEvent({
       delay: 1000,
-      repeat: 14,
+      repeat: 19,
       callback: () => {
         timeLeft--;
         timerText.setText(String(timeLeft));
@@ -3471,9 +3496,26 @@ export class HomeScene extends BaseChapterScene {
       },
     });
 
-    // Curl animation on Space
+    // Curl on Space — but greed while the form bar is red tears it
     const doCurl = () => {
-      if (gameOver) return;
+      if (gameOver || lockout) return;
+      formLevel += 21;
+      if (formLevel > 100) {
+        // Form breaks: lose reps, sit out the recovery
+        lockout = true;
+        formLevel = 55;
+        reps = Math.max(0, reps - 2);
+        repText.setText(String(reps));
+        repText.setColor('#ff4444');
+        this.showFloatingText('FORM BREAKS. -2', '#ff4040');
+        this.cameras.main.shake(180, 0.004);
+        this.tweens.add({ targets: jpSprite, angle: 8, duration: 120, yoyo: true, repeat: 2 });
+        this.time.delayedCall(1800, () => {
+          lockout = false;
+          repText.setColor('#ffffff');
+        });
+        return;
+      }
       reps++;
       repText.setText(String(reps));
 

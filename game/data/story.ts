@@ -425,8 +425,8 @@ export const chapter3NPCs: NPCData[] = [
     sprite: 'npc_inmate',
     dialogue: [
       { speaker: 'Mikey', text: 'Bro, keep your head down. First week is the worst.' },
-      { speaker: 'Mikey', text: 'I been here 8 months. You learn who to trust real quick.' },
-      { speaker: 'Mikey', text: 'Don\'t talk to nobody you don\'t know. And don\'t look at nobody\'s food.' },
+      { speaker: 'Mikey', text: 'I been here 8 months. My daughter turned two on Tuesday. I heard it over the phone.' },
+      { speaker: 'Mikey', text: 'You learn who to trust real quick. Don\'t talk to nobody you don\'t know. And don\'t look at nobody\'s food.' },
     ],
   },
   {
@@ -1786,6 +1786,7 @@ const ch3Day1NPCDialogue: Record<string, DialogueLine[]> = {
   ch3_chris: [
     { speaker: 'Chris', text: 'JP? Damn. When\'d they get you?' },
     { speaker: 'Chris', text: 'Don\'t worry, we got you in here. Mikey, Bird, and me.' },
+    { speaker: 'Chris', text: 'I got four months left. That\'s the scary part — I did three bids of four months. It\'s the out part I keep failing.' },
     { speaker: 'Chris', text: 'Just don\'t do nothing stupid the first month.' },
   ],
   ch3_bird: [
@@ -1862,6 +1863,7 @@ const ch3Day2NPCDialogue: Record<string, DialogueLine[]> = {
   ch3_chris: [
     { speaker: 'Chris', text: 'Yo JP, we playing dice in the yard. You in?' },
     { speaker: 'Chris', text: 'Commissary on the line. Don\'t bet what you can\'t lose.' },
+    { speaker: 'Chris', text: 'Sixty-one days left. I keep saying it like it means something this time.' },
   ],
   ch3_bird: [
     { speaker: 'Bird', text: 'JP filling out already. Them morning pushups working, bro.' },
@@ -1926,6 +1928,7 @@ const ch3Day3NPCDialogue: Record<string, DialogueLine[]> = {
     { speaker: 'JP', text: 'The Compound Effect. It\'s about how small things add up.' },
     { speaker: 'Mikey', text: 'Like pushups?' },
     { speaker: 'JP', text: 'Like everything.' },
+    { speaker: 'Mikey', text: '...you think it works on being a dad? I got fourteen months of small things to make up.' },
   ],
   ch3_chris: [
     { speaker: 'Chris', text: 'JP signed up for that psychology course. Getting college credit in here.' },
