@@ -4,6 +4,7 @@ import { weedRiseMap, type MapData } from '../data/maps';
 import type { DialogueLine } from '../systems/DialogueSystem';
 import { GAME_HEIGHT, GAME_WIDTH, SCALE, SCALED_TILE } from '../config';
 import { SoundEffects } from '../systems/SoundEffects';
+import { MusicSystem } from '../systems/MusicSystem';
 import { ChoiceLedger } from '../systems/ChoiceLedger';
 
 /**
@@ -488,6 +489,7 @@ export class WeedRiseScene extends BaseChapterScene {
         this.stashHidden = true;
         this.requiredDone = true;
         this.interactions.consume(interactable.id);
+        MusicSystem.transitionTo('weed-paranoia', 1200);
         this.dialogue.show([
           { speaker: 'Narrator', text: 'JP counts the return twice and hides it behind the kitchen panel.' },
           { speaker: 'Narrator', text: 'For a minute, being back at zero feels impossible.' },

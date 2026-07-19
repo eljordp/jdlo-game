@@ -686,6 +686,7 @@ export class VegasScene extends Phaser.Scene {
         break;
       }
       case 6: {
+        MusicSystem.transitionTo('vegas-sunrise', 1100);
         this.addObj(this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x171124));
         this.addObj(this.add.rectangle(cx, GAME_HEIGHT - 120, GAME_WIDTH, 240, 0xd06f48));
         this.addObj(this.add.circle(GAME_WIDTH - 190, GAME_HEIGHT - 160, 78, 0xffd469, 0.9));

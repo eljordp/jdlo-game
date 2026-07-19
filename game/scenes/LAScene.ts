@@ -26,7 +26,7 @@ export class LAScene extends Phaser.Scene {
     this.sceneObjects = [];
     this.activeTweens = [];
 
-    MusicSystem.stop();
+    MusicSystem.play('la');
     this.cameras.main.fadeIn(500, 0, 0, 0);
 
     // Cinema letterbox bars

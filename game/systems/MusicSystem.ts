@@ -284,6 +284,36 @@ const TRACKS: Record<string, TrackDef> = {
     ],
   },
 
+  // ── Weed paranoia: the same motion, drained of its confidence. ─────────
+  'weed-paranoia': {
+    ambience: 'traffic',
+    layers: [
+      {
+        notes: ['E2', 'R', 'R', 'E2', 'R', 'Eb2', 'R', 'D2',
+                'E2', 'R', 'R', 'R', 'Bb1', 'R', 'D2', 'R'],
+        bpm: 48,
+        gain: 0.013,
+        wave: 'sine',
+        filterFreq: 270,
+        filterQ: 0.9,
+        attack: 0.55,
+        release: 0.75,
+      },
+      {
+        notes: ['R', 'R', 'R', 'B4', 'R', 'R', 'R', 'R',
+                'R', 'R', 'Bb4', 'R', 'R', 'R', 'R', 'R'],
+        bpm: 48,
+        gain: 0.003,
+        wave: 'square',
+        filterFreq: 1450,
+        filterQ: 1.2,
+        detune: -9,
+        attack: 0.02,
+        release: 0.24,
+      },
+    ],
+  },
+
   // ── Raid: short, breathless action pulse. Used only once danger breaks. ─
   'raid': {
     layers: [
@@ -544,6 +574,47 @@ const TRACKS: Record<string, TrackDef> = {
     ],
   },
 
+  // ── LA: access on the surface, invoices and rent under every note. ────
+  'la': {
+    ambience: 'city',
+    layers: [
+      {
+        notes: ['C2', 'R', 'G2', 'R', 'Bb2', 'R', 'Ab2', 'R',
+                'C2', 'R', 'Eb2', 'R', 'G2', 'R', 'Bb1', 'R'],
+        bpm: 76,
+        gain: 0.011,
+        wave: 'sine',
+        filterFreq: 380,
+        filterQ: 0.55,
+        attack: 0.24,
+        release: 0.35,
+      },
+      {
+        notes: ['C4', 'R', 'Eb4', 'G4', 'R', 'F4', 'Eb4', 'R',
+                'Bb3', 'R', 'C4', 'R', 'G4', 'F4', 'Eb4', 'R'],
+        bpm: 76,
+        gain: 0.006,
+        wave: 'triangle',
+        filterFreq: 1180,
+        filterQ: 0.4,
+        detune: 4,
+        attack: 0.18,
+        release: 0.42,
+      },
+      {
+        notes: ['R', 'R', 'C5', 'R', 'R', 'R', 'R', 'G5',
+                'R', 'R', 'R', 'R', 'Eb5', 'R', 'R', 'R'],
+        bpm: 76,
+        gain: 0.0025,
+        wave: 'sine',
+        filterFreq: 2100,
+        filterQ: 0.6,
+        attack: 0.08,
+        release: 0.8,
+      },
+    ],
+  },
+
   // ── Vegas: glossy club pulse with a sunrise comedown in the harmony. ──
   'vegas': {
     layers: [
@@ -580,6 +651,36 @@ const TRACKS: Record<string, TrackDef> = {
         filterQ: 0.5,
         attack: 0.01,
         release: 0.06,
+      },
+    ],
+  },
+
+  // ── Vegas sunrise: ringing ears, relief, and the cost after the rush. ──
+  'vegas-sunrise': {
+    ambience: 'city',
+    layers: [
+      {
+        notes: ['A1', 'R', 'E2', 'R', 'G2', 'R', 'D2', 'R',
+                'A1', 'R', 'C2', 'R', 'E2', 'R', 'R', 'R'],
+        bpm: 42,
+        gain: 0.009,
+        wave: 'sine',
+        filterFreq: 330,
+        filterQ: 0.35,
+        attack: 0.7,
+        release: 0.9,
+      },
+      {
+        notes: ['R', 'A3', 'R', 'C4', 'R', 'E4', 'R', 'R',
+                'R', 'G3', 'R', 'A3', 'R', 'E4', 'R', 'R'],
+        bpm: 42,
+        gain: 0.005,
+        wave: 'triangle',
+        filterFreq: 1050,
+        filterQ: 0.3,
+        detune: -4,
+        attack: 0.45,
+        release: 1.1,
       },
     ],
   },

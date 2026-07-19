@@ -4,6 +4,7 @@ import { homeReturnDialogue } from '../data/story';
 import { GAME_WIDTH, GAME_HEIGHT, SCALED_TILE } from '../config';
 import type { DialogueLine } from '../systems/DialogueSystem';
 import { ChoiceLedger } from '../systems/ChoiceLedger';
+import { MusicSystem } from '../systems/MusicSystem';
 
 /**
  * Home Return — playable chapter. Same house from Ch1, but JP is different now.
@@ -421,6 +422,7 @@ export class HomeReturnScene extends BaseChapterScene {
   // ── Pops reunion — emotional peak of the game ──
   private playPopsReunion(baseDialogue: DialogueLine[]) {
     this.frozen = true;
+    MusicSystem.stop();
 
     // Dim screen — intimate moment
     const dimOverlay = this.add.rectangle(
@@ -478,6 +480,7 @@ export class HomeReturnScene extends BaseChapterScene {
                           this.popsTalked = true;
                           this.requiredDone = true;
                           this.frozen = false;
+                          MusicSystem.play('homecoming');
                         },
                       });
                     },
