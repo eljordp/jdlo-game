@@ -227,17 +227,20 @@ export const chapter1NPCs: NPCData[] = [
     y: 10,
     sprite: 'npc_bikini2',
     dialogue: [
-      { speaker: 'Girl', text: 'You got a light?' },
+      // Sam has her own life and her own exit plan. She's not here to
+      // tell JP he's special — she's here to leave before it gets ugly.
+      { speaker: 'Sam', text: 'You got a light?' },
       { speaker: 'JP', text: '', choices: [
         { text: '"Yeah, here."', next: [
-          { speaker: 'Girl', text: 'Thanks. You seem different from the other guys here.' },
-          { speaker: 'JP', text: 'Different how?' },
-          { speaker: 'Girl', text: 'I don\'t know. Like you\'re here but you\'re not really here.' },
-          { speaker: 'JP', text: 'Yeah. I get that a lot.' },
-          { speaker: 'JP\'s Mind', text: 'She clocked it in five minutes. These guys I live with still haven\'t.' },
+          { speaker: 'Sam', text: 'Thanks. Last one for me — MCAT in the morning. I just come for one drink and dip.' },
+          { speaker: 'JP', text: 'You leave every party at eleven?' },
+          { speaker: 'Sam', text: 'Every single one. This house is a countdown, not a lifestyle. Most of y\'all can\'t hear the clock.' },
+          { speaker: 'Narrator', text: 'She stubs it out half-smoked and leaves. On time.' },
+          { speaker: 'JP\'s Mind', text: 'She hears the clock. Why can\'t I?' },
         ]},
         { text: '"Nah."', next: [
-          { speaker: 'Girl', text: 'Whatever.' },
+          { speaker: 'Sam', text: 'All good.' },
+          { speaker: 'Narrator', text: 'She\'s gone by eleven anyway. She always is.' },
           { speaker: 'JP\'s Mind', text: 'Didn\'t feel like talking. That\'s becoming more frequent.' },
         ]},
       ]},

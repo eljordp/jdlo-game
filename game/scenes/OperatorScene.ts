@@ -18,6 +18,7 @@ export class OperatorScene extends BaseChapterScene {
   private dashboardDone = false;
   private pitchDone = false;
   private vacavilleTexted = false;
+  private geraldTexted = false;
   private clockText?: Phaser.GameObjects.Text;
   private dayNightOverlay?: Phaser.GameObjects.Rectangle;
   private hiddenRoomFound = false;
@@ -771,10 +772,19 @@ export class OperatorScene extends BaseChapterScene {
         { speaker: 'JP\'s Mind', text: 'Two years later. Still "one small thing."' },
         { speaker: 'JP\'s Mind', text: 'Good client though. Scope doc goes out tomorrow.' },
       ];
+      // Gerald, two years later, still circling — second phone check only
+      const geraldReturn: DialogueLine[] = (this.vacavilleTexted && !this.geraldTexted) ? [
+        { speaker: 'Narrator', text: 'Also: Gerald.' },
+        { speaker: 'Gerald', text: 'JP! Big news. My cousin\'s FINALLY freed up. Q3 we align for real. The vision lives!' },
+        { speaker: 'JP\'s Mind', text: 'Two years. Same vision. Same cousin. Still circling.' },
+        { speaker: 'JP\'s Mind', text: 'Some people never land the plane. You just stop waiting at the airport.' },
+      ] : [];
+      if (this.vacavilleTexted) this.geraldTexted = true;
       this.vacavilleTexted = true;
       this.dialogue.show([
         { speaker: 'Narrator', text: 'JP pulls out his phone. Battery at 87%. 14 notifications.' },
         ...vacavilleReturn,
+        ...geraldReturn,
         { speaker: 'JP\'s Mind', text: 'Let me check on a few things.' },
       ], () => {
         this.showPhoneApps();

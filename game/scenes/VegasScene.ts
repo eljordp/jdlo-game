@@ -672,6 +672,7 @@ export class VegasScene extends Phaser.Scene {
         this.addDealExchange(GAME_WIDTH - 210, 465, 'FOLLOW-UP SET', 'npc-business');
         this.showText('PENTHOUSE — 4:18 AM', 85, { size: '16px', color: '#f0c040', delay: 250 });
         this.showText('One owned companies. One owned the floor. One collected supercars.', 140, { size: '11px', delay: 850 });
+        this.showText('The one who owned the floor: "Everybody in this room talks. I watch who follows up."', 250, { size: '9px', color: '#c8b890', delay: 2100 });
         this.showText('Projects, partnerships, and numbers kept moving. Some became work. Others stayed Vegas talk.', 195, { size: '10px', color: '#aaaacc', delay: 1500 });
         this.time.delayedCall(2700, () => {
           this.showText("JP's Mind", 280, { size: '11px', color: '#f0c040' });
