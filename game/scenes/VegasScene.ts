@@ -491,7 +491,8 @@ export class VegasScene extends Phaser.Scene {
       const swimmer = this.addObj(this.add.circle(360 + i * 110, GAME_HEIGHT - 125 + (i % 2) * 55, 11, i % 2 ? 0xe5ad7b : 0x9f6f50));
       this.addTween({ targets: swimmer, x: swimmer.x + 55, duration: 1800 + i * 140, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
     }
-    this.addMovingCrowd(245, 12, 1.05);
+    // Crowd on the pool deck, below the text zone
+    this.addMovingCrowd(330, 12, 1.05);
   }
 
   private makeNightclub(name: string, color: number, chandelier = false): void {
@@ -502,11 +503,12 @@ export class VegasScene extends Phaser.Scene {
     }).setOrigin(0.5).setDepth(40));
 
     if (chandelier) {
-      const ring = this.addObj(this.add.circle(GAME_WIDTH / 2, 185, 110, 0x000000, 0).setStrokeStyle(12, 0xf0c040, 0.8));
+      // Ring sits below the title so OMNIA stays readable
+      const ring = this.addObj(this.add.circle(GAME_WIDTH / 2, 245, 110, 0x000000, 0).setStrokeStyle(12, 0xf0c040, 0.8));
       this.addTween({ targets: ring, angle: 360, duration: 7000, repeat: -1, ease: 'Linear' });
       for (let i = 0; i < 18; i++) {
         const angle = (Math.PI * 2 * i) / 18;
-        const light = this.addObj(this.add.circle(GAME_WIDTH / 2 + Math.cos(angle) * 110, 185 + Math.sin(angle) * 45, 5, 0xffe18a, 0.8));
+        const light = this.addObj(this.add.circle(GAME_WIDTH / 2 + Math.cos(angle) * 110, 245 + Math.sin(angle) * 45, 5, 0xffe18a, 0.8));
         this.addTween({ targets: light, alpha: 0.2, duration: 250 + (i % 5) * 90, yoyo: true, repeat: -1 });
       }
     } else {
@@ -652,8 +654,8 @@ export class VegasScene extends Phaser.Scene {
         });
 
         this.showText('SPEARMINT RHINO', 100, { size: '18px', color: '#ff4d86', delay: 250 });
-        this.showText('AFTER HOURS', 132, { size: '9px', color: '#a06478', delay: 500 });
-        this.showText('"One more stop." — Dan. It was never one more stop.', 150, { size: '11px', color: '#e0a8bc', delay: 850 });
+        this.showText('AFTER HOURS', 128, { size: '8px', color: '#a06478', delay: 500 });
+        this.showText('"One more stop." — Dan. It was never one more stop.', 160, { size: '11px', color: '#e0a8bc', delay: 850 });
         this.showText('Two of them picked JP before he sat down. They were not asking.', 200, { size: '10px', color: '#e0a8bc', delay: 1600 });
         this.showText('Dancers working. Owners talking. Cash, smoke, drinks—and business still moving at the table.', 255, { size: '10px', color: '#d8a6b7', delay: 2400 });
         this.time.delayedCall(6200, () => {
