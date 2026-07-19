@@ -152,7 +152,7 @@ export class MenuScene extends Phaser.Scene {
     const taglines = [
       'Based on real events. No cap.',
       '7 chapters. 1 real story.',
-      'From the bedroom to the boardroom.',
+      'Never back to zero.',
       'He faced 13 years. Took the plea.',
       'Self-taught everything. In 5 months.',
       'Not a game about a coder. A game about a person.',

@@ -460,12 +460,12 @@ export class OperatorScene extends BaseChapterScene {
       ch6_dashboard: {
         title: "Pomaika'i Team Dashboard",
         description: 'Full ops dashboard. Built in one session. Whole team uses it daily.',
-        revenue: 'COO',
+        revenue: 'In production',
       },
       ch6_portfolio: {
         title: 'The Portfolio',
         description: 'Websites, AI tools, and operating systems. Self-taught, with real work separated from demos.',
-        revenue: '$10K+/mo',
+        revenue: 'Delivered',
       },
     };
   }
@@ -864,7 +864,7 @@ export class OperatorScene extends BaseChapterScene {
     const slides = [
       { heading: 'The Problem', body: 'Client needs a system that runs\nwithout hand-holding.\nNo dashboards. No visibility.\nJust chaos.' },
       { heading: 'The Solution', body: 'Custom ops dashboard.\nAI-powered workflows.\nTeam Slack integration.\nBuilt in one weekend.' },
-      { heading: 'The Result', value: '$15K/mo', sub: 'Recurring revenue. Zero downtime.' },
+      { heading: 'The Result', value: 'DELIVERED', sub: 'Paid. In production. Still asking questions.' },
     ];
 
     let slideIndex = 0;
@@ -942,7 +942,7 @@ export class OperatorScene extends BaseChapterScene {
           valueText?.destroy();
           subText?.destroy();
 
-          const closedText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 20, 'Deal closed.', {
+          const closedText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 20, 'Scope agreed. Work starts Monday.', {
             fontFamily: '"Press Start 2P", monospace',
             fontSize: '20px',
             color: '#111111',
@@ -965,7 +965,7 @@ export class OperatorScene extends BaseChapterScene {
                     for (const obj of objects) obj.destroy();
                     // End with narrator line
                     this.dialogue.show([
-                      { speaker: 'Narrator', text: 'JP doesn\'t pitch anymore. He presents.' },
+                      { speaker: 'Narrator', text: 'The client nods. The next call starts in twenty minutes.' },
                     ], () => { this.frozen = false; });
                   },
                 });
@@ -1013,9 +1013,9 @@ export class OperatorScene extends BaseChapterScene {
 
     // Stats that count up
     const stats = [
-      { label: 'Team Members', target: 8, suffix: '' },
-      { label: 'Active Projects', target: 12, suffix: '' },
-      { label: 'Monthly Revenue', target: 15, suffix: 'K', prefix: '$' },
+      { label: 'Open Projects', target: 12, suffix: '', prefix: '' },
+      { label: 'Unread Messages', target: 47, suffix: '', prefix: '' },
+      { label: 'Invoices Pending', target: 3, suffix: '', prefix: '' },
     ];
 
     const startY = GAME_HEIGHT / 2 - termH / 2 + 80;
@@ -1281,22 +1281,21 @@ export class OperatorScene extends BaseChapterScene {
     }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
     objects.push(totalLabel);
 
-    const totalValue = this.add.text(cx, cy - 100, '$12,847.33', {
+    const totalValue = this.add.text(cx, cy - 100, '$1,204.55', {
       fontFamily: '"Press Start 2P", monospace', fontSize: '14px', color: '#40f080',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
     objects.push(totalValue);
 
-    const changeText = this.add.text(cx, cy - 80, '+$2,341.12 (22.3%)', {
+    const changeText = this.add.text(cx, cy - 80, '+$41.02 (3.5%) — small on purpose', {
       fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#40f080',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
     objects.push(changeText);
 
-    // Holdings
+    // Holdings — modest by design. He learned that lesson already.
     const holdings = [
-      { name: 'BTC', amount: '0.087', value: '$5,480', change: '+12.4%', color: '#f0a020' },
-      { name: 'ETH', amount: '2.14',  value: '$4,120', change: '+8.7%',  color: '#627eea' },
-      { name: 'SOL', amount: '18.5',  value: '$2,220', change: '+41.2%', color: '#00d18c' },
-      { name: 'DOGE', amount: '4200',  value: '$1,027', change: '-3.1%', color: '#c2a633' },
+      { name: 'BTC', amount: '0.012', value: '$780', change: '+2.1%', color: '#f0a020' },
+      { name: 'SOL', amount: '4.2',  value: '$310', change: '+6.0%', color: '#00d18c' },
+      { name: 'ETH', amount: '0.04', value: '$114', change: '-1.2%', color: '#627eea' },
     ];
 
     holdings.forEach((h, i) => {

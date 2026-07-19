@@ -362,7 +362,7 @@ export class LAScene extends Phaser.Scene {
         this.showText('LOS ANGELES', cy - 140, { size: '28px', color: '#f0c040' });
         this.showText('Top down in a C8 Corvette.', cy - 70, { size: '14px', delay: 800 });
         this.showText(
-          'PCH at sunset. Wind in the hair.\nThis is what they don\'t show you\nabout making it out.',
+          'PCH at sunset. Wind in the hair.\nThe car is paid for.\nNext month isn\'t.',
           cy,
           { size: '12px', color: '#aaaacc', delay: 1600 }
         );
@@ -496,12 +496,12 @@ export class LAScene extends Phaser.Scene {
 
         this.showText('Steak dinner. Real restaurant.\nNot the drive-thru.', cy - 180, { color: '#f0d0a0' });
         this.showText(
-          'Four friends at the table.\nLaptops open between the plates.\nBuilding while we eat.',
+          'Four friends at the table.\nLaptops open between the plates.\nNot for the vibes. Deliveries due tonight.',
           cy + 180,
           { size: '12px', delay: 800 }
         );
         this.showText(
-          '"We\'re all doing AI work now.\nEvery single one of us left\nthe old life behind."',
+          '"We\'re all doing AI work now.\nEvery single one of us left\nthe old life behind."\nNobody mentions how little we slept.',
           cy + 280,
           { size: '12px', color: '#aaaacc', delay: 1600 }
         );
@@ -668,7 +668,7 @@ export class LAScene extends Phaser.Scene {
         // Text
         this.showText('30th floor. Downtown LA.', 40, { size: '20px', color: '#8888cc', delay: 500 });
         this.showText(
-          'One window lit brighter than the rest.\nThat\'s where Jordi is.',
+          'One window still lit at 2 AM.\nThat\'s JP. The delivery is due at nine.',
           GAME_HEIGHT - 200,
           { delay: 1500, color: '#aaaacc' }
         );
@@ -756,8 +756,8 @@ export class LAScene extends Phaser.Scene {
             '"I used to stare at the same',
             'ceiling every morning.',
             '',
-            'Now I\'m in a penthouse in LA',
-            'building AI systems."',
+            'Now the view is thirty floors up.',
+            'The rent on it is due on the first."',
           ],
           cy + 120,
           { size: '14px', color: '#ffffff', baseDelay: 600, lineGap: 1500, lineSpacing: 32 }

@@ -803,7 +803,7 @@ export class EndScene extends Phaser.Scene {
       delay: callbackDelay,
     });
 
-    const callbackLine2 = this.add.text(GAME_WIDTH / 2, 540, '...now runs operations from an LA highrise.', {
+    const callbackLine2 = this.add.text(GAME_WIDTH / 2, 540, '...still moves like he\'s one bad month from zero.', {
       fontFamily: '"Press Start 2P", monospace',
       fontSize: '9px',
       color: '#aaaacc',
@@ -816,23 +816,24 @@ export class EndScene extends Phaser.Scene {
       delay: callbackDelay + 1500,
     });
 
-    // Three clear CTAs
-    const ctaY = 590;
-    const ctaDelay = callbackDelay + 3000;
-
-    const keepUp = this.add.text(GAME_WIDTH / 2, ctaY, 'Keep up with the story', {
+    const callbackLine3 = this.add.text(GAME_WIDTH / 2, 575, 'That\'s the engine. It doesn\'t turn off.', {
       fontFamily: '"Press Start 2P", monospace',
-      fontSize: '12px',
+      fontSize: '10px',
       color: '#f0c040',
-    }).setOrigin(0.5).setAlpha(0).setInteractive({ useHandCursor: true });
+    }).setOrigin(0.5).setAlpha(0);
 
-    keepUp.on('pointerdown', () => window.open('https://instagram.com/jdlo', '_blank'));
-    keepUp.on('pointerover', () => keepUp.setColor('#ffdd66'));
-    keepUp.on('pointerout', () => keepUp.setColor('#f0c040'));
+    this.tweens.add({
+      targets: callbackLine3,
+      alpha: 1,
+      duration: 1200,
+      delay: callbackDelay + 3000,
+    });
 
-    this.tweens.add({ targets: keepUp, alpha: 1, duration: 800, delay: ctaDelay });
+    // One quiet handle \u2014 the story continues off-screen
+    const ctaY = 640;
+    const ctaDelay = callbackDelay + 4500;
 
-    const igHandle = this.add.text(GAME_WIDTH / 2, ctaY + 28, '@jdlo', {
+    const igHandle = this.add.text(GAME_WIDTH / 2, ctaY, '@jdlo', {
       fontFamily: '"Press Start 2P", monospace',
       fontSize: '10px',
       color: '#6688cc',
@@ -842,69 +843,10 @@ export class EndScene extends Phaser.Scene {
     igHandle.on('pointerover', () => igHandle.setColor('#88aaee'));
     igHandle.on('pointerout', () => igHandle.setColor('#6688cc'));
 
-    this.tweens.add({ targets: igHandle, alpha: 1, duration: 800, delay: ctaDelay + 200 });
-
-    // Divider
-    const divider = this.add.text(GAME_WIDTH / 2, ctaY + 65, '\u2014\u2014\u2014\u2014\u2014', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '8px',
-      color: '#333355',
-    }).setOrigin(0.5).setAlpha(0);
-
-    this.tweens.add({ targets: divider, alpha: 1, duration: 800, delay: ctaDelay + 400 });
-
-    // Learn from me
-    const learn = this.add.text(GAME_WIDTH / 2, ctaY + 100, 'Learn what I know', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '12px',
-      color: '#f0c040',
-    }).setOrigin(0.5).setAlpha(0).setInteractive({ useHandCursor: true });
-
-    learn.on('pointerdown', () => window.open('https://jdlo.site', '_blank'));
-    learn.on('pointerover', () => learn.setColor('#ffdd66'));
-    learn.on('pointerout', () => learn.setColor('#f0c040'));
-
-    this.tweens.add({ targets: learn, alpha: 1, duration: 800, delay: ctaDelay + 600 });
-
-    const site = this.add.text(GAME_WIDTH / 2, ctaY + 128, 'jdlo.site', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '10px',
-      color: '#6688cc',
-    }).setOrigin(0.5).setAlpha(0).setInteractive({ useHandCursor: true });
-
-    site.on('pointerdown', () => window.open('https://jdlo.site', '_blank'));
-    site.on('pointerover', () => site.setColor('#88aaee'));
-    site.on('pointerout', () => site.setColor('#6688cc'));
-
-    this.tweens.add({ targets: site, alpha: 1, duration: 800, delay: ctaDelay + 800 });
-
-    // Work with me
-    const work = this.add.text(GAME_WIDTH / 2, ctaY + 175, 'Work with me', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '12px',
-      color: '#f0c040',
-    }).setOrigin(0.5).setAlpha(0).setInteractive({ useHandCursor: true });
-
-    work.on('pointerdown', () => window.open('https://instagram.com/jdlo', '_blank'));
-    work.on('pointerover', () => work.setColor('#ffdd66'));
-    work.on('pointerout', () => work.setColor('#f0c040'));
-
-    this.tweens.add({ targets: work, alpha: 1, duration: 800, delay: ctaDelay + 1000 });
-
-    const dm = this.add.text(GAME_WIDTH / 2, ctaY + 203, 'DM me. Let\'s build.', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '10px',
-      color: '#6688cc',
-    }).setOrigin(0.5).setAlpha(0).setInteractive({ useHandCursor: true });
-
-    dm.on('pointerdown', () => window.open('https://instagram.com/jdlo', '_blank'));
-    dm.on('pointerover', () => dm.setColor('#88aaee'));
-    dm.on('pointerout', () => dm.setColor('#6688cc'));
-
-    this.tweens.add({ targets: dm, alpha: 1, duration: 800, delay: ctaDelay + 1200 });
+    this.tweens.add({ targets: igHandle, alpha: 1, duration: 800, delay: ctaDelay });
 
     // Share button
-    const shareBtn = this.add.text(GAME_WIDTH / 2, ctaY + 250, '[ SHARE YOUR JOURNEY ]', {
+    const shareBtn = this.add.text(GAME_WIDTH / 2, ctaY + 60, '[ SHARE YOUR JOURNEY ]', {
       fontFamily: '"Press Start 2P", monospace',
       fontSize: '11px',
       color: '#f0c040',
@@ -1250,7 +1192,7 @@ export class EndScene extends Phaser.Scene {
     ctx.fillStyle = '#aaaacc';
     ctx.font = '22px monospace';
     ctx.fillText("I played through JP's story", 540, 400);
-    ctx.fillText('From Santa Barbara to the boardroom', 540, 440);
+    ctx.fillText('Based on a true story', 540, 440);
 
     // CTA
     ctx.fillStyle = '#f0c040';
@@ -1271,7 +1213,7 @@ export class EndScene extends Phaser.Scene {
         const file = new File([blob], 'jdlo-game.png', { type: 'image/png' });
         navigator.share({
           title: 'JDLO | The Game',
-          text: "I just played through JP's story. From Santa Barbara to the boardroom.",
+          text: "I just played through JP's story. Based on a true story. Never back to zero.",
           files: [file],
         }).catch(() => {
           this.downloadShare(blob);
