@@ -1501,7 +1501,9 @@ const ch1Extras: Record<string, DialogueLine[]> = {
     { speaker: 'Narrator', text: 'Bob Marley poster. Obviously.' },
   ],
   ch1_clothes: [
-    { speaker: 'Narrator', text: 'JP\'s clothes all over the floor. Mom would lose her mind.' },
+    { speaker: 'Narrator', text: 'JP\'s clothes all over the floor. Half of it still has tags.' },
+    { speaker: 'JP\'s Mind', text: 'Ten racks of work money hit different. Sushi on the beach, LA runs, fits on fits.' },
+    { speaker: 'JP\'s Mind', text: 'For a minute out here, I was THE man. Off my own paycheck too.' },
     { speaker: 'JP\'s Mind', text: 'I\'ll pick it up later. Probably.' },
   ],
   // --- Kitchen ---
@@ -1576,6 +1578,7 @@ const ch1Extras: Record<string, DialogueLine[]> = {
   ],
   ch1_bmw_keys: [
     { speaker: 'Narrator', text: 'Keys to the BMW. Freedom, delivery route, escape plan — depends on the hour.' },
+    { speaker: 'JP\'s Mind', text: 'All-black 335i. N54 twin turbo. New parts came out of the savings too.' },
     { speaker: 'JP\'s Mind', text: 'I like anything that lets me leave fast.' },
   ],
 };
