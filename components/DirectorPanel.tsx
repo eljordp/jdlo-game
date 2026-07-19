@@ -102,6 +102,7 @@ const MINIGAMES: Record<string, Array<{ label: string; method: string }>> = {
     { label: "AI Discovery", method: "directorLaunchAIDiscovery" },
   ],
   ComeUpScene: [
+    { label: "Client Triage", method: "playClientTriage" },
     { label: "Rejection Montage", method: "playRejectionMontage" },
     { label: "Typing", method: "playTypingMinigame" },
     { label: "First Payment", method: "playPaymentCutscene" },
