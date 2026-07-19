@@ -61,6 +61,7 @@ const SCENES = [
 
 const MINIGAMES: Record<string, Array<{ label: string; method: string }>> = {
   HomeScene: [
+    { label: "Nolan Call", method: "triggerPhoneCall" },
     { label: "Fit Check", method: "playFitCheck" },
     { label: "Stash Hide", method: "playStashHide" },
     { label: "Lifting", method: "playLiftingMinigame" },
@@ -98,7 +99,7 @@ const MINIGAMES: Record<string, Array<{ label: string; method: string }>> = {
   ],
   TractorScene: [
     { label: "Tractor", method: "playTractorMinigame" },
-    { label: "AI Discovery", method: "playAIDiscoveryCutscene" },
+    { label: "AI Discovery", method: "directorLaunchAIDiscovery" },
   ],
   ComeUpScene: [
     { label: "Rejection Montage", method: "playRejectionMontage" },

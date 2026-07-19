@@ -15,6 +15,8 @@ import { SoundEffects } from '../systems/SoundEffects';
 export class TractorScene extends BaseChapterScene {
   private phoneExaminedFirst = false;
   private tractorPlayed = false;
+  private crashCompleted = false;
+  private aiDiscovered = false;
 
   constructor() {
     super({ key: 'TractorScene' });
@@ -32,6 +34,8 @@ export class TractorScene extends BaseChapterScene {
   }
 
   create() {
+    this.crashCompleted = false;
+    this.aiDiscovered = false;
     super.create();
     this.createCaymusIdentity();
 
@@ -261,7 +265,9 @@ export class TractorScene extends BaseChapterScene {
 
     if (interactable.id === 'ch4_ai_discovery') {
       Analytics.trackInteraction(interactable.id);
-      // Let the base class handle it — it now uses the grounded discovery scene
+      this.aiDiscovered = true;
+      this.updateChapterGate();
+      // Let the base class handle it — it uses the grounded discovery scene.
       super.handleInteractable(interactable);
       return;
     }
@@ -317,6 +323,15 @@ export class TractorScene extends BaseChapterScene {
     }
 
     super.handleInteractable(interactable);
+  }
+
+  /** Director entry point that follows the same handler as a real interaction. */
+  public directorLaunchAIDiscovery() {
+    this.directorTriggerTarget('ch4_ai_discovery', 'interaction');
+  }
+
+  private updateChapterGate() {
+    this.requiredDone = this.crashCompleted && this.aiDiscovered;
   }
 
   // ─── PHONE APPS (Ch5: DMs + Crypto only — no casino, he's working) ───
@@ -926,8 +941,9 @@ export class TractorScene extends BaseChapterScene {
 
                     this.frozen = false;
 
-                    // Mark as required done and trigger crash dialogue
-                    this.requiredDone = true;
+                    // The chapter only opens after both the crash and AI discovery.
+                    this.crashCompleted = true;
+                    this.updateChapterGate();
                     const chapterDialogue = this.getChapterDialogue();
                     const crashLines = chapterDialogue.npcs['ch4_crash'];
                     if (crashLines) {

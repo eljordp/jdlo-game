@@ -2400,7 +2400,7 @@ const ch4Extras: Record<string, DialogueLine[]> = {
       ]},
     ]},
     { speaker: 'Ernesto', text: '¡Esa línea de riego cuesta más que tu cheque!' },
-    { speaker: 'JP\'s Mind', text: 'This is it. I can\'t do this forever. $12 an hour while people make thousands online.' },
+    { speaker: 'JP\'s Mind', text: 'This is it. I can\'t do this forever. Around twenty an hour while people make thousands online.' },
     { speaker: 'JP', text: 'Ernesto, ya no puedo más.', choices: [
       { text: '"I appreciate everything. But I gotta go."', next: [
         { speaker: 'Ernesto', text: '¿A dónde? ¿A hacer qué?' },
