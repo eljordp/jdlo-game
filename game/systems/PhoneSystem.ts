@@ -53,7 +53,6 @@ export class PhoneSystem {
   private static isOpen = false;
   private static objects: Phaser.GameObjects.GameObject[] = [];
   private static pKey: Phaser.Input.Keyboard.Key | null = null;
-  private static tabKey: Phaser.Input.Keyboard.Key | null = null;
   private static escKey: Phaser.Input.Keyboard.Key | null = null;
   private static currentScreen: 'home' | 'app' = 'home';
   private static phoneContainer: Phaser.GameObjects.Container | null = null;
@@ -67,14 +66,9 @@ export class PhoneSystem {
 
     // Register keys
     this.pKey = scene.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.P);
-    this.tabKey = scene.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.TAB);
     this.escKey = scene.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
 
     this.pKey.on('down', () => this.toggle());
-    this.tabKey.on('down', (e: KeyboardEvent) => {
-      if (e && typeof e.preventDefault === 'function') e.preventDefault();
-      this.toggle();
-    });
     this.escKey.on('down', () => {
       if (this.isOpen) this.close();
     });

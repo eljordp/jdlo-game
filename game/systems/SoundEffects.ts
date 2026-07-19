@@ -1,10 +1,28 @@
+import { GameSettings } from './GameSettings';
+
 export class SoundEffects {
   private static ctx: AudioContext | null = null;
+  private static masterGain: GainNode | null = null;
 
   private static getCtx(): AudioContext {
     if (!this.ctx) this.ctx = new AudioContext();
     if (this.ctx.state === 'suspended') this.ctx.resume();
     return this.ctx;
+  }
+
+  private static getOutput(ctx: AudioContext): GainNode {
+    if (!this.masterGain) {
+      this.masterGain = ctx.createGain();
+      this.masterGain.gain.value = GameSettings.sfxVolume;
+      this.masterGain.connect(ctx.destination);
+    }
+    return this.masterGain;
+  }
+
+  static setVolume(volume: number): void {
+    const clamped = Math.max(0, Math.min(1, volume));
+    GameSettings.setNumber('sfxVolume', clamped);
+    if (this.masterGain) this.masterGain.gain.value = clamped;
   }
 
   /** Short high beep for menu selection */
@@ -13,7 +31,7 @@ export class SoundEffects {
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(this.getOutput(ctx));
 
     osc.type = 'square';
     osc.frequency.value = 880;
@@ -32,7 +50,7 @@ export class SoundEffects {
     const osc1 = ctx.createOscillator();
     const gain1 = ctx.createGain();
     osc1.connect(gain1);
-    gain1.connect(ctx.destination);
+    gain1.connect(this.getOutput(ctx));
     osc1.type = 'triangle';
     osc1.frequency.value = 440;
     gain1.gain.setValueAtTime(0.08, ctx.currentTime);
@@ -44,7 +62,7 @@ export class SoundEffects {
     const osc2 = ctx.createOscillator();
     const gain2 = ctx.createGain();
     osc2.connect(gain2);
-    gain2.connect(ctx.destination);
+    gain2.connect(this.getOutput(ctx));
     osc2.type = 'triangle';
     osc2.frequency.value = 660;
     gain2.gain.setValueAtTime(0.08, ctx.currentTime + 0.06);
@@ -59,7 +77,7 @@ export class SoundEffects {
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(this.getOutput(ctx));
 
     osc.type = 'triangle';
     osc.frequency.setValueAtTime(200, ctx.currentTime);
@@ -84,7 +102,7 @@ export class SoundEffects {
     buzzGain.gain.setValueAtTime(0.035, now);
     buzzGain.gain.exponentialRampToValueAtTime(0.001, now + 0.34);
     buzz.connect(buzzGain);
-    buzzGain.connect(ctx.destination);
+    buzzGain.connect(this.getOutput(ctx));
     buzz.start(now);
     buzz.stop(now + 0.35);
 
@@ -106,7 +124,7 @@ export class SoundEffects {
     scrapeGain.gain.exponentialRampToValueAtTime(0.001, now + 0.55);
     scrape.connect(scrapeFilter);
     scrapeFilter.connect(scrapeGain);
-    scrapeGain.connect(ctx.destination);
+    scrapeGain.connect(this.getOutput(ctx));
     scrape.start(now + 0.08);
     scrape.stop(now + 0.56);
 
@@ -118,7 +136,7 @@ export class SoundEffects {
     slamGain.gain.setValueAtTime(0.09, now + 0.42);
     slamGain.gain.exponentialRampToValueAtTime(0.001, now + 0.72);
     slam.connect(slamGain);
-    slamGain.connect(ctx.destination);
+    slamGain.connect(this.getOutput(ctx));
     slam.start(now + 0.42);
     slam.stop(now + 0.74);
   }
@@ -136,7 +154,7 @@ export class SoundEffects {
       gain.gain.setValueAtTime(i === 0 ? 0.09 : 0.07, now + offset);
       gain.gain.exponentialRampToValueAtTime(0.001, now + offset + 0.16);
       osc.connect(gain);
-      gain.connect(ctx.destination);
+      gain.connect(this.getOutput(ctx));
       osc.start(now + offset);
       osc.stop(now + offset + 0.18);
     });
@@ -165,7 +183,7 @@ export class SoundEffects {
     gain.gain.exponentialRampToValueAtTime(0.001, now + 0.24);
     noise.connect(filter);
     filter.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(this.getOutput(ctx));
     noise.start(now);
     noise.stop(now + 0.25);
   }
@@ -190,7 +208,7 @@ export class SoundEffects {
     gain.gain.exponentialRampToValueAtTime(0.001, now + 0.34);
     source.connect(filter);
     filter.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(this.getOutput(ctx));
     source.start(now);
     source.stop(now + 0.35);
   }
@@ -201,7 +219,7 @@ export class SoundEffects {
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(this.getOutput(ctx));
 
     osc.type = 'sine';
     osc.frequency.value = 1200;
@@ -219,7 +237,7 @@ export class SoundEffects {
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(this.getOutput(ctx));
 
     osc.type = 'sine';
     this.stepToggle = !this.stepToggle;
@@ -239,7 +257,7 @@ export class SoundEffects {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.connect(gain);
-      gain.connect(ctx.destination);
+      gain.connect(this.getOutput(ctx));
       osc.type = 'sine';
       osc.frequency.value = freq;
       const t = ctx.currentTime + i * 0.04;
@@ -256,7 +274,7 @@ export class SoundEffects {
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(this.getOutput(ctx));
 
     osc.type = 'square';
     osc.frequency.value = 600;
@@ -273,7 +291,7 @@ export class SoundEffects {
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(this.getOutput(ctx));
 
     osc.type = 'sine';
     osc.frequency.setValueAtTime(150, ctx.currentTime);
@@ -291,7 +309,7 @@ export class SoundEffects {
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(this.getOutput(ctx));
 
     osc.type = 'sawtooth';
     osc.frequency.value = 60;
@@ -311,7 +329,7 @@ export class SoundEffects {
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(this.getOutput(ctx));
 
     osc.type = 'square';
     osc.frequency.value = 800;
@@ -329,7 +347,7 @@ export class SoundEffects {
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(this.getOutput(ctx));
 
     osc.type = 'sine';
     osc.frequency.setValueAtTime(400, ctx.currentTime);
@@ -349,7 +367,7 @@ export class SoundEffects {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.connect(gain);
-      gain.connect(ctx.destination);
+      gain.connect(this.getOutput(ctx));
       osc.type = 'square';
       osc.frequency.value = i % 2 === 0 ? 700 : 500;
       const t = ctx.currentTime + i * 0.15;
@@ -366,7 +384,7 @@ export class SoundEffects {
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(this.getOutput(ctx));
 
     osc.type = 'sine';
     osc.frequency.setValueAtTime(200, ctx.currentTime);
@@ -384,7 +402,7 @@ export class SoundEffects {
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(this.getOutput(ctx));
 
     osc.type = 'sawtooth';
     osc.frequency.setValueAtTime(80, ctx.currentTime);
@@ -407,7 +425,7 @@ export class SoundEffects {
     const ctx = this.getCtx();
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
-    osc.connect(gain); gain.connect(ctx.destination);
+    osc.connect(gain); gain.connect(this.getOutput(ctx));
     osc.type = 'sawtooth';
     osc.frequency.setValueAtTime(200, ctx.currentTime);
     osc.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 1);
@@ -423,7 +441,7 @@ export class SoundEffects {
     notes.forEach((freq, i) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
-      osc.connect(gain); gain.connect(ctx.destination);
+      osc.connect(gain); gain.connect(this.getOutput(ctx));
       osc.type = 'square';
       osc.frequency.value = freq;
       const t = ctx.currentTime + i * 0.1;
@@ -444,7 +462,7 @@ export class SoundEffects {
       const gain = ctx.createGain();
       lfo.frequency.value = 12; lfoGain.gain.value = 0.03;
       lfo.connect(lfoGain); lfoGain.connect(gain.gain);
-      osc.connect(gain); gain.connect(ctx.destination);
+      osc.connect(gain); gain.connect(this.getOutput(ctx));
       osc.type = 'square'; osc.frequency.value = freq;
       const t = ctx.currentTime + i * 0.2;
       gain.gain.setValueAtTime(0.07, t);
@@ -460,7 +478,7 @@ export class SoundEffects {
     notes.forEach((freq, i) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
-      osc.connect(gain); gain.connect(ctx.destination);
+      osc.connect(gain); gain.connect(this.getOutput(ctx));
       osc.type = 'triangle';
       osc.frequency.value = freq;
       const t = ctx.currentTime + i * 0.15;
@@ -478,7 +496,7 @@ export class SoundEffects {
     for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * 0.3;
     const src = ctx.createBufferSource(); src.buffer = buf;
     const gain = ctx.createGain();
-    src.connect(gain); gain.connect(ctx.destination);
+    src.connect(gain); gain.connect(this.getOutput(ctx));
     gain.gain.setValueAtTime(0.06, ctx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
     src.start(ctx.currentTime);
@@ -494,7 +512,7 @@ export class SoundEffects {
     const filter = ctx.createBiquadFilter();
     filter.type = 'bandpass'; filter.frequency.value = 3000; filter.Q.value = 2;
     const gain = ctx.createGain();
-    src.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+    src.connect(filter); filter.connect(gain); gain.connect(this.getOutput(ctx));
     gain.gain.setValueAtTime(0.05, ctx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
     src.start(ctx.currentTime);
@@ -508,7 +526,7 @@ export class SoundEffects {
     for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * 0.4;
     const src = ctx.createBufferSource(); src.buffer = buf;
     const gain = ctx.createGain();
-    src.connect(gain); gain.connect(ctx.destination);
+    src.connect(gain); gain.connect(this.getOutput(ctx));
     gain.gain.setValueAtTime(0.08, ctx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.03);
     src.start(ctx.currentTime);
@@ -523,7 +541,7 @@ export class SoundEffects {
     const ctx = this.getCtx();
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
-    osc.connect(gain); gain.connect(ctx.destination);
+    osc.connect(gain); gain.connect(this.getOutput(ctx));
     osc.type = 'sawtooth';
     osc.frequency.setValueAtTime(200, ctx.currentTime);
     osc.frequency.exponentialRampToValueAtTime(600, ctx.currentTime + 0.2);
@@ -537,7 +555,7 @@ export class SoundEffects {
     const ctx = this.getCtx();
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
-    osc.connect(gain); gain.connect(ctx.destination);
+    osc.connect(gain); gain.connect(this.getOutput(ctx));
     osc.type = 'sawtooth';
     osc.frequency.setValueAtTime(600, ctx.currentTime);
     osc.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.2);
@@ -552,7 +570,7 @@ export class SoundEffects {
     // Low rumble
     const osc1 = ctx.createOscillator();
     const gain1 = ctx.createGain();
-    osc1.connect(gain1); gain1.connect(ctx.destination);
+    osc1.connect(gain1); gain1.connect(this.getOutput(ctx));
     osc1.type = 'sawtooth'; osc1.frequency.value = 60;
     gain1.gain.setValueAtTime(0.08, ctx.currentTime);
     gain1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
@@ -560,7 +578,7 @@ export class SoundEffects {
     // Descending screech
     const osc2 = ctx.createOscillator();
     const gain2 = ctx.createGain();
-    osc2.connect(gain2); gain2.connect(ctx.destination);
+    osc2.connect(gain2); gain2.connect(this.getOutput(ctx));
     osc2.type = 'square';
     osc2.frequency.setValueAtTime(800, ctx.currentTime);
     osc2.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 0.5);
@@ -579,7 +597,7 @@ export class SoundEffects {
     [880, 1046].forEach((freq, i) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
-      osc.connect(gain); gain.connect(ctx.destination);
+      osc.connect(gain); gain.connect(this.getOutput(ctx));
       osc.type = 'sine'; osc.frequency.value = freq;
       const t = ctx.currentTime + i * 0.08;
       gain.gain.setValueAtTime(0.06, t);
@@ -595,7 +613,7 @@ export class SoundEffects {
     notes.forEach((freq, i) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
-      osc.connect(gain); gain.connect(ctx.destination);
+      osc.connect(gain); gain.connect(this.getOutput(ctx));
       osc.type = 'triangle'; osc.frequency.value = freq;
       const t = ctx.currentTime + i * 0.15;
       gain.gain.setValueAtTime(0.07, t);
@@ -611,7 +629,7 @@ export class SoundEffects {
     notes.forEach((freq, i) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
-      osc.connect(gain); gain.connect(ctx.destination);
+      osc.connect(gain); gain.connect(this.getOutput(ctx));
       osc.type = 'sine'; osc.frequency.value = freq;
       const t = ctx.currentTime + i * 0.06;
       gain.gain.setValueAtTime(0.07, t);
@@ -631,7 +649,7 @@ export class SoundEffects {
     notes.forEach((freq, i) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
-      osc.connect(gain); gain.connect(ctx.destination);
+      osc.connect(gain); gain.connect(this.getOutput(ctx));
       osc.type = 'sine'; osc.frequency.value = freq;
       // Add slight detune for shimmer
       osc.detune.value = Math.sin(i * 2) * 15;
@@ -652,7 +670,7 @@ export class SoundEffects {
     // High cha-ching
     const osc1 = ctx.createOscillator();
     const gain1 = ctx.createGain();
-    osc1.connect(gain1); gain1.connect(ctx.destination);
+    osc1.connect(gain1); gain1.connect(this.getOutput(ctx));
     osc1.type = 'sine'; osc1.frequency.value = 2400;
     gain1.gain.setValueAtTime(0.08, ctx.currentTime);
     gain1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
@@ -660,7 +678,7 @@ export class SoundEffects {
     // Low thump
     const osc2 = ctx.createOscillator();
     const gain2 = ctx.createGain();
-    osc2.connect(gain2); gain2.connect(ctx.destination);
+    osc2.connect(gain2); gain2.connect(this.getOutput(ctx));
     osc2.type = 'sine';
     osc2.frequency.setValueAtTime(120, ctx.currentTime + 0.05);
     osc2.frequency.exponentialRampToValueAtTime(40, ctx.currentTime + 0.2);
@@ -683,7 +701,7 @@ export class SoundEffects {
     const filter = ctx.createBiquadFilter();
     filter.type = 'bandpass'; filter.frequency.value = 1200; filter.Q.value = 0.5;
     const gain = ctx.createGain();
-    src.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+    src.connect(filter); filter.connect(gain); gain.connect(this.getOutput(ctx));
     gain.gain.setValueAtTime(0.06, ctx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
     src.start(ctx.currentTime);
@@ -699,7 +717,7 @@ export class SoundEffects {
     const filter = ctx.createBiquadFilter();
     filter.type = 'highpass'; filter.frequency.value = 4000;
     const gain = ctx.createGain();
-    src.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+    src.connect(filter); filter.connect(gain); gain.connect(this.getOutput(ctx));
     gain.gain.setValueAtTime(0.08, ctx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
     src.start(ctx.currentTime);
@@ -715,7 +733,7 @@ export class SoundEffects {
     const filter = ctx.createBiquadFilter();
     filter.type = 'lowpass'; filter.frequency.value = 600;
     const gain = ctx.createGain();
-    src.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+    src.connect(filter); filter.connect(gain); gain.connect(this.getOutput(ctx));
     gain.gain.setValueAtTime(0.07, ctx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
     src.start(ctx.currentTime);
@@ -740,7 +758,7 @@ export class SoundEffects {
     const gain = ctx.createGain();
     noise.connect(filter);
     filter.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(this.getOutput(ctx));
     gain.gain.setValueAtTime(0.001, ctx.currentTime);
     gain.gain.linearRampToValueAtTime(0.05, ctx.currentTime + 0.15);
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);

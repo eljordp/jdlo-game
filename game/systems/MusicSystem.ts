@@ -5,6 +5,8 @@
  * Volume is kept LOW (0.03-0.06 total) — this is background ambience.
  */
 
+import { GameSettings } from './GameSettings';
+
 // ── Note frequencies ──────────────────────────────────────────────────────────
 
 const NOTE: Record<string, number> = {
@@ -661,6 +663,7 @@ export class MusicSystem {
     if (!track) return;
 
     const ctx = this.getCtx();
+    this.volume = GameSettings.musicVolume;
 
     if (track.ambience) this.startAmbience(ctx, track.ambience);
 

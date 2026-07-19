@@ -211,8 +211,9 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     // Interaction keys
     this.input.keyboard!.on('keydown-SPACE', () => this.handleInteract());
     this.input.keyboard!.on('keydown-ENTER', () => this.handleInteract());
-    // Pause menu — STATS / FRIENDS / CHOICES / BAG
-    this.input.keyboard!.on('keydown-P', () => {
+    // Game menu — STATS / FRIENDS / CHOICES / BAG / SETTINGS.
+    // M is intentionally separate from P (phone) and I (inventory).
+    this.input.keyboard!.on('keydown-M', () => {
       if (this.frozen || PauseMenu.open_) return;
       this.frozen = true;
       PauseMenu.open(this, () => { this.frozen = false; });

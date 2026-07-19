@@ -103,6 +103,9 @@ export class DialogueSystem {
     const line = this.lines[index];
     if (!line) return;
 
+    const textSpeed = Math.max(0.5, Math.min(3, GameSettings.textSpeed));
+    this.charDelay = 30 / textSpeed;
+
     let processedText = GameSettings.censor(line.text);
     // Slur JP's dialogue when drunk/high
     if (line.speaker === 'JP' || line.speaker === 'JP\'s Mind') {

@@ -29,6 +29,8 @@ const CHAPTERS = [
 ];
 
 const SPEEDS = [1, 1.5, 2, 3];
+const VOLUME_STEPS = [0, 0.25, 0.5, 0.75, 1];
+const TEXT_SPEEDS = [0.75, 1, 1.5, 2];
 
 const YELLOW = '#f0c040';
 const GREY = '#666688';
@@ -47,7 +49,6 @@ export class MenuScene extends Phaser.Scene {
   private taglineText: Phaser.GameObjects.Text | null = null;
 
   // Settings state
-  private musicOn = true;
   private speedIndex = 0;
 
   constructor() {
@@ -305,11 +306,24 @@ export class MenuScene extends Phaser.Scene {
     const bigHeadOn = GameSettings.bigHead;
     const hardOn = GameSettings.hardMode;
     const speedRunOn = GameSettings.get('speedRun');
+    const musicVolume = GameSettings.musicVolume;
+    const sfxVolume = GameSettings.sfxVolume;
+    const textSpeed = GameSettings.textSpeed;
 
     this.menuItems = [
       {
-        label: `Music: ${this.musicOn ? 'ON' : 'OFF'}`,
-        action: () => this.toggleMusic(),
+        label: `Music Volume: ${Math.round(musicVolume * 100)}%`,
+        action: () => this.cycleMusicVolume(),
+        enabled: true,
+      },
+      {
+        label: `SFX Volume: ${Math.round(sfxVolume * 100)}%`,
+        action: () => this.cycleSfxVolume(),
+        enabled: true,
+      },
+      {
+        label: `Text Speed: ${textSpeed}x`,
+        action: () => this.cycleTextSpeed(),
         enabled: true,
       },
       {
@@ -357,11 +371,10 @@ export class MenuScene extends Phaser.Scene {
     }).setOrigin(0.5).setDepth(1);
     this.menuTexts.push(desc);
 
-    this.renderMenu(240);
+    this.renderMenu(205, 36);
   }
 
-  private renderMenu(startY: number) {
-    const spacing = 44;
+  private renderMenu(startY: number, spacing = 44) {
 
     for (let i = 0; i < this.menuItems.length; i++) {
       const item = this.menuItems[i];
@@ -483,10 +496,31 @@ export class MenuScene extends Phaser.Scene {
     }
   }
 
-  private toggleMusic() {
-    this.musicOn = !this.musicOn;
-    MusicSystem.toggleMute();
-    // Rebuild settings to update label
+  private cycleMusicVolume() {
+    const current = GameSettings.musicVolume;
+    const index = VOLUME_STEPS.reduce((best, value, i) =>
+      Math.abs(value - current) < Math.abs(VOLUME_STEPS[best] - current) ? i : best, 0);
+    const next = VOLUME_STEPS[(index + 1) % VOLUME_STEPS.length];
+    GameSettings.setNumber('musicVolume', next);
+    MusicSystem.setVolume(next);
+    this.buildSettings();
+  }
+
+  private cycleSfxVolume() {
+    const current = GameSettings.sfxVolume;
+    const index = VOLUME_STEPS.reduce((best, value, i) =>
+      Math.abs(value - current) < Math.abs(VOLUME_STEPS[best] - current) ? i : best, 0);
+    const next = VOLUME_STEPS[(index + 1) % VOLUME_STEPS.length];
+    SoundEffects.setVolume(next);
+    this.buildSettings();
+  }
+
+  private cycleTextSpeed() {
+    const current = GameSettings.textSpeed;
+    const index = TEXT_SPEEDS.reduce((best, value, i) =>
+      Math.abs(value - current) < Math.abs(TEXT_SPEEDS[best] - current) ? i : best, 0);
+    const next = TEXT_SPEEDS[(index + 1) % TEXT_SPEEDS.length];
+    GameSettings.setNumber('textSpeed', next);
     this.buildSettings();
   }
 

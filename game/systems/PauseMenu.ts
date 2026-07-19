@@ -1,7 +1,7 @@
 // Pokémon-style pause menu: STATS / FRIENDS / CHOICES / BAG.
 // Self-contained overlay — open with PauseMenu.open(scene, onClose).
 // Reads GameStats, AffinitySystem, ChoiceLedger, InventorySystem, BalanceSystem.
-// Integration is one keybind wherever the host scene wants it.
+// Integration is the M key in BaseChapterScene; P remains reserved for phone.
 
 import { GAME_WIDTH, GAME_HEIGHT } from '../config';
 import { GameStats } from './GameStats';
@@ -11,9 +11,13 @@ import { AffinitySystem } from './AffinitySystem';
 import { ChoiceLedger, CHOICE_DEFS } from './ChoiceLedger';
 import { InventorySystem } from './InventorySystem';
 import { SoundEffects } from './SoundEffects';
+import { MusicSystem } from './MusicSystem';
+import { GameSettings } from './GameSettings';
 
-type Tab = 'STATS' | 'FRIENDS' | 'CHOICES' | 'BAG';
-const TABS: Tab[] = ['STATS', 'FRIENDS', 'CHOICES', 'BAG'];
+type Tab = 'STATS' | 'FRIENDS' | 'CHOICES' | 'BAG' | 'SETTINGS';
+const TABS: Tab[] = ['STATS', 'FRIENDS', 'CHOICES', 'BAG', 'SETTINGS'];
+const VOLUME_STEPS = [0, 0.25, 0.5, 0.75, 1];
+const TEXT_SPEEDS = [0.75, 1, 1.5, 2];
 
 // Friendly display names for tracked NPCs (fallback: prettified id).
 const NPC_NAMES: Record<string, string> = {
@@ -38,6 +42,8 @@ export class PauseMenu {
     const objects: Phaser.GameObjects.GameObject[] = [];
     let tabObjects: Phaser.GameObjects.GameObject[] = [];
     let activeTab: Tab = 'STATS';
+    let settingsIndex = 0;
+    let settingsActions: Array<() => void> = [];
 
     const cx = GAME_WIDTH / 2;
     objects.push(scene.add.rectangle(cx, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.82)
@@ -48,16 +54,16 @@ export class PauseMenu {
     // Tab bar
     const tabTexts: Record<Tab, Phaser.GameObjects.Text> = {} as Record<Tab, Phaser.GameObjects.Text>;
     TABS.forEach((tab, i) => {
-      const t = scene.add.text(cx - 240 + i * 160, GAME_HEIGHT / 2 - 275, tab, {
-        fontFamily: '"Press Start 2P", monospace', fontSize: '11px', color: '#666688',
+      const t = scene.add.text(cx - 250 + i * 125, GAME_HEIGHT / 2 - 275, tab, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#666688',
       }).setOrigin(0.5).setScrollFactor(0).setDepth(602).setInteractive({ useHandCursor: true });
       t.on('pointerdown', () => switchTab(tab));
       tabTexts[tab] = t;
       objects.push(t);
     });
 
-    objects.push(scene.add.text(cx, GAME_HEIGHT / 2 + 285, 'TAB switch · ESC close', {
-      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#555577',
+    objects.push(scene.add.text(cx, GAME_HEIGHT / 2 + 285, 'TAB page · ↑↓ select · ENTER change · ESC close', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#555577',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(602));
 
     const line = (x: number, y: number, text: string, color = '#ccccdd', size = '9px') => {
@@ -71,6 +77,7 @@ export class PauseMenu {
     const renderTab = () => {
       tabObjects.forEach(o => o.destroy());
       tabObjects = [];
+      settingsActions = [];
       TABS.forEach(tab => tabTexts[tab].setColor(tab === activeTab ? '#f0c040' : '#666688'));
       const left = cx - 280;
       let y = GAME_HEIGHT / 2 - 230;
@@ -144,6 +151,45 @@ export class PauseMenu {
           }
         }
       }
+
+      if (activeTab === 'SETTINGS') {
+        line(left, y, 'AUDIO + DIALOGUE', '#f0c040', '11px'); y += 48;
+
+        const cycleValue = (values: number[], current: number): number => {
+          const index = values.reduce((best, value, i) =>
+            Math.abs(value - current) < Math.abs(values[best] - current) ? i : best, 0);
+          return values[(index + 1) % values.length];
+        };
+        const setting = (label: string, value: string, action: () => void) => {
+          const rowIndex = settingsActions.length;
+          settingsActions.push(action);
+          const selected = rowIndex === settingsIndex;
+          const row = line(left, y, `${selected ? '> ' : '  '}${label}  ${value}`, selected ? '#f0c040' : '#ccccdd', '10px')
+            .setInteractive({ useHandCursor: true });
+          row.on('pointerdown', () => {
+            settingsIndex = rowIndex;
+            action();
+            SoundEffects.playConfirm();
+            renderTab();
+          });
+          y += 52;
+        };
+
+        setting('MUSIC', `${Math.round(GameSettings.musicVolume * 100)}%`, () => {
+          const next = cycleValue(VOLUME_STEPS, GameSettings.musicVolume);
+          GameSettings.setNumber('musicVolume', next);
+          MusicSystem.setVolume(next);
+        });
+        setting('SFX', `${Math.round(GameSettings.sfxVolume * 100)}%`, () => {
+          SoundEffects.setVolume(cycleValue(VOLUME_STEPS, GameSettings.sfxVolume));
+        });
+        setting('TEXT SPEED', `${GameSettings.textSpeed}x`, () => {
+          GameSettings.setNumber('textSpeed', cycleValue(TEXT_SPEEDS, GameSettings.textSpeed));
+        });
+        y += 12;
+        line(left, y, 'Click a setting to change it.', '#666688', '8px'); y += 28;
+        line(left, y, 'Changes save automatically.', '#666688', '8px');
+      }
     };
 
     const switchTab = (tab: Tab) => {
@@ -156,10 +202,32 @@ export class PauseMenu {
     const kb = scene.input.keyboard!;
     const tabKey = kb.addKey(Phaser.Input.Keyboard.KeyCodes.TAB);
     const escKey = kb.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+    const upKey = kb.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
+    const downKey = kb.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
+    const enterKey = kb.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
     const onTab = () => switchTab(TABS[(TABS.indexOf(activeTab) + 1) % TABS.length]);
+    const moveSetting = (direction: number) => {
+      if (activeTab !== 'SETTINGS' || settingsActions.length === 0) return;
+      settingsIndex = (settingsIndex + direction + settingsActions.length) % settingsActions.length;
+      SoundEffects.playBlip();
+      renderTab();
+    };
+    const changeSetting = () => {
+      if (activeTab !== 'SETTINGS') return;
+      const action = settingsActions[settingsIndex];
+      if (!action) return;
+      action();
+      SoundEffects.playConfirm();
+      renderTab();
+    };
+    const onSettingUp = () => moveSetting(-1);
+    const onSettingDown = () => moveSetting(1);
     const close = () => {
       tabKey.off('down', onTab);
       escKey.off('down', close);
+      upKey.off('down', onSettingUp);
+      downKey.off('down', onSettingDown);
+      enterKey.off('down', changeSetting);
       tabObjects.forEach(o => o.destroy());
       objects.forEach(o => o.destroy());
       this.isOpen = false;
@@ -167,6 +235,9 @@ export class PauseMenu {
     };
     tabKey.on('down', onTab);
     escKey.on('down', close);
+    upKey.on('down', onSettingUp);
+    downKey.on('down', onSettingDown);
+    enterKey.on('down', changeSetting);
 
     renderTab();
   }

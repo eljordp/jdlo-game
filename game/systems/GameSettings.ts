@@ -9,11 +9,14 @@ export class GameSettings {
     bigHead: false,     // Big head mode — NPC heads 2x size
     speedRun: false,    // Timer on screen, skip dialogue faster
     commentary: true,   // JP's inner monologue / narrator enabled
+    musicVolume: 0.75,
+    sfxVolume: 0.75,
+    textSpeed: 1,
   };
 
-  private static cache: Record<string, boolean> | null = null;
+  private static cache: Record<string, boolean | number> | null = null;
 
-  private static load(): Record<string, boolean> {
+  private static load(): Record<string, boolean | number> {
     if (this.cache) return this.cache;
     try {
       const stored = JSON.parse(localStorage.getItem(this.KEY) || '{}');
@@ -31,7 +34,7 @@ export class GameSettings {
   }
 
   static get(key: string): boolean {
-    return this.load()[key] ?? false;
+    return this.load()[key] === true;
   }
 
   static set(key: string, value: boolean) {
@@ -45,11 +48,24 @@ export class GameSettings {
     return newVal;
   }
 
+  static getNumber(key: string, fallback: number): number {
+    const value = this.load()[key];
+    return typeof value === 'number' && Number.isFinite(value) ? value : fallback;
+  }
+
+  static setNumber(key: string, value: number) {
+    this.load()[key] = value;
+    this.save();
+  }
+
   // Convenience
   static get kidsMode(): boolean { return this.get('kidsMode'); }
   static get hardMode(): boolean { return this.get('hardMode'); }
   static get bigHead(): boolean { return this.get('bigHead'); }
   static get speedRun(): boolean { return this.get('speedRun'); }
+  static get musicVolume(): number { return this.getNumber('musicVolume', 0.75); }
+  static get sfxVolume(): number { return this.getNumber('sfxVolume', 0.75); }
+  static get textSpeed(): number { return this.getNumber('textSpeed', 1); }
 
   /** Censor text for kids mode — replaces drug/adult references with funny alternatives */
   static censor(text: string): string {

@@ -336,7 +336,7 @@ export default function GameCanvas() {
             showControls ? "opacity-100" : "opacity-0"
           }`}
         >
-          Arrow keys / WASD to move · Space to interact
+          WASD / arrows move · Space interact · M menu · P phone · I bag
         </div>
       )}
 
