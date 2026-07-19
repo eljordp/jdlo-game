@@ -50,8 +50,8 @@ export const CHOICE_DEFS: ChoiceDef[] = [
     chapter: 'Weed Rise',
     prompt: "Jose checking in",
     options: ['Texted back', 'Left it on read'],
-    jpReal: null,
-    jpLine: '',
+    jpReal: 'Left it on read', // canon: "he stopped answering the people who worried"
+    jpLine: 'JP left him on read. Jose kept checking anyway.',
   },
   {
     id: 'tractor_phone',
@@ -74,7 +74,7 @@ export const CHOICE_DEFS: ChoiceDef[] = [
     chapter: 'Weed Rise',
     prompt: 'Planning the route',
     options: ['Urgent stop first', 'Closest stop first'],
-    jpReal: null,
+    jpReal: null, // PERMANENT: gameplay-only choice (Codex-invented mechanic), no real-life answer exists
     jpLine: '',
   },
   {
