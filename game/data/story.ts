@@ -15,39 +15,6 @@ export type NPCData = {
   dialogue: DialogueLine[];
 };
 
-// ─── Intro (Professor-Rowan-style opening) ─────────────────────────────
-
-export const introDialogue: DialogueLine[] = [
-  {
-    speaker: 'Narrator',
-    text: 'This is a story about building something from nothing.',
-  },
-  {
-    speaker: 'Narrator',
-    text: 'No trust fund. No connections. No playbook handed down.',
-  },
-  {
-    speaker: 'Narrator',
-    text: 'Just a kid from Santa Barbara who hit rock bottom and decided that was the foundation, not the ending.',
-  },
-  {
-    speaker: 'Narrator',
-    text: 'He taught himself everything. Made every mistake you can make. Lost time he\'ll never get back.',
-  },
-  {
-    speaker: 'Narrator',
-    text: 'But somewhere between the worst day of his life and right now, he figured it out.',
-  },
-  {
-    speaker: 'Narrator',
-    text: 'Not because he was special. Because he refused to stay down.',
-  },
-  {
-    speaker: 'Narrator',
-    text: 'This is JP\'s story. And you\'re going to live it.',
-  },
-];
-
 // ─── Chapter 0: Home ─────────────────────────────────────────────────
 
 export const chapter0IntroText: string[] = [];
@@ -1652,7 +1619,7 @@ const ch2Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'Dark alley. No cameras. No witnesses. The kind of place where your life changes in one second.' },
   ],
   ch2_phone: [
-    { speaker: 'JP\'s Mind', text: '12 missed calls from Pops. I\'ll call him back. Tomorrow.' },
+    { speaker: 'JP\'s Mind', text: 'Three missed calls from Pops. I\'ll call him back. Tomorrow.' },
     { speaker: 'JP\'s Mind', text: 'He knows. He always knows. And I keep dodging because I don\'t want to hear the truth.' },
   ],
   ch2_gun: [
