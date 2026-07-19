@@ -2618,6 +2618,10 @@ const ch5Extras: Record<string, DialogueLine[]> = {
     { speaker: 'Narrator', text: 'Text message: "Hey JP, we decided to go with someone else. Thanks though."' },
     { speaker: 'JP\'s Mind', text: '...' },
     { speaker: 'JP\'s Mind', text: 'That one stung. I spent 3 hours on that proposal.' },
+    // The negotiator. A true story. The number is real.
+    { speaker: 'Narrator', text: 'Next text, different prospect: "$200 is outrageous for a whole website."' },
+    { speaker: 'Narrator', text: '"$40. Final offer. And I will tell my friends about you. That is marketing. You are welcome."' },
+    { speaker: 'JP\'s Mind', text: 'He negotiated a $200 website like it was a used car with no engine.' },
     { speaker: 'JP\'s Mind', text: 'Whatever. Next.' },
   ],
   ch5_testimonial: [
@@ -2679,6 +2683,8 @@ const ch6Extras: Record<string, DialogueLine[]> = {
   ],
   ch6_instagram: [
     { speaker: 'JP\'s Mind', text: '@jdlo. The page JP kept deleting posts from. Not anymore.' },
+    { speaker: 'Narrator', text: 'Old comment, still up: "bro is LARPing 💀". Below it, the site he said was fake. Live. With customers.' },
+    { speaker: 'JP\'s Mind', text: 'The accounts that called it larping went quiet. The builds didn\'t.' },
     { speaker: 'JP\'s Mind', text: 'Every post is proof. Every build is a receipt.' },
   ],
   ch6_future: [

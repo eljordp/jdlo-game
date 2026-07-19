@@ -850,6 +850,9 @@ export class ComeUpScene extends BaseChapterScene {
       '"We need someone with more experience."',
       '"Sorry, who are you?"',
       '"Read 3:42 PM"',
+      '"$200 is CRAZY. $40 and I leave a Google review."',
+      '"bro is LARPing as a developer 💀"',
+      '"67"',
       '"Not a good fit."',
       '"We found someone on Fiverr."',
     ];
