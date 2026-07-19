@@ -515,6 +515,11 @@ export const weedRiseMap: MapData = {
     { id: 'rise_receipts', x: 18, y: 14, type: 'examine', glow: false, sprite: 'item-phone' },
     { id: 'rise_overlook', x: 33, y: 18, type: 'examine', glow: false, sprite: 'item-photo' },
     { id: 'rise_exit_note', x: 18, y: 27, type: 'examine', glow: false },
+    { id: 'rise_order_board', x: 5, y: 3, type: 'examine', glow: false, sprite: 'item-letter' },
+    { id: 'rise_laundry', x: 12, y: 8, type: 'examine', glow: false, sprite: 'item-laundry-basket' },
+    { id: 'rise_takeout', x: 20, y: 7, type: 'examine', glow: false, sprite: 'item-food' },
+    { id: 'rise_trunk', x: 13, y: 15, type: 'examine', glow: false, sprite: 'item-storage-box' },
+    { id: 'rise_mailbox', x: 32, y: 19, type: 'examine', glow: false, sprite: 'item-letter' },
   ],
 };
 

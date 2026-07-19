@@ -39,7 +39,9 @@ export class ComeUpScene extends BaseChapterScene {
 
   create() {
     super.create();
+    this.createHomeOfficeIdentity();
     this.createClientDistrictIdentity();
+    this.createComeUpAtmosphere();
 
     // GameIntelligence — track player behavior
     GameIntelligence.init(this, this.player);
@@ -73,13 +75,15 @@ export class ComeUpScene extends BaseChapterScene {
       }).setOrigin(0.5).setDepth(1.6);
     };
 
-    facadeLabel(5, 12.35, 7.6, 'WCT', 0x254d70);
-    facadeLabel(18, 12.35, 9.2, 'STICKER SMITH', 0x61264a);
+    facadeLabel(5, 12.35, 7.6, 'WCT E-COMMERCE', 0x254d70);
+    facadeLabel(18, 12.35, 9.2, 'PROPOSALS / PROSPECTS', 0x4c4f59);
+    facadeLabel(30.5, 12.35, 10.2, 'STICKER SMITH', 0x61264a);
+    facadeLabel(14.5, 22.35, 8.2, 'VACAVILLE APPLIANCE', 0x42615c);
     facadeLabel(30.5, 22.35, 12.2, 'DHL OPERATIONS', 0xdca900);
 
     // Print-shop windows and rolls of stock establish what these early clients
     // actually do, instead of presenting three identical office boxes.
-    for (const x of [15, 17, 19, 21]) {
+    for (const x of [27, 29, 31, 33]) {
       this.add.rectangle(x * tile, 14.2 * tile, 34, 48, 0x56314b).setDepth(1.3);
       this.add.rectangle(x * tile, 14.2 * tile, 26, 38, 0xd870a2, 0.32).setDepth(1.34);
     }
@@ -145,6 +149,170 @@ export class ComeUpScene extends BaseChapterScene {
     this.add.text(safetyX, safetyY, 'SAFETY • EN  ES  TL  ZH', {
       fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#f2c315',
     }).setOrigin(0.5).setDepth(2.2);
+
+    this.createClientInteriors();
+  }
+
+  private createHomeOfficeIdentity() {
+    const tile = SCALED_TILE;
+    const px = (value: number) => value * tile + tile / 2;
+    const rect = (x: number, y: number, width: number, height: number, color: number, depth = 2.05, alpha = 1) =>
+      this.add.rectangle(px(x), px(y), width * tile, height * tile, color, alpha).setDepth(depth);
+    const prop = (texture: string, x: number, y: number, scale = 0.72, tint?: number) => {
+      const sprite = this.add.sprite(px(x), px(y), texture).setScale(SCALE * scale).setDepth(3.1);
+      if (tint !== undefined) sprite.setTint(tint);
+      return sprite;
+    };
+
+    // Divide the oversized room into a work wall, build bench, admin corner
+    // and food/sleep corner. Existing interactables now sit on furniture instead
+    // of floating independently across an empty hardwood box.
+    rect(11.5, 4.45, 13.8, 3.5, 0x253242, 2.0);
+    rect(11.5, 4.45, 13.1, 2.9, 0x34475b, 2.02);
+    for (let x = 5.3; x <= 17.7; x += 1.05) {
+      this.add.rectangle(px(x), px(4.45), 4, 2.55 * tile, 0x7d98ab, 0.2).setDepth(2.04);
+    }
+
+    // Monitor wall and long desk: portfolio, first site, pricing, invoices and
+    // the bank app occupy one believable working surface.
+    rect(11.5, 2.65, 13.9, 0.7, 0x4b3327, 2.5);
+    this.add.rectangle(px(11.5), px(2.45), 13.5 * tile, 12, 0x9a6a48).setDepth(2.58);
+    for (const x of [5.5, 8.8, 13.4, 17.2]) {
+      const screen = this.add.rectangle(px(x), px(2.15), 72, 44, 0x10151d).setDepth(2.72).setStrokeStyle(4, 0x4a4f57);
+      const glow = this.add.rectangle(px(x), px(2.15), 58, 31, x < 10 ? 0x4a8bc8 : x < 15 ? 0x6e76d2 : 0x4fb186, 0.48).setDepth(2.74);
+      this.tweens.add({ targets: glow, alpha: 0.2, duration: 1100 + x * 55, yoyo: true, repeat: -1 });
+      this.add.rectangle(screen.x, px(2.56), 8, 12, 0x3d4148).setDepth(2.73);
+    }
+    prop('item-speaker', 10.7, 2.3, 0.48);
+    prop('item-headphones', 15.4, 2.3, 0.5);
+
+    // Whiteboard, corkboard and handwritten work queue make the room read as
+    // self-taught operations, not a polished startup office.
+    this.add.rectangle(px(8), 1.28 * tile, 230, 54, 0xe8e5dc).setDepth(2.42).setStrokeStyle(6, 0x775e45);
+    this.add.text(px(8), 1.28 * tile, 'BUILD  •  SEND  •  FOLLOW UP', {
+      fontFamily: 'monospace', fontSize: '10px', color: '#29303a',
+    }).setOrigin(0.5).setDepth(2.45);
+    this.add.rectangle(px(16.8), 1.28 * tile, 225, 54, 0x8f6742).setDepth(2.42).setStrokeStyle(5, 0x5c3e2d);
+    for (const note of [
+      { x: 15.6, color: 0xe9d979, angle: -5 },
+      { x: 16.5, color: 0x82c4d8, angle: 4 },
+      { x: 17.4, color: 0xe49da7, angle: -2 },
+      { x: 18.2, color: 0xa5d28b, angle: 6 },
+    ]) {
+      this.add.rectangle(px(note.x), 1.28 * tile, 38, 30, note.color).setDepth(2.47).setAngle(note.angle);
+    }
+
+    // Admin table: cold email, proposal, invoice and a cheap printer.
+    rect(13.5, 6.0, 5.2, 0.75, 0x493126, 2.48);
+    prop('item-letter', 12.0, 5.85, 0.55);
+    prop('item-money', 13.0, 5.9, 0.52);
+    prop('item-tablet', 14.2, 5.85, 0.58);
+    prop('item-storage-box', 15.3, 6.0, 0.58, 0xd6d3ca);
+
+    // Left corner stayed home: fridge, coffee, ramen, laundry and the family
+    // photograph that follows JP through each move.
+    rect(5.0, 5.65, 2.1, 1.65, 0x6e4b36, 2.45);
+    prop('item-fridge', 4.2, 5.6, 0.76, 0xe7e4dc);
+    prop('item-food', 5.1, 5.25, 0.54);
+    prop('item-bottle', 5.8, 5.25, 0.48, 0x704b32);
+    prop('item-laundry-basket', 6.1, 6.2, 0.56, 0x737a83);
+    prop('item-photo', 4.4, 1.65, 0.6);
+
+    // A couch that became a second bed, shipping boxes and a narrow clear path
+    // to the door. The room is dense but remains traversable down the middle.
+    prop('item-couch', 18.6, 5.9, 0.86, 0x515b68);
+    prop('item-storage-box', 18.9, 4.7, 0.62);
+    prop('item-storage-box', 18.1, 4.9, 0.54, 0x8b735c);
+    prop('item-shoe-rack', 7.3, 6.2, 0.55);
+    for (const [x, y] of [[5, 2], [7, 2], [9, 2], [12, 2], [14, 2], [17, 2], [4, 5], [6, 6], [18, 6]] as Array<[number, number]>) {
+      this.collisionTiles.add(`${x},${y}`);
+    }
+  }
+
+  private createClientInteriors() {
+    const tile = SCALED_TILE;
+    const px = (value: number) => value * tile + tile / 2;
+    const prop = (texture: string, x: number, y: number, scale = 0.66, tint?: number) => {
+      const sprite = this.add.sprite(px(x), px(y), texture).setScale(SCALE * scale).setDepth(3.05);
+      if (tint !== undefined) sprite.setTint(tint);
+      return sprite;
+    };
+    const worktable = (x: number, y: number, width: number, color: number) => {
+      this.add.rectangle(px(x), px(y), width * tile, 38, color).setDepth(2.45);
+      this.add.rectangle(px(x), px(y) - 15, width * tile - 18, 8, 0xd4c6af, 0.55).setDepth(2.5);
+    };
+
+    // WCT e-commerce: products, cartons, checkout screen and a real delivery
+    // workflow rather than a generic office.
+    worktable(5, 14.7, 5.1, 0x405f75);
+    for (const [x, y, tint] of [[3, 13.4, 0x9b6741], [4, 13.4, 0x826e53], [6, 13.4, 0x7e9b8a], [7, 13.4, 0xa77b52]] as const) {
+      prop('item-storage-box', x, y, 0.52, tint);
+    }
+    prop('item-tablet', 5.1, 14.55, 0.54);
+    prop('item-letter', 7.2, 15.6, 0.48);
+
+    // Prospect office: too many chairs, one untouched proposal and nobody
+    // willing to make the decision.
+    worktable(18, 14.7, 6.0, 0x4d4c53);
+    prop('item-letter', 18, 14.55, 0.56);
+    for (const x of [15.2, 16.6, 19.4, 20.8]) prop('item-nightstand', x, 15.7, 0.47, 0x55565d);
+    const coldLight = this.add.rectangle(px(18), px(13.6), 5.8 * tile, 1.2 * tile, 0x9eb8c7, 0.08).setDepth(2.1);
+    this.tweens.add({ targets: coldLight, alpha: 0.16, duration: 2300, yoyo: true, repeat: -1 });
+
+    // Sticker Smith: rolls, cutting tables and a wall of color samples.
+    worktable(30.5, 15.5, 8.1, 0x6a4057);
+    for (const [x, color] of [[27, 0xe36c75], [28, 0xe6b758], [29, 0x66b7cc], [32, 0x7e76c9], [33, 0x75b477], [34, 0xd77ca9]] as const) {
+      this.add.circle(px(x), px(13.6), 18, color).setDepth(2.8);
+      this.add.circle(px(x), px(13.6), 7, 0x3b3540).setDepth(2.82);
+    }
+    prop('item-tablet', 30, 15.35, 0.52);
+    prop('item-poster', 34.2, 15.3, 0.58, 0xeaaac7);
+
+    // Vacaville Appliance: recognizable appliance silhouettes and service
+    // paperwork. The work is practical, local and paid.
+    for (const x of [12, 14, 16, 17]) prop('item-fridge', x, 24.2, 0.7, x % 2 ? 0xd7d3ca : 0xc5c8cc);
+    worktable(14.5, 26.0, 6.2, 0x4b625d);
+    prop('item-letter', 14, 25.8, 0.5);
+    prop('item-tablet', 15.5, 25.8, 0.52);
+
+    // Keep doors and central aisles mechanically clear despite added density.
+    for (const [x, y] of [[3, 13], [4, 13], [6, 13], [7, 13], [27, 13], [28, 13], [32, 13], [33, 13], [34, 13], [12, 24], [14, 24], [16, 24], [17, 24]] as Array<[number, number]>) {
+      this.collisionTiles.add(`${x},${y}`);
+    }
+  }
+
+  private createComeUpAtmosphere() {
+    const tile = SCALED_TILE;
+
+    // A late-night delivery truck crosses the client district while the DHL
+    // conveyor and workers keep moving inside.
+    const truck = this.add.sprite(-2 * tile, 20.55 * tile, 'item-truck')
+      .setScale(SCALE * 1.05).setDepth(2.7).setTint(0xd8b500);
+    this.tweens.add({
+      targets: truck,
+      x: 42 * tile,
+      duration: 14500,
+      repeat: -1,
+      onRepeat: () => { truck.x = -2 * tile; },
+      ease: 'Linear',
+    });
+
+    // Streetlights, window glow and a lonely office light connect the chapter's
+    // public momentum to its private 3 AM reality.
+    for (const [x, y] of [[3, 8.8], [21, 8.8], [3, 19.5], [23, 19.5], [38, 29.5]] as Array<[number, number]>) {
+      this.add.rectangle(x * tile, y * tile, 6, 56, 0x40484c).setDepth(2.35);
+      const lamp = this.add.circle(x * tile, (y - 0.4) * tile, 10, 0xf0cc71, 0.62).setDepth(2.4);
+      this.tweens.add({ targets: lamp, alpha: 0.3, duration: 1800 + x * 19, yoyo: true, repeat: -1 });
+    }
+    const officeWindow = this.add.rectangle(11.5 * tile, 1.55 * tile, 13.4 * tile, 26, 0x7da4ca, 0.2).setDepth(2.18);
+    this.tweens.add({ targets: officeWindow, alpha: 0.38, duration: 2700, yoyo: true, repeat: -1 });
+
+    // Notification pulses happen at different rhythms; the room never becomes
+    // silent even when nobody answers.
+    for (const [x, y, delay] of [[6, 4, 0], [11, 4, 450], [16, 3, 900]] as Array<[number, number, number]>) {
+      const pulse = this.add.circle(x * tile + tile / 2, y * tile + tile / 2, 15, 0x58a6ff, 0.1).setDepth(3.35);
+      this.tweens.add({ targets: pulse, alpha: 0.46, scale: 1.35, duration: 620, delay, yoyo: true, repeat: -1, repeatDelay: 3100 });
+    }
   }
 
   protected getObjectiveHint(): string {

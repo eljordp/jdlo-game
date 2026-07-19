@@ -92,6 +92,180 @@ export class WeedRiseScene extends BaseChapterScene {
       const lamp = this.add.circle(x * tile, 16.65 * tile, 9, 0xf1d17a, 0.72).setDepth(1.9);
       this.tweens.add({ targets: lamp, alpha: 0.35, duration: 1600, yoyo: true, repeat: -1 });
     }
+
+    this.createTownhouseDensity();
+    this.createDeliveryNeighborhood();
+    this.createRouteAtmosphere();
+  }
+
+  private createTownhouseDensity() {
+    const tile = SCALED_TILE;
+    const px = (value: number) => value * tile + tile / 2;
+    const rect = (x: number, y: number, width: number, height: number, color: number, depth = 2.15, alpha = 1) =>
+      this.add.rectangle(px(x), px(y), width * tile, height * tile, color, alpha).setDepth(depth);
+    const prop = (texture: string, x: number, y: number, scale = 0.82, tint?: number) => {
+      const sprite = this.add.sprite(px(x), px(y), texture).setScale(SCALE * scale).setDepth(3.15);
+      if (tint !== undefined) sprite.setTint(tint);
+      return sprite;
+    };
+    const block = (...tiles: Array<[number, number]>) => {
+      for (const [x, y] of tiles) this.collisionTiles.add(`${x},${y}`);
+    };
+
+    // Living room / packing room: the social space has turned into an order
+    // station without ever becoming a professional operation.
+    rect(6.3, 7.8, 5.6, 2.2, 0x5a3028, 2.02);
+    rect(6.3, 7.8, 5.1, 1.7, 0x9b5a45, 2.04);
+    for (let x = 4.2; x <= 8.4; x += 0.7) {
+      this.add.rectangle(px(x), px(7.8), 4, 1.45 * tile, 0xd59668, 0.28).setDepth(2.06);
+    }
+    prop('item-couch', 3.7, 7.9, 0.95, 0x6f493c);
+    prop('item-tv', 9.4, 7.9, 0.82);
+    prop('item-speaker', 9.5, 6.6, 0.68);
+    prop('item-laundry-basket', 3.6, 3.5, 0.7);
+    prop('item-storage-box', 4.5, 3.5, 0.72);
+    prop('item-letter', 5.4, 3.5, 0.72);
+    rect(5.1, 4.3, 3.5, 0.55, 0x4f3428, 2.7);
+    for (const x of [4.2, 5.1, 6.0]) {
+      this.add.rectangle(px(x), px(4.15), 34, 20, x === 5.1 ? 0xebe4d6 : 0x94724f).setDepth(2.82).setAngle(x === 4.2 ? -8 : x === 6 ? 7 : 0);
+    }
+    block([3, 8], [9, 8], [4, 3]);
+
+    // JP's room: bed, clothes, shoes, an always-on phone glow and one narrow
+    // clear strip from the living room door to the parking-lot door.
+    rect(15.4, 6.2, 5.4, 2.8, 0x2f4350, 2.01);
+    rect(15.4, 6.2, 4.8, 2.2, 0x496979, 2.03);
+    prop('item-bed', 13.2, 3.4, 0.92, 0xd6d1c5);
+    prop('item-nightstand', 14.4, 3.4, 0.65);
+    const phoneGlow = this.add.circle(px(14.4), px(3.2), 11, 0x76b7ff, 0.4).setDepth(3.05);
+    this.tweens.add({ targets: phoneGlow, alpha: 0.12, duration: 620, yoyo: true, repeat: -1 });
+    prop('item-closet', 18.1, 8.3, 0.85);
+    prop('item-shoe-rack', 16.8, 8.4, 0.76);
+    prop('item-laundry-basket', 12.4, 8.3, 0.7, 0x6f7c91);
+    for (const [x, y, color] of [[14.3, 8.35, 0x1e2430], [15.0, 8.5, 0xd9d9d9], [15.6, 8.32, 0x4e6e9f]] as const) {
+      this.add.rectangle(px(x), px(y), 30, 14, color).setDepth(3.05).setAngle((x - 15) * 14);
+    }
+    block([13, 3], [18, 8], [17, 8], [12, 8]);
+
+    // Kitchen: full counters, sink, fridge, table, takeout and the stash panel.
+    rect(22, 3.25, 5.1, 0.7, 0x674935, 2.5);
+    rect(24.1, 6.0, 0.75, 4.9, 0x674935, 2.5);
+    for (const x of [20.1, 21.2, 22.3, 23.4]) {
+      this.add.rectangle(px(x), px(3.08), 54, 10, 0xc9b18b).setDepth(2.62);
+    }
+    prop('item-fridge', 20.2, 4.1, 0.88, 0xe2dfd5);
+    prop('item-bottle', 23.3, 3.25, 0.58, 0x8ec5d2);
+    prop('item-food', 20.7, 7.4, 0.72);
+    prop('item-bottle', 21.4, 7.45, 0.52, 0xb86f43);
+    prop('item-letter', 20.1, 8.4, 0.62);
+    rect(21.0, 7.8, 2.5, 1.7, 0x5a3828, 2.42);
+    this.add.rectangle(px(21), px(7.8), 2.05 * tile, 1.25 * tile, 0x8a5a3e).setDepth(2.45);
+    for (const [x, y] of [[20, 7], [22, 7], [20, 9], [22, 9]] as Array<[number, number]>) {
+      prop('item-nightstand', x, y, 0.52, 0x6d4635);
+    }
+    this.add.rectangle(px(24.1), px(8.2), 34, 48, 0x4a3427).setDepth(2.7).setStrokeStyle(3, 0x9b7858);
+    this.add.text(px(24.1), px(8.2), 'PANEL', {
+      fontFamily: 'monospace', fontSize: '7px', color: '#c6ad86',
+    }).setOrigin(0.5).setDepth(2.75);
+    block([20, 4], [24, 4], [24, 5], [24, 6], [20, 7], [22, 7]);
+  }
+
+  private createDeliveryNeighborhood() {
+    const tile = SCALED_TILE;
+    const px = (value: number) => value * tile + tile / 2;
+    const prop = (texture: string, x: number, y: number, scale = 0.74, tint?: number) => {
+      const sprite = this.add.sprite(px(x), px(y), texture).setScale(SCALE * scale).setDepth(3.1);
+      if (tint !== undefined) sprite.setTint(tint);
+      return sprite;
+    };
+
+    // Three houses, three lives. The buyers remain composites, but the rooms
+    // are specific enough to feel inhabited instead of copied boxes.
+    const rugs = [
+      { x: 6, color: 0x315f78, accent: 0xd6bc76 },
+      { x: 17, color: 0x574c73, accent: 0xa8b58f },
+      { x: 29, color: 0x7b384b, accent: 0xd38f6f },
+    ];
+    for (const rug of rugs) {
+      this.add.rectangle(px(rug.x), px(24.35), 5.2 * tile, 1.8 * tile, rug.color).setDepth(2.02);
+      this.add.rectangle(px(rug.x), px(24.35), 4.7 * tile, 1.4 * tile, rug.accent, 0.25).setDepth(2.04);
+      for (const dx of [-1.6, -0.8, 0, 0.8, 1.6]) {
+        this.add.rectangle(px(rug.x + dx), px(24.35), 3, 1.25 * tile, rug.accent, 0.38).setDepth(2.06);
+      }
+    }
+
+    // First referral: student apartment, game on, shoes and takeout by door.
+    prop('item-couch', 3.2, 22.0, 0.8, 0x47677e);
+    prop('item-tv', 8.7, 22.0, 0.72);
+    prop('item-food', 4.1, 25.2, 0.58);
+    prop('item-shoe-rack', 8.7, 25.2, 0.62);
+    prop('item-poster', 4.1, 21.0, 0.62, 0x78a2c8);
+
+    // Repeat buyer: cleaner, quieter, mail stacked beside a work laptop.
+    prop('item-desk', 14.5, 22.0, 0.76, 0x6f5c4c);
+    prop('item-tablet', 14.5, 21.75, 0.48);
+    prop('item-couch', 19.8, 25.0, 0.75, 0x6b647d);
+    prop('item-letter', 14.3, 25.0, 0.52);
+    prop('item-lamp', 20.3, 22.0, 0.58);
+
+    // New referral: louder room, speaker, drinks, people already waiting.
+    prop('item-speaker', 26.2, 22.0, 0.76);
+    prop('item-couch', 31.8, 22.0, 0.8, 0x7e4658);
+    prop('item-bottle', 26.2, 25.2, 0.52, 0xc99861);
+    prop('item-bottle', 27.0, 25.3, 0.48, 0x5f9b8c);
+    prop('item-led-strip', 32.8, 21.0, 0.72, 0xd76ea3);
+
+    for (const house of [{ x: 6, label: 'A' }, { x: 17, label: 'B' }, { x: 29, label: 'C' }]) {
+      this.add.rectangle(px(house.x + 1.25), px(20.25), 32, 22, 0x3f3028).setDepth(2.3);
+      this.add.text(px(house.x + 1.25), px(20.25), house.label, {
+        fontFamily: 'monospace', fontSize: '10px', color: '#d8c6a6',
+      }).setOrigin(0.5).setDepth(2.35);
+    }
+  }
+
+  private createRouteAtmosphere() {
+    const tile = SCALED_TILE;
+    const roadY = 13.35 * tile + tile / 2;
+
+    // Traffic never stops for JP's route. These are background vehicles, not
+    // collision objects, so the playable road remains reliable.
+    const traffic = [
+      { x: -2 * tile, y: roadY - 28, tint: 0x7f8a93, duration: 8800 },
+      { x: 38 * tile, y: roadY + 34, tint: 0x6f493f, duration: 10600 },
+    ];
+    traffic.forEach((carData, index) => {
+      const car = this.add.sprite(carData.x, carData.y, 'item-car').setScale(SCALE * 0.82).setTint(carData.tint).setDepth(2.45).setAlpha(0.78);
+      if (index === 1) car.setFlipX(true);
+      this.tweens.add({
+        targets: car,
+        x: index === 0 ? 38 * tile : -2 * tile,
+        duration: carData.duration,
+        repeat: -1,
+        onRepeat: () => { car.x = index === 0 ? -2 * tile : 38 * tile; },
+        ease: 'Linear',
+      });
+    });
+
+    // Dumpsters, mailboxes and stacked delivery clutter fill the dead edges of
+    // the parking lot while preserving the central driving path.
+    for (const [x, y] of [[3, 12], [33, 16], [25, 12]] as Array<[number, number]>) {
+      this.add.sprite(x * tile + tile / 2, y * tile + tile / 2, 'item-storage-box')
+        .setScale(SCALE * 0.68).setTint(0x58615d).setDepth(2.7);
+    }
+    for (const x of [5, 16, 28]) {
+      this.add.rectangle(x * tile + tile / 2, 19.1 * tile, 18, 36, 0x4d5557).setDepth(2.25);
+      this.add.rectangle(x * tile + tile / 2, 18.85 * tile, 24, 8, 0x727b7d).setDepth(2.3);
+    }
+
+    const windowLights = [
+      { x: 4, y: 21.1, color: 0x8bbbd0 },
+      { x: 15, y: 21.1, color: 0xe0b36f },
+      { x: 31, y: 21.1, color: 0xd47fa6 },
+    ];
+    windowLights.forEach((light, index) => {
+      const glow = this.add.rectangle(light.x * tile + tile / 2, light.y * tile, 58, 32, light.color, 0.3).setDepth(2.2);
+      this.tweens.add({ targets: glow, alpha: 0.12, duration: 1300 + index * 420, yoyo: true, repeat: -1 });
+    });
   }
 
   getMapData(): MapData {
@@ -149,6 +323,26 @@ export class WeedRiseScene extends BaseChapterScene {
         rise_receipts: [
           { speaker: 'Narrator', text: 'Gas. Food. Clothes. Nights out. Cash disappears quietly.' },
           { speaker: 'JP\'s Mind', text: 'More money coming in. Somehow still chasing it.' },
+        ],
+        rise_order_board: [
+          { speaker: 'Narrator', text: 'Names are reduced to initials, times and crossed-out addresses.' },
+          { speaker: 'JP\'s Mind', text: 'A whole day can fit on one folded sheet.' },
+        ],
+        rise_laundry: [
+          { speaker: 'Narrator', text: 'Clean clothes never make it into the closet anymore.' },
+          { speaker: 'JP\'s Mind', text: 'Grab a shirt. Check the phone. Leave again.' },
+        ],
+        rise_takeout: [
+          { speaker: 'Narrator', text: 'Half the kitchen is takeout containers and unopened groceries.' },
+          { speaker: 'JP\'s Mind', text: 'Money saves time until the life it buys takes all of it.' },
+        ],
+        rise_trunk: [
+          { speaker: 'Narrator', text: 'Gas receipts, spare clothes and a trunk that never really empties.' },
+          { speaker: 'JP\'s Mind', text: 'Everything I need to stay out longer.' },
+        ],
+        rise_mailbox: [
+          { speaker: 'Narrator', text: 'Bills for people who live normal days.' },
+          { speaker: 'JP\'s Mind', text: 'I keep checking the street before I check the mail.' },
         ],
         rise_overlook: [
           { speaker: 'Narrator', text: 'Santa Barbara looks clean from up here.' },
