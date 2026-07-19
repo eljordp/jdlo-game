@@ -203,19 +203,19 @@ export const chapter1NPCs: NPCData[] = [
     y: 5,
     sprite: 'npc_bikini1',
     dialogue: [
-      { speaker: 'Rosa', text: 'You live here?' },
+      { speaker: 'Lily', text: 'You live here?' },
       { speaker: 'JP', text: 'Yeah.' },
-      { speaker: 'Rosa', text: 'Figures. I bartend two of these houses a week. Y\'all all have the same fridge.' },
+      { speaker: 'Lily', text: 'Figures. I bartend two of these houses a week. Y\'all all have the same fridge.' },
       { speaker: 'JP', text: 'We always throwing.' },
-      { speaker: 'Rosa', text: 'I know. I\'m working your party Friday. Double rate if it goes past two — I don\'t do free overtime for rich kids.' },
+      { speaker: 'Lily', text: 'I know. I\'m working your party Friday. Double rate if it goes past two — I don\'t do free overtime for rich kids.' },
       { speaker: 'JP', text: '', choices: [
         { text: '"It\'s not as cool as it looks."', next: [
-          { speaker: 'Rosa', text: 'I KNOW it\'s not. I clean up after it. Last week somebody microwaved a vape.' },
-          { speaker: 'Rosa', text: 'You\'re the first one to admit it though.' },
+          { speaker: 'Lily', text: 'I KNOW it\'s not. I clean up after it. Last week somebody microwaved a vape.' },
+          { speaker: 'Lily', text: 'You\'re the first one to admit it though.' },
           { speaker: 'JP\'s Mind', text: 'She sees the 3 AM version. She mops it.' },
         ]},
         { text: '"Yeah. It\'s not bad."', next: [
-          { speaker: 'Rosa', text: 'Not bad, he says. Okay. See you Friday. Tip your bartender.' },
+          { speaker: 'Lily', text: 'Not bad, he says. Okay. See you Friday. Tip your bartender.' },
           { speaker: 'JP\'s Mind', text: 'She\'ll outlast every single person at this party. She has a rate card.' },
         ]},
       ]},
@@ -2412,7 +2412,7 @@ const ch4Extras: Record<string, DialogueLine[]> = {
   ],
   ch4_truck: [
     { speaker: 'Narrator', text: 'Ernesto\'s truck. 1998 Ford F-150. Dents on every panel.' },
-    { speaker: 'Narrator', text: 'Rosary hanging from the mirror. Mexican flag sticker on the bumper.' },
+    { speaker: 'Narrator', text: 'Lilyry hanging from the mirror. Mexican flag sticker on the bumper.' },
     { speaker: 'JP\'s Mind', text: 'This man works harder than anyone I know.' },
   ],
   ch4_grape_row1: [
