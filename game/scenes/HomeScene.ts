@@ -3414,7 +3414,7 @@ export class HomeScene extends BaseChapterScene {
     }).setOrigin(0.5).setScrollFactor(0).setDepth(310));
 
     // Instructions
-    objects.push(this.add.text(GAME_WIDTH / 2, 70, 'SPACE to curl. Pace it — red form tears, and torn form costs reps.', {
+    objects.push(this.add.text(GAME_WIDTH / 2, 70, 'SPACE to curl. Let STRAIN fall — curl in red and you lose reps.', {
       fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#aaaacc',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(310));
 
@@ -3452,7 +3452,7 @@ export class HomeScene extends BaseChapterScene {
     objects.push(repLabel);
 
     // Form meter — the actual skill. Fills per rep, drains when you breathe.
-    objects.push(this.add.text(GAME_WIDTH / 2 - 130, GAME_HEIGHT / 2 - 55, 'FORM', {
+    objects.push(this.add.text(GAME_WIDTH / 2 - 130, GAME_HEIGHT / 2 - 55, 'STRAIN', {
       fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#888888',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(310));
     objects.push(this.add.rectangle(GAME_WIDTH / 2 + 20, GAME_HEIGHT / 2 - 55, 208, 16, 0x222230)
@@ -3471,8 +3471,6 @@ export class HomeScene extends BaseChapterScene {
         formFill.setFillStyle(formLevel > 75 ? 0xff4040 : formLevel > 45 ? 0xf0c040 : 0x40c060);
       },
     });
-    objects.push(formTicker as unknown as Phaser.GameObjects.GameObject);
-
     // Timer
     const timerText = this.add.text(GAME_WIDTH - 100, 40, '20', {
       fontFamily: '"Press Start 2P", monospace', fontSize: '20px', color: '#ffffff',
@@ -3556,11 +3554,11 @@ export class HomeScene extends BaseChapterScene {
       }
 
       // Milestone text
-      if (reps === 10) {
+      if (reps === 6) {
         this.showFloatingText('WARMING UP', '#f0c040');
-      } else if (reps === 20) {
+      } else if (reps === 12) {
         this.showFloatingText('LOCKED IN', '#40c060');
-      } else if (reps === 30) {
+      } else if (reps === 17) {
         this.showFloatingText('BEAST MODE', '#ff4040');
         this.cameras.main.shake(200, 0.003);
       }
@@ -3573,19 +3571,20 @@ export class HomeScene extends BaseChapterScene {
 
     const endGame = () => {
       countdown.remove();
+      formTicker.remove(false);
 
       // Result
       let msg: string;
       let color: string;
-      if (reps >= 30) {
+      if (reps >= 17) {
         msg = 'BEAST. ' + reps + ' reps.';
         color = '#ff4040';
         MoodSystem.setMood('locked_in', 60);
-      } else if (reps >= 20) {
+      } else if (reps >= 12) {
         msg = 'Solid. ' + reps + ' reps.';
         color = '#40c060';
         MoodSystem.setMood('locked_in', 45);
-      } else if (reps >= 10) {
+      } else if (reps >= 6) {
         msg = 'Not bad. ' + reps + ' reps.';
         color = '#f0c040';
       } else {
@@ -3603,14 +3602,16 @@ export class HomeScene extends BaseChapterScene {
           if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
         }
         this.dialogue.show([
-          { speaker: 'JP\'s Mind', text: reps >= 20 ? 'Gotta stay disciplined.' : 'Need to hit these more.' },
+          { speaker: 'JP\'s Mind', text: reps >= 12 ? 'Gotta stay disciplined.' : 'Need to hit these more.' },
         ], () => { this.frozen = false; });
       });
     };
 
     exitBtn.on('pointerdown', () => {
+      if (gameOver) return;
       gameOver = true;
       countdown.remove();
+      formTicker.remove(false);
       spaceKey.off('down', curlHandler);
       this.input.off('pointerdown', curlHandler);
       for (const obj of objects) {
@@ -3621,8 +3622,10 @@ export class HomeScene extends BaseChapterScene {
 
     const escKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
     escKey.once('down', () => {
+      if (gameOver) return;
       gameOver = true;
       countdown.remove();
+      formTicker.remove(false);
       spaceKey.off('down', curlHandler);
       this.input.off('pointerdown', curlHandler);
       for (const obj of objects) {
