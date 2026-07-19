@@ -2592,6 +2592,8 @@ const ch5Extras: Record<string, DialogueLine[]> = {
   ],
   ch5_portfolio: [
     { speaker: 'Narrator', text: 'JP\'s portfolio site. Three projects. One of them is his own.' },
+    { speaker: 'Narrator', text: 'One is a t-shirt store he built for Nolan. A favor. No invoice.' },
+    { speaker: 'JP\'s Mind', text: 'Nolan\'s orders chart went up this week. Mine didn\'t.' },
     { speaker: 'JP\'s Mind', text: 'Gotta start somewhere. Even if "somewhere" looks embarrassing.' },
   ],
   ch5_coffee: [
@@ -2647,6 +2649,8 @@ const ch6Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'Not long ago I was teaching myself the basics from a laptop.' },
     { speaker: 'JP\'s Mind', text: 'Now there are systems in production and clients expecting answers.' },
     { speaker: 'JP\'s Mind', text: 'Sticker Smith. WCT. DHL. Vacaville Appliance. Real work, with different outcomes.' },
+    { speaker: 'JP\'s Mind', text: 'And Nolan\'s shirt store still running. The favor build outsells half my paid work.' },
+    { speaker: 'JP\'s Mind', text: 'He does his thing. I do mine. Both of us made it out of that house.' },
   ],
   ch6_team: [
     { speaker: 'JP\'s Mind', text: 'Three people count on me now. Can\'t let them down.' },

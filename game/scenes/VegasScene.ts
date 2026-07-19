@@ -593,7 +593,9 @@ export class VegasScene extends Phaser.Scene {
         this.showText('Not a future vision. This trip happened.', 165, { size: '12px', color: '#c4c4d4', delay: 900 });
         this.showText('Tony. Patrick. Dan. Same crew every time — and it\'s always lit.', 220, { size: '11px', color: '#e8d8b0', delay: 1500 });
         this.showText('Every stop was party, women, owners—and somebody talking business.', 270, { size: '10px', color: '#aaaacc', delay: 2200 });
-        this.showContinue(3400);
+        this.showText('Text from Nolan: "you\'re in MY city and didn\'t tell me?? pull up to the new house tomorrow."', 320, { size: '9px', color: '#88aacc', delay: 2900 });
+        this.showText('The frat house kid bought a house out here. The shirt store JP built him did that.', 365, { size: '9px', color: '#7788aa', delay: 3600 });
+        this.showContinue(4400);
         break;
       }
       case 1: {
