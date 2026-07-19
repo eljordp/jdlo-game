@@ -49,6 +49,24 @@ type LayerDef = {
 
 type TrackDef = {
   layers: LayerDef[];
+  ambience?: 'home' | 'traffic' | 'institution' | 'field' | 'room' | 'city';
+};
+
+type AmbienceDef = {
+  filterType: BiquadFilterType;
+  filterFreq: number;
+  filterQ: number;
+  gain: number;
+  color: 'white' | 'brown';
+};
+
+const AMBIENCES: Record<NonNullable<TrackDef['ambience']>, AmbienceDef> = {
+  home: { filterType: 'lowpass', filterFreq: 520, filterQ: 0.3, gain: 0.0035, color: 'brown' },
+  traffic: { filterType: 'bandpass', filterFreq: 430, filterQ: 0.45, gain: 0.006, color: 'brown' },
+  institution: { filterType: 'bandpass', filterFreq: 118, filterQ: 2.2, gain: 0.0065, color: 'white' },
+  field: { filterType: 'lowpass', filterFreq: 1050, filterQ: 0.25, gain: 0.0055, color: 'brown' },
+  room: { filterType: 'bandpass', filterFreq: 680, filterQ: 0.5, gain: 0.0035, color: 'brown' },
+  city: { filterType: 'lowpass', filterFreq: 620, filterQ: 0.4, gain: 0.0045, color: 'brown' },
 };
 
 // ── Track definitions ─────────────────────────────────────────────────────────
@@ -88,6 +106,7 @@ const TRACKS: Record<string, TrackDef> = {
 
   // ── Ch1 Home: Warm Saturday morning — lo-fi chill, nostalgic but upbeat. ────
   'home': {
+    ambience: 'home',
     layers: [
       // Bass — gentle walking bounce
       {
@@ -180,6 +199,7 @@ const TRACKS: Record<string, TrackDef> = {
 
   // ── Ch3 Wrong Crowd: Dark, tense — minor key, ominous drone. ──────────
   'wrong-crowd': {
+    ambience: 'traffic',
     layers: [
       // Low drone — constant unease
       {
@@ -223,6 +243,7 @@ const TRACKS: Record<string, TrackDef> = {
 
   // ── Weed Rise: seductive momentum with danger hiding underneath. ──────
   'weed-rise': {
+    ambience: 'traffic',
     layers: [
       {
         notes: ['E2', 'R', 'E2', 'G2', 'A2', 'R', 'B2', 'A2',
@@ -290,6 +311,7 @@ const TRACKS: Record<string, TrackDef> = {
 
   // ── Ch4 Locked Up: Sparse, cold — minimal, echoing, institutional. ────
   'jail': {
+    ambience: 'institution',
     layers: [
       // Deep institutional hum
       {
@@ -333,6 +355,7 @@ const TRACKS: Record<string, TrackDef> = {
 
   // ── Jail reflection: the same room, but the mind is getting quieter. ──
   'jail-reflection': {
+    ambience: 'institution',
     layers: [
       {
         notes: ['D2', 'R', 'R', 'A1', 'R', 'R', 'F2', 'R',
@@ -389,6 +412,7 @@ const TRACKS: Record<string, TrackDef> = {
 
   // ── Ch5 Caymus: Earthy, working — acoustic feel, outdoor warmth. ──────
   'caymus': {
+    ambience: 'field',
     layers: [
       // Root bass — steady, grounding
       {
@@ -431,6 +455,7 @@ const TRACKS: Record<string, TrackDef> = {
 
   // ── Ch6 Come Up: Grinding, focused — lo-fi beats, late night energy. ──
   'come-up': {
+    ambience: 'room',
     layers: [
       // Lo-fi bass — steady grind rhythm
       {
@@ -474,6 +499,7 @@ const TRACKS: Record<string, TrackDef> = {
 
   // ── Ch7 Operator: Confident, clean — modern synth, professional. ──────
   'operator': {
+    ambience: 'city',
     layers: [
       // Clean bass — confident, steady
       {
@@ -558,6 +584,7 @@ const TRACKS: Record<string, TrackDef> = {
 
   // ── Homecoming: familiar Home melody, calmer and earned. ───────────────
   'homecoming': {
+    ambience: 'home',
     layers: [
       {
         notes: ['G2', 'R', 'C3', 'R', 'D3', 'R', 'B2', 'R',
@@ -602,11 +629,17 @@ export class MusicSystem {
   private static currentTrack = '';
   private static activeLayers: ActiveLayer[] = [];
   private static muted = false;
+  private static volume = 1;
+  private static lastTrack = '';
   // Beach-specific nodes
   private static beachNoise: AudioBufferSourceNode | null = null;
   private static beachGain: GainNode | null = null;
   private static beachFilter: BiquadFilterNode | null = null;
   private static beachTimeout: ReturnType<typeof setTimeout> | null = null;
+  private static ambientNoise: AudioBufferSourceNode | null = null;
+  private static ambientGain: GainNode | null = null;
+  private static ambientFilter: BiquadFilterNode | null = null;
+  private static ambientBaseGain = 0;
 
   private static getCtx(): AudioContext {
     if (!this.ctx) this.ctx = new AudioContext();
@@ -628,6 +661,8 @@ export class MusicSystem {
     if (!track) return;
 
     const ctx = this.getCtx();
+
+    if (track.ambience) this.startAmbience(ctx, track.ambience);
 
     // Santa Barbara gets wave noise underneath its oscillator layers
     if (trackName === 'santa-barbara') {
@@ -717,7 +752,7 @@ export class MusicSystem {
       } else {
         // Note — glide to frequency, fade in
         osc.frequency.setTargetAtTime(freq, now, attack * 0.5);
-        gain.gain.setTargetAtTime(def.gain, now, attack * 0.3);
+        gain.gain.setTargetAtTime(def.gain * this.volume, now, attack * 0.3);
       }
     };
 
@@ -754,7 +789,7 @@ export class MusicSystem {
     smoothFilter.Q.value = 0.5;
 
     const gain = ctx.createGain();
-    gain.gain.value = 0.018;
+    gain.gain.value = 0.018 * this.volume;
 
     noise.connect(filter);
     filter.connect(smoothFilter);
@@ -770,8 +805,8 @@ export class MusicSystem {
     const waveRhythm = () => {
       if (!this.beachGain || this.currentTrack !== 'santa-barbara') return;
       const now = ctx.currentTime;
-      this.beachGain.gain.setTargetAtTime(0.035, now, 2.0);
-      this.beachGain.gain.setTargetAtTime(0.010, now + 4, 2.5);
+      this.beachGain.gain.setTargetAtTime(0.035 * this.volume, now, 2.0);
+      this.beachGain.gain.setTargetAtTime(0.010 * this.volume, now + 4, 2.5);
 
       if (this.beachFilter) {
         this.beachFilter.frequency.setTargetAtTime(350, now, 1.5);
@@ -781,6 +816,38 @@ export class MusicSystem {
       this.beachTimeout = setTimeout(waveRhythm, 6000 + Math.random() * 4000);
     };
     waveRhythm();
+  }
+
+  private static startAmbience(ctx: AudioContext, name: NonNullable<TrackDef['ambience']>): void {
+    const def = AMBIENCES[name];
+    const seconds = 4;
+    const buffer = ctx.createBuffer(1, Math.floor(ctx.sampleRate * seconds), ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    let brown = 0;
+    for (let i = 0; i < data.length; i++) {
+      const white = Math.random() * 2 - 1;
+      brown = (brown + 0.025 * white) / 1.025;
+      data[i] = def.color === 'brown' ? brown * 3.2 : white;
+    }
+
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
+    source.loop = true;
+    const filter = ctx.createBiquadFilter();
+    filter.type = def.filterType;
+    filter.frequency.value = def.filterFreq;
+    filter.Q.value = def.filterQ;
+    const gain = ctx.createGain();
+    gain.gain.value = def.gain * this.volume;
+    source.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+    source.start();
+
+    this.ambientNoise = source;
+    this.ambientGain = gain;
+    this.ambientFilter = filter;
+    this.ambientBaseGain = def.gain;
   }
 
   // ── Stop ────────────────────────────────────────────────────────────────
@@ -812,6 +879,19 @@ export class MusicSystem {
       this.beachFilter.disconnect();
       this.beachFilter = null;
     }
+    if (this.ambientNoise) {
+      try { this.ambientNoise.stop(); } catch { /* already stopped */ }
+      this.ambientNoise = null;
+    }
+    if (this.ambientGain) {
+      this.ambientGain.disconnect();
+      this.ambientGain = null;
+    }
+    if (this.ambientFilter) {
+      this.ambientFilter.disconnect();
+      this.ambientFilter = null;
+    }
+    this.ambientBaseGain = 0;
 
     this.currentTrack = '';
   }
@@ -819,15 +899,23 @@ export class MusicSystem {
   // ── Volume / Mute ──────────────────────────────────────────────────────
 
   static setVolume(vol: number): void {
+    this.volume = Math.max(0, Math.min(1, vol));
     for (const layer of this.activeLayers) {
-      layer.gain.gain.value = vol;
+      layer.gain.gain.value = layer.def.gain * this.volume;
     }
+    if (this.beachGain) this.beachGain.gain.value = 0.018 * this.volume;
+    if (this.ambientGain) this.ambientGain.gain.value = this.ambientBaseGain * this.volume;
   }
 
   static toggleMute(): boolean {
     this.muted = !this.muted;
     if (this.muted) {
+      this.lastTrack = this.currentTrack.startsWith('transition:') ? '' : this.currentTrack;
       this.stop();
+    } else if (this.lastTrack) {
+      const track = this.lastTrack;
+      this.lastTrack = '';
+      this.play(track);
     }
     return this.muted;
   }
