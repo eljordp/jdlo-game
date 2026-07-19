@@ -62,6 +62,8 @@ export const chapter0NPCs: NPCData[] = [
       { speaker: 'JP', text: 'I know. But I\'m not spending forty thousand a year for something I can learn myself.' },
       { speaker: 'Mom', text: '...' },
       { speaker: 'Narrator', text: 'She walks away. She doesn\'t agree but she\'s done arguing.' },
+      { speaker: 'JP\'s Mind', text: 'Private school. Test prep. Her map of my whole life. College is just the next stop on it.' },
+      { speaker: 'JP\'s Mind', text: 'First time I ever said no to the map.' },
     ],
   },
   {
@@ -2325,6 +2327,8 @@ const ch4Extras: Record<string, DialogueLine[]> = {
   ],
   ch4_vines: [
     { speaker: 'JP\'s Mind', text: 'Caymus grows some of the best Cabernet in Napa. And I\'m here mowing their lawn.' },
+    { speaker: 'JP\'s Mind', text: 'Funny thing. Pops bought his own vineyard with the college money I never spent.' },
+    { speaker: 'JP\'s Mind', text: 'My tuition is growing grapes somewhere. And I\'m out here working somebody else\'s rows.' },
     { speaker: 'JP\'s Mind', text: 'But you know what — somebody built this vineyard from nothing too. Dirt and a vision. That\'s it.' },
   ],
   ch4_ai_discovery: [

@@ -927,10 +927,12 @@ export class BeachScene extends BaseChapterScene {
               { speaker: 'JP\'s Mind', text: 'I put in about a thousand.' },
               { speaker: 'JP\'s Mind', text: 'It became about five. Then around forty.' },
               { speaker: 'JP\'s Mind', text: 'First time trading. I thought I understood it.' },
+              { speaker: 'JP\'s Mind', text: 'Mom had a plan for every year of my life. This was the first one that was mine.' },
               { speaker: 'Narrator', text: 'JP moved the whole portfolio into LUNA.' },
               { speaker: 'Narrator', text: 'Then it went to zero.' },
               { speaker: 'JP\'s Mind', text: '...' },
               { speaker: 'JP\'s Mind', text: 'Everything I had. Gone.' },
+              { speaker: 'JP\'s Mind', text: 'The first plan I ever picked for myself.' },
               { speaker: 'JP\'s Mind', text: 'I am not starting over from zero.' },
               { speaker: 'Narrator', text: 'His eyes move from the red screen to the phone.' },
             ], () => {
