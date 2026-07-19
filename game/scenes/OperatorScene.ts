@@ -666,8 +666,9 @@ export class OperatorScene extends BaseChapterScene {
     // Manza — walks between buildings (row 12, cols 28-38)
     patrolX('ch6_manza', 28, 38, 6000, 3500);
 
-    // DHL manager — checks the scan/sort line inside the operations floor.
-    patrolX('ch6_dhl', 29, 32, 5500, 2500);
+    // DHL manager — checks the scan-side aisle. Keep him off the Future object
+    // at 30,16 so normal interaction can never resolve the wrong target.
+    patrolX('ch6_dhl', 28, 29, 5500, 1800);
 
     // Gym bro — moves between equipment (col 5, rows 38-41)
     patrolY('ch6_gym_bro', 38, 41, 4500, 2000);
