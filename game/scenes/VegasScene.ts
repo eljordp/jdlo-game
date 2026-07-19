@@ -626,7 +626,8 @@ export class VegasScene extends Phaser.Scene {
       case 4: {
         this.makeStripClub();
         this.addDealExchange(GAME_WIDTH - 205, 420, 'DEAL MOVING', 'npc-business');
-        this.showText('AFTER HOURS', 100, { size: '18px', color: '#ff4d86', delay: 250 });
+        this.showText('SPEARMINT RHINO', 100, { size: '18px', color: '#ff4d86', delay: 250 });
+        this.showText('AFTER HOURS', 132, { size: '9px', color: '#a06478', delay: 500 });
         this.showText('"One more stop." — Dan. It was never one more stop.', 150, { size: '11px', color: '#e0a8bc', delay: 850 });
         this.showText('The night did not slow down. It changed buildings.', 200, { size: '11px', delay: 1450 });
         this.showText('Dancers working. Owners talking. Cash, smoke, drinks—and business still moving at the table.', 255, { size: '10px', color: '#d8a6b7', delay: 2050 });
