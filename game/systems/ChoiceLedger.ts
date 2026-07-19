@@ -86,6 +86,14 @@ export const CHOICE_DEFS: ChoiceDef[] = [
     jpLine: 'JP added the stop. One of those nights, the door got kicked in.',
   },
   {
+    id: 'la_delivery_order',
+    chapter: 'LA',
+    prompt: 'Dinner or the delivery first',
+    options: ['Delivered first', 'Made dinner first'],
+    jpReal: null, // gameplay-only pressure choice; no documentary answer supplied
+    jpLine: '',
+  },
+  {
     id: 'vegas_invite',
     chapter: 'LA',
     prompt: 'Vegas invite on rent week',

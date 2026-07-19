@@ -14,6 +14,7 @@ export class LAScene extends Phaser.Scene {
   private textObjects: Phaser.GameObjects.Text[] = [];
   private sceneObjects: Phaser.GameObjects.GameObject[] = [];
   private activeTweens: Phaser.Tweens.Tween[] = [];
+  private deliveryOrder: 'delivery-first' | 'dinner-first' | null = null;
 
   constructor() {
     super({ key: 'LAScene' });
@@ -25,6 +26,7 @@ export class LAScene extends Phaser.Scene {
     this.textObjects = [];
     this.sceneObjects = [];
     this.activeTweens = [];
+    this.deliveryOrder = null;
 
     MusicSystem.play('la');
     this.cameras.main.fadeIn(500, 0, 0, 0);
@@ -108,6 +110,61 @@ export class LAScene extends Phaser.Scene {
     noBg.on('pointerdown', onNo);
     spaceKey.on('down', onYes);
     nKey.on('down', onNo);
+  }
+
+  // A gameplay-only pressure choice inside the LA night. The documentary
+  // spine stays fixed, but the next scenes remember what the player sacrificed.
+  private showDeliveryOrderChoice() {
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT - 155;
+
+    this.showText('Dinner reservation in 20 minutes. Client delivery still open.', cy - 72, {
+      size: '10px', color: '#e8d8b0',
+    });
+
+    const deliveryBg = this.addObj(this.add.rectangle(cx - 170, cy, 280, 48, 0x305f8e)
+      .setInteractive({ useHandCursor: true }).setDepth(110));
+    const deliveryText = this.addObj(this.add.text(cx - 170, cy, 'DELIVER FIRST  [D]', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#ffffff',
+    }).setOrigin(0.5).setDepth(111));
+    const dinnerBg = this.addObj(this.add.rectangle(cx + 170, cy, 280, 48, 0x8a5a30)
+      .setInteractive({ useHandCursor: true }).setDepth(110));
+    const dinnerText = this.addObj(this.add.text(cx + 170, cy, 'MAKE DINNER  [F]', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#ffffff',
+    }).setOrigin(0.5).setDepth(111));
+
+    const dKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+    const fKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.F);
+    let resolved = false;
+    const cleanup = () => {
+      deliveryBg.destroy(); deliveryText.destroy(); dinnerBg.destroy(); dinnerText.destroy();
+      dKey.off('down', deliverFirst); fKey.off('down', dinnerFirst);
+    };
+    const deliverFirst = () => {
+      if (resolved) return;
+      resolved = true;
+      cleanup();
+      this.deliveryOrder = 'delivery-first';
+      ChoiceLedger.record('la_delivery_order', 'Delivered first');
+      SoundEffects.playConfirm();
+      this.showText('Sent. JP arrives after everybody ordered.', cy, { size: '10px', color: '#8fc8ff' });
+      this.showContinue(1200);
+    };
+    const dinnerFirst = () => {
+      if (resolved) return;
+      resolved = true;
+      cleanup();
+      this.deliveryOrder = 'dinner-first';
+      ChoiceLedger.record('la_delivery_order', 'Made dinner first');
+      SoundEffects.playVibrate();
+      this.showText('Phone goes face-down. The deadline follows him inside.', cy, { size: '10px', color: '#f0c080' });
+      this.showContinue(1200);
+    };
+
+    deliveryBg.on('pointerdown', deliverFirst);
+    dinnerBg.on('pointerdown', dinnerFirst);
+    dKey.on('down', deliverFirst);
+    fKey.on('down', dinnerFirst);
   }
 
   private showText(
@@ -410,7 +467,9 @@ export class LAScene extends Phaser.Scene {
           { size: '12px', color: '#aaaacc', delay: 1600 }
         );
 
-        this.showContinue(3500);
+        this.time.delayedCall(3500, () => {
+          if (this.scene.isActive()) this.showDeliveryOrderChoice();
+        });
         break;
       }
 
@@ -538,8 +597,11 @@ export class LAScene extends Phaser.Scene {
         }
 
         this.showText('Steak dinner. Real restaurant.\nNot the drive-thru.', cy - 180, { color: '#f0d0a0' });
+        const dinnerPressure = this.deliveryOrder === 'delivery-first'
+          ? 'JP slides in late. Everybody already ordered.\nThe client got the build; the steak got cold.'
+          : 'JP makes the table on time.\nThe unfinished delivery vibrates beside his plate.';
         this.showText(
-          'Four friends at the table.\nLaptops open between the plates.\nNot for the vibes. Deliveries due tonight.',
+          `Four friends at the table.\n${dinnerPressure}`,
           cy + 180,
           { size: '12px', delay: 800 }
         );
@@ -710,8 +772,11 @@ export class LAScene extends Phaser.Scene {
 
         // Text
         this.showText('30th floor. Downtown LA.', 40, { size: '20px', color: '#8888cc', delay: 500 });
+        const lateNightPressure = this.deliveryOrder === 'delivery-first'
+          ? 'One window still lit at 2 AM.\nThat\'s JP. Another client needs an answer by nine.'
+          : 'One window still lit at 2 AM.\nThat\'s JP. Dinner ended; the delivery did not.';
         this.showText(
-          'One window still lit at 2 AM.\nThat\'s JP. The delivery is due at nine.',
+          lateNightPressure,
           GAME_HEIGHT - 200,
           { delay: 1500, color: '#aaaacc' }
         );
