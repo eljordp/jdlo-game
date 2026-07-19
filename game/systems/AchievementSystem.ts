@@ -158,6 +158,22 @@ export class AchievementSystem {
     this.chapterStartTime = Date.now();
   }
 
+  /** Reset run-scoped counters while preserving badges earned across runs. */
+  static resetRunTrackers() {
+    this.blackjackWins = 0;
+    this.diceWinStreak = 0;
+    this.casinoSessionLoss = 0;
+    this.casinoSessionProfit = 0;
+    this.flirtSuccesses = 0;
+    this.plugChapters = new Set<string>();
+    this.fadedTimer = 0;
+    this.usedSubstance = false;
+    this.chapterStartTime = Date.now();
+    this.scene = null;
+    this.toastActive = false;
+    this.toastQueue = [];
+  }
+
   /** Update faded timer — call from BaseChapterScene update() */
   static updateFadedTimer(delta: number, isFaded: boolean) {
     if (isFaded) {

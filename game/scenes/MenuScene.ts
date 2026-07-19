@@ -7,6 +7,13 @@ import { GameSettings } from '../systems/GameSettings';
 import { InventorySystem } from '../systems/InventorySystem';
 import { ChoiceLedger } from '../systems/ChoiceLedger';
 import { AffinitySystem } from '../systems/AffinitySystem';
+import { BalanceSystem } from '../systems/BalanceSystem';
+import { GameStats } from '../systems/GameStats';
+import { MoodSystem } from '../systems/MoodSystem';
+import { SubstanceSystem } from '../systems/SubstanceSystem';
+import { DMSystem } from '../systems/DMSystem';
+import { CasinoSystem } from '../systems/CasinoSystem';
+import { AchievementSystem } from '../systems/AchievementSystem';
 import { virtualInput } from '../../components/GameCanvas';
 
 type MenuState = 'main' | 'chapters' | 'settings';
@@ -474,11 +481,32 @@ export class MenuScene extends Phaser.Scene {
   }
 
   private startPlay() {
-    // New game — clear old save data
+    // A new game is a new documentary run, not a chapter restart. Keep player
+    // settings and earned badges, but clear every choice, stat and secret that
+    // can change this run or the ending's "YOUR RUN vs JP" comparison.
     InventorySystem.clearAll();
     ChoiceLedger.reset();
     AffinitySystem.reset();
+    BalanceSystem.reset();
+    GameStats.reset();
+    MoodSystem.reset();
+    SubstanceSystem.reset();
+    DMSystem.reset();
+    CasinoSystem.reset();
+    AchievementSystem.resetRunTrackers();
     SaveSystem.clearSave();
+
+    for (const key of [
+      'jdlo_konami_found',
+      'jdlo_arm_wrestle_won',
+      'jdlo_bp_champion',
+      'jdlo_perfect_roll',
+      'jdlo_dev_room_found',
+      'jdlo_ghost_found',
+      'jdlo_hidden_room_found',
+    ]) {
+      try { localStorage.removeItem(key); } catch { /* storage unavailable */ }
+    }
 
     this.cameras.main.fadeOut(500, 0, 0, 0);
     this.cameras.main.once('camerafadeoutcomplete', () => {

@@ -27,6 +27,7 @@ export class JailScene extends BaseChapterScene {
   private bookRead = false;
   private faithDone = false;
   private pushupDominated = false; // won by 10+
+  private pushupGameActive = false;
   private diceBroke = false; // went to 0 in dice
   private crewSaveUsed = false; // the crew steps in once per fight, if earned
   private shirtOff = false;
@@ -64,6 +65,7 @@ export class JailScene extends BaseChapterScene {
     this.bookRead = false;
     this.faithDone = false;
     this.pushupDominated = false;
+    this.pushupGameActive = false;
     this.diceBroke = false;
     this.shirtOff = false;
     this.jailGateVisuals.clear();
@@ -84,6 +86,7 @@ export class JailScene extends BaseChapterScene {
     GameIntelligence.watch('ch3_letter_home', 4,  6);
     GameIntelligence.watch('ch3_phone',       10, 13);
     GameIntelligence.watch('ch3_fight_watch', 23, 3);
+    GameIntelligence.watch('ch3_pbj_witness', 26, 8);
     GameIntelligence.watch('ch3_dice_watch',  34, 8);
     GameIntelligence.watch('ch3_pushups',     12, 19, true);  // required: minigame
     GameIntelligence.watch('ch3_faith',       7,  22, true);  // required: transformation arc
@@ -826,6 +829,14 @@ export class JailScene extends BaseChapterScene {
       return;
     }
 
+    // Optional documentary beat: jail violence had become ordinary enough
+    // that chow kept moving. It is witnessed, not turned into another game.
+    if (interactable.id === 'ch3_pbj_witness') {
+      this.interactions.consume(interactable.id);
+      this.playPBJWitness();
+      return;
+    }
+
     if (interactable.id === 'ch3_commissary') {
       Analytics.trackInteraction(interactable.id);
       this.frozen = true;
@@ -1248,6 +1259,11 @@ export class JailScene extends BaseChapterScene {
   // Three-set yard strategy: read the rival, manage your reputation.
   // No meters. Each set he telegraphs his condition; you pick your move.
   private playPushupMinigame() {
+    // Director, pointer and interaction inputs can arrive in the same frame.
+    // Never let two contests stack; otherwise a completed set reveals a fresh
+    // duplicate underneath and makes the player's choice look ignored.
+    if (this.pushupGameActive) return;
+    this.pushupGameActive = true;
     this.frozen = true;
     const objects: Phaser.GameObjects.GameObject[] = [];
     let jpCount = 0;
@@ -1302,7 +1318,7 @@ export class JailScene extends BaseChapterScene {
       fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#888888',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(302));
 
-    const crowdText = this.add.text(GAME_WIDTH / 2, 50, '', {
+    const crowdText = this.add.text(GAME_WIDTH / 2, 155, '', {
       fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#f0c040',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(302).setAlpha(0);
     objects.push(crowdText);
@@ -1314,34 +1330,25 @@ export class JailScene extends BaseChapterScene {
     };
 
     const buttonObjs: Phaser.GameObjects.GameObject[] = [];
+    const keyCleanups: Array<() => void> = [];
     const clearButtons = () => {
+      for (const cleanup of keyCleanups) cleanup();
+      keyCleanups.length = 0;
       for (const b of buttonObjs) b.destroy();
       buttonObjs.length = 0;
     };
 
-    // Quick tick animation for a set's reps landing on the counters
+    // Resolve a set as one deliberate decision. Per-rep timer events could
+    // overlap Director/pointer inputs and leave a duplicate-looking Set 1 on
+    // screen; the read and consequence matter more than watching 12 ticks.
     const animateSet = (jpAdd: number, rivalAdd: number, onDone: () => void) => {
-      let step = 0;
-      const steps = Math.max(jpAdd, rivalAdd);
-      const tick = this.time.addEvent({
-        delay: 110,
-        repeat: Math.max(0, steps - 1),
-        callback: () => {
-          step++;
-          if (step <= jpAdd) {
-            jpCount++;
-            jpCounter.setText(String(jpCount));
-            this.tweens.add({ targets: jpSprite, scaleY: 2.2, duration: 50, yoyo: true });
-          }
-          if (step <= rivalAdd) {
-            rivalCount++;
-            rivalCounter.setText(String(rivalCount));
-            this.tweens.add({ targets: rivalSprite, scaleY: 2.2, duration: 50, yoyo: true });
-          }
-          if (step >= steps) { this.time.delayedCall(500, onDone); }
-        },
-      });
-      objects.push(tick as unknown as Phaser.GameObjects.GameObject);
+      jpCount += jpAdd;
+      rivalCount += rivalAdd;
+      jpCounter.setText(String(jpCount));
+      rivalCounter.setText(String(rivalCount));
+      this.tweens.add({ targets: jpSprite, scaleY: 2.2, duration: 110, yoyo: true, repeat: 2 });
+      this.tweens.add({ targets: rivalSprite, scaleY: 2.2, duration: 110, yoyo: true, repeat: 2 });
+      this.time.delayedCall(850, onDone);
     };
 
     const offerChoices = () => {
@@ -1384,19 +1391,35 @@ export class JailScene extends BaseChapterScene {
         },
       ];
 
+      const choose = (def: typeof defs[number]) => {
+        clearButtons();
+        def.pick();
+      };
+
+      const choiceKeys = [
+        Phaser.Input.Keyboard.KeyCodes.ONE,
+        Phaser.Input.Keyboard.KeyCodes.TWO,
+        Phaser.Input.Keyboard.KeyCodes.THREE,
+      ];
+
       defs.forEach((def, i) => {
         const bx = GAME_WIDTH / 2 + (i - 1) * 250;
         const by = GAME_HEIGHT / 2 + 180;
         const bg = this.add.rectangle(bx, by, 230, 52, def.color)
           .setScrollFactor(0).setDepth(303).setInteractive({ useHandCursor: true });
-        const label = this.add.text(bx, by, def.label, {
+        const label = this.add.text(bx, by, `[${i + 1}] ${def.label}`, {
           fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#ffffff',
         }).setOrigin(0.5).setScrollFactor(0).setDepth(304);
         bg.on('pointerover', () => bg.setAlpha(0.85));
         bg.on('pointerout', () => bg.setAlpha(1));
-        bg.on('pointerdown', () => { clearButtons(); def.pick(); });
+        bg.on('pointerdown', () => choose(def));
         buttonObjs.push(bg, label);
         objects.push(bg, label);
+
+        const key = this.input.keyboard!.addKey(choiceKeys[i]);
+        const onKey = () => choose(def);
+        key.on('down', onKey);
+        keyCleanups.push(() => key.off('down', onKey));
       });
     };
 
@@ -1413,10 +1436,10 @@ export class JailScene extends BaseChapterScene {
       let message = '';
       const diff = jpCount - rivalCount;
       if (diff > 10) {
-        message = 'Destroyed. The yard is watching.';
+        message = 'He wins. The yard remembers. It does not make him safe.';
         jpCounter.setColor('#f0c040');
       } else if (diff > 0) {
-        message = 'JP wins. Respect earned.';
+        message = 'JP wins. Respect buys room. Not peace.';
         jpCounter.setColor('#40c040');
       } else if (diff === 0) {
         message = 'Dead even. Mutual respect.';
@@ -1458,12 +1481,67 @@ export class JailScene extends BaseChapterScene {
         for (const obj of objects) {
           if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
         }
+        this.pushupGameActive = false;
         this.frozen = false;
         this.refreshObjectiveHint();
       });
     };
 
     offerChoices();
+  }
+
+  private playPBJWitness() {
+    this.frozen = true;
+
+    const shade = this.add.rectangle(
+      GAME_WIDTH / 2,
+      GAME_HEIGHT / 2,
+      GAME_WIDTH,
+      GAME_HEIGHT,
+      0x06080a,
+      0.72,
+    ).setScrollFactor(0).setDepth(280).setAlpha(0);
+    const left = this.add.sprite(GAME_WIDTH / 2 - 85, GAME_HEIGHT / 2 - 10, 'npc_inmate2', 0)
+      .setScale(6).setTint(0x111111).setScrollFactor(0).setDepth(281).setAlpha(0);
+    const right = this.add.sprite(GAME_WIDTH / 2 + 85, GAME_HEIGHT / 2 - 10, 'npc_inmate4', 0)
+      .setScale(6).setTint(0x111111).setScrollFactor(0).setDepth(281).setAlpha(0);
+
+    this.tweens.add({ targets: [shade, left, right], alpha: 1, duration: 300 });
+    this.dialogue.show([
+      { speaker: 'Narrator', text: 'Two inmates had been playing around. One wanted it to stop. The other took it personal.' },
+      { speaker: 'Narrator', text: 'A chair scrapes. Somebody slams into the wall.' },
+    ], () => {
+      SoundEffects.playImpact();
+      this.cameras.main.shake(180, 0.006);
+      this.tweens.add({
+        targets: left,
+        x: GAME_WIDTH / 2 + 35,
+        duration: 160,
+        yoyo: true,
+        repeat: 1,
+      });
+      this.time.delayedCall(420, () => {
+        SoundEffects.playImpact();
+        this.dialogue.show([
+          { speaker: 'Narrator', text: 'Then shoes against concrete. A head hits the wall. The whole thing is over almost as fast as it started.' },
+          { speaker: 'Guard', text: 'KEEP THE CHOW LINE MOVING.' },
+          { speaker: 'Narrator', text: 'JP walks to the table, unwraps his PB&J, and eats.' },
+          { speaker: 'JP\'s Mind', text: 'Not mine.' },
+        ], () => {
+          this.tweens.add({
+            targets: [shade, left, right],
+            alpha: 0,
+            duration: 500,
+            onComplete: () => {
+              shade.destroy();
+              left.destroy();
+              right.destroy();
+              this.frozen = false;
+            },
+          });
+        });
+      });
+    });
   }
 
 
@@ -2412,7 +2490,8 @@ export class JailScene extends BaseChapterScene {
             // Recurring-character consequence: if JP shared the commissary,
             // the crew doesn't let him take a real beating. Generosity is armor.
             if (jpHP > 0 && jpHP <= 30 && !this.crewSaveUsed
-                && ChoiceLedger.get('commissary_share') === 'Shared it') {
+                && ChoiceLedger.get('commissary_share') === 'Shared it'
+                && ChoiceLedger.get('jail_fight') === 'Fought') {
               this.crewSaveUsed = true;
               state = 'player-action';
               inputEnabled = false;

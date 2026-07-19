@@ -1,5 +1,6 @@
 // ─── GAME STATS ─────────────────────────────────────────────────────
-// Tracks lifetime stats across ALL chapters. Persisted to localStorage.
+// Tracks stats across one complete run. Persisted so Continue can resume them;
+// Play resets them before starting a new documentary run.
 // Used by EndScene for the GTA-style stats screen.
 // ────────────────────────────────────────────────────────────────────
 

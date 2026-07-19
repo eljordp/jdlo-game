@@ -31,6 +31,13 @@ export class CasinoSystem {
     try { localStorage.setItem(CASINO_SAVE_KEY, String(this.casinoBalance)); } catch { /* noop */ }
   }
 
+  /** Reset the fallback bankroll for a genuinely new play-through. */
+  static reset() {
+    this.casinoBalance = 500;
+    this.initialized = true;
+    this.save();
+  }
+
   // ─── BALANCE HELPERS ─────────────────────────────────────────────
 
   private static getCasinoBalance(): number {
