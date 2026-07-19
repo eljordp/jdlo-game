@@ -50,7 +50,7 @@ const ACHIEVEMENTS: AchievementDef[] = [
   { id: 'speed_runner',  name: 'Speed Runner',      subtitle: 'Complete a chapter in under 3 min',     icon: '\u{26A1}', category: 'gameplay', rare: true },
   { id: 'faded_247',     name: 'Faded 24/7',        subtitle: 'Stay faded for 60+ seconds',            icon: '\u{1F32C}\u{FE0F}', category: 'gameplay' },
   { id: 'sober_sally',   name: 'Sober Sally',       subtitle: 'Complete a chapter without substances',  icon: '\u{1F9CA}', category: 'gameplay' },
-  { id: 'the_whole_story', name: 'The Whole Story', subtitle: 'Beat all 7 chapters',                   icon: '\u{1F3C6}', category: 'gameplay', rare: true },
+  { id: 'the_whole_story', name: 'The Whole Story', subtitle: 'Beat all 8 chapters',                   icon: '\u{1F3C6}', category: 'gameplay', rare: true },
   { id: 'konami_found',    name: 'Old School',      subtitle: 'You know the code',                     icon: '\u{1F579}\u{FE0F}', category: 'gameplay', rare: true },
 ];
 

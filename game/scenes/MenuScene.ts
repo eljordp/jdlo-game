@@ -14,7 +14,7 @@ import { SubstanceSystem } from '../systems/SubstanceSystem';
 import { DMSystem } from '../systems/DMSystem';
 import { CasinoSystem } from '../systems/CasinoSystem';
 import { AchievementSystem } from '../systems/AchievementSystem';
-import { virtualInput } from '../../components/GameCanvas';
+import { gamepadInput, virtualInput } from '../../components/GameCanvas';
 
 type MenuState = 'main' | 'chapters' | 'settings';
 
@@ -29,10 +29,16 @@ const CHAPTERS = [
   { key: 'BeachScene', label: 'Ch 2: Santa Barbara', desc: 'The boys, the beach, the bad ideas' },
   { key: 'WeedRiseScene', label: 'Ch 3: The Rise', desc: 'One run became a life' },
   { key: 'WrongCrowdScene', label: 'Ch 4: Wrong Crowd', desc: '3 AM. Nothing good happens.' },
-  { key: 'CourtScene', label: 'Ch 5: Locked Up', desc: 'Faced 13 years. Took the plea.' },
+  { key: 'CourtScene', label: 'Ch 5A: Court', desc: 'Faced 13 years. Took the plea.' },
+  { key: 'JailScene', label: 'Ch 5B: Jail', desc: 'Same escape. Different walls.' },
+  { key: 'ReleaseScene', label: 'Ch 5C: Release', desc: 'The doors opened. Faith came with him.' },
   { key: 'TractorScene', label: 'Ch 6: Caymus Vineyards', desc: 'Honest work. Restless mind.' },
-  { key: 'ComeUpScene', label: 'Ch 7: The Come Up', desc: 'Ignored, ghosted, then trusted' },
-  { key: 'OperatorScene', label: 'Ch 8: Operator Mode', desc: 'More access. More pressure.' },
+  { key: 'ComeUpScene', label: 'Ch 7A: The Come Up', desc: 'Ignored, ghosted, then trusted' },
+  { key: 'LAScene', label: 'Ch 7B: Los Angeles', desc: 'Deliveries, dinners, pressure.' },
+  { key: 'OperatorScene', label: 'Ch 8A: Operator Mode', desc: 'More access. More pressure.' },
+  { key: 'VegasScene', label: 'Ch 8B: Las Vegas', desc: 'Everybody talks. Watch who follows up.' },
+  { key: 'HomeReturnScene', label: 'Ch 8C: Home Return', desc: 'Pops just needed him home.' },
+  { key: 'EndScene', label: 'Ending', desc: 'Your run against JP\'s.' },
 ];
 
 const SPEEDS = [1, 1.5, 2, 3];
@@ -161,7 +167,7 @@ export class MenuScene extends Phaser.Scene {
     // Rotating tagline — cycles through different hooks
     const taglines = [
       'Based on real events. No cap.',
-      '7 chapters. 1 real story.',
+      '8 chapters. 1 real story.',
       'Never back to zero.',
       'He faced 13 years. Took the plea.',
       'Self-taught everything. In 5 months.',
@@ -210,6 +216,34 @@ export class MenuScene extends Phaser.Scene {
     this.input.keyboard!.on('keydown-ENTER', () => this.confirmSelection());
   }
 
+  update() {
+    if (virtualInput.navUpJustPressed || gamepadInput.navUpJustPressed) {
+      virtualInput.navUpJustPressed = false;
+      gamepadInput.navUpJustPressed = false;
+      this.moveSelection(-1);
+    }
+    if (virtualInput.navDownJustPressed || gamepadInput.navDownJustPressed) {
+      virtualInput.navDownJustPressed = false;
+      gamepadInput.navDownJustPressed = false;
+      this.moveSelection(1);
+    }
+    if (virtualInput.actionJustPressed || gamepadInput.actionJustPressed) {
+      virtualInput.actionJustPressed = false;
+      gamepadInput.actionJustPressed = false;
+      this.confirmSelection();
+    }
+    if (virtualInput.cancelJustPressed || gamepadInput.cancelJustPressed) {
+      virtualInput.cancelJustPressed = false;
+      gamepadInput.cancelJustPressed = false;
+      if (this.menuState !== 'main') this.buildMainMenu();
+    }
+    // Horizontal pulses have no meaning on this vertical menu.
+    virtualInput.navLeftJustPressed = false;
+    virtualInput.navRightJustPressed = false;
+    gamepadInput.navLeftJustPressed = false;
+    gamepadInput.navRightJustPressed = false;
+  }
+
   private clearMenu() {
     for (const t of this.menuTexts) t.destroy();
     this.menuTexts = [];
@@ -250,9 +284,10 @@ export class MenuScene extends Phaser.Scene {
     this.playerSprite.setVisible(false);
     this.titleText.setVisible(false);
     this.subtitleText.setVisible(false);
+    if (this.taglineText) this.taglineText.setVisible(false);
 
     // Header
-    const header = this.add.text(GAME_WIDTH / 2, 140, 'SELECT YOUR CHAPTER', {
+    const header = this.add.text(GAME_WIDTH / 2, 90, 'SELECT YOUR CHAPTER', {
       fontFamily: '"Press Start 2P", monospace',
       fontSize: '14px',
       color: YELLOW,
@@ -260,7 +295,7 @@ export class MenuScene extends Phaser.Scene {
     this.menuTexts.push(header);
 
     // Subheader
-    const sub = this.add.text(GAME_WIDTH / 2, 165, 'Every chapter is a real part of JP\'s life', {
+    const sub = this.add.text(GAME_WIDTH / 2, 118, 'Every chapter is a real part of JP\'s life', {
       fontFamily: '"Press Start 2P", monospace',
       fontSize: '7px',
       color: FADED,
@@ -268,7 +303,7 @@ export class MenuScene extends Phaser.Scene {
     this.menuTexts.push(sub);
 
     // Description area — updates on hover
-    this.chapterDescText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 80, CHAPTERS[0].desc, {
+    this.chapterDescText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 170, CHAPTERS[0].desc, {
       fontFamily: '"Press Start 2P", monospace',
       fontSize: '9px',
       color: '#aaaacc',
@@ -287,7 +322,7 @@ export class MenuScene extends Phaser.Scene {
       enabled: true,
     });
 
-    this.renderMenu(220);
+    this.renderMenu(155, 30);
   }
 
   private buildSettings() {

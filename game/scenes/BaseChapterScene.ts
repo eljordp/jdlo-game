@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { virtualInput } from '../../components/GameCanvas';
+import { gamepadInput, virtualInput } from '../../components/GameCanvas';
 import { GAME_WIDTH, GAME_HEIGHT, SCALED_TILE, SCALE, CHAR_SCALE, TILE_IDS } from '../config';
 import { DialogueSystem, DialogueLine } from '../systems/DialogueSystem';
 import { MapBuilder } from '../systems/MapBuilder';
@@ -1505,15 +1505,41 @@ export abstract class BaseChapterScene extends Phaser.Scene {
       }
     }
 
-    // Check mobile action button
-    if (virtualInput.actionJustPressed) {
+    // Mobile MENU and controller START use the same pause surface as M.
+    if (virtualInput.menuJustPressed || gamepadInput.menuJustPressed) {
+      virtualInput.menuJustPressed = false;
+      gamepadInput.menuJustPressed = false;
+      if (!this.frozen && !PauseMenu.open_) {
+        this.frozen = true;
+        PauseMenu.open(this, () => { this.frozen = false; });
+      }
+    }
+
+    // Leave controller/touch pulses for the open overlay to consume.
+    if (PauseMenu.open_) return;
+
+    // Navigation pulses only matter inside menus. Do not carry a movement
+    // tap forward and change a pause-menu tab several seconds later.
+    virtualInput.navUpJustPressed = false;
+    virtualInput.navDownJustPressed = false;
+    virtualInput.navLeftJustPressed = false;
+    virtualInput.navRightJustPressed = false;
+    gamepadInput.navUpJustPressed = false;
+    gamepadInput.navDownJustPressed = false;
+    gamepadInput.navLeftJustPressed = false;
+    gamepadInput.navRightJustPressed = false;
+
+    // Check mobile/controller action button
+    if (virtualInput.actionJustPressed || gamepadInput.actionJustPressed) {
       virtualInput.actionJustPressed = false;
+      gamepadInput.actionJustPressed = false;
       this.handleInteract();
     }
 
     // Check mobile cancel (B) button — advance dialogue or close overlays
-    if (virtualInput.cancelJustPressed) {
+    if (virtualInput.cancelJustPressed || gamepadInput.cancelJustPressed) {
       virtualInput.cancelJustPressed = false;
+      gamepadInput.cancelJustPressed = false;
       if (this.dialogue.isActive()) {
         this.dialogue.advance();
       }
@@ -1524,10 +1550,10 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     let dx = 0;
     let dy = 0;
 
-    if (this.cursors.left.isDown || this.wasd.A.isDown || virtualInput.left) { dx = -1; this.facing = 'left'; }
-    else if (this.cursors.right.isDown || this.wasd.D.isDown || virtualInput.right) { dx = 1; this.facing = 'right'; }
-    else if (this.cursors.up.isDown || this.wasd.W.isDown || virtualInput.up) { dy = -1; this.facing = 'up'; }
-    else if (this.cursors.down.isDown || this.wasd.S.isDown || virtualInput.down) { dy = 1; this.facing = 'down'; }
+    if (this.cursors.left.isDown || this.wasd.A.isDown || virtualInput.left || gamepadInput.left) { dx = -1; this.facing = 'left'; }
+    else if (this.cursors.right.isDown || this.wasd.D.isDown || virtualInput.right || gamepadInput.right) { dx = 1; this.facing = 'right'; }
+    else if (this.cursors.up.isDown || this.wasd.W.isDown || virtualInput.up || gamepadInput.up) { dy = -1; this.facing = 'up'; }
+    else if (this.cursors.down.isDown || this.wasd.S.isDown || virtualInput.down || gamepadInput.down) { dy = 1; this.facing = 'down'; }
 
     const frameMap = { down: 0, up: 2, left: 4, right: 6 };
     this.player.setFrame(frameMap[this.facing]);

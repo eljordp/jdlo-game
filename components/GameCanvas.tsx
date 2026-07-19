@@ -43,7 +43,28 @@ export const virtualInput = {
   phoneJustPressed: false,
   emoteJustPressed: false,
   inventoryJustPressed: false,
+  menuJustPressed: false,
+  navUpJustPressed: false,
+  navDownJustPressed: false,
+  navLeftJustPressed: false,
+  navRightJustPressed: false,
   gameSpeed: 1,
+};
+
+// Kept separate from touch input so releasing a stick cannot cancel a finger
+// that is still holding the on-screen D-pad.
+export const gamepadInput = {
+  left: false,
+  right: false,
+  up: false,
+  down: false,
+  actionJustPressed: false,
+  cancelJustPressed: false,
+  menuJustPressed: false,
+  navUpJustPressed: false,
+  navDownJustPressed: false,
+  navLeftJustPressed: false,
+  navRightJustPressed: false,
 };
 
 // Expose to window for Playwright/automation testing
@@ -130,6 +151,7 @@ export default function GameCanvas() {
   const [showControls, setShowControls] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
+  const [controllerConnected, setControllerConnected] = useState(false);
 
   useEffect(() => {
     // Detect mobile/touch device
@@ -213,6 +235,66 @@ export default function GameCanvas() {
     };
   }, []);
 
+  useEffect(() => {
+    let frame = 0;
+    let wasConnected = false;
+    let previous = {
+      up: false, down: false, left: false, right: false,
+      action: false, cancel: false, menu: false, phone: false, inventory: false,
+    };
+
+    const pollGamepad = () => {
+      const pad = typeof navigator.getGamepads === "function"
+        ? Array.from(navigator.getGamepads()).find((candidate): candidate is Gamepad => Boolean(candidate?.connected))
+        : undefined;
+      const connected = Boolean(pad);
+      if (connected !== wasConnected) {
+        wasConnected = connected;
+        setControllerConnected(connected);
+      }
+
+      const pressed = (index: number) => Boolean(pad?.buttons[index]?.pressed);
+      const horizontal = pad?.axes[0] ?? 0;
+      const vertical = pad?.axes[1] ?? 0;
+      const next = {
+        up: pressed(12) || vertical < -0.35,
+        down: pressed(13) || vertical > 0.35,
+        left: pressed(14) || horizontal < -0.35,
+        right: pressed(15) || horizontal > 0.35,
+        action: pressed(0),
+        cancel: pressed(1),
+        menu: pressed(9),
+        phone: pressed(2),
+        inventory: pressed(3),
+      };
+
+      gamepadInput.up = next.up;
+      gamepadInput.down = next.down;
+      gamepadInput.left = next.left;
+      gamepadInput.right = next.right;
+      if (next.up && !previous.up) gamepadInput.navUpJustPressed = true;
+      if (next.down && !previous.down) gamepadInput.navDownJustPressed = true;
+      if (next.left && !previous.left) gamepadInput.navLeftJustPressed = true;
+      if (next.right && !previous.right) gamepadInput.navRightJustPressed = true;
+      if (next.action && !previous.action) gamepadInput.actionJustPressed = true;
+      if (next.cancel && !previous.cancel) gamepadInput.cancelJustPressed = true;
+      if (next.menu && !previous.menu) gamepadInput.menuJustPressed = true;
+      if (next.phone && !previous.phone) {
+        virtualInput.phoneJustPressed = true;
+        setTimeout(() => { virtualInput.phoneJustPressed = false; }, 120);
+      }
+      if (next.inventory && !previous.inventory) {
+        virtualInput.inventoryJustPressed = true;
+        setTimeout(() => { virtualInput.inventoryJustPressed = false; }, 120);
+      }
+      previous = next;
+      frame = requestAnimationFrame(pollGamepad);
+    };
+
+    frame = requestAnimationFrame(pollGamepad);
+    return () => cancelAnimationFrame(frame);
+  }, []);
+
   const toggleMute = useCallback(() => {
     const muted = MusicSystem.toggleMute();
     setIsMuted(muted);
@@ -244,6 +326,9 @@ export default function GameCanvas() {
   // D-pad handlers
   const pressDir = useCallback((dir: "up" | "down" | "left" | "right") => {
     virtualInput[dir] = true;
+    const pulse = `${dir === "up" ? "navUp" : dir === "down" ? "navDown" : dir === "left" ? "navLeft" : "navRight"}JustPressed` as
+      'navUpJustPressed' | 'navDownJustPressed' | 'navLeftJustPressed' | 'navRightJustPressed';
+    virtualInput[pulse] = true;
   }, []);
   const releaseDir = useCallback((dir: "up" | "down" | "left" | "right") => {
     virtualInput[dir] = false;
@@ -336,7 +421,9 @@ export default function GameCanvas() {
             showControls ? "opacity-100" : "opacity-0"
           }`}
         >
-          WASD / arrows move · Space interact · M menu · P phone · I bag
+          {controllerConnected
+            ? 'Controller · A interact · B back · START menu · X phone · Y bag'
+            : 'WASD / arrows move · Space interact · M menu · P phone · I bag'}
         </div>
       )}
 
@@ -495,6 +582,23 @@ export default function GameCanvas() {
             }}
           >
             <span className="text-white/60 text-lg">&#128548;</span>
+          </button>
+
+          {/* Pause/menu button — reachable without a keyboard */}
+          <button
+            className="absolute z-30 flex items-center justify-center rounded-lg active:brightness-150 transition-all"
+            style={{
+              width: 54, height: 34,
+              bottom: 248, right: 18,
+              backgroundColor: 'rgba(255,255,255,0.08)',
+              border: '2px solid rgba(255,255,255,0.15)',
+            }}
+            onTouchStart={(e) => {
+              e.preventDefault();
+              virtualInput.menuJustPressed = true;
+            }}
+          >
+            <span className="text-white/60 font-mono text-[9px]">MENU</span>
           </button>
         </div>
       )}

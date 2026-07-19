@@ -13,6 +13,7 @@ import { InventorySystem } from './InventorySystem';
 import { SoundEffects } from './SoundEffects';
 import { MusicSystem } from './MusicSystem';
 import { GameSettings } from './GameSettings';
+import { gamepadInput, virtualInput } from '../../components/GameCanvas';
 
 type Tab = 'STATS' | 'FRIENDS' | 'CHOICES' | 'BAG' | 'SETTINGS';
 const TABS: Tab[] = ['STATS', 'FRIENDS', 'CHOICES', 'BAG', 'SETTINGS'];
@@ -62,7 +63,7 @@ export class PauseMenu {
       objects.push(t);
     });
 
-    objects.push(scene.add.text(cx, GAME_HEIGHT / 2 + 285, 'TAB page · ↑↓ select · ENTER change · ESC close', {
+    objects.push(scene.add.text(cx, GAME_HEIGHT / 2 + 285, 'TAB / ←→ page · ↑↓ select · A/ENTER change · B/ESC close', {
       fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#555577',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(602));
 
@@ -222,7 +223,10 @@ export class PauseMenu {
     };
     const onSettingUp = () => moveSetting(-1);
     const onSettingDown = () => moveSetting(1);
+    let controllerPoll: Phaser.Time.TimerEvent | null = null;
     const close = () => {
+      controllerPoll?.destroy();
+      controllerPoll = null;
       tabKey.off('down', onTab);
       escKey.off('down', close);
       upKey.off('down', onSettingUp);
@@ -238,6 +242,39 @@ export class PauseMenu {
     upKey.on('down', onSettingUp);
     downKey.on('down', onSettingDown);
     enterKey.on('down', changeSetting);
+
+    controllerPoll = scene.time.addEvent({
+      delay: 70,
+      loop: true,
+      callback: () => {
+        const left = virtualInput.navLeftJustPressed || gamepadInput.navLeftJustPressed;
+        const right = virtualInput.navRightJustPressed || gamepadInput.navRightJustPressed;
+        const up = virtualInput.navUpJustPressed || gamepadInput.navUpJustPressed;
+        const down = virtualInput.navDownJustPressed || gamepadInput.navDownJustPressed;
+        const action = virtualInput.actionJustPressed || gamepadInput.actionJustPressed;
+        const cancel = virtualInput.cancelJustPressed || gamepadInput.cancelJustPressed;
+
+        virtualInput.navLeftJustPressed = false;
+        virtualInput.navRightJustPressed = false;
+        virtualInput.navUpJustPressed = false;
+        virtualInput.navDownJustPressed = false;
+        gamepadInput.navLeftJustPressed = false;
+        gamepadInput.navRightJustPressed = false;
+        gamepadInput.navUpJustPressed = false;
+        gamepadInput.navDownJustPressed = false;
+        virtualInput.actionJustPressed = false;
+        gamepadInput.actionJustPressed = false;
+        virtualInput.cancelJustPressed = false;
+        gamepadInput.cancelJustPressed = false;
+
+        if (left) switchTab(TABS[(TABS.indexOf(activeTab) - 1 + TABS.length) % TABS.length]);
+        else if (right) switchTab(TABS[(TABS.indexOf(activeTab) + 1) % TABS.length]);
+        else if (up) moveSetting(-1);
+        else if (down) moveSetting(1);
+        else if (action) changeSetting();
+        else if (cancel) close();
+      },
+    });
 
     renderTab();
   }

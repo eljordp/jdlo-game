@@ -1412,7 +1412,10 @@ export class JailScene extends BaseChapterScene {
         }).setOrigin(0.5).setScrollFactor(0).setDepth(304);
         bg.on('pointerover', () => bg.setAlpha(0.85));
         bg.on('pointerout', () => bg.setAlpha(1));
-        bg.on('pointerdown', () => choose(def));
+        bg.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+          pointer.event?.stopPropagation();
+          choose(def);
+        });
         buttonObjs.push(bg, label);
         objects.push(bg, label);
 
@@ -2099,6 +2102,8 @@ export class JailScene extends BaseChapterScene {
     let dodgeActive = false;
     let talkDebuff = false; // reduces enemy attack by 5
     let inputEnabled = false;
+    let swingsLanded = 0;
+    let crewIntervened = false;
 
     // === INTRO: Pokemon swipe transition ===
     const introTop = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 4, GAME_WIDTH, GAME_HEIGHT / 2, 0x000000)
@@ -2487,17 +2492,18 @@ export class JailScene extends BaseChapterScene {
           });
 
           showText(`Inmate swings! JP takes ${damage} damage!`, () => {
-            // Recurring-character consequence: if JP shared the commissary,
-            // the crew doesn't let him take a real beating. Generosity is armor.
+            // Yard protection is earned twice: JP fed the crew and proved he
+            // would stand up for himself. They stop a jump, not a fair fade.
             if (jpHP > 0 && jpHP <= 30 && !this.crewSaveUsed
                 && ChoiceLedger.get('commissary_share') === 'Shared it'
-                && ChoiceLedger.get('jail_fight') === 'Fought') {
+                && swingsLanded >= 2) {
               this.crewSaveUsed = true;
+              crewIntervened = true;
               state = 'player-action';
               inputEnabled = false;
-              showText('Mikey pulls the inmate off. Chris steps between them.', () => {
-                showText('"He eats with us. Walk it off."', () => {
-                  showText('The yard goes back to minding its business.', () => {
+              showText('A second inmate starts in from JP\'s blind side.', () => {
+                showText('Mikey grabs him. Chris and Bird fill the space.', () => {
+                  showText('"He stood up. He eats with us. This ain\'t a jump."', () => {
                     endBattle(true);
                   });
                 });
@@ -2533,6 +2539,7 @@ export class JailScene extends BaseChapterScene {
           flashSprite(enemySprite);
           screenShake(damage > 20);
           enemyHP -= damage;
+          swingsLanded++;
           updateEnemyHP();
 
           // JP returns
@@ -2673,6 +2680,14 @@ export class JailScene extends BaseChapterScene {
           'Guard: "I don\'t care who started it. You want more time?"',
           "JP's Mind: Winning did not fix anything.",
           'The yard goes quiet. Everyone saw that.',
+        ], () => {
+          cleanupBattle();
+        });
+      } else if (jpWon && crewIntervened) {
+        showTextSequence([
+          'The whole crew moved. The extra inmate backs off.',
+          'Nobody celebrates. Count is still coming.',
+          'The yard goes back to pretending it saw nothing.',
         ], () => {
           cleanupBattle();
         });
