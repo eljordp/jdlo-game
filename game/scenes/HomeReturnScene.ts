@@ -20,10 +20,11 @@ export class HomeReturnScene extends BaseChapterScene {
 
   constructor() {
     super({ key: 'HomeReturnScene' });
-    this.chapterTitle = 'Home';
+    this.chapterTitle = 'Home Return';
     this.nextScene = 'EndScene';
-    // ch0_goodbye is the interactable near exit — but we make Pops the real gate
-    this.requiredInteractionId = '';
+    // BaseChapterScene only locks exits when this is non-empty. Pops is handled
+    // by the custom reunion flow below, which marks requiredDone at its end.
+    this.requiredInteractionId = 'ch0_pops';
   }
 
   protected getPlayerTexture(): string {

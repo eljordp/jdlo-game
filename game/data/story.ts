@@ -541,10 +541,10 @@ export const chapter4NPCs: NPCData[] = [
       { speaker: 'JP\'s Mind', text: 'What is this ChatGPT thing everyone\'s talking about...' },
       { speaker: 'JP\'s Mind', text: 'Wait. It just... answers anything? And it\'s free?' },
       { speaker: 'JP\'s Mind', text: 'I just asked it how to build a website and it gave me a full tutorial. In thirty seconds.' },
-      { speaker: 'JP\'s Mind', text: 'My hands are shaking. This is real. This changes everything.' },
+      { speaker: 'JP\'s Mind', text: 'It worked. So I ask another question.' },
       { speaker: 'JP\'s Mind', text: 'Wix first. Okay that\'s cool but limited. What else is out there?' },
       { speaker: 'JP\'s Mind', text: 'Webflow. Then Lovable. Then something called Claude.' },
-      { speaker: 'JP\'s Mind', text: 'I haven\'t felt this alive in years. I\'m not sleeping tonight. I\'m learning everything.' },
+      { speaker: 'JP\'s Mind', text: 'Lunch ends. I save the page for later.' },
     ],
   },
   {
@@ -1601,7 +1601,7 @@ const ch2Extras: Record<string, DialogueLine[]> = {
   ],
   ch2_bed_under: [
     { speaker: 'Narrator', text: 'Bags poking out from under the bed. Stacked deep.' },
-    { speaker: 'JP\'s Mind', text: 'Probably 25 Ps under there. Lost count a while ago.' },
+    { speaker: 'JP\'s Mind', text: 'More than I can keep pretending is temporary.' },
   ],
   ch2_closet: [
     { speaker: 'Narrator', text: 'JP opens the closet.' },
@@ -1640,19 +1640,10 @@ const ch2Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'JP leaves it. He always leaves it.' },
   ],
   ch2_computer: [
-    { speaker: 'Narrator', text: 'JP opens his laptop. The spreadsheet loads.' },
-    { speaker: 'Narrator', text: '━━━━━━━━━━━━━━━━━━━━━━━━━━' },
-    { speaker: 'Narrator', text: 'INVENTORY: 31 lbs remaining  ▼' },
-    { speaker: 'Narrator', text: 'CASH COLLECTED: $189,000 YTD  ▼' },
-    { speaker: 'Narrator', text: 'MONTHLY AVG: $18,400  ▼▼' },
-    { speaker: 'Narrator', text: 'ACTIVE CUSTOMERS: 89  ▼' },
-    { speaker: 'Narrator', text: 'REPEAT RATE: 52%  ▼▼' },
-    { speaker: 'Narrator', text: 'SUPPLIER: ??? (ghosted 2 weeks)' },
-    { speaker: 'Narrator', text: '━━━━━━━━━━━━━━━━━━━━━━━━━━' },
-    { speaker: 'JP\'s Mind', text: 'Numbers are down across the board.' },
-    { speaker: 'JP\'s Mind', text: 'Supplier ghosted. Customers finding other plugs.' },
-    { speaker: 'JP\'s Mind', text: 'The whole thing is falling apart and nobody sees it but me.' },
-    { speaker: 'JP\'s Mind', text: 'I know I can build something real. I just need the right path.' },
+    { speaker: 'Narrator', text: 'JP opens the crypto app. Everything is red.' },
+    { speaker: 'JP\'s Mind', text: 'The balance is smaller every time I look.' },
+    { speaker: 'JP\'s Mind', text: 'I keep waiting for one candle to undo all of it.' },
+    { speaker: 'Narrator', text: 'It does not.' },
   ],
   ch2_bed: [
     { speaker: 'JP\'s Mind', text: 'Unmade bed. Hasn\'t slept in it in two days.' },
@@ -2331,11 +2322,10 @@ const ch4Extras: Record<string, DialogueLine[]> = {
   ],
   ch4_ai_discovery: [
     { speaker: 'JP\'s Mind', text: 'I just typed a question into ChatGPT and it gave me a full answer. Like a person. But instant.' },
-    { speaker: 'JP\'s Mind', text: 'My heart is pounding. This is not normal.' },
     { speaker: 'JP\'s Mind', text: 'I asked it to explain HTML like I\'m five and it did. Then I asked it to write me a website and it DID.' },
-    { speaker: 'JP\'s Mind', text: 'I\'ve been looking for a way out and it was sitting on my phone this whole time.' },
-    { speaker: 'JP\'s Mind', text: 'I\'m not sleeping tonight. Or tomorrow. I need to learn everything about this.' },
-    { speaker: 'JP\'s Mind', text: 'This is the door. I can feel it. I just walked through it.' },
+    { speaker: 'Narrator', text: 'The shift ends in twenty minutes.' },
+    { speaker: 'JP\'s Mind', text: 'One more question turns into ten.' },
+    { speaker: 'JP\'s Mind', text: 'I do not know what this is yet. I just know I am not done.' },
   ],
   ch4_phone: [
     { speaker: 'JP\'s Mind', text: 'Everyone else is on break scrolling Instagram. I\'m watching Wix tutorials.' },
@@ -2454,7 +2444,7 @@ const ch4Extras: Record<string, DialogueLine[]> = {
   ],
   ch4_dust: [
     { speaker: 'Narrator', text: 'Dust everywhere. In JP\'s hair. In his lungs. In his shoes.' },
-    { speaker: 'JP\'s Mind', text: 'I used to complain about traffic in SB. Now I\'m eating dirt for $12 an hour.' },
+    { speaker: 'JP\'s Mind', text: 'I used to complain about traffic in SB. Now I\'m eating dirt for around twenty an hour.' },
   ],
   ch4_hat: [
     { speaker: 'Narrator', text: 'Straw hat on a fence post. Nobody claims it.' },
