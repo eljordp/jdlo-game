@@ -4,6 +4,7 @@ import { weedRiseMap, type MapData } from '../data/maps';
 import type { DialogueLine } from '../systems/DialogueSystem';
 import { GAME_HEIGHT, GAME_WIDTH, SCALE, SCALED_TILE } from '../config';
 import { SoundEffects } from '../systems/SoundEffects';
+import { ChoiceLedger } from '../systems/ChoiceLedger';
 
 /**
  * The missing middle of the street act.
@@ -18,6 +19,7 @@ export class WeedRiseScene extends BaseChapterScene {
   private ordersReady = false;
   private routeCompleted = false;
   private stashHidden = false;
+  private orderPolicy: 'all' | 'limit' = 'all';
 
   constructor() {
     super({ key: 'WeedRiseScene' });
@@ -521,96 +523,132 @@ export class WeedRiseScene extends BaseChapterScene {
       { speaker: 'JP\'s Mind', text: 'This feels like demand.' },
       { speaker: 'JP\'s Mind', text: 'If I stop now, I go back to zero.' },
     ], () => {
-      this.ordersReady = true;
-      this.interactions.consume('rise_phone');
-      this.frozen = false;
-      this.refreshObjectiveHint();
+      this.showRouteChoice('Eleven messages. Take every stop?', 'Take all', 'Set a limit', () => {
+        this.orderPolicy = 'all';
+        ChoiceLedger.record('rise_orders', 'Took every order');
+        this.dialogue.show([
+          { speaker: 'JP\'s Mind', text: 'Everybody gets a yes. I will figure the route out moving.' },
+          { speaker: 'Narrator', text: 'The night gets longer before the car even starts.' },
+        ], () => this.finishOrderRush());
+      }, () => {
+        this.orderPolicy = 'limit';
+        ChoiceLedger.record('rise_orders', 'Set a limit');
+        this.dialogue.show([
+          { speaker: 'JP', text: 'Three stops. Everybody else can wait.' },
+          { speaker: 'Narrator', text: 'The boundary lasts until the next vibration.' },
+        ], () => this.finishOrderRush());
+      });
     });
+  }
+
+  private finishOrderRush() {
+    this.ordersReady = true;
+    this.interactions.consume('rise_phone');
+    this.frozen = false;
+    this.refreshObjectiveHint();
   }
 
   // Abstract arcade route: this dramatizes pressure without exposing real buyers
   // or turning the game into a how-to.
   private playDeliveryRun() {
     this.frozen = true;
+    SoundEffects.playDoorOpen();
+
+    this.dialogue.show([
+      { speaker: 'Narrator', text: 'Three confirmed stops. One late message keeps buzzing.' },
+      { speaker: 'JP\'s Mind', text: this.orderPolicy === 'all'
+        ? 'I already told everybody yes. Now I have to make the route work.'
+        : 'Three stops was the limit. The phone does not care.' },
+    ], () => {
+      this.showRouteChoice('Which stop comes first?', 'Urgent one', 'Closest one', () => {
+        ChoiceLedger.record('rise_route', 'Urgent stop first');
+        this.runRoutePressure('urgent');
+      }, () => {
+        ChoiceLedger.record('rise_route', 'Closest stop first');
+        this.runRoutePressure('close');
+      });
+    });
+  }
+
+  private runRoutePressure(route: 'urgent' | 'close') {
+    const routeLines: DialogueLine[] = route === 'urgent'
+      ? [
+          { speaker: 'Narrator', text: 'JP crosses town for the loudest message first.' },
+          { speaker: 'Narrator', text: 'The closest buyer sends another question mark.' },
+        ]
+      : [
+          { speaker: 'Narrator', text: 'The first handoff is two blocks away. Efficient.' },
+          { speaker: 'Narrator', text: 'The urgent buyer calls before JP reaches the next light.' },
+        ];
+
+    this.dialogue.show(routeLines, () => {
+      SoundEffects.playVibrate();
+      this.showRouteChoice('Last-minute order. Add the stop?', 'Add it', 'Keep moving', () => {
+        ChoiceLedger.record('rise_extra_stop', 'Added the stop');
+        this.finishDeliveryRoute([
+          { speaker: 'JP', text: 'Send the location.' },
+          { speaker: 'Narrator', text: 'The route bends back across town. Easy money adds another hour.' },
+          { speaker: 'Narrator', text: 'Four stops. The same engine never cools down.' },
+        ]);
+      }, () => {
+        ChoiceLedger.record('rise_extra_stop', 'Ignored it');
+        this.finishDeliveryRoute([
+          { speaker: 'JP\'s Mind', text: 'Not tonight.' },
+          { speaker: 'Narrator', text: 'The phone vibrates until the screen goes dark.' },
+          { speaker: 'Narrator', text: 'Three stops. For once, the route ends where JP planned.' },
+        ]);
+      });
+    });
+  }
+
+  private finishDeliveryRoute(opening: DialogueLine[]) {
+    this.routeCompleted = true;
+    this.interactions.consume('rise_bmw');
+    this.dialogue.show([
+      ...opening,
+      { speaker: 'Narrator', text: 'People start calling JP before they call anyone else.' },
+      { speaker: 'JP\'s Mind', text: 'I am making it back.' },
+      { speaker: 'JP\'s Mind', text: 'So why does stopping feel harder now?' },
+    ], () => {
+      this.frozen = false;
+      this.refreshObjectiveHint();
+    });
+  }
+
+  private showRouteChoice(
+    prompt: string,
+    yesLabel: string,
+    noLabel: string,
+    onYes: () => void,
+    onNo: () => void,
+  ) {
     const cx = GAME_WIDTH / 2;
     const cy = GAME_HEIGHT / 2;
-    const objects: Phaser.GameObjects.GameObject[] = [];
-    const add = <T extends Phaser.GameObjects.GameObject>(object: T): T => {
-      objects.push(object);
-      return object;
+    const promptText = this.add.text(cx, cy - 42, prompt, {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '11px', color: '#f0c040',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(451);
+    const yesBg = this.add.rectangle(cx - 105, cy + 12, 180, 46, 0x355d49)
+      .setScrollFactor(0).setDepth(450).setInteractive({ useHandCursor: true });
+    const yesText = this.add.text(cx - 105, cy + 12, yesLabel, {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(451);
+    const noBg = this.add.rectangle(cx + 105, cy + 12, 180, 46, 0x4b5362)
+      .setScrollFactor(0).setDepth(450).setInteractive({ useHandCursor: true });
+    const noText = this.add.text(cx + 105, cy + 12, noLabel, {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(451);
+
+    const spaceKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    const nKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.N);
+    const cleanup = () => {
+      promptText.destroy(); yesBg.destroy(); yesText.destroy(); noBg.destroy(); noText.destroy();
+      spaceKey.off('down', chooseYes); nKey.off('down', chooseNo);
     };
-
-    add(this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x030409, 0.96).setScrollFactor(0).setDepth(400));
-    add(this.add.text(cx, 70, 'THE ROUTE', {
-      fontFamily: '"Press Start 2P", monospace', fontSize: '16px', color: '#f0c040',
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(401));
-    add(this.add.text(cx, 105, 'Press SPACE inside each lit stop.', {
-      fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#aaaabb',
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(401));
-    add(this.add.rectangle(cx, cy + 65, 620, 120, 0x1b1b24).setScrollFactor(0).setDepth(401));
-    add(this.add.rectangle(cx, cy + 65, 620, 4, 0xd8b34c, 0.5).setScrollFactor(0).setDepth(402));
-
-    const stopXs = [cx - 190, cx, cx + 190];
-    const stops = stopXs.map((x, index) => add(this.add.rectangle(x, cy + 65, 70, 110, index === 0 ? 0x2c9a62 : 0x33333c, index === 0 ? 0.45 : 0.25)
-      .setScrollFactor(0).setDepth(402)));
-    const car = add(this.add.sprite(cx - 290, cy + 65, 'car-bmw335i').setScale(SCALE * 0.9).setScrollFactor(0).setDepth(403));
-    const status = add(this.add.text(cx, cy + 160, 'STOP 1 / 3', {
-      fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#ffffff',
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(403));
-
-    let completed = 0;
-    let finishing = false;
-    const drive = this.tweens.add({
-      targets: car,
-      x: cx + 290,
-      duration: 2100,
-      repeat: -1,
-      onRepeat: () => { car.x = cx - 290; },
-    });
-
-    const finish = () => {
-      drive.stop();
-      this.input.keyboard?.off('keydown-SPACE', drop);
-      this.input.off('pointerdown', drop);
-      objects.forEach((object) => object.destroy());
-      this.routeCompleted = true;
-      this.interactions.consume('rise_bmw');
-      this.dialogue.show([
-        { speaker: 'Narrator', text: 'Three stops. Three handoffs. The same engine never cools down.' },
-        { speaker: 'Narrator', text: 'People start calling JP before they call anyone else.' },
-        { speaker: 'JP\'s Mind', text: 'I am making it back.' },
-        { speaker: 'JP\'s Mind', text: 'So why does stopping feel harder now?' },
-      ], () => {
-        this.frozen = false;
-        this.refreshObjectiveHint();
-      });
-    };
-
-    const drop = () => {
-      if (finishing) return;
-      const target = stops[completed];
-      if (!target || Math.abs(car.x - target.x) > target.width / 2) {
-        status.setText('MISSED — LOOP BACK').setColor('#ff6666');
-        this.cameras.main.shake(100, 0.004);
-        return;
-      }
-
-      target.setFillStyle(0x55555e, 0.25);
-      completed++;
-      if (completed >= 3) {
-        finishing = true;
-        this.input.keyboard?.off('keydown-SPACE', drop);
-        this.input.off('pointerdown', drop);
-        status.setText('ROUTE COMPLETE').setColor('#55ee99');
-        this.time.delayedCall(500, finish);
-        return;
-      }
-      stops[completed].setFillStyle(0x2c9a62, 0.45);
-      status.setText(`STOP ${completed + 1} / 3`).setColor('#ffffff');
-    };
-
-    this.input.keyboard?.on('keydown-SPACE', drop);
-    this.input.on('pointerdown', drop);
-    this.events.once('shutdown', () => this.input.off('pointerdown', drop));
+    const chooseYes = () => { cleanup(); onYes(); };
+    const chooseNo = () => { cleanup(); onNo(); };
+    yesBg.on('pointerdown', chooseYes);
+    noBg.on('pointerdown', chooseNo);
+    spaceKey.on('down', chooseYes);
+    nKey.on('down', chooseNo);
   }
 }
