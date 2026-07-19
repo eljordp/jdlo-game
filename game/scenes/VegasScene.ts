@@ -10,6 +10,7 @@ import { ChoiceLedger } from '../systems/ChoiceLedger';
 export class VegasScene extends Phaser.Scene {
   private currentStep = 0;
   private canAdvance = false;
+  private penthousePick: 'company' | 'floor' | 'supercar' | null = null;
   private textObjects: Phaser.GameObjects.Text[] = [];
   private sceneObjects: Phaser.GameObjects.GameObject[] = [];
   private activeTweens: Phaser.Tweens.Tween[] = [];
@@ -579,6 +580,45 @@ export class VegasScene extends Phaser.Scene {
     this.addTween({ targets: [c8, svj], alpha: { from: 0.78, to: 1 }, duration: 1200, yoyo: true, repeat: -1 });
   }
 
+  // 4:18 AM: one conversation left in the tank. Read the room, spend it right.
+  private showPenthouseChoice() {
+    const cy = GAME_HEIGHT - 150;
+    const defs: Array<{ label: string; pick: 'company' | 'floor' | 'supercar'; color: number; result: string; tag: string }> = [
+      { label: 'THE COMPANY GUY', pick: 'company', color: 0x4a5568,
+        result: 'Twenty polished minutes. He loves everything. Commits to nothing.', tag: 'VEGAS TALK' },
+      { label: 'THE FLOOR OWNER', pick: 'floor', color: 0x30a040,
+        result: 'Four unpolished minutes. She asks two hard questions and books Tuesday.', tag: 'FOLLOW-UP SET' },
+      { label: 'THE SUPERCAR GUY', pick: 'supercar', color: 0xa03030,
+        result: 'The best hour of the night. Photos, toasts, plans. No numbers exchanged.', tag: 'VEGAS TALK' },
+    ];
+
+    const buttons: Phaser.GameObjects.GameObject[] = [];
+    const choose = (def: typeof defs[number]) => {
+      for (const b of buttons) b.destroy();
+      this.penthousePick = def.pick;
+      this.showText(def.result, cy - 55, { size: '9px', color: def.pick === 'floor' ? '#c8b890' : '#9aa0b0' });
+      this.showText(def.tag, cy - 20, { size: '10px', color: def.pick === 'floor' ? '#40c060' : '#8a94a8', delay: 600 });
+      this.time.delayedCall(1400, () => {
+        this.showText("JP's Mind", 385, { size: '10px', color: '#f0c040' });
+        this.showText('"There are rooms you do not know exist until somebody opens the door."', 425, { size: '10px', color: '#d8d8e8', delay: 200 });
+      });
+      this.showContinue(2600);
+    };
+
+    defs.forEach((def, i) => {
+      const bx = GAME_WIDTH / 2 + (i - 1) * 265;
+      const bg = this.addObj(this.add.rectangle(bx, cy, 245, 46, def.color).setDepth(120)
+        .setInteractive({ useHandCursor: true }));
+      const label = this.addObj(this.add.text(bx, cy, def.label, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#ffffff',
+      }).setOrigin(0.5).setDepth(121));
+      bg.on('pointerover', () => bg.setAlpha(0.85));
+      bg.on('pointerout', () => bg.setAlpha(1));
+      bg.on('pointerdown', () => choose(def));
+      buttons.push(bg, label);
+    });
+  }
+
   private playStep() {
     const cx = GAME_WIDTH / 2;
     const cy = GAME_HEIGHT / 2;
@@ -610,7 +650,8 @@ export class VegasScene extends Phaser.Scene {
         this.showText('Pool. Cabanas. Bottles. Music in full daylight.', 135, { size: '11px', color: '#17445c', delay: 700 });
         this.showText('"We are NOT sleeping this weekend." — Tony, correct as always.', 185, { size: '10px', color: '#0e3346', delay: 1300 });
         this.showText('A bottle-service introduction turned into a business conversation before sunset.', 235, { size: '10px', color: '#17445c', delay: 2000 });
-        this.showContinue(3700);
+        this.showText('Cabana three isn\'t dancing — she\'s studying the bottle-service margins. Her own pool deck by 30.', 278, { size: '8px', color: '#1d5570', delay: 2800 });
+        this.showContinue(4100);
         break;
       }
       case 2: {
@@ -619,7 +660,8 @@ export class VegasScene extends Phaser.Scene {
         this.showText('The LED wall swallowed the whole room.', 420, { size: '12px', delay: 650 });
         this.showText('Patrick disappeared into the crowd in the first five minutes. Standard.', 465, { size: '10px', color: '#88bbcc', delay: 1300 });
         this.showText('Women dancing. Owners talking numbers. Contacts changing hands between songs.', 510, { size: '10px', color: '#aaaacc', delay: 2000 });
-        this.showContinue(3900);
+        this.showText('The guy filming isn\'t filming the DJ — crowd-reaction footage for a club owner in Phoenix. Everybody\'s working.', 550, { size: '8px', color: '#7a95a8', delay: 2800 });
+        this.showContinue(4300);
         break;
       }
       case 3: {
@@ -664,6 +706,7 @@ export class VegasScene extends Phaser.Scene {
         this.showText('"One more stop." — Dan. It was never one more stop.', 160, { size: '11px', color: '#e0a8bc', delay: 850 });
         this.showText('Two of them picked JP before he sat down. They were not asking.', 200, { size: '10px', color: '#e0a8bc', delay: 1600 });
         this.showText('Dancers working. Owners talking. Cash, smoke, drinks—and business still moving at the table.', 255, { size: '10px', color: '#d8a6b7', delay: 2400 });
+        this.showText('One dancer counts between sets, not after. Four more months pays off the nursing degree. She tips the DJ first.', 290, { size: '8px', color: '#b08494', delay: 3200 });
         this.time.delayedCall(6200, () => {
           this.showText('Some parts of the night stay in the room.', 320, { size: '11px', color: '#f0c040' });
         });
@@ -672,17 +715,14 @@ export class VegasScene extends Phaser.Scene {
       }
       case 5: {
         this.makePenthouse();
-        this.addDealExchange(210, 465, 'SCOPE TALKED', 'npc_female');
-        this.addDealExchange(GAME_WIDTH - 210, 465, 'FOLLOW-UP SET', 'npc-business');
         this.showText('PENTHOUSE — 4:18 AM', 85, { size: '16px', color: '#f0c040', delay: 250 });
         this.showText('One owned companies. One owned the floor. One collected supercars.', 140, { size: '11px', delay: 850 });
-        this.showText('The one who owned the floor: "Everybody in this room talks. I watch who follows up."', 250, { size: '9px', color: '#c8b890', delay: 2100 });
-        this.showText('Projects, partnerships, and numbers kept moving. Some became work. Others stayed Vegas talk.', 195, { size: '10px', color: '#aaaacc', delay: 1500 });
-        this.time.delayedCall(2700, () => {
-          this.showText("JP's Mind", 280, { size: '11px', color: '#f0c040' });
-          this.showText('"There are rooms you do not know exist until somebody opens the door."', 325, { size: '11px', color: '#d8d8e8', delay: 200 });
-        });
-        this.showContinue(5200);
+        this.showText('JP has juice left for exactly one real conversation before sunrise.', 190, { size: '10px', color: '#aaaacc', delay: 1500 });
+        // The three tells. One is real. The loud one isn't.
+        this.showText('"Send me a deck sometime." — the company guy, already looking past you', 245, { size: '8px', color: '#8a94a8', delay: 2300 });
+        this.showText('"I don\'t do decks. I do Tuesday, 10 AM." — the one who owns the floor', 280, { size: '8px', color: '#c8b890', delay: 2900 });
+        this.showText('"You\'re my GUY! We\'re building an APP!" — the supercar collector, hugging you', 315, { size: '8px', color: '#d090a0', delay: 3500 });
+        this.time.delayedCall(4300, () => this.showPenthouseChoice());
         break;
       }
       case 6: {
@@ -701,10 +741,21 @@ export class VegasScene extends Phaser.Scene {
         this.addTween({ targets: [jp, tony, patrick, dan], y: GAME_HEIGHT - 149, duration: 1100, yoyo: true, repeat: -1 });
         this.showText('SUNRISE', 105, { size: '18px', color: '#ffd469', delay: 250 });
         this.showText('Tony, Patrick, Dan — quiet for the first time all weekend.', 160, { size: '10px', color: '#d4c4d6', delay: 900 });
-        this.showText('The point was not that JP had become one of them overnight.', 215, { size: '11px', delay: 1650 });
-        this.showText('The point was that the ceiling moved again.', 270, { size: '12px', color: '#f0c040', delay: 2400 });
-        this.showText('Now he knew those rooms were real.', 325, { size: '11px', color: '#d4c4d6', delay: 3100 });
-        this.showContinue(5000);
+        // The night's one real conversation gets its receipt
+        this.showText(
+          this.penthousePick === 'floor'
+            ? '"Tuesday, 10 AM." It held. The rest stayed Vegas talk.'
+            : this.penthousePick === 'company'
+              ? 'The deck email bounced Monday. Vegas talk.'
+              : this.penthousePick === 'supercar'
+                ? 'The app never got a name. Great story though.'
+                : 'Some became work. Others stayed Vegas talk.',
+          215, { size: '9px', color: '#c8b890', delay: 1650 },
+        );
+        this.showText('The point was not that JP had become one of them overnight.', 262, { size: '11px', delay: 2400 });
+        this.showText('The point was that the ceiling moved again.', 315, { size: '12px', color: '#f0c040', delay: 3100 });
+        this.showText('Now he knew those rooms were real.', 365, { size: '11px', color: '#d4c4d6', delay: 3800 });
+        this.showContinue(5600);
         break;
       }
       default: {

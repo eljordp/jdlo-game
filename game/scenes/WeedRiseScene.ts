@@ -636,13 +636,44 @@ export class WeedRiseScene extends BaseChapterScene {
         ? 'I already told everybody yes. Now I have to make the route work.'
         : 'Three stops was the limit. The phone does not care.' },
     ], () => {
-      this.showRouteChoice('Which stop comes first?', 'Urgent one', 'Closest one', () => {
-        ChoiceLedger.record('rise_route', 'Urgent stop first');
-        this.runRoutePressure('urgent');
-      }, () => {
-        ChoiceLedger.record('rise_route', 'Closest stop first');
-        this.runRoutePressure('close');
-      });
+      this.showPaceChoice();
+    });
+  }
+
+  // Pace before route: speed saves the night and spends your luck.
+  // Heat carries into Wrong Crowd — the city remembers fast cars.
+  private showPaceChoice() {
+    this.showRouteChoice('How does JP drive tonight?', 'Speed', 'Drive normal', () => {
+      // SPEED — one rearview moment, and the night gets warmer
+      try { localStorage.setItem('jdlo_heat', '1'); } catch { /* ignore */ }
+      const flash = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0xff2020, 0)
+        .setScrollFactor(0).setDepth(500);
+      const flashBlue = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x2040ff, 0)
+        .setScrollFactor(0).setDepth(500);
+      this.tweens.add({ targets: flash, alpha: 0.16, duration: 130, yoyo: true, repeat: 2 });
+      this.tweens.add({ targets: flashBlue, alpha: 0.16, duration: 130, yoyo: true, repeat: 2, delay: 65,
+        onComplete: () => { flash.destroy(); flashBlue.destroy(); } });
+      SoundEffects.playPoliceSiren();
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'The 335i eats two red lights. Rearview: red and blue, one block over.' },
+        { speaker: 'JP\'s Mind', text: 'Not for me. This time.' },
+        { speaker: 'Narrator', text: 'The engine settles. The heart does not.' },
+      ], () => this.continueToRoute());
+    }, () => {
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'Speed limit. Full stops. Blinkers.' },
+        { speaker: 'JP\'s Mind', text: 'Slow is smooth. Boring keeps you free.' },
+      ], () => this.continueToRoute());
+    });
+  }
+
+  private continueToRoute() {
+    this.showRouteChoice('Which stop comes first?', 'Urgent one', 'Closest one', () => {
+      ChoiceLedger.record('rise_route', 'Urgent stop first');
+      this.runRoutePressure('urgent');
+    }, () => {
+      ChoiceLedger.record('rise_route', 'Closest stop first');
+      this.runRoutePressure('close');
     });
   }
 

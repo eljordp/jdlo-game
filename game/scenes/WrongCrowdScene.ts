@@ -46,6 +46,15 @@ export class WrongCrowdScene extends BaseChapterScene {
     super.create();
     this.createSantaBarbaraAfterDark();
 
+    // Heat carried from the Weed Rise speed choice — the city remembers fast cars.
+    // The night starts two clicks more paranoid.
+    try {
+      if (localStorage.getItem('jdlo_heat') === '1') {
+        localStorage.removeItem('jdlo_heat');
+        this.interactionCount += 2;
+      }
+    } catch { /* ignore */ }
+
     // GameIntelligence — track player behavior
     GameIntelligence.init(this, this.player);
     GameIntelligence.watch('ch2_grab_weed',   19, 3,  true);  // required: story
