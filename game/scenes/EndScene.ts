@@ -697,31 +697,35 @@ export class EndScene extends Phaser.Scene {
     objects.push(sub);
     this.tweens.add({ targets: sub, alpha: 1, duration: 800, delay: 600 });
 
-    let y = 200;
+    // Two columns, up to 12 rows — a full run earns a full receipt.
     let matches = 0;
-    rows.slice(0, 6).forEach((row, i) => {
-      const delay = 1400 + i * 900;
+    const shown = Math.min(rows.length, 12);
+    const perCol = Math.ceil(shown / (shown > 6 ? 2 : 1));
+    rows.slice(0, 12).forEach((row, i) => {
+      const delay = 1200 + i * 550;
       if (row.matched) matches++;
 
-      const prompt = this.add.text(cx, y, row.def.prompt.toUpperCase(), {
-        fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#666688',
+      const col = Math.floor(i / perCol);
+      const colCx = shown > 6 ? cx - 310 + col * 620 : cx;
+      const y = 190 + (i % perCol) * 88;
+
+      const prompt = this.add.text(colCx, y, row.def.prompt.toUpperCase(), {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#666688',
       }).setOrigin(0.5).setAlpha(0);
-      const you = this.add.text(cx - 20, y + 26, `YOU: ${row.playerPick}`, {
-        fontFamily: '"Press Start 2P", monospace', fontSize: '9px',
+      const you = this.add.text(colCx, y + 22, `YOU: ${row.playerPick}`, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '8px',
         color: row.matched ? '#40c060' : '#ccccdd',
-      }).setOrigin(1, 0.5).setAlpha(0);
-      const jp = this.add.text(cx + 20, y + 26, row.def.jpLine, {
-        fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#aaaacc',
-      }).setOrigin(0, 0.5).setAlpha(0);
+      }).setOrigin(0.5).setAlpha(0);
+      const jp = this.add.text(colCx, y + 44, row.def.jpLine, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#aaaacc',
+        wordWrap: { width: shown > 6 ? 560 : 760 }, align: 'center',
+      }).setOrigin(0.5, 0).setAlpha(0);
       objects.push(prompt, you, jp);
       this.tweens.add({ targets: [prompt, you, jp], alpha: 1, duration: 600, delay });
-      y += 78;
     });
-
-    const shown = Math.min(rows.length, 6);
-    const closerDelay = 1400 + shown * 900 + 600;
+    const closerDelay = 1200 + shown * 550 + 600;
     const closer = this.add.text(
-      cx, y + 30,
+      cx, 190 + perCol * 88 + 30,
       matches === shown
         ? 'You made every choice he made.\nNow you know how it felt.'
         : `You broke from his path ${shown - matches} time${shown - matches === 1 ? '' : 's'}.\nHe didn't get a second run.`,
