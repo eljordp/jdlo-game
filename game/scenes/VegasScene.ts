@@ -3,9 +3,8 @@ import { GAME_WIDTH, GAME_HEIGHT, SCALE, CHAR_SCALE } from '../config';
 import { MusicSystem } from '../systems/MusicSystem';
 
 /**
- * Cinematic Vegas scene — JP flies out with Malachi for business.
- * He realizes people closing million-dollar deals are asking HIM for advice.
- * Step-based cutscene, same pattern as CourtScene / ReleaseScene.
+ * Cinematic Vegas scene — a real trip where party access, owners, women,
+ * introductions and business conversations keep colliding until sunrise.
  */
 export class VegasScene extends Phaser.Scene {
   private currentStep = 0;
@@ -25,7 +24,7 @@ export class VegasScene extends Phaser.Scene {
     this.sceneObjects = [];
     this.activeTweens = [];
 
-    MusicSystem.stop();
+    MusicSystem.play('vegas');
     this.cameras.main.fadeIn(500, 0, 0, 0);
 
     // Cinema letterbox bars
@@ -438,7 +437,216 @@ export class VegasScene extends Phaser.Scene {
   // Steps
   // ---------------------------------------------------------------
 
+  private addMovingCrowd(y: number, count: number, scale = 1): void {
+    const textures = ['npc_generic', 'npc_female', 'npc_suit', 'npc-business', 'npc_bikini1', 'npc_bikini2'];
+    for (let i = 0; i < count; i++) {
+      const x = 70 + (i * (GAME_WIDTH - 140)) / Math.max(1, count - 1);
+      const sprite = this.addObj(
+        this.add.sprite(x, y + (i % 3) * 26, textures[i % textures.length], i % 2 ? 4 : 0)
+          .setScale(SCALE * scale).setDepth(35 + (i % 3))
+      );
+      this.addTween({
+        targets: sprite,
+        y: sprite.y - (5 + (i % 4) * 2),
+        x: sprite.x + ((i % 2 === 0 ? 1 : -1) * (8 + (i % 3) * 5)),
+        angle: i % 2 === 0 ? 2 : -2,
+        duration: 500 + (i % 5) * 130,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+      });
+    }
+  }
+
+  private addDealExchange(x: number, y: number, label: string, rightTexture = 'npc_female'): void {
+    const left = this.addObj(this.add.sprite(x - 38, y, 'npc_suit', 6).setScale(SCALE * 1.02).setDepth(72));
+    const right = this.addObj(this.add.sprite(x + 38, y, rightTexture, 4).setScale(SCALE * 1.02).setDepth(72));
+    const phone = this.addObj(this.add.rectangle(x, y - 5, 13, 21, 0x9ed8ff).setStrokeStyle(3, 0x1c3040).setDepth(74));
+    const tag = this.addObj(this.add.text(x, y - 48, label, {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#f0c040',
+      backgroundColor: '#101018', padding: { x: 5, y: 3 },
+    }).setOrigin(0.5).setDepth(75));
+    this.addTween({ targets: phone, x: x + 18, duration: 650, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+    this.addTween({ targets: [left, right, tag], y: '-=3', duration: 800, yoyo: true, repeat: -1 });
+  }
+
+  private makeDayclub(): void {
+    this.addObj(this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x58b9e8));
+    this.addObj(this.add.circle(GAME_WIDTH - 120, 105, 58, 0xffe06a, 0.95));
+    this.addObj(this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT - 115, GAME_WIDTH, 260, 0xf1dfc2));
+    const pool = this.addObj(this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT - 120, 760, 210, 0x159bd1));
+    pool.setStrokeStyle(10, 0xf5f1e8, 1);
+    for (let y = GAME_HEIGHT - 195; y <= GAME_HEIGHT - 55; y += 34) {
+      const ripple = this.addObj(this.add.rectangle(GAME_WIDTH / 2, y, 650, 4, 0x8ee8ff, 0.32));
+      this.addTween({ targets: ripple, scaleX: 0.88, alpha: 0.12, duration: 1300, yoyo: true, repeat: -1 });
+    }
+    // Cabanas and bottle-service tables.
+    for (const x of [130, 310, GAME_WIDTH - 310, GAME_WIDTH - 130]) {
+      this.addObj(this.add.rectangle(x, 165, 150, 90, 0xffffff, 0.88));
+      this.addObj(this.add.rectangle(x, 118, 170, 12, 0xf0c040));
+      this.addObj(this.add.rectangle(x, 205, 90, 18, 0x6c8f9d));
+    }
+    // Swimmers and the crowd never stand still.
+    for (let i = 0; i < 6; i++) {
+      const swimmer = this.addObj(this.add.circle(360 + i * 110, GAME_HEIGHT - 125 + (i % 2) * 55, 11, i % 2 ? 0xe5ad7b : 0x9f6f50));
+      this.addTween({ targets: swimmer, x: swimmer.x + 55, duration: 1800 + i * 140, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+    }
+    this.addMovingCrowd(245, 12, 1.05);
+  }
+
+  private makeNightclub(name: string, color: number, chandelier = false): void {
+    this.addObj(this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x070711));
+    this.addObj(this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT - 130, GAME_WIDTH, 300, 0x16101f));
+    this.addObj(this.add.text(GAME_WIDTH / 2, 100, name, {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '24px', color: Phaser.Display.Color.IntegerToColor(color).rgba,
+    }).setOrigin(0.5).setDepth(40));
+
+    if (chandelier) {
+      const ring = this.addObj(this.add.circle(GAME_WIDTH / 2, 185, 110, 0x000000, 0).setStrokeStyle(12, 0xf0c040, 0.8));
+      this.addTween({ targets: ring, angle: 360, duration: 7000, repeat: -1, ease: 'Linear' });
+      for (let i = 0; i < 18; i++) {
+        const angle = (Math.PI * 2 * i) / 18;
+        const light = this.addObj(this.add.circle(GAME_WIDTH / 2 + Math.cos(angle) * 110, 185 + Math.sin(angle) * 45, 5, 0xffe18a, 0.8));
+        this.addTween({ targets: light, alpha: 0.2, duration: 250 + (i % 5) * 90, yoyo: true, repeat: -1 });
+      }
+    } else {
+      for (let i = 0; i < 8; i++) {
+        const laser = this.addObj(this.add.rectangle(GAME_WIDTH / 2, 185, GAME_WIDTH * 0.92, 3, i % 2 ? color : 0x33bbee, 0.35).setAngle(-34 + i * 10));
+        this.addTween({ targets: laser, angle: laser.angle + 18, alpha: 0.08, duration: 900 + i * 70, yoyo: true, repeat: -1 });
+      }
+    }
+    this.addMovingCrowd(GAME_HEIGHT - 230, 19, 1.08);
+    for (let i = 0; i < 32; i++) {
+      const confetti = this.addObj(this.add.rectangle(30 + Math.random() * (GAME_WIDTH - 60), 110 + Math.random() * 260, 5, 10, i % 2 ? color : 0xffffff, 0.75));
+      this.addTween({ targets: confetti, y: GAME_HEIGHT - 100, angle: 240, duration: 2200 + Math.random() * 2100, repeat: -1, delay: Math.random() * 1800 });
+    }
+  }
+
+  private makeStripClub(): void {
+    this.addObj(this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x12050b));
+    this.addObj(this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT - 125, GAME_WIDTH, 260, 0x2b0c18));
+    for (const x of [260, GAME_WIDTH / 2, GAME_WIDTH - 260]) {
+      this.addObj(this.add.circle(x, 235, 130, 0xd81b58, 0.08));
+      this.addObj(this.add.rectangle(x, 300, 8, 330, 0xb7a28a, 0.85));
+      const silhouette = this.addObj(this.add.sprite(x + 25, 275, 'npc_bikini1', 0).setScale(SCALE * 1.35).setTint(0x4a172b));
+      this.addTween({ targets: silhouette, x: x - 25, angle: 4, duration: 1050, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+    }
+    this.addMovingCrowd(GAME_HEIGHT - 190, 12, 1.02);
+  }
+
+  private makePenthouse(): void {
+    this.addObj(this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x0b1020));
+    // Floor-to-ceiling glass and Strip lights far below.
+    for (let x = 80; x < GAME_WIDTH; x += 120) {
+      this.addObj(this.add.rectangle(x, 250, 100, 340, 0x162946, 0.85).setStrokeStyle(3, 0x56677d, 0.5));
+      for (let y = 155; y < 390; y += 45) {
+        this.addObj(this.add.rectangle(x - 30 + Math.random() * 60, y, 16, 5, [0xff2266, 0x36cfff, 0xf0c040][Math.floor(Math.random() * 3)], 0.42));
+      }
+    }
+    this.addObj(this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT - 110, GAME_WIDTH, 220, 0x29242a));
+    this.addObj(this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT - 170, 410, 90, 0x4c3840));
+    this.addObj(this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT - 185, 370, 55, 0x73535e));
+    this.addMovingCrowd(GAME_HEIGHT - 205, 9, 1.12);
+
+    // Supercars visible at the private entrance below.
+    const c8 = this.addObj(this.add.sprite(230, GAME_HEIGHT - 65, 'car-corvette-c8').setScale(SCALE * 1.08));
+    const svj = this.addObj(this.add.sprite(GAME_WIDTH - 230, GAME_HEIGHT - 65, 'car-lambo-svj').setScale(SCALE * 1.08).setFlipX(true));
+    this.addTween({ targets: [c8, svj], alpha: { from: 0.78, to: 1 }, duration: 1200, yoyo: true, repeat: -1 });
+  }
+
   private playStep() {
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+
+    switch (this.currentStep) {
+      case 0: {
+        this.makeStrip();
+        const c8 = this.addObj(this.add.sprite(-120, GAME_HEIGHT - 92, 'car-corvette-c8').setScale(SCALE * 1.05).setFlipX(true));
+        const svj = this.addObj(this.add.sprite(-280, GAME_HEIGHT - 65, 'car-lambo-svj').setScale(SCALE * 1.05).setFlipX(true));
+        this.addTween({ targets: c8, x: GAME_WIDTH + 150, duration: 5200, repeat: -1, ease: 'Linear' });
+        this.addTween({ targets: svj, x: GAME_WIDTH + 150, duration: 4300, delay: 900, repeat: -1, ease: 'Linear' });
+        this.showText('LAS VEGAS', 115, { size: '20px', color: '#f0c040', delay: 250 });
+        this.showText('Not a future vision. This trip happened.', 165, { size: '12px', color: '#c4c4d4', delay: 900 });
+        this.showText('Every stop was party, women, owners—and somebody talking business.', 220, { size: '11px', color: '#aaaacc', delay: 1500 });
+        this.showContinue(3000);
+        break;
+      }
+      case 1: {
+        this.makeDayclub();
+        this.addDealExchange(225, 425, 'INTRO MADE', 'npc_bikini2');
+        this.addDealExchange(GAME_WIDTH - 225, 425, 'NUMBER SAVED', 'npc-business');
+        this.showText('DAYCLUB', 92, { size: '20px', color: '#ffffff', delay: 200 });
+        this.showText('Pool. Cabanas. Bottles. Music in full daylight.', 135, { size: '11px', color: '#17445c', delay: 700 });
+        this.showText('A bottle-service introduction turned into a business conversation before sunset.', 185, { size: '10px', color: '#17445c', delay: 1300 });
+        this.showContinue(3400);
+        break;
+      }
+      case 2: {
+        this.makeNightclub('MARQUEE', 0x22ccee);
+        this.addDealExchange(GAME_WIDTH - 190, 255, 'TERMS TALKED', 'npc_female');
+        this.showText('The room moved like one body.', 155, { size: '12px', delay: 650 });
+        this.showText('Women dancing. Owners talking numbers. Contacts changing hands between songs.', 205, { size: '10px', color: '#aaaacc', delay: 1300 });
+        this.showContinue(3600);
+        break;
+      }
+      case 3: {
+        this.makeNightclub('OMNIA', 0xf0c040, true);
+        this.addDealExchange(180, 310, 'OFFER MADE', 'npc-business');
+        this.addDealExchange(GAME_WIDTH - 180, 310, 'PARTNER INTRO', 'npc_female');
+        this.showText('Another line. Another room. Another level.', 345, { size: '12px', delay: 700 });
+        this.showText('One introduction became three. Deals kept moving while the chandelier moved.', 400, { size: '10px', color: '#d2c49e', delay: 1400 });
+        this.showContinue(3900);
+        break;
+      }
+      case 4: {
+        this.makeStripClub();
+        this.addDealExchange(GAME_WIDTH - 205, 420, 'DEAL MOVING', 'npc-business');
+        this.showText('AFTER HOURS', 100, { size: '18px', color: '#ff4d86', delay: 250 });
+        this.showText('The night did not slow down. It changed buildings.', 150, { size: '11px', delay: 850 });
+        this.showText('Dancers working. Owners talking. Cash, smoke, drinks—and business still moving at the table.', 205, { size: '10px', color: '#d8a6b7', delay: 1450 });
+        this.showContinue(3900);
+        break;
+      }
+      case 5: {
+        this.makePenthouse();
+        this.addDealExchange(210, 465, 'SCOPE TALKED', 'npc_female');
+        this.addDealExchange(GAME_WIDTH - 210, 465, 'FOLLOW-UP SET', 'npc-business');
+        this.showText('PENTHOUSE — 4:18 AM', 85, { size: '16px', color: '#f0c040', delay: 250 });
+        this.showText('One owned companies. One owned the floor. One collected supercars.', 140, { size: '11px', delay: 850 });
+        this.showText('Projects, partnerships, and numbers kept moving. Some became work. Others stayed Vegas talk.', 195, { size: '10px', color: '#aaaacc', delay: 1500 });
+        this.time.delayedCall(2700, () => {
+          this.showText("JP's Mind", 280, { size: '11px', color: '#f0c040' });
+          this.showText('"There are rooms you do not know exist until somebody opens the door."', 325, { size: '11px', color: '#d8d8e8', delay: 200 });
+        });
+        this.showContinue(5200);
+        break;
+      }
+      case 6: {
+        this.addObj(this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x171124));
+        this.addObj(this.add.rectangle(cx, GAME_HEIGHT - 120, GAME_WIDTH, 240, 0xd06f48));
+        this.addObj(this.add.circle(GAME_WIDTH - 190, GAME_HEIGHT - 160, 78, 0xffd469, 0.9));
+        for (let x = 40; x < GAME_WIDTH; x += 90) {
+          this.addObj(this.add.rectangle(x, GAME_HEIGHT - 105, 60, 45 + Math.random() * 80, 0x2b2432));
+        }
+        const jp = this.addObj(this.add.sprite(cx - 42, GAME_HEIGHT - 145, 'player-ch6', 0).setScale(CHAR_SCALE * 1.3));
+        const malachi = this.addObj(this.add.sprite(cx + 42, GAME_HEIGHT - 145, 'npc_malachi', 0).setScale(SCALE * 1.3));
+        this.addTween({ targets: [jp, malachi], y: GAME_HEIGHT - 149, duration: 1100, yoyo: true, repeat: -1 });
+        this.showText('SUNRISE', 105, { size: '18px', color: '#ffd469', delay: 250 });
+        this.showText('The point was not that JP had become one of them overnight.', 165, { size: '11px', delay: 900 });
+        this.showText('The point was that the ceiling moved again.', 220, { size: '12px', color: '#f0c040', delay: 1650 });
+        this.showText('Now he knew those rooms were real.', 275, { size: '11px', color: '#d4c4d6', delay: 2400 });
+        this.showContinue(4400);
+        break;
+      }
+      default: {
+        this.cameras.main.fadeOut(900, 0, 0, 0);
+        this.cameras.main.once('camerafadeoutcomplete', () => this.scene.start('HomeReturnScene'));
+        break;
+      }
+    }
+  }
+
+  private playLegacyStep() {
     const cx = GAME_WIDTH / 2;
     const cy = GAME_HEIGHT / 2;
 
@@ -567,7 +775,7 @@ export class VegasScene extends Phaser.Scene {
           this.cameras.main.fadeIn(600, 0, 0, 0);
 
           this.showText('Big Player', 80, { size: '12px', color: '#f0c040', delay: 400 });
-          this.showText('"That system you built saved us\ntwenty hours a week."', 120, { delay: 600 });
+          this.showText('"That system is working.\nWhat else can you see?"', 120, { delay: 600 });
 
           this.time.delayedCall(2200, () => {
             this.showText('Big Player', 200, { size: '12px', color: '#f0c040' });
@@ -590,7 +798,7 @@ export class VegasScene extends Phaser.Scene {
       }
 
       // ================================================================
-      // STEP 3 — The Handshake / "Six months ago I was on a tractor"
+      // STEP 3 — The Handshake / access becomes real
       // ================================================================
       case 3: {
         this.cameras.main.fadeOut(400, 0, 0, 0);
@@ -613,7 +821,7 @@ export class VegasScene extends Phaser.Scene {
 
           this.cameras.main.fadeIn(400, 0, 0, 0);
 
-          this.showText('They sign.', cy - 140, { size: '16px', delay: 400 });
+          this.showText('The conversation moves.', cy - 140, { size: '16px', delay: 400 });
 
           // === DEAL MOMENT: Table golden glow pulse + brief white flash ===
           this.time.delayedCall(1200, () => {
@@ -642,20 +850,18 @@ export class VegasScene extends Phaser.Scene {
             });
           });
 
-          // === THE CALLBACK — "Six months ago I was on a tractor." ===
-          // Earth/vineyard color, shown alone, centered. THE moment.
           this.time.delayedCall(2000, () => {
-            const tractorLine = this.add.text(cx, cy - 40, 'Six months ago I was\non a tractor.', {
+            const ownershipLine = this.add.text(cx, cy - 40, 'Everybody in the room\nowns something.', {
               fontFamily: '"Press Start 2P", monospace',
               fontSize: '18px',
-              color: '#8b6914',
+              color: '#ffffff',
               align: 'center',
               lineSpacing: 14,
             }).setOrigin(0.5).setAlpha(0).setDepth(100);
-            this.textObjects.push(tractorLine);
+            this.textObjects.push(ownershipLine);
 
             this.addTween({
-              targets: tractorLine,
+              targets: ownershipLine,
               alpha: 1,
               duration: 1500,
               ease: 'Sine.easeIn',
@@ -664,7 +870,7 @@ export class VegasScene extends Phaser.Scene {
 
           // 2s pause, then the follow-up in gold
           this.time.delayedCall(5500, () => {
-            const nowLine = this.add.text(cx, cy + 50, "Now he's in a conference room\non the strip.", {
+            const nowLine = this.add.text(cx, cy + 50, "Tonight, JP is not outside\nlooking in.", {
               fontFamily: '"Press Start 2P", monospace',
               fontSize: '14px',
               color: '#f0c040',
@@ -683,7 +889,7 @@ export class VegasScene extends Phaser.Scene {
 
           // Another pause, then final line
           this.time.delayedCall(8000, () => {
-            const closingLine = this.add.text(cx, cy + 120, 'Closing deals with people\nwho do this every day.', {
+            const closingLine = this.add.text(cx, cy + 120, 'Talking real work with people\nwho do this every day.', {
               fontFamily: '"Press Start 2P", monospace',
               fontSize: '13px',
               color: '#f0c040',

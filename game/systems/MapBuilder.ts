@@ -40,6 +40,73 @@ const OVERLAY_TILES = new Set<number>([
   TILE_IDS.JAIL_BAR,
 ]);
 
+// Repeating one 32px texture across a large room makes every surface look like
+// a spreadsheet. These deterministic variations keep the pixel-art language
+// while breaking the obvious tile stamp without introducing blurry filtering.
+const MATERIAL_TINTS: Partial<Record<number, number[]>> = {
+  [TILE_IDS.GRASS]: [0xffffff, 0xf7fff4, 0xf1f9ee, 0xfbfff8],
+  [TILE_IDS.SAND]: [0xffffff, 0xfffbf2, 0xf7f0e4, 0xfff7e8],
+  [TILE_IDS.PATH]: [0xffffff, 0xf8f3ed, 0xf2ebe3],
+  [TILE_IDS.FLOOR]: [0xffffff, 0xfbf8f2, 0xf4eee5],
+  [TILE_IDS.DARK_FLOOR]: [0xffffff, 0xf3f1f6, 0xeceaf0],
+  [TILE_IDS.DIRT]: [0xffffff, 0xf7f0e8, 0xeee5dc],
+  [TILE_IDS.CONCRETE]: [0xffffff, 0xf5f5f7, 0xeeeeef, 0xf8f6f4],
+  [TILE_IDS.HARDWOOD]: [0xffffff, 0xfbf6ed, 0xf3eadc, 0xfff9ef],
+  [TILE_IDS.CARPET]: [0xffffff, 0xfaf6ef, 0xf2ece3, 0xfffbf5],
+};
+
+const FREE_FLIP_TILES = new Set<number>([
+  TILE_IDS.GRASS,
+  TILE_IDS.SAND,
+  TILE_IDS.DIRT,
+  TILE_IDS.CONCRETE,
+  TILE_IDS.DARK_FLOOR,
+  TILE_IDS.CARPET,
+]);
+
+const HORIZONTAL_FLIP_TILES = new Set<number>([
+  TILE_IDS.FLOOR,
+  TILE_IDS.HARDWOOD,
+  TILE_IDS.PATH,
+]);
+
+const ARCHITECTURE_TILES = new Set<number>([
+  TILE_IDS.WALL,
+  TILE_IDS.HOUSE_WALL,
+  TILE_IDS.BUILDING_WALL,
+  TILE_IDS.COUNTER,
+]);
+
+const FLOOR_MATERIALS = new Set<number>([
+  TILE_IDS.GRASS,
+  TILE_IDS.SAND,
+  TILE_IDS.PATH,
+  TILE_IDS.FLOOR,
+  TILE_IDS.DARK_FLOOR,
+  TILE_IDS.DIRT,
+  TILE_IDS.CONCRETE,
+  TILE_IDS.HARDWOOD,
+  TILE_IDS.CARPET,
+]);
+
+function tileHash(x: number, y: number, tileId: number): number {
+  let value = Math.imul(x + 17, 374761393) ^ Math.imul(y + 31, 668265263) ^ Math.imul(tileId + 7, 69069);
+  value = Math.imul(value ^ (value >>> 13), 1274126177);
+  return (value ^ (value >>> 16)) >>> 0;
+}
+
+function applyMaterialVariation(sprite: Phaser.GameObjects.Sprite, tileId: number, x: number, y: number): void {
+  const hash = tileHash(x, y, tileId);
+  const tints = MATERIAL_TINTS[tileId];
+  if (tints?.length) sprite.setTint(tints[hash % tints.length]);
+
+  if (FREE_FLIP_TILES.has(tileId)) {
+    sprite.setFlip(Boolean(hash & 1), Boolean(hash & 2));
+  } else if (HORIZONTAL_FLIP_TILES.has(tileId)) {
+    sprite.setFlipX(Boolean(hash & 1));
+  }
+}
+
 // What ground tile to put under each overlay, based on nearby tiles
 function findNearbyGround(tiles: number[][], x: number, y: number, width: number, height: number): string {
   // Check adjacent tiles for a ground type
@@ -125,7 +192,25 @@ export class MapBuilder {
             : OVERLAY_TILES.has(tileId) ? 1 : 0;
           sprite.setDepth(depth);
           sprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+          applyMaterialVariation(sprite, tileId, x, y);
           rowSprites.push(sprite);
+        }
+
+        // Contact shadows make walls, counters, and buildings sit on the map
+        // instead of reading as another flat colored square.
+        if (FLOOR_MATERIALS.has(tileId)) {
+          const above = y > 0 ? mapData.tiles[y - 1][x] : TILE_IDS.EMPTY;
+          const left = x > 0 ? mapData.tiles[y][x - 1] : TILE_IDS.EMPTY;
+          if (ARCHITECTURE_TILES.has(above)) {
+            const shadow = this.scene.add.rectangle(pixelX, pixelY - SCALED_TILE / 2 + 4, SCALED_TILE, 8, 0x000000, 0.16)
+              .setDepth(0.25);
+            rowSprites.push(shadow as unknown as Phaser.GameObjects.Sprite);
+          }
+          if (ARCHITECTURE_TILES.has(left)) {
+            const shadow = this.scene.add.rectangle(pixelX - SCALED_TILE / 2 + 3, pixelY, 6, SCALED_TILE, 0x000000, 0.10)
+              .setDepth(0.25);
+            rowSprites.push(shadow as unknown as Phaser.GameObjects.Sprite);
+          }
         }
 
         if (collisionTileIds.has(tileId)) {

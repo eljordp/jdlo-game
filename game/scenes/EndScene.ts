@@ -763,10 +763,10 @@ export class EndScene extends Phaser.Scene {
 
     // Stats — compounding
     const stats = [
-      'Self-taught in 5 months',
-      '6+ clients and counting',
-      'COO at 22',
-      'Nothing stops. Always compounding.',
+      'Self-taught. No degree.',
+      'Real systems in production.',
+      'Paid work is not the same as a promise.',
+      'The story is still happening.',
     ];
 
     let yPos = 370;

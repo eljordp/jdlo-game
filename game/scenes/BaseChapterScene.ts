@@ -211,8 +211,9 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     this.input.keyboard!.on('keydown-ENTER', () => this.handleInteract());
     this.input.on('pointerdown', () => this.handleInteract());
 
-    // Camera follows player — zoomed out slightly for Pokemon-style proportions
-    this.cameras.main.setZoom(0.85);
+    // A tighter camera lets rooms, materials, and character acting read like a
+    // handheld-era Pokemon map instead of a zoomed-out level editor.
+    this.cameras.main.setZoom(1.05);
     this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
     this.cameras.main.setBounds(0, 0, this.mapWidth * SCALED_TILE, this.mapHeight * SCALED_TILE);
 
@@ -1033,15 +1034,16 @@ export abstract class BaseChapterScene extends Phaser.Scene {
   private static readonly CHAPTER_TITLES: Record<string, string> = {
     HomeScene: 'Chapter 1: Home',
     BeachScene: 'Chapter 2: Santa Barbara',
-    WrongCrowdScene: 'Chapter 3: Wrong Crowd',
-    CourtScene: 'Chapter 3: The Verdict',
-    JailScene: 'Chapter 4: Locked Up',
-    ReleaseScene: 'Chapter 4: Release',
-    TractorScene: 'Chapter 5: Caymus Vineyards',
-    ComeUpScene: 'Chapter 6: The Come Up',
-    LAScene: 'Chapter 6: Los Angeles',
-    OperatorScene: 'Chapter 7: Operator Mode',
-    VegasScene: 'Chapter 7: Vegas',
+    WeedRiseScene: 'Chapter 3: The Rise',
+    WrongCrowdScene: 'Chapter 4: Wrong Crowd',
+    CourtScene: 'Chapter 4: The Verdict',
+    JailScene: 'Chapter 5: Locked Up',
+    ReleaseScene: 'Chapter 5: Release',
+    TractorScene: 'Chapter 6: Caymus Vineyards',
+    ComeUpScene: 'Chapter 7: The Come Up',
+    LAScene: 'Chapter 7: Los Angeles',
+    OperatorScene: 'Chapter 8: Operator Mode',
+    VegasScene: 'Chapter 8: Vegas',
     HomeReturnScene: 'Home',
   };
 
@@ -1205,8 +1207,9 @@ export abstract class BaseChapterScene extends Phaser.Scene {
       });
     }
 
-    // Ch2 -> Ch3: Night overlay fade
-    if (fromScene === 'BeachScene' && (toScene === 'WrongCrowdScene' || toScene === 'TransitionScene')) {
+    // Santa Barbara -> Rise -> Wrong Crowd: night closes in gradually.
+    if ((fromScene === 'BeachScene' || fromScene === 'WeedRiseScene') &&
+        (toScene === 'WeedRiseScene' || toScene === 'WrongCrowdScene' || toScene === 'TransitionScene')) {
       const nightOverlay = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000030)
         .setScrollFactor(0).setDepth(DEPTH).setAlpha(0);
       this.tweens.add({
@@ -1217,7 +1220,7 @@ export abstract class BaseChapterScene extends Phaser.Scene {
       });
     }
 
-    // Ch3 -> Court: Red/blue police flash
+    // Wrong Crowd -> Court: Red/blue police flash
     if (fromScene === 'WrongCrowdScene' && toScene === 'CourtScene') {
       SoundEffects.playPoliceSiren();
       this.playPoliceFlash(DEPTH);

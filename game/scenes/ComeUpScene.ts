@@ -2,7 +2,7 @@ import { BaseChapterScene } from './BaseChapterScene';
 import { comeUpMap, MapData } from '../data/maps';
 import { comeUpDialogue } from '../data/story';
 import type { DialogueLine } from '../systems/DialogueSystem';
-import { GAME_WIDTH, GAME_HEIGHT } from '../config';
+import { GAME_WIDTH, GAME_HEIGHT, SCALE, SCALED_TILE } from '../config';
 import { Analytics } from '../systems/Analytics';
 import { MoodSystem } from '../systems/MoodSystem';
 import { InventorySystem } from '../systems/InventorySystem';
@@ -24,7 +24,7 @@ export class ComeUpScene extends BaseChapterScene {
 
   constructor() {
     super({ key: 'ComeUpScene' });
-    this.chapterTitle = 'Chapter 6: The Come Up';
+    this.chapterTitle = 'Chapter 7: The Come Up';
     this.nextScene = 'LAScene';
     this.requiredInteractionId = 'ch5_first_dollar';
   }
@@ -39,6 +39,7 @@ export class ComeUpScene extends BaseChapterScene {
 
   create() {
     super.create();
+    this.createClientDistrictIdentity();
 
     // GameIntelligence — track player behavior
     GameIntelligence.init(this, this.player);
@@ -62,10 +63,95 @@ export class ComeUpScene extends BaseChapterScene {
     this.addNavArrow(30, 27, 'Exit');
   }
 
+  private createClientDistrictIdentity() {
+    const tile = SCALED_TILE;
+
+    const facadeLabel = (x: number, y: number, width: number, label: string, color: number) => {
+      this.add.rectangle(x * tile, y * tile, width * tile, 28, color).setDepth(1.45);
+      this.add.text(x * tile, y * tile, label, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#ffffff',
+      }).setOrigin(0.5).setDepth(1.6);
+    };
+
+    facadeLabel(5, 12.35, 7.6, 'WCT', 0x254d70);
+    facadeLabel(18, 12.35, 9.2, 'STICKER SMITH', 0x61264a);
+    facadeLabel(30.5, 22.35, 12.2, 'DHL OPERATIONS', 0xdca900);
+
+    // Print-shop windows and rolls of stock establish what these early clients
+    // actually do, instead of presenting three identical office boxes.
+    for (const x of [15, 17, 19, 21]) {
+      this.add.rectangle(x * tile, 14.2 * tile, 34, 48, 0x56314b).setDepth(1.3);
+      this.add.rectangle(x * tile, 14.2 * tile, 26, 38, 0xd870a2, 0.32).setDepth(1.34);
+    }
+    for (const x of [3, 5, 7]) {
+      this.add.rectangle(x * tile, 15.3 * tile, 34, 46, 0xd7d7dc).setDepth(1.28);
+      this.add.circle(x * tile, 15.3 * tile, 10, 0x5983a0).setDepth(1.34);
+    }
+
+    // DHL is a working distribution building: dock shutters, safety lanes,
+    // pallets, conveyors and staff in motion. The central bay remains visibly
+    // open and the underlying doorway stays passable.
+    for (const x of [26.2, 30, 33.8]) {
+      this.add.rectangle(x * tile, 26.65 * tile, 2.5 * tile, 46, 0x4b5358).setDepth(1.45);
+      for (let line = -16; line <= 16; line += 8) {
+        this.add.rectangle(x * tile, 26.65 * tile + line, 2.35 * tile, 3, 0x778087).setDepth(1.5);
+      }
+      this.add.rectangle(x * tile, 27.05 * tile, 2.8 * tile, 8, 0xe4bc17).setDepth(1.55);
+    }
+    // Reopen the visual center of the actual door.
+    this.add.rectangle(30 * tile + tile / 2, 27.25 * tile, 34, 56, 0x1d2226).setDepth(1.58);
+
+    for (const y of [23.5, 25.5]) {
+      this.add.rectangle(30.5 * tile, y * tile, 10.5 * tile, 5, 0xe4bc17, 0.72).setDepth(1.2);
+      for (let x = 25.5; x <= 35.5; x += 2) {
+        this.add.rectangle(x * tile, y * tile, 26, 5, 0x20262a, 0.75).setDepth(1.22).setAngle(-28);
+      }
+    }
+
+    // Conveyor spine with moving parcels.
+    this.add.rectangle(30.5 * tile, 24.6 * tile, 8.5 * tile, 18, 0x596168).setDepth(1.7);
+    this.add.rectangle(30.5 * tile, 24.6 * tile, 8.2 * tile, 6, 0x252a2e).setDepth(1.75);
+    for (let i = 0; i < 5; i++) {
+      const parcel = this.add.rectangle((26.5 + i * 1.6) * tile, 24.45 * tile, 28, 22, 0xa8783d)
+        .setDepth(1.9);
+      this.tweens.add({
+        targets: parcel,
+        x: parcel.x + 3.2 * tile,
+        duration: 4200,
+        delay: i * 650,
+        repeat: -1,
+        onRepeat: () => { parcel.x = 26.5 * tile; },
+        ease: 'Linear',
+      });
+    }
+
+    for (const pos of [{ x: 27, y: 23.6 }, { x: 32, y: 25.6 }, { x: 35, y: 23.8 }]) {
+      const worker = this.add.sprite(pos.x * tile, pos.y * tile, 'npc_dhl_client', 0)
+        .setScale(SCALE * 0.92).setDepth(4);
+      this.tweens.add({
+        targets: worker,
+        x: worker.x + tile * 1.2,
+        y: worker.y + (pos.x % 2 ? 8 : -8),
+        duration: 1900 + pos.x * 22,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Linear',
+      });
+    }
+
+    const safetyX = 30.5 * tile;
+    const safetyY = 22.8 * tile;
+    this.add.rectangle(safetyX, safetyY, 310, 30, 0x20262a).setDepth(2.1);
+    this.add.text(safetyX, safetyY, 'SAFETY • EN  ES  TL  ZH', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#f2c315',
+    }).setOrigin(0.5).setDepth(2.2);
+  }
+
   protected getObjectiveHint(): string {
     if (this.clientReturned) return "You're building something real. Keep going.";
-    if (this.stickerTalked) return 'Keep going. More clients out there.';
-    return 'No clients. No portfolio. Start building.';
+    if (this.stickerTalked && !this.requiredDone) return 'Return to the office. Check the first real payment.';
+    if (this.stickerTalked) return 'Deliver the work. More conversations are waiting.';
+    return 'Find the difference between interest and a real yes.';
   }
 
   getMapData(): MapData {
@@ -80,18 +166,18 @@ export class ComeUpScene extends BaseChapterScene {
     return {
       ch5_wct_showcase: {
         title: 'WCT E-Commerce',
-        description: 'Full online store. Product pages, cart, checkout. Built in one week.',
-        revenue: '$900',
+        description: 'A real e-commerce build: products, cart, checkout, delivery.',
+        revenue: 'Delivered',
       },
       ch5_sticker_showcase: {
         title: 'The Sticker Smith',
-        description: 'Complete brand overhaul. Website, Google Business, marketing system.',
-        revenue: '$1,000',
+        description: 'The first legitimate client: website and a real working relationship.',
+        revenue: '~$1K',
       },
       ch5_dhl_showcase: {
         title: 'DHL Translator App',
-        description: 'Translation tool for warehouse workers. Enterprise deployment.',
-        revenue: 'Enterprise',
+        description: 'A serious translation tool built around warehouse communication.',
+        revenue: 'Operational',
       },
     };
   }
@@ -135,9 +221,11 @@ export class ComeUpScene extends BaseChapterScene {
     GameIntelligence.onNPCTalked(npcId);
     if (npcId === 'ch5_sticker' && !this.stickerTalked) {
       this.stickerTalked = true;
+      this.refreshObjectiveHint();
       SoundEffects.playConfirm();
       this.dialogue.show(dialogue, () => {
-        // After talking to Sticker, Manza gets a referral indicator
+        // One paid client makes the next conversation possible. It does not
+        // magically turn every interested person into a deal.
         const manza = this.npcs.find(n => n.id === 'ch5_manza');
         if (manza) {
           // Sparkle effect on Manza
@@ -152,12 +240,14 @@ export class ComeUpScene extends BaseChapterScene {
             yoyo: true,
             repeat: -1,
           });
-          // Update Manza dialogue to reference Sticker
+          // Update the composite prospect with the real frustrating pattern:
+          // enthusiasm, a promised follow-up, then silence.
           manza.dialogue = [
-            { speaker: 'Manza', text: 'Yo, Sticker just told me about you.' },
-            { speaker: 'Manza', text: 'I got like five friends who need sites. You ready?' },
-            { speaker: 'JP', text: 'Send them all.' },
-            { speaker: 'JP\'s Mind', text: 'Word of mouth. The best kind of marketing.' },
+            { speaker: 'Prospect', text: 'I saw the Sticker Smith work. Send me a proposal.' },
+            { speaker: 'Prospect', text: 'I am serious. I will call you tomorrow.' },
+            { speaker: 'JP', text: 'Cool. I will have it ready.' },
+            { speaker: 'Narrator', text: 'Tomorrow passes. The proposal stays on seen.' },
+            { speaker: 'JP\'s Mind', text: 'He still watches every story.' },
           ];
         }
       });
@@ -188,6 +278,14 @@ export class ComeUpScene extends BaseChapterScene {
     }
 
     if (interactable.id === 'ch5_first_dollar') {
+      if (!this.stickerTalked) {
+        this.frozen = true;
+        this.dialogue.show([
+          { speaker: 'Narrator', text: 'Invoice ready. Payment notifications empty.' },
+          { speaker: 'JP\'s Mind', text: 'A good conversation is not money. Find a real yes.' },
+        ], () => { this.frozen = false; });
+        return;
+      }
       Analytics.trackInteraction(interactable.id);
       this.requiredDone = true;
       SoundEffects.moneyRain();
@@ -230,8 +328,8 @@ export class ComeUpScene extends BaseChapterScene {
       this.dialogue.show([
         { speaker: 'JP\'s Mind', text: 'What if this doesn\'t work?' },
         { speaker: 'JP\'s Mind', text: 'What if I\'m just a kid with a laptop pretending to be something?' },
-        { speaker: 'JP\'s Mind', text: 'Everyone else went to school. Got degrees. Has experience.' },
-        { speaker: 'JP\'s Mind', text: 'I taught myself everything from YouTube and ChatGPT.' },
+        { speaker: 'JP\'s Mind', text: 'Other people went to school for this. I did not.' },
+        { speaker: 'JP\'s Mind', text: 'I taught myself from tutorials, AI, broken builds, and doing it again.' },
         { speaker: 'Narrator', text: 'He stares at the screen. The cursor blinks.' },
         { speaker: 'JP\'s Mind', text: '...but the site works. The client paid. That\'s real.' },
         { speaker: 'JP\'s Mind', text: 'Keep going.' },
@@ -246,10 +344,8 @@ export class ComeUpScene extends BaseChapterScene {
       Analytics.trackInteraction(interactable.id);
       this.frozen = true;
       this.dialogue.show([
-        { speaker: 'Narrator', text: 'JP\'s pricing sheet. Scribbled on a napkin.' },
-        { speaker: 'Narrator', text: '"Website: $300. Logo: $50. Full brand: $500."' },
-        { speaker: 'JP\'s Mind', text: 'I\'m charging nothing. But it\'s more than zero.' },
-        { speaker: 'JP\'s Mind', text: 'Gotta start somewhere.' },
+        { speaker: 'Narrator', text: 'JP\'s pricing sheet. Scope on one side. Anxiety on the other.' },
+        { speaker: 'JP\'s Mind', text: 'I know how long it takes. I am still learning what the work is worth.' },
       ], () => { this.frozen = false; });
       return;
     }
@@ -258,7 +354,7 @@ export class ComeUpScene extends BaseChapterScene {
       Analytics.trackInteraction(interactable.id);
       this.frozen = true;
       this.dialogue.show([
-        { speaker: 'Narrator', text: '3:47 AM. Screen glowing in the dark.' },
+        { speaker: 'Narrator', text: 'Late night. Screen glowing in the dark.' },
         { speaker: 'Narrator', text: 'Red Bull can. Cold coffee. Stack of tutorials.' },
         { speaker: 'JP\'s Mind', text: 'Everyone\'s asleep. This is when the real work happens.' },
         { speaker: 'JP\'s Mind', text: 'Nobody sees this part. They only see the finished site.' },
@@ -614,24 +710,15 @@ export class ComeUpScene extends BaseChapterScene {
     }).setOrigin(0.5).setScrollFactor(0).setDepth(304);
     objects.push(balanceText);
 
-    // Count up to $127.43
-    let bal = 0;
-    const countUp = this.time.addEvent({
-      delay: 30,
-      repeat: 42,
-      callback: () => {
-        bal += 3.03;
-        if (bal > 127.43) bal = 127.43;
-        balanceText.setText(`$${bal.toFixed(2)}`);
-      },
-    });
+    // Documentary tension without pretending an invented balance is a receipt.
+    this.time.delayedCall(700, () => balanceText.setText('LOW'));
 
     // Bills list
     const bills = [
-      { name: 'Rent', amount: '$400.00', due: 'Due Friday' },
-      { name: 'Phone', amount: '$85.00', due: 'Due 15th' },
-      { name: 'Car Insurance', amount: '$120.00', due: 'Due 20th' },
-      { name: 'Food', amount: '???', due: '' },
+      { name: 'Housing', amount: 'DUE', due: 'Soon' },
+      { name: 'Phone', amount: 'DUE', due: '' },
+      { name: 'Car', amount: 'DUE', due: '' },
+      { name: 'Food', amount: 'LOW', due: '' },
     ];
 
     let billY = cy - 20;
@@ -661,8 +748,8 @@ export class ComeUpScene extends BaseChapterScene {
     // JP's reaction after all bills shown
     this.time.delayedCall(4000, () => {
       this.dialogue.show([
-        { speaker: 'JP\'s Mind', text: '$127. Rent is $400. Due Friday.' },
-        { speaker: 'JP\'s Mind', text: 'I need three clients this week or I\'m done.' },
+        { speaker: 'JP\'s Mind', text: 'Not enough room between the balance and the bills.' },
+        { speaker: 'JP\'s Mind', text: 'A promise from a prospect cannot pay anything.' },
         { speaker: 'Narrator', text: 'He closes the app. Opens his laptop instead.' },
       ], () => {
         MoodSystem.changeMorale(-15);
@@ -685,12 +772,12 @@ export class ComeUpScene extends BaseChapterScene {
     this.tweens.add({ targets: overlay, alpha: 0.9, duration: 500 });
 
     const weeks = [
-      { text: 'Week 1', sub: '47 cold emails. 2 replies. Both said no.' },
-      { text: 'Week 2', sub: 'Built a portfolio site. 3 projects. One is his own.' },
-      { text: 'Week 3', sub: 'No clients. Ramen again.' },
-      { text: 'Week 4', sub: 'One lead. Met at a coffee shop. Ghosted.' },
-      { text: 'Week 6', sub: 'Finally. First client. $300 for a website.' },
-      { text: 'Week 8', sub: 'Second client. Word of mouth. $500.' },
+      { text: 'Outreach', sub: 'Messages sent. Mostly silence.' },
+      { text: 'Portfolio', sub: 'Built proof before anyone asked for it.' },
+      { text: 'Proposal', sub: '"I am serious." Then no reply.' },
+      { text: 'Follow-up', sub: 'Seen. Still watches every story.' },
+      { text: 'Sticker Smith', sub: 'A legitimate client. A real payment.' },
+      { text: 'Delivery', sub: 'The work has to justify the trust.' },
     ];
 
     let delay = 800;
@@ -722,8 +809,8 @@ export class ComeUpScene extends BaseChapterScene {
     // End
     this.time.delayedCall(delay + 500, () => {
       this.dialogue.show([
-        { speaker: 'Narrator', text: 'Two months. Felt like two years.' },
-        { speaker: 'JP\'s Mind', text: 'But the momentum is building. I can feel it.' },
+        { speaker: 'Narrator', text: 'Enough silence to make one real yes feel enormous.' },
+        { speaker: 'JP\'s Mind', text: 'Now deliver.' },
       ], () => {
         for (const obj of objects) {
           if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();

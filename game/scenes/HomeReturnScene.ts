@@ -30,7 +30,7 @@ export class HomeReturnScene extends BaseChapterScene {
   }
 
   protected getMusicTrack(): string {
-    return '';
+    return 'homecoming';
   }
 
   create() {
@@ -149,12 +149,12 @@ export class HomeReturnScene extends BaseChapterScene {
       // Emotional peak — extra lines after the story dialogue
       this.time.delayedCall(400, () => {
         this.dialogue.show(
-          [{ speaker: 'Pops', text: 'Most people don\'t come back from that, Jordan.' }],
+          [{ speaker: 'Pops', text: 'I don\'t need to understand every screen.' }],
           () => {
             // Long pause — let it sit
             this.time.delayedCall(2000, () => {
               this.dialogue.show(
-                [{ speaker: 'Pops', text: 'Now you\'re finally listening.' }],
+                [{ speaker: 'Pops', text: 'I just needed you home.' }],
                 () => {
                   // Camera flash white — like a memory being sealed
                   const flash = this.add.rectangle(

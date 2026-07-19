@@ -20,7 +20,7 @@ const NOTE: Record<string, number> = {
   'E4': 329.63, 'F4': 349.23, 'F#4': 369.99, 'G4': 392.00,
   'Ab4': 415.30, 'A4': 440.00, 'Bb4': 466.16, 'B4': 493.88,
   'C5': 523.25, 'D5': 587.33, 'E5': 659.26, 'F5': 698.46,
-  'G5': 783.99,
+  'G5': 783.99, 'A5': 880.00, 'B5': 987.77,
   'R': 0,
 };
 
@@ -221,6 +221,73 @@ const TRACKS: Record<string, TrackDef> = {
     ],
   },
 
+  // ── Weed Rise: seductive momentum with danger hiding underneath. ──────
+  'weed-rise': {
+    layers: [
+      {
+        notes: ['E2', 'R', 'E2', 'G2', 'A2', 'R', 'B2', 'A2',
+                'E2', 'R', 'E2', 'G2', 'D3', 'R', 'B2', 'R'],
+        bpm: 82,
+        gain: 0.014,
+        wave: 'triangle',
+        filterFreq: 420,
+        filterQ: 0.7,
+        attack: 0.08,
+        release: 0.2,
+      },
+      {
+        notes: ['E3', 'G3', 'A3', 'R', 'B3', 'A3', 'G3', 'R',
+                'E3', 'G3', 'B3', 'R', 'D4', 'B3', 'A3', 'R'],
+        bpm: 82,
+        gain: 0.008,
+        wave: 'triangle',
+        filterFreq: 1050,
+        filterQ: 0.4,
+        detune: -4,
+        attack: 0.08,
+        release: 0.28,
+      },
+      {
+        notes: ['R', 'E5', 'R', 'R', 'R', 'E5', 'R', 'G5',
+                'R', 'R', 'R', 'D5', 'R', 'R', 'E5', 'R'],
+        bpm: 164,
+        gain: 0.0025,
+        wave: 'square',
+        filterFreq: 1800,
+        filterQ: 0.8,
+        attack: 0.01,
+        release: 0.05,
+      },
+    ],
+  },
+
+  // ── Raid: short, breathless action pulse. Used only once danger breaks. ─
+  'raid': {
+    layers: [
+      {
+        notes: ['E2', 'E2', 'R', 'E2', 'F2', 'E2', 'R', 'D2'],
+        bpm: 148,
+        gain: 0.020,
+        wave: 'sawtooth',
+        filterFreq: 310,
+        filterQ: 1.1,
+        attack: 0.015,
+        release: 0.06,
+      },
+      {
+        notes: ['E3', 'R', 'F3', 'R', 'Bb3', 'R', 'A3', 'R'],
+        bpm: 148,
+        gain: 0.009,
+        wave: 'square',
+        filterFreq: 720,
+        filterQ: 1.3,
+        detune: -12,
+        attack: 0.01,
+        release: 0.08,
+      },
+    ],
+  },
+
   // ── Ch4 Locked Up: Sparse, cold — minimal, echoing, institutional. ────
   'jail': {
     layers: [
@@ -260,6 +327,62 @@ const TRACKS: Record<string, TrackDef> = {
         filterQ: 1.5,
         attack: 0.1,
         release: 2.0,
+      },
+    ],
+  },
+
+  // ── Jail reflection: the same room, but the mind is getting quieter. ──
+  'jail-reflection': {
+    layers: [
+      {
+        notes: ['D2', 'R', 'R', 'A1', 'R', 'R', 'F2', 'R',
+                'D2', 'R', 'R', 'A1', 'R', 'R', 'C2', 'R'],
+        bpm: 36,
+        gain: 0.010,
+        wave: 'sine',
+        filterFreq: 320,
+        filterQ: 0.4,
+        attack: 0.8,
+        release: 0.9,
+      },
+      {
+        notes: ['R', 'R', 'F3', 'R', 'A3', 'R', 'R', 'R',
+                'R', 'R', 'G3', 'R', 'F3', 'R', 'R', 'R'],
+        bpm: 36,
+        gain: 0.006,
+        wave: 'sine',
+        filterFreq: 760,
+        filterQ: 0.3,
+        attack: 0.45,
+        release: 1.2,
+      },
+    ],
+  },
+
+  // ── Release: sunlight after a year of institutional hum. ──────────────
+  'release': {
+    layers: [
+      {
+        notes: ['D2', 'R', 'G2', 'R', 'B2', 'R', 'A2', 'R',
+                'G2', 'R', 'D3', 'R', 'B2', 'A2', 'G2', 'R'],
+        bpm: 48,
+        gain: 0.010,
+        wave: 'triangle',
+        filterFreq: 520,
+        filterQ: 0.3,
+        attack: 0.45,
+        release: 0.55,
+      },
+      {
+        notes: ['R', 'R', 'R', 'D4', 'R', 'G4', 'R', 'B4',
+                'R', 'R', 'A4', 'R', 'G4', 'R', 'R', 'R'],
+        bpm: 48,
+        gain: 0.006,
+        wave: 'sine',
+        filterFreq: 1500,
+        filterQ: 0.4,
+        attack: 0.2,
+        release: 1.0,
       },
     ],
   },
@@ -392,6 +515,74 @@ const TRACKS: Record<string, TrackDef> = {
       },
     ],
   },
+
+  // ── Vegas: glossy club pulse with a sunrise comedown in the harmony. ──
+  'vegas': {
+    layers: [
+      {
+        notes: ['A1', 'A1', 'R', 'A1', 'C2', 'C2', 'R', 'E2',
+                'A1', 'A1', 'R', 'G2', 'E2', 'E2', 'R', 'G2'],
+        bpm: 124,
+        gain: 0.018,
+        wave: 'sine',
+        filterFreq: 260,
+        filterQ: 0.9,
+        attack: 0.015,
+        release: 0.1,
+      },
+      {
+        notes: ['A3', 'R', 'C4', 'R', 'E4', 'R', 'G4', 'R',
+                'A3', 'R', 'E4', 'R', 'D4', 'R', 'C4', 'R'],
+        bpm: 124,
+        gain: 0.006,
+        wave: 'sawtooth',
+        filterFreq: 1150,
+        filterQ: 1.0,
+        detune: 5,
+        attack: 0.025,
+        release: 0.14,
+      },
+      {
+        notes: ['R', 'A5', 'R', 'R', 'R', 'E5', 'R', 'R',
+                'R', 'G5', 'R', 'R', 'R', 'E5', 'R', 'R'],
+        bpm: 124,
+        gain: 0.003,
+        wave: 'square',
+        filterFreq: 2300,
+        filterQ: 0.5,
+        attack: 0.01,
+        release: 0.06,
+      },
+    ],
+  },
+
+  // ── Homecoming: familiar Home melody, calmer and earned. ───────────────
+  'homecoming': {
+    layers: [
+      {
+        notes: ['G2', 'R', 'C3', 'R', 'D3', 'R', 'B2', 'R',
+                'G2', 'R', 'E3', 'R', 'C3', 'D3', 'G2', 'R'],
+        bpm: 62,
+        gain: 0.010,
+        wave: 'triangle',
+        filterFreq: 520,
+        filterQ: 0.3,
+        attack: 0.35,
+        release: 0.5,
+      },
+      {
+        notes: ['G3', 'R', 'B3', 'D4', 'R', 'C4', 'B3', 'R',
+                'E4', 'D4', 'B3', 'R', 'A3', 'B3', 'G3', 'R'],
+        bpm: 62,
+        gain: 0.007,
+        wave: 'sine',
+        filterFreq: 1300,
+        filterQ: 0.3,
+        attack: 0.3,
+        release: 0.65,
+      },
+    ],
+  },
 };
 
 // ── Active layer state ────────────────────────────────────────────────────────
@@ -449,6 +640,38 @@ export class MusicSystem {
     }
   }
 
+  /** Fade between emotional beats without an abrupt soundtrack cut. */
+  static transitionTo(trackName: string, fadeMs = 500): void {
+    if (this.currentTrack === trackName) return;
+    if (this.muted || this.activeLayers.length === 0) {
+      this.play(trackName);
+      return;
+    }
+
+    const ctx = this.getCtx();
+    const now = ctx.currentTime;
+    const fadeSeconds = Math.max(0.12, fadeMs / 1000);
+    const fromTrack = this.currentTrack;
+    this.currentTrack = `transition:${fromTrack}->${trackName}`;
+
+    for (const layer of this.activeLayers) {
+      layer.gain.gain.cancelScheduledValues(now);
+      layer.gain.gain.setValueAtTime(Math.max(layer.gain.gain.value, 0.0001), now);
+      layer.gain.gain.exponentialRampToValueAtTime(0.0001, now + fadeSeconds);
+    }
+    if (this.beachGain) {
+      this.beachGain.gain.cancelScheduledValues(now);
+      this.beachGain.gain.setValueAtTime(Math.max(this.beachGain.gain.value, 0.0001), now);
+      this.beachGain.gain.exponentialRampToValueAtTime(0.0001, now + fadeSeconds);
+    }
+
+    window.setTimeout(() => {
+      if (this.currentTrack !== `transition:${fromTrack}->${trackName}`) return;
+      this.stop();
+      this.play(trackName);
+    }, fadeMs);
+  }
+
   // ── Start a single oscillator layer ─────────────────────────────────────
 
   private static startLayer(ctx: AudioContext, def: LayerDef): void {
@@ -482,10 +705,13 @@ export class MusicSystem {
 
     const tick = () => {
       noteIndex = (noteIndex + 1) % def.notes.length;
-      const freq = NOTE[def.notes[noteIndex]];
+      const noteName = def.notes[noteIndex];
+      const freq = NOTE[noteName];
       const now = ctx.currentTime;
 
-      if (freq === 0) {
+      // A typo in a track must never poison Web Audio with NaN/undefined and
+      // flood the runtime. Unknown notes degrade to a rest in production.
+      if (!Number.isFinite(freq) || freq === 0) {
         // Rest — fade to silence
         gain.gain.setTargetAtTime(0, now, release);
       } else {

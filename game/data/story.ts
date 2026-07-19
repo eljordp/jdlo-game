@@ -529,7 +529,7 @@ export const chapter3OutroText: string[] = [
 export const chapter4IntroText: string[] = [
   'Caymus Vineyards',
   'Most people don\'t make it out of that situation.',
-  'Jordan did. Now he\'s got dirt under his nails and $12 an hour.',
+  'Jordan did. Now he\'s got dirt under his nails and an early shift.',
   'But he\'s free. And that\'s enough to start.',
 ];
 
@@ -647,26 +647,22 @@ export const chapter5NPCs: NPCData[] = [
     y: 4,
     sprite: 'npc_client',
     dialogue: [
-      { speaker: 'Small Biz Owner', text: 'So you can really build me a website?' },
+      { speaker: 'Prospect', text: 'So you can really build me a website?' },
       { speaker: 'JP', text: '', choices: [
         { text: '"Yeah. I can do it."', next: [
-          { speaker: 'Small Biz Owner', text: 'You got a portfolio? Something I can look at?' },
-          { speaker: 'JP', text: 'Not yet. But I\'ll build yours for cheap and you can judge from that.' },
-          { speaker: 'Small Biz Owner', text: 'Hmm. How cheap?' },
+          { speaker: 'Prospect', text: 'You got a portfolio? Something I can look at?' },
+          { speaker: 'JP', text: 'Not much yet. Let me show you what I can make.' },
+          { speaker: 'Prospect', text: 'Send it over. I\'ll call you.' },
         ]},
         { text: '"I\'m still learning. But I\'ll make it work."', next: [
-          { speaker: 'Small Biz Owner', text: 'At least you\'re honest. My last guy oversold and underdelivered.' },
-          { speaker: 'Small Biz Owner', text: 'How much?' },
+          { speaker: 'Prospect', text: 'At least you\'re honest. Send me something.' },
+          { speaker: 'JP', text: 'Tonight.' },
         ]},
       ]},
-      { speaker: 'JP', text: '$300.' },
-      { speaker: 'Small Biz Owner', text: 'Three hundred? My last quote was four thousand.' },
-      { speaker: 'JP', text: 'Their quote. My price.' },
-      { speaker: 'Small Biz Owner', text: 'You got one week. If it\'s good, I\'ll tell people.' },
-      { speaker: 'JP', text: 'Deal.' },
-      { speaker: 'JP\'s Mind', text: 'Hands are shaking under the table. This is the first real client.' },
-      { speaker: 'JP\'s Mind', text: 'If I mess this up, there might not be a second one.' },
-      { speaker: 'JP\'s Mind', text: 'Don\'t mess this up.' },
+      { speaker: 'Narrator', text: 'JP sends the mockup that night. Seen.' },
+      { speaker: 'Narrator', text: 'No call the next day. Or the day after.' },
+      { speaker: 'JP\'s Mind', text: 'He still watches every story.' },
+      { speaker: 'JP\'s Mind', text: 'Alright. Next.' },
     ],
   },
   {
@@ -675,24 +671,13 @@ export const chapter5NPCs: NPCData[] = [
     y: 3,
     sprite: 'npc_sticker_smith',
     dialogue: [
-      { speaker: 'Sticker Smith', text: 'JP, this site is clean. Like, actually clean.' },
-      { speaker: 'JP', text: 'Told you I\'d handle it.' },
-      { speaker: 'Sticker Smith', text: 'We\'re getting calls now. Real calls. From Google.' },
-      { speaker: 'JP', text: 'That\'s the SEO kicking in.' },
-      { speaker: 'Sticker Smith', text: 'I don\'t know what that means but I love it.' },
-      { speaker: 'Sticker Smith', text: 'How much for the full marketing setup?', choices: [
-        { text: '"$1,000. Full package."', next: [
-          { speaker: 'JP', text: 'Website, Google Business, SEO, social media templates.' },
-          { speaker: 'Sticker Smith', text: 'Done. I trust you.' },
-        ]},
-        { text: '"Let me scope it and get back to you."', next: [
-          { speaker: 'JP', text: 'I want to give you exactly what you need. Not just what\'s easy.' },
-          { speaker: 'Sticker Smith', text: 'See? That\'s why I rock with you.' },
-        ]},
-      ]},
-      { speaker: 'Sticker Smith', text: 'Bro, you\'re different. Most people just talk. You actually deliver.' },
-      { speaker: 'Sticker Smith', text: 'I got people who need what you do. I\'m putting them on.' },
-      { speaker: 'JP\'s Mind', text: 'First referral. One person believes in you and tells two more. This is how it starts.' },
+      { speaker: 'Sticker Smith', text: 'I looked at the work. I want you to handle mine.' },
+      { speaker: 'JP', text: 'I got you. Let me scope it right.' },
+      { speaker: 'Sticker Smith', text: 'Good. Send it.' },
+      { speaker: 'Narrator', text: 'This one does not disappear after the mockup.' },
+      { speaker: 'Narrator', text: 'The payment lands. About a thousand dollars.' },
+      { speaker: 'JP\'s Mind', text: 'First legitimate client. Somebody trusted the work enough to pay for it.' },
+      { speaker: 'JP\'s Mind', text: 'Now deliver.' },
     ],
   },
   {
@@ -702,12 +687,11 @@ export const chapter5NPCs: NPCData[] = [
     sprite: 'npc_generic',
     dialogue: [
       { speaker: 'Prospect', text: 'Yeah I saw your DM. What can you do for me?' },
-      { speaker: 'JP', text: 'Website, branding, the whole setup. I can have something for you in a week.' },
-      { speaker: 'Prospect', text: 'How much?' },
-      { speaker: 'JP', text: '$500.' },
-      { speaker: 'Prospect', text: 'Let me think about it.' },
-      { speaker: 'JP\'s Mind', text: '"Let me think about it" means no. I already know.' },
-      { speaker: 'JP\'s Mind', text: 'But I sent the message. That\'s one more than yesterday.' },
+      { speaker: 'JP', text: 'Website, branding, the setup. What is the business actually missing?' },
+      { speaker: 'Prospect', text: 'Send a proposal. I\'m serious.' },
+      { speaker: 'Narrator', text: 'Proposal sent. Follow-up sent. Seen.' },
+      { speaker: 'Narrator', text: 'No answer. He keeps watching JP\'s stories.' },
+      { speaker: 'JP\'s Mind', text: 'Some people want free attention, not a project.' },
     ],
   },
   {
@@ -726,7 +710,7 @@ export const chapter5NPCs: NPCData[] = [
           { speaker: 'JP\'s Mind', text: 'Third rejection this week. Starting to wonder if this is real or if I\'m delusional.' },
         ]},
       ]},
-      { speaker: 'JP\'s Mind', text: 'Normal people quit after three. I sent six more proposals that night.' },
+      { speaker: 'JP\'s Mind', text: 'He sends more proposals that night.' },
     ],
   },
   {
@@ -736,20 +720,20 @@ export const chapter5NPCs: NPCData[] = [
     sprite: 'npc_client',
     dialogue: [
       { speaker: 'WCT Owner', text: 'I need an online store. Products, cart, checkout. The whole thing.' },
-      { speaker: 'JP', text: 'I can do that. $900.' },
+      { speaker: 'JP', text: 'I can build it. Let\'s map the products and the checkout first.' },
       { speaker: 'WCT Owner', text: 'Can you handle it? This is my business.' },
       { speaker: 'JP', text: '', choices: [
-        { text: '"I\'ve built three sites this month. I got you."', next: [
-          { speaker: 'WCT Owner', text: 'Three? In a month?' },
-          { speaker: 'JP', text: 'When you don\'t sleep, you ship.' },
+        { text: '"I got you."', next: [
+          { speaker: 'WCT Owner', text: 'Show me the plan.' },
+          { speaker: 'JP', text: 'Products first. Then cart, payment, and the handoff.' },
         ]},
         { text: '"I\'ll be straight with you — I\'m still new. But I work harder than anyone."', next: [
           { speaker: 'WCT Owner', text: 'You know what, I respect that more than the guys who oversell.' },
         ]},
       ]},
-      { speaker: 'WCT Owner', text: 'Alright. Two weeks. Don\'t let me down.' },
-      { speaker: 'JP\'s Mind', text: '$900. Biggest project yet. Built in two weeks while working another gig during the day.' },
-      { speaker: 'JP\'s Mind', text: 'A month ago I didn\'t know what a component was. Now I\'m shipping stores.' },
+      { speaker: 'WCT Owner', text: 'Alright. Don\'t let me down.' },
+      { speaker: 'Narrator', text: 'The store ships. The client pays.' },
+      { speaker: 'JP\'s Mind', text: 'A real e-commerce build. More responsibility than a demo. More proof.' },
     ],
   },
   {
@@ -758,11 +742,9 @@ export const chapter5NPCs: NPCData[] = [
     y: 8,
     sprite: 'npc_generic',
     dialogue: [
-      { speaker: 'Vacaville Appliance', text: 'You fixed our website and now we\'re getting 3x the calls.' },
-      { speaker: 'JP', text: 'That\'s what happens when it actually works.' },
-      { speaker: 'Vacaville Appliance', text: 'How much for Google Ads?' },
-      { speaker: 'JP', text: 'I\'ll send a proposal tonight.' },
-      { speaker: 'JP\'s Mind', text: 'Repeat client. They came back. That means the work is real.' },
+      { speaker: 'Vacaville Appliance', text: 'The site is delivered. There are still things we need to sort out.' },
+      { speaker: 'JP', text: 'Send me the list. I\'ll tell you what is in scope and what is next.' },
+      { speaker: 'JP\'s Mind', text: 'Real client work is not a victory screen. It keeps asking questions.' },
     ],
   },
   {
@@ -771,28 +753,26 @@ export const chapter5NPCs: NPCData[] = [
     y: 8,
     sprite: 'npc_manza',
     dialogue: [
-      { speaker: 'Manza', text: 'JP, the website is fire. Exactly what I needed.' },
-      { speaker: 'JP', text: 'Told you I\'d come through.' },
-      { speaker: 'Manza', text: 'I got like five friends who need sites. I\'m sending them all your way.' },
-      { speaker: 'JP', text: 'That\'s what I like to hear.' },
-      { speaker: 'Manza', text: 'Real talk, you\'re different from the other web guys. You actually care.' },
-      { speaker: 'JP\'s Mind', text: 'Word of mouth. The only marketing that matters when you\'re starting from zero.' },
+      { speaker: 'Prospect', text: 'The demo looks hard. Let me talk to my people.' },
+      { speaker: 'JP', text: 'Cool. I\'ll follow up tomorrow.' },
+      { speaker: 'Narrator', text: 'Tomorrow becomes next week.' },
+      { speaker: 'JP\'s Mind', text: 'A demo is not a client. Interest is not payment.' },
     ],
   },
 ];
 
 export const chapter5OutroText: string[] = [
-  '$300. Then $500. Then $900. Then $1,000.',
-  'The prices went up because the work got better.',
-  'Jordan was building something. And people were starting to notice.',
+  'A real payment. Then a real delivery.',
+  'Ghosts between both of them.',
+  'The work was getting better. So was his judgment.',
 ];
 
 // ─── Chapter 6: Operator Mode ──────────────────────────────────────────
 
 export const chapter6IntroText: string[] = [
   'Operator Mode',
-  'Enterprise clients. Closing deals. Building teams.',
-  'The kid from the vineyard is running the operation now.',
+  'Bigger rooms. Serious problems. More pressure.',
+  'Being self-taught got him in. Delivery decides whether he stays.',
 ];
 
 export const chapter6NPCs: NPCData[] = [
@@ -806,15 +786,15 @@ export const chapter6NPCs: NPCData[] = [
       { speaker: 'JP', text: 'Good. That was the point.' },
       { speaker: 'Malachi', text: 'I gotta be real with you. When I first met you I thought you were just another guy talking big.' },
       { speaker: 'JP', text: 'And now?' },
-      { speaker: 'Malachi', text: 'Now you\'re the reason this company runs. Every system, every workflow, every automation — that\'s you.' },
+      { speaker: 'Malachi', text: 'Now I see you operate. You turn a messy problem into something the team can use.' },
       { speaker: 'Malachi', text: 'Big meeting tomorrow. New client. You ready?', choices: [
         { text: '"Always ready."', next: [
           { speaker: 'Malachi', text: 'That\'s why you\'re COO. Not because of a title. Because you operate.' },
-          { speaker: 'JP\'s Mind', text: 'COO at 22. No degree. No connections. Just work.' },
+          { speaker: 'JP\'s Mind', text: 'No degree. Self-taught. The responsibility is still real.' },
         ]},
         { text: '"Send me the details. I\'ll have the proposal by morning."', next: [
-          { speaker: 'Malachi', text: 'By morning? You\'re insane. That\'s why this works.' },
-          { speaker: 'JP\'s Mind', text: 'He doesn\'t know I was up until 4 AM last night building the last system. But he trusts me.' },
+          { speaker: 'Malachi', text: 'Good. Make the scope clear before you promise the build.' },
+          { speaker: 'JP\'s Mind', text: 'He trusts me. That makes the responsibility heavier, not easier.' },
         ]},
       ]},
     ],
@@ -826,13 +806,13 @@ export const chapter6NPCs: NPCData[] = [
     sprite: 'npc_suit',
     dialogue: [
       { speaker: 'Client', text: 'We need the full stack. Website, CRM, AI receptionist, booking.', choices: [
-        { text: '"End of week."', next: [
-          { speaker: 'Client', text: 'End of week?! Our last vendor quoted eight weeks.' },
-          { speaker: 'JP', text: 'I\'m not your last vendor.' },
+        { text: '"Let me map the dependencies."', next: [
+          { speaker: 'Client', text: 'Good. Our last vendor promised everything before understanding anything.' },
+          { speaker: 'JP', text: 'I need to know what has to work first.' },
         ]},
         { text: '"Tell me more about the business first."', next: [
-          { speaker: 'Client', text: 'Smart. Most devs just start coding without understanding the problem.' },
-          { speaker: 'JP', text: 'That\'s why they take eight weeks.' },
+          { speaker: 'Client', text: 'Alright. The missed calls are the first leak.' },
+          { speaker: 'JP', text: 'Then that is where the system starts.' },
         ]},
       ]},
       { speaker: 'Client', text: 'Clearly. Let\'s talk numbers.' },
@@ -844,7 +824,7 @@ export const chapter6NPCs: NPCData[] = [
     y: 7,
     sprite: 'npc_whale',
     dialogue: [
-      { speaker: 'Big Player', text: 'That automation saved us twenty hours a week. What else can you do?', choices: [
+      { speaker: 'Big Player', text: 'The automation is working. What else can you do?', choices: [
         { text: '"What do you need?"', next: [
           { speaker: 'Big Player', text: 'I need someone who sees the whole system. Not just pieces.' },
           { speaker: 'JP', text: 'That\'s literally what I do.' },
@@ -864,10 +844,9 @@ export const chapter6NPCs: NPCData[] = [
     y: 4,
     sprite: 'npc_tech',
     dialogue: [
-      { speaker: 'Office Kult Rep', text: 'Office Kult wants you on the creative team.' },
-      { speaker: 'JP', text: 'I\'m already running three systems for them.' },
-      { speaker: 'Office Kult Rep', text: 'Exactly. That\'s why they want you full-time.' },
-      { speaker: 'JP', text: 'Tell them I\'m an operator, not an employee.' },
+      { speaker: 'Office Kult Rep', text: 'There may be a bigger partnership here.' },
+      { speaker: 'JP', text: 'Then start with a paid scope and clear ownership.' },
+      { speaker: 'Office Kult Rep', text: 'Fair. I\'ll take that back to them.' },
     ],
   },
   {
@@ -876,9 +855,9 @@ export const chapter6NPCs: NPCData[] = [
     y: 8,
     sprite: 'npc_suit',
     dialogue: [
-      { speaker: 'Tony', text: 'JP, I got connections at Flamingo and Caesars. They need a promoter bot.' },
-      { speaker: 'JP', text: 'Send me the specs. I\'ll have a demo by Friday.' },
-      { speaker: 'Tony', text: 'This is why I keep calling you, man.' },
+      { speaker: 'Promoter', text: 'There are Vegas people asking about automation.' },
+      { speaker: 'JP', text: 'Bring me the actual operator and the actual problem.' },
+      { speaker: 'Promoter', text: 'I can make the introduction.' },
     ],
   },
   {
@@ -899,8 +878,8 @@ export const chapter6NPCs: NPCData[] = [
     y: 13,
     sprite: 'npc_generic',
     dialogue: [
-      { speaker: 'Team Member', text: 'JP, the dashboard you built is saving us 10 hours a week minimum.' },
-      { speaker: 'JP', text: 'That\'s the point. Automate the boring stuff so you can focus on closing.' },
+      { speaker: 'Team Member', text: 'JP, the dashboard is finally giving us one place to see the work.' },
+      { speaker: 'JP', text: 'Good. If the team cannot use it, the system does not count.' },
     ],
   },
   {
@@ -909,9 +888,9 @@ export const chapter6NPCs: NPCData[] = [
     y: 11,
     sprite: 'npc_manza',
     dialogue: [
-      { speaker: 'Manza', text: 'My boy just hit me up. He needs a site by Friday. You want it?' },
-      { speaker: 'JP', text: 'Send it over.' },
-      { speaker: 'Manza', text: 'Already did. Check your DMs. I told him you\'re the guy.' },
+      { speaker: 'Prospect', text: 'My people saw the demo. They might need a site.' },
+      { speaker: 'JP', text: 'Cool. Connect us when they are ready to scope it.' },
+      { speaker: 'JP\'s Mind', text: 'Might. Need. Soon. None of those mean client.' },
     ],
   },
   {
@@ -921,23 +900,19 @@ export const chapter6NPCs: NPCData[] = [
     sprite: 'npc_dhl_client',
     dialogue: [
       { speaker: 'DHL Manager', text: 'We have a problem. Our warehouse team speaks four different languages.' },
-      { speaker: 'DHL Manager', text: 'Safety protocols aren\'t getting through. Three incidents this quarter.' },
-      { speaker: 'DHL Manager', text: 'Our dev team\'s been working on a translator app for two months. Nothing.' },
+      { speaker: 'DHL Manager', text: 'Instructions have to make sense across a working warehouse.' },
+      { speaker: 'DHL Manager', text: 'We need a translator the team can actually use.' },
       { speaker: 'JP', text: '', choices: [
-        { text: '"I can have a demo by Friday."', next: [
-          { speaker: 'DHL Manager', text: 'End of WEEK? Our team said six months minimum.' },
-          { speaker: 'JP', text: 'Different tools. Different approach.' },
-          { speaker: 'DHL Manager', text: 'You\'re serious?' },
-          { speaker: 'JP', text: 'Dead serious.' },
+        { text: '"Let me see the actual workflow."', next: [
+          { speaker: 'DHL Manager', text: 'Good. Start on the floor, not in a conference room.' },
+          { speaker: 'JP', text: 'The tool has to match how people really work.' },
         ]},
         { text: '"People\'s safety is on the line. I\'ll figure it out."', next: [
-          { speaker: 'DHL Manager', text: 'That\'s the right answer. Most devs ask about the budget first.' },
-          { speaker: 'JP\'s Mind', text: 'Enterprise. Lives depending on code I haven\'t written yet.' },
+          { speaker: 'DHL Manager', text: 'Then make it clear, fast, and usable.' },
+          { speaker: 'JP\'s Mind', text: 'Serious work. No room for a flashy demo that fails on the floor.' },
         ]},
       ]},
-      { speaker: 'DHL Manager', text: 'We\'ll pay whatever it takes. This is infrastructure, not a website.' },
-      { speaker: 'JP\'s Mind', text: 'Their whole dev team couldn\'t crack it. And I\'m about to do it alone in a week.' },
-      { speaker: 'JP\'s Mind', text: 'That\'s the play. Move fast. Figure it out. Ship it.' },
+      { speaker: 'JP\'s Mind', text: 'Build it around workers, languages, and the pressure of a real shift.' },
     ],
   },
   {
@@ -946,12 +921,11 @@ export const chapter6NPCs: NPCData[] = [
     y: 8,
     sprite: 'npc_generic',
     dialogue: [
-      { speaker: 'Mentor', text: 'You built all this in five months? Self-taught?' },
+      { speaker: 'Mentor', text: 'You taught yourself this?' },
       { speaker: 'JP', text: 'Yeah. AI helped. But I had to learn how to use it right.' },
-      { speaker: 'Mentor', text: 'Most people with CS degrees can\'t ship this fast.' },
-      { speaker: 'Mentor', text: 'Stop charging a thousand. You\'re leaving money on the table.' },
+      { speaker: 'Mentor', text: 'The next step is not learning another tool. It is scoping and selling the work.' },
       { speaker: 'JP', text: 'I\'m getting there.' },
-      { speaker: 'Mentor', text: 'You\'re already there. You just don\'t believe it yet.' },
+      { speaker: 'Mentor', text: 'Good. Keep the proof clean and stop counting conversations as clients.' },
       { speaker: 'JP\'s Mind', text: 'First time someone in this industry looked at me like an equal. Not a kid. Not a project. An equal.' },
     ],
   },
@@ -979,19 +953,18 @@ export const chapter6NPCs: NPCData[] = [
 ];
 
 export const chapter6OutroText: string[] = [
-  'From a cell to a courtroom to a vineyard to a laptop to the boardroom.',
-  'Self-taught. No degree. No bootcamp. No connections. No excuses.',
-  'The story isn\'t over. It\'s just getting started.',
+  'Self-taught. No degree. No bootcamp.',
+  'More access than before. More pressure than people can see.',
+  'The story is still happening.',
 ];
 
 // ─── End Screen ────────────────────────────────────────────────────────
 
 export const endScreenStats: string[] = [
-  '5 months: Zero to full-stack operator',
-  '6+ clients served',
-  'Built with: Next.js, React, AI, Claude Code',
   'Self-taught. No degree. No bootcamp.',
-  'From a cell to the boardroom',
+  'Real systems in production',
+  'Paid work separated from demos and promises',
+  'Still building the next chapter',
 ];
 
 export const endScreenCTA =
@@ -1532,17 +1505,10 @@ const ch1Extras: Record<string, DialogueLine[]> = {
     { speaker: 'Narrator', text: 'Beer pong table. Red cups ready.' },
   ],
   ch1_computer: [
-    { speaker: 'Narrator', text: 'JP opens his laptop. The spreadsheet loads.' },
-    { speaker: 'Narrator', text: '━━━━━━━━━━━━━━━━━━━━━━━━━━' },
-    { speaker: 'Narrator', text: 'INVENTORY: 83 lbs in rotation' },
-    { speaker: 'Narrator', text: 'CASH COLLECTED: $247,000 YTD' },
-    { speaker: 'Narrator', text: 'MONTHLY AVG: $31,200' },
-    { speaker: 'Narrator', text: 'ACTIVE CUSTOMERS: 142' },
-    { speaker: 'Narrator', text: 'REPEAT RATE: 78%' },
-    { speaker: 'Narrator', text: '━━━━━━━━━━━━━━━━━━━━━━━━━━' },
-    { speaker: 'JP\'s Mind', text: 'Real business metrics. Inventory, logistics, customer retention.' },
-    { speaker: 'JP\'s Mind', text: 'I built a whole operation and I\'m 20 years old.' },
-    { speaker: 'JP\'s Mind', text: 'If I put this energy into something legal...' },
+    { speaker: 'Narrator', text: 'JP opens the same laptop he used for his first trade.' },
+    { speaker: 'Narrator', text: 'The LUNA chart is still there. Full portfolio in. Then almost straight to zero.' },
+    { speaker: 'JP\'s Mind', text: 'First time trading and I thought conviction meant going all in.' },
+    { speaker: 'JP\'s Mind', text: 'Now the computer is for messages, routes, names, and who still owes.' },
   ],
   ch1_closet: [
     { speaker: 'JP\'s Mind', text: 'Clothes everywhere. Half designer, half thrift.' },
@@ -1635,6 +1601,18 @@ const ch1Extras: Record<string, DialogueLine[]> = {
     { speaker: 'Narrator', text: 'The sun is starting to drop. Orange light across the water.' },
     { speaker: 'Narrator', text: 'Santa Barbara sunsets hit different. Even JP can\'t deny that.' },
     { speaker: 'JP\'s Mind', text: 'If I could freeze one moment... it might be this one.' },
+  ],
+  ch1_north_bay_photo: [
+    { speaker: 'Narrator', text: 'A photo from back home. Fairfield, Suisun, Napa — home never fit into one label.' },
+    { speaker: 'JP\'s Mind', text: 'Different place now. Same people I don\'t want to disappoint.' },
+  ],
+  ch1_k_bag: [
+    { speaker: 'Narrator', text: 'K\'s bag is packed by the bed. Her morning has somewhere to go.' },
+    { speaker: 'JP\'s Mind', text: 'Mine keeps turning into another night.' },
+  ],
+  ch1_bmw_keys: [
+    { speaker: 'Narrator', text: 'Keys to the BMW. Freedom, delivery route, escape plan — depends on the hour.' },
+    { speaker: 'JP\'s Mind', text: 'I like anything that lets me leave fast.' },
   ],
 };
 
@@ -1934,7 +1912,7 @@ const ch3Day2NPCDialogue: Record<string, DialogueLine[]> = {
     { speaker: 'Chris', text: 'Commissary on the line. Don\'t bet what you can\'t lose.' },
   ],
   ch3_bird: [
-    { speaker: 'Bird', text: 'JP looking different already. You filling out, bro.' },
+    { speaker: 'Bird', text: 'JP filling out already. Them morning pushups working, bro.' },
     { speaker: 'Bird', text: 'Keep it up. People respect strength in here.' },
   ],
   ch3_og: [
@@ -1956,8 +1934,8 @@ const ch3Day2NPCDialogue: Record<string, DialogueLine[]> = {
     { speaker: 'Fighter', text: 'Respect.' },
   ],
   ch3_fighter2: [
-    { speaker: 'Inmate', text: 'JP\'s different from most guys that come through here.' },
-    { speaker: 'Inmate', text: 'Quiet. Focused. That scares people more than loud.' },
+    { speaker: 'Inmate', text: 'JP got quieter after the first months.' },
+    { speaker: 'Inmate', text: 'Less watching everybody else. More working on himself.' },
   ],
   ch3_dice1: [
     { speaker: 'Dice Player', text: 'JP! You playing today or just watching again?' },
@@ -1999,7 +1977,7 @@ const ch3Day3NPCDialogue: Record<string, DialogueLine[]> = {
   ],
   ch3_chris: [
     { speaker: 'Chris', text: 'JP signed up for that psychology course. Getting college credit in here.' },
-    { speaker: 'Chris', text: 'I\'m proud of you, bro. Most people come out worse. You\'re gonna come out better.' },
+    { speaker: 'Chris', text: 'I\'m proud of you, bro. Just keep the routine when the doors open.' },
   ],
   ch3_bird: [
     { speaker: 'Bird', text: 'JP, real talk. When you get out, don\'t come back to the bullshit.' },
@@ -2008,7 +1986,7 @@ const ch3Day3NPCDialogue: Record<string, DialogueLine[]> = {
   ],
   ch3_og: [
     { speaker: 'OG Inmate', text: 'Lopez. I been watching you.' },
-    { speaker: 'OG Inmate', text: 'You came in here scared. Now you walk different. Talk different.' },
+    { speaker: 'OG Inmate', text: 'You came in here scared. Now you keep your head up and your routine tight.' },
     { speaker: 'OG Inmate', text: 'Don\'t ever forget what this place taught you. But don\'t ever come back.' },
   ],
   ch3_guard: [
@@ -2027,8 +2005,8 @@ const ch3Day3NPCDialogue: Record<string, DialogueLine[]> = {
     { speaker: 'Fighter', text: 'Do something with it, man. For all of us who can\'t.' },
   ],
   ch3_fighter2: [
-    { speaker: 'Inmate', text: 'JP\'s leaving soon. Place won\'t be the same.' },
-    { speaker: 'Inmate', text: 'He was the only one in here who actually changed.' },
+    { speaker: 'Inmate', text: 'JP\'s leaving soon.' },
+    { speaker: 'Inmate', text: 'Hope he keeps doing outside what he started in here.' },
   ],
   ch3_dice1: [
     { speaker: 'Dice Player', text: 'JP quit playing dice weeks ago. Says he don\'t gamble anymore.' },
@@ -2036,7 +2014,7 @@ const ch3Day3NPCDialogue: Record<string, DialogueLine[]> = {
   ],
   ch3_dice2: [
     { speaker: 'Dice Player 2', text: 'I tried to read one of JP\'s books. Couldn\'t finish the first chapter.' },
-    { speaker: 'Dice Player 2', text: 'That boy built different.' },
+    { speaker: 'Dice Player 2', text: 'That boy really reads that shit every night.' },
   ],
   ch3_tattoo: [
     { speaker: 'Tattoo Guy', text: 'JP, before you go — I made you something.' },
@@ -2225,7 +2203,7 @@ const ch3Day2Extras: Record<string, DialogueLine[]> = {
   ch3_letter_home: [
     { speaker: 'JP', text: 'Dear Pops,' },
     { speaker: 'JP', text: 'I enrolled in a college course. Psychology. Getting an A.' },
-    { speaker: 'JP', text: 'Working out every day. Reading every night. I\'m different.' },
+    { speaker: 'JP', text: 'Working out every day. Reading every night. I finally have a routine.' },
     { speaker: 'JP', text: '- JP' },
   ],
   ch3_birthday: [
@@ -2244,7 +2222,7 @@ const ch3Day2Extras: Record<string, DialogueLine[]> = {
   ],
   ch3_transformation: [
     { speaker: 'JP\'s Mind', text: 'JP catches his reflection again.' },
-    { speaker: 'JP\'s Mind', text: 'Same face. But the eyes are different. Sharper. More focused.' },
+    { speaker: 'JP\'s Mind', text: 'Same face. Clearer eyes. More focused.' },
   ],
   ch3_mirror_day2: [
     { speaker: 'JP\'s Mind', text: 'JP looks at himself. Three months in.' },
@@ -2368,7 +2346,7 @@ const ch3Day3Extras: Record<string, DialogueLine[]> = {
   ],
   ch3_mirror_day3: [
     { speaker: 'JP\'s Mind', text: 'JP looks at himself. Six months of pushups, reading, and discipline.' },
-    { speaker: 'JP\'s Mind', text: 'Same face. Completely different person behind it.' },
+    { speaker: 'JP\'s Mind', text: 'The change is visible now.' },
     { speaker: 'JP\'s Mind', text: 'Strong. Healthy. Clear-eyed. Ready.' },
   ],
   ch3_faith: [
@@ -2579,58 +2557,52 @@ const ch4Extras: Record<string, DialogueLine[]> = {
 const ch5Extras: Record<string, DialogueLine[]> = {
   ch5_wct_showcase: [
     { speaker: 'JP\'s Mind', text: 'WCT E-Commerce. Full online store. Product pages, cart, checkout.' },
-    { speaker: 'JP\'s Mind', text: '$900. My biggest project yet. Built in two weeks.' },
-    { speaker: 'JP\'s Mind', text: 'A month ago I didn\'t know what a component was. Now I\'m shipping stores.' },
+    { speaker: 'JP\'s Mind', text: 'Delivered work. Paid work. Not a mockup waiting for an answer.' },
   ],
   ch5_sticker_showcase: [
-    { speaker: 'JP\'s Mind', text: 'The Sticker Smith. Complete brand overhaul. Website, Google Business, marketing.' },
-    { speaker: 'JP\'s Mind', text: '$1,000. And they\'re getting real calls now. Real customers.' },
-    { speaker: 'JP\'s Mind', text: 'I didn\'t just build a site. I built their pipeline.' },
+    { speaker: 'JP\'s Mind', text: 'The Sticker Smith. The first legitimate client.' },
+    { speaker: 'JP\'s Mind', text: 'About a thousand dollars. More important: somebody paid and expected delivery.' },
   ],
   ch5_dhl_showcase: [
     { speaker: 'JP\'s Mind', text: 'DHL Translator App. Built a translation tool for warehouse workers.' },
-    { speaker: 'JP\'s Mind', text: 'Enterprise client. Different league. They needed something their team of devs couldn\'t figure out.' },
-    { speaker: 'JP\'s Mind', text: 'I built it in a week.' },
+    { speaker: 'JP\'s Mind', text: 'Serious environment. Real teams, real language gaps, real consequences when communication fails.' },
   ],
   ch5_first_dollar: [
-    { speaker: 'JP\'s Mind', text: 'Payment received: $300. First real dollar from something I BUILT.' },
-    { speaker: 'JP\'s Mind', text: 'Not hustled. Not finessed. Built. With my hands and my brain. This feeling is different.' },
+    { speaker: 'Narrator', text: 'Sticker Smith payment received.' },
+    { speaker: 'JP\'s Mind', text: 'First legitimate client payment. Not a promise. Not a maybe. Paid.' },
+    { speaker: 'JP\'s Mind', text: 'Now I have to make the work worth the trust.' },
   ],
   ch5_late_night: [
     { speaker: 'JP\'s Mind', text: 'Everyone\'s asleep. I\'m shipping a client site. This is the grind they don\'t show.' },
     { speaker: 'JP\'s Mind', text: '3 AM. Eyes burning. But the site is live. And the client doesn\'t know I just pulled an all-nighter for them.' },
   ],
   ch5_review: [
-    { speaker: 'JP\'s Mind', text: 'First 5-star review.' },
-    { speaker: 'JP\'s Mind', text: '\'JP delivered in 3 days what our last agency couldn\'t in 3 months.\'' },
-    { speaker: 'JP\'s Mind', text: 'Screenshot that. Frame it. That\'s proof. That\'s not luck. That\'s work.' },
+    { speaker: 'Narrator', text: 'A client sends a short message: the build works.' },
+    { speaker: 'JP\'s Mind', text: 'Save that. Quiet proof matters more than a loud pitch.' },
   ],
   ch5_print_shop: [
-    { speaker: 'JP\'s Mind', text: 'The Sticker Smith\'s print shop. JP rebuilt their whole online presence.' },
-    { speaker: 'JP\'s Mind', text: 'They\'re getting calls now. Real leads. Real revenue from a real website.' },
-    { speaker: 'JP\'s Mind', text: 'This is what it looks like when you actually deliver.' },
+    { speaker: 'JP\'s Mind', text: 'The Sticker Smith\'s print shop. Ink, vinyl, orders, deadlines.' },
+    { speaker: 'JP\'s Mind', text: 'The website has to fit this real operation. That is what the client paid for.' },
   ],
   ch5_dhl_building: [
-    { speaker: 'JP\'s Mind', text: 'DHL warehouse. JP built them a translator app so workers could understand safety protocols.' },
-    { speaker: 'JP\'s Mind', text: 'Enterprise client. The kind of project that changes how people see you.' },
-    { speaker: 'JP\'s Mind', text: 'Their dev team couldn\'t crack it. I did it in a week.' },
+    { speaker: 'JP\'s Mind', text: 'DHL warehouse. Shifts, scanners, loading lanes, and workers switching between languages.' },
+    { speaker: 'JP\'s Mind', text: 'The translator belongs here because the problem belongs here. This is operations, not a portfolio prop.' },
   ],
   ch5_first_site: [
-    { speaker: 'JP\'s Mind', text: 'JP\'s first website. $300. Took him a week.' },
+    { speaker: 'JP\'s Mind', text: 'One of JP\'s first websites.' },
     { speaker: 'JP\'s Mind', text: 'Looking back, it was ugly as hell. But it WORKED. And the client paid.' },
   ],
   ch5_3am: [
-    { speaker: 'JP\'s Mind', text: '3:47 AM. Red Bull empty. Eyes burning.' },
+    { speaker: 'JP\'s Mind', text: 'Late enough that the room has gone quiet. Eyes burning.' },
     { speaker: 'JP\'s Mind', text: 'But the client site is deploying. JP watches the Vercel build logs scroll.' },
     { speaker: 'JP\'s Mind', text: 'Green checkmark. It\'s live.' },
   ],
   ch5_pricing: [
-    { speaker: 'JP\'s Mind', text: '$300... $500... $1,000... $3,000... $5,000.' },
-    { speaker: 'JP\'s Mind', text: 'The prices kept going up because the work kept getting better.' },
+    { speaker: 'JP\'s Mind', text: 'Every quote feels like guessing what the work is worth.' },
+    { speaker: 'JP\'s Mind', text: 'Charge too little and drown. Charge too much without proof and lose the room.' },
   ],
   ch5_github: [
-    { speaker: 'JP\'s Mind', text: '60+ repos on GitHub. Some abandoned. Most shipped.' },
-    { speaker: 'JP\'s Mind', text: 'Every one taught JP something. Every failure was a lesson. Every build was proof.' },
+    { speaker: 'JP\'s Mind', text: 'Repos everywhere. Some abandoned. Some shipped. All of them part of teaching himself.' },
   ],
   ch5_stack: [
     { speaker: 'JP\'s Mind', text: 'Next.js. React. Tailwind. Supabase. Vercel. Claude.' },
@@ -2642,10 +2614,9 @@ const ch5Extras: Record<string, DialogueLine[]> = {
     { text: 'JP stares at the phone.' },
     { speaker: 'JP\'s Mind', text: 'Maybe I\'m not cut out for this.' },
     { speaker: 'JP\'s Mind', text: 'Everyone else has a degree. A portfolio. Experience.' },
-    { speaker: 'JP\'s Mind', text: 'I have... a laptop and six months of YouTube tutorials.' },
+    { speaker: 'JP\'s Mind', text: 'I have a laptop, tutorials, AI, and whatever I can teach myself tonight.' },
     { text: '...' },
-    { speaker: 'JP\'s Mind', text: 'But I have something they don\'t.' },
-    { speaker: 'JP\'s Mind', text: 'I have nothing to lose.' },
+    { speaker: 'JP\'s Mind', text: 'The site still has to work. That is the part nobody can argue with.' },
   ],
   ch5_client_returns: [
     { speaker: 'First Client', text: 'Hey! The site is already getting traffic!' },
@@ -2663,9 +2634,8 @@ const ch5Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'Forget Fiverr. I\'ll find my own clients.' },
   ],
   ch5_cold_email: [
-    { speaker: 'Narrator', text: 'Gmail. 47 cold emails sent this week. 2 replies. Both "not interested."' },
-    { speaker: 'JP\'s Mind', text: '2 out of 47. That\'s... bad.' },
-    { speaker: 'JP\'s Mind', text: 'But two people read it. That\'s more than zero.' },
+    { speaker: 'Narrator', text: 'Gmail. Outreach sent all week. A few replies. Mostly no.' },
+    { speaker: 'JP\'s Mind', text: 'The silence is worse than rejection. At least rejection answers the question.' },
   ],
   ch5_portfolio: [
     { speaker: 'Narrator', text: 'JP\'s portfolio site. Three projects. One of them is his own.' },
@@ -2693,13 +2663,12 @@ const ch5Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'Whatever. Next.' },
   ],
   ch5_testimonial: [
-    { speaker: 'Narrator', text: 'Email from WCT: "JP built our site in a week. Already getting traffic. Highly recommend."' },
-    { speaker: 'JP\'s Mind', text: 'First testimonial. First proof that this works.' },
-    { speaker: 'JP\'s Mind', text: 'Screenshot that. Put it everywhere.' },
+    { speaker: 'Narrator', text: 'A client confirms the project is delivered and usable.' },
+    { speaker: 'JP\'s Mind', text: 'Not hype. A real person using real work.' },
   ],
   ch5_youtube: [
-    { speaker: 'Narrator', text: 'YouTube. "How to Build a Website in 2024" — 14 hour watch time this week.' },
-    { speaker: 'JP\'s Mind', text: 'My real college. Free tuition. No degree. Better education.' },
+    { speaker: 'Narrator', text: 'Tutorials stacked across tabs. Code, design, hosting, whatever the build needs next.' },
+    { speaker: 'JP\'s Mind', text: 'No school for this. Teach yourself, test it, break it, fix it.' },
   ],
   ch5_ramen: [
     { speaker: 'Narrator', text: 'Ramen noodles. Third time this week.' },
@@ -2707,9 +2676,9 @@ const ch5Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'One day I\'ll eat steak every night. Not yet.' },
   ],
   ch5_bank_app: [
-    { speaker: 'Narrator', text: 'Bank app. Checking: $127.43.' },
-    { speaker: 'JP\'s Mind', text: 'Rent is $400. That\'s due Friday.' },
-    { speaker: 'JP\'s Mind', text: 'I need two more clients this week or I\'m cooked.' },
+    { speaker: 'Narrator', text: 'Bank app. Not enough room between the balance and the bills.' },
+    { speaker: 'JP\'s Mind', text: 'A promise from a prospect cannot pay anything.' },
+    { speaker: 'JP\'s Mind', text: 'I need a real client, not another "I\'ll call you."' },
     { speaker: 'Narrator', text: 'He closes the app. Opens his laptop instead.' },
   ],
 };
@@ -2718,15 +2687,13 @@ const ch5Extras: Record<string, DialogueLine[]> = {
 
 const ch6Extras: Record<string, DialogueLine[]> = {
   ch6_dashboard: [
-    { speaker: 'JP\'s Mind', text: 'Built this in one session. The whole Pomaika\'i team uses it now.' },
-    { speaker: 'JP\'s Mind', text: 'Malachi needed ops visibility. I gave him a full dashboard in four hours.' },
-    { speaker: 'JP\'s Mind', text: 'That\'s the power move. Don\'t talk about what you can do. Just do it. Then show them.' },
+    { speaker: 'JP\'s Mind', text: 'A Pomaika\'i dashboard built for the team to actually use.' },
+    { speaker: 'JP\'s Mind', text: 'Malachi needed clearer operations. This is one working part of that system.' },
   ],
   ch6_portfolio: [
-    { speaker: 'JP\'s Mind', text: 'Six months ago I didn\'t know what HTML was.' },
-    { speaker: 'JP\'s Mind', text: 'Now I\'m COO of Pomaika\'i. Systems operator at Office Kult. Running my own clients on the side.' },
-    { speaker: 'JP\'s Mind', text: 'Sticker Smith. WCT. DHL. Vacaville Appliance. Manza Visuals. And it\'s still just the beginning.' },
-    { speaker: 'JP\'s Mind', text: 'People doing $400K a month treat me like an equal. Because I earned it.' },
+    { speaker: 'JP\'s Mind', text: 'Not long ago I was teaching myself the basics from a laptop.' },
+    { speaker: 'JP\'s Mind', text: 'Now there are systems in production and clients expecting answers.' },
+    { speaker: 'JP\'s Mind', text: 'Sticker Smith. WCT. DHL. Vacaville Appliance. Real work, with different outcomes.' },
   ],
   ch6_team: [
     { speaker: 'JP\'s Mind', text: 'Three people count on me now. Can\'t let them down.' },
@@ -2735,22 +2702,20 @@ const ch6Extras: Record<string, DialogueLine[]> = {
   ],
   ch6_mirror: [
     { speaker: 'JP\'s Mind', text: 'The kid from Santa Barbara would never believe this.' },
-    { speaker: 'JP\'s Mind', text: 'COO. Operator. Builder. The guy people call when they need it done right.' },
+    { speaker: 'JP\'s Mind', text: 'Operator. Builder. Still learning in public.' },
     { speaker: 'JP\'s Mind', text: 'Same face. Different person behind it. And I\'m just getting started.' },
   ],
   ch6_pomaikai_office: [
-    { speaker: 'JP\'s Mind', text: 'Pomaika\'i Co headquarters. JP built this operation from the ground up.' },
-    { speaker: 'JP\'s Mind', text: 'Dashboard, team workflows, client pipeline — all running. All built by one person with a laptop.' },
-    { speaker: 'JP\'s Mind', text: 'Malachi had the vision. I built the machine that makes it real.' },
-    { speaker: 'JP\'s Mind', text: 'COO at 22. No degree. No connections. Just work.' },
+    { speaker: 'JP\'s Mind', text: 'Pomaika\'i. Dashboards, workflows, and a client pipeline taking shape.' },
+    { speaker: 'JP\'s Mind', text: 'Malachi carries the vision. I keep turning parts of it into systems people can use.' },
+    { speaker: 'JP\'s Mind', text: 'Self-taught does not mean unaccountable. If it breaks, it is still my problem.' },
   ],
   ch6_slack: [
     { speaker: 'JP\'s Mind', text: 'Team Slack is blowing up. Three clients need updates. Two proposals due. A new lead from Instagram.' },
     { speaker: 'JP\'s Mind', text: 'JP handles all of it before lunch.' },
   ],
   ch6_revenue: [
-    { speaker: 'JP\'s Mind', text: 'Revenue tracker: $2,550 collected. Pomaika\'i retainer pending. More coming.' },
-    { speaker: 'JP\'s Mind', text: 'The snowball is rolling.' },
+    { speaker: 'JP\'s Mind', text: 'Revenue tracker. Paid work separated from demos, promises, and pending conversations.' },
   ],
   ch6_instagram: [
     { speaker: 'JP\'s Mind', text: '@jdlo. The page JP kept deleting posts from. Not anymore.' },
@@ -2761,8 +2726,8 @@ const ch6Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'This isn\'t freelancing anymore. This is a business.' },
   ],
   ch6_equal_moment: [
-    { speaker: 'JP\'s Mind', text: 'A guy doing $400K a month just asked JP to build his AI system.' },
-    { speaker: 'JP\'s Mind', text: 'Not as a favor. As a client. Because JP is that good.' },
+    { speaker: 'JP\'s Mind', text: 'A serious owner is asking JP about an AI system.' },
+    { speaker: 'JP\'s Mind', text: 'Not as a favor. As a working conversation that still has to become a real scope.' },
   ],
   ch6_elijah_update: [
     { speaker: 'Elijah', text: 'Dashboard metrics are up 40% since the redesign.' },
@@ -2785,12 +2750,12 @@ const ch6Extras: Record<string, DialogueLine[]> = {
   ],
   ch6_luxury_view: [
     { speaker: 'Narrator', text: 'Floor-to-ceiling windows. The city stretches out below.' },
-    { speaker: 'JP\'s Mind', text: 'A year ago I couldn\'t afford the view. Now I\'m in the building.' },
+    { speaker: 'JP\'s Mind', text: 'Access is not ownership. Still, you learn what rooms exist by entering them.' },
   ],
   ch6_restaurant: [
-    { speaker: 'Hostess', text: 'Welcome back. Your usual table?' },
-    { speaker: 'JP', text: 'Yeah. Thanks.' },
-    { speaker: 'Narrator', text: 'They know his name here now.' },
+    { speaker: 'Hostess', text: 'Reservation name?' },
+    { speaker: 'JP', text: 'Malachi.' },
+    { speaker: 'Narrator', text: 'Another room opened by a relationship, not a victory screen.' },
   ],
   ch6_coworker1: [
     { speaker: 'Dev', text: 'Yo JP, your dashboard template is insane. Can I fork it?' },
@@ -2820,9 +2785,9 @@ const ch6Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP', text: 'That\'s the point.' },
   ],
   ch6_dhl_solved: [
-    { speaker: 'DHL Manager', text: 'The translator app is live. Zero incidents this week.' },
-    { speaker: 'DHL Manager', text: 'You might have saved someone\'s life with that thing.' },
-    { speaker: 'JP\'s Mind', text: 'That one hit different.' },
+    { speaker: 'DHL Manager', text: 'The translator is live on the floor.' },
+    { speaker: 'DHL Manager', text: 'The team is using it. Now we see what needs to improve.' },
+    { speaker: 'JP\'s Mind', text: 'Real software starts another round of work when people begin using it.' },
   ],
   // Block 3 — Gym, Coffee Shop, Highrise Lobby
   ch6_gym_weights: [
@@ -2830,12 +2795,11 @@ const ch6Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'Can\'t run a business if your body\'s broken.' },
   ],
   ch6_coffee: [
-    { speaker: 'Narrator', text: 'JP\'s daily order.' },
-    { speaker: 'JP\'s Mind', text: 'Iced americano. Every morning. Non-negotiable.' },
+    { speaker: 'Narrator', text: 'Coffee, laptop, one quiet hour between rooms.' },
   ],
   ch6_lobby_desk: [
-    { speaker: 'Doorman', text: 'Mr. Lopez. Package at the front desk.' },
-    { speaker: 'JP', text: 'Thanks Marcus. I\'ll grab it on the way up.' },
+    { speaker: 'Doorman', text: 'Visitor pass?' },
+    { speaker: 'JP', text: 'Meeting upstairs.' },
   ],
   ch6_gym_bro: [
     { speaker: 'Gym Bro', text: 'Bro you\'re getting strong. What\'s your split?' },
@@ -2853,7 +2817,7 @@ const ch6Extras: Record<string, DialogueLine[]> = {
   ],
   // Block 4 — JP's World
   ch6_corvette: [
-    { speaker: 'Narrator', text: 'Dark metallic green C8. The car JP dreamed about on the tractor.' },
+    { speaker: 'Narrator', text: 'Dark metallic green C8. The car from JP\'s saved photos is finally outside.' },
     { speaker: 'JP\'s Mind', text: 'Not a reward. A reminder of what happens when you don\'t stop.' },
     { speaker: 'Narrator', text: 'He runs his hand along the hood. Still can\'t believe it\'s real.' },
     { speaker: 'JP\'s Mind', text: 'Every mile on this thing is a mile away from who I used to be.' },
@@ -3002,8 +2966,8 @@ const homeReturnNPCs: NPCData[] = [
       { speaker: 'Pops', text: 'I saw the websites. The businesses.' },
       { speaker: 'Pops', text: 'Your mom showed me. I don\'t understand half of it.' },
       { speaker: 'Pops', text: 'But I know you built it yourself.' },
-      { speaker: 'Pops', text: 'Most people don\'t come back from what you went through, Jordan.' },
-      { speaker: 'Pops', text: 'But you did. And you came back better.' },
+      { speaker: 'Pops', text: 'You came home with something to build, Jordan.' },
+      { speaker: 'Pops', text: 'I can see it.' },
       { speaker: 'Pops', text: 'Whatever you do, just do it all the way.' },
       { speaker: 'Pops', text: 'Don\'t half-ass it.' },
       { speaker: 'JP', text: 'You told me that before I left for SB.' },

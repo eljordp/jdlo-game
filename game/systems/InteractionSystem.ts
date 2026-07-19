@@ -16,6 +16,16 @@ export interface Interactable {
   glow?: boolean; // subtle visual indicator that this is interactable
 }
 
+// Floor textiles and large furniture need to read as room anchors, not as
+// collectible icons. These treatments also keep rugs below every character.
+const DISPLAY_TREATMENTS: Record<string, { scaleX: number; scaleY: number; depth?: number }> = {
+  'item-rug': { scaleX: 2.55, scaleY: 1.8, depth: 1 },
+  'item-yoga-mat': { scaleX: 2.1, scaleY: 1.3, depth: 1 },
+  'item-couch': { scaleX: 1.45, scaleY: 1.12 },
+  'item-bed': { scaleX: 1.35, scaleY: 1.15 },
+  'item-bed-pink': { scaleX: 1.35, scaleY: 1.15 },
+};
+
 export class InteractionSystem {
   private scene: Phaser.Scene;
   private interactables: Interactable[] = [];
@@ -155,8 +165,12 @@ export class InteractionSystem {
         // Small items (joints, pencils, keys) render smaller than big items (tablets, bbq)
         const smallItems = ['item-joint', 'item-pencil', 'item-keys', 'item-dice'];
         const itemScale = smallItems.includes(obj.sprite) ? SCALE * 0.6 : SCALE;
-        sprite.setScale(itemScale);
-        sprite.setDepth(5); // above ground tiles, below player/NPCs
+        const treatment = DISPLAY_TREATMENTS[obj.sprite];
+        sprite.setScale(
+          itemScale * (treatment?.scaleX ?? 1),
+          itemScale * (treatment?.scaleY ?? 1),
+        );
+        sprite.setDepth(treatment?.depth ?? 5); // textiles below furniture; objects below player/NPCs
 
         this.sprites.set(obj.id, sprite);
 

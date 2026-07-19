@@ -83,6 +83,8 @@ export class HomeScene extends BaseChapterScene {
     this.chapterTitle = '';
     super.create();
 
+    this.createNorthBayIdentity();
+
     // GameIntelligence — track player behavior
     GameIntelligence.init(this, this.player);
     GameIntelligence.watch('ch0_computer',      10, 5,  true);  // required: story
@@ -434,6 +436,44 @@ export class HomeScene extends BaseChapterScene {
   }
 
   // ─── OPENING CUTSCENE ──────────────────────────────────────────────
+  private createNorthBayIdentity() {
+    // The opening is a family home, not a generic green suburb. The dry-gold
+    // shoulders, live oaks, and road marker carry Fairfield / Suisun / Napa
+    // through the explorable exterior without pretending all three are one city.
+    const tile = SCALED_TILE;
+
+    const dryPatches = [
+      { x: 1.5, y: 25.5, w: 4.5, h: 2.2 },
+      { x: 8.5, y: 33.5, w: 4.0, h: 1.7 },
+      { x: 25.0, y: 36.5, w: 5.0, h: 1.8 },
+      { x: 34.5, y: 24.8, w: 4.0, h: 2.2 },
+    ];
+    for (const patch of dryPatches) {
+      this.add.ellipse(
+        patch.x * tile,
+        patch.y * tile,
+        patch.w * tile,
+        patch.h * tile,
+        0xc9a85f,
+        0.18,
+      ).setDepth(0.35);
+    }
+
+    // Low roadside marker: place memory, not exposition.
+    const signX = 3.2 * tile;
+    const signY = 39.0 * tile;
+    this.add.rectangle(signX, signY, 112, 34, 0x315f68).setDepth(4);
+    this.add.rectangle(signX, signY, 106, 28, 0xe9dfc7).setDepth(4.1);
+    this.add.text(signX, signY - 5, 'NORTH BAY', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#315f68',
+    }).setOrigin(0.5).setDepth(4.2);
+    this.add.text(signX, signY + 7, '80  •  12  •  29', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '5px', color: '#7a5632',
+    }).setOrigin(0.5).setDepth(4.2);
+    this.add.rectangle(signX - 42, signY + 29, 4, 28, 0x6a5844).setDepth(3.9);
+    this.add.rectangle(signX + 42, signY + 29, 4, 28, 0x6a5844).setDepth(3.9);
+  }
+
   private playOpeningCutscene() {
     this.frozen = true;
 
@@ -465,7 +505,8 @@ export class HomeScene extends BaseChapterScene {
 
   private playNarratorLines(overlay: Phaser.GameObjects.Rectangle) {
     const lines = [
-      { text: 'Napa, California.', hold: 1500 },
+      { text: 'Fairfield. Suisun. Napa.', hold: 1800 },
+      { text: 'Different North Bay addresses. Same search for home.', hold: 2200 },
       { text: 'Same room. Same walls. Same ceiling.', hold: 2000 },
       { text: 'Jordan had everything going for him.', hold: 2000 },
       { text: 'Then he left.', hold: 1500 },

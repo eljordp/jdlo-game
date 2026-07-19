@@ -335,14 +335,14 @@ export const beachMap: MapData = {
     ],
   },
   triggers: [
-    { x: 15, y: 27, action: 'scene', target: 'TransitionScene', data: { text: 'That summer changed everything.', subtext: 'Wrong people. Wrong choices.', nextScene: 'WrongCrowdScene' } },
-    { x: 16, y: 27, action: 'scene', target: 'TransitionScene', data: { text: 'That summer changed everything.', subtext: 'Wrong people. Wrong choices.', nextScene: 'WrongCrowdScene' } },
-    { x: 17, y: 27, action: 'scene', target: 'TransitionScene', data: { text: 'That summer changed everything.', subtext: 'Wrong people. Wrong choices.', nextScene: 'WrongCrowdScene' } },
-    { x: 18, y: 27, action: 'scene', target: 'TransitionScene', data: { text: 'That summer changed everything.', subtext: 'Wrong people. Wrong choices.', nextScene: 'WrongCrowdScene' } },
-    { x: 19, y: 27, action: 'scene', target: 'TransitionScene', data: { text: 'That summer changed everything.', subtext: 'Wrong people. Wrong choices.', nextScene: 'WrongCrowdScene' } },
-    { x: 20, y: 27, action: 'scene', target: 'TransitionScene', data: { text: 'That summer changed everything.', subtext: 'Wrong people. Wrong choices.', nextScene: 'WrongCrowdScene' } },
-    { x: 21, y: 27, action: 'scene', target: 'TransitionScene', data: { text: 'That summer changed everything.', subtext: 'Wrong people. Wrong choices.', nextScene: 'WrongCrowdScene' } },
-    { x: 22, y: 27, action: 'scene', target: 'TransitionScene', data: { text: 'That summer changed everything.', subtext: 'Wrong people. Wrong choices.', nextScene: 'WrongCrowdScene' } },
+    { x: 15, y: 26, action: 'scene', target: 'TransitionScene', data: { text: 'One run became another.', subtext: 'Then people started calling him.', nextScene: 'WeedRiseScene' } },
+    { x: 16, y: 26, action: 'scene', target: 'TransitionScene', data: { text: 'One run became another.', subtext: 'Then people started calling him.', nextScene: 'WeedRiseScene' } },
+    { x: 17, y: 26, action: 'scene', target: 'TransitionScene', data: { text: 'One run became another.', subtext: 'Then people started calling him.', nextScene: 'WeedRiseScene' } },
+    { x: 18, y: 26, action: 'scene', target: 'TransitionScene', data: { text: 'One run became another.', subtext: 'Then people started calling him.', nextScene: 'WeedRiseScene' } },
+    { x: 19, y: 26, action: 'scene', target: 'TransitionScene', data: { text: 'One run became another.', subtext: 'Then people started calling him.', nextScene: 'WeedRiseScene' } },
+    { x: 20, y: 26, action: 'scene', target: 'TransitionScene', data: { text: 'One run became another.', subtext: 'Then people started calling him.', nextScene: 'WeedRiseScene' } },
+    { x: 21, y: 26, action: 'scene', target: 'TransitionScene', data: { text: 'One run became another.', subtext: 'Then people started calling him.', nextScene: 'WeedRiseScene' } },
+    { x: 22, y: 26, action: 'scene', target: 'TransitionScene', data: { text: 'One run became another.', subtext: 'Then people started calling him.', nextScene: 'WeedRiseScene' } },
   ],
   interactables: [
     // --- Living Room (cols 1-11, rows 1-8) ---
@@ -399,11 +399,127 @@ export const beachMap: MapData = {
     // --- JP's Room additions ---
     { id: 'ch1_phone',          x: 20, y: 2,  type: 'examine', glow: true,  sprite: 'item-phone' },       // JP's room phone
     { id: 'ch1_kitchen_table',  x: 28, y: 6,  type: 'examine', glow: false, sprite: 'item-food' },        // kitchen table sesh spot
+    { id: 'ch1_north_bay_photo',x: 17, y: 7,  type: 'examine', glow: false, sprite: 'item-photo' },       // home carried from 707 to 805
+    { id: 'ch1_k_bag',          x: 14, y: 7,  type: 'examine', glow: false, sprite: 'item-laundry-basket' },
+    { id: 'ch1_bmw_keys',       x: 18, y: 7,  type: 'examine', glow: false, sprite: 'item-keys' },
   ],
 };
 
 // ---------------------------------------------------------------------------
-// 2. WRONG CROWD MAP — SB Frat House at Night + Buyer's Block  (40 wide x 32 tall)
+// 2. WEED RISE MAP — Townhouse + Delivery Loop  (36 wide x 30 tall)
+// ---------------------------------------------------------------------------
+// A compressed, playable version of the period where the first front turned
+// into a routine. The house remains explorable; the required spine is scale,
+// orders, deliveries, and hiding the return. Exact buyers and locations are
+// composites so the emotion can be clear without exposing private details.
+// ---------------------------------------------------------------------------
+const buildWeedRiseTiles = (): number[][] => {
+  const width = 36;
+  const height = 30;
+  const tiles = Array.from({ length: height }, () => Array<number>(width).fill(G));
+
+  // Map boundary.
+  for (let x = 0; x < width; x++) {
+    tiles[0][x] = E;
+    tiles[height - 1][x] = E;
+  }
+  for (let y = 0; y < height; y++) {
+    tiles[y][0] = E;
+    tiles[y][width - 1] = E;
+  }
+
+  // Townhouse: living room, JP's carpeted room, and kitchen.
+  for (let y = 2; y <= 10; y++) {
+    for (let x = 2; x <= 25; x++) {
+      const shell = y === 2 || y === 10 || x === 2 || x === 25;
+      tiles[y][x] = shell ? B : (x >= 12 && x <= 18 ? A : J);
+    }
+  }
+  for (let y = 2; y <= 10; y++) {
+    tiles[y][11] = B;
+    tiles[y][19] = B;
+  }
+  tiles[6][11] = O;
+  tiles[6][19] = O;
+  tiles[10][7] = O;
+  tiles[10][15] = O;
+  tiles[10][22] = O;
+  for (let x = 4; x <= 23; x++) tiles[11][x] = C;
+
+  // Parking lot and the road where the BMW delivery loop begins.
+  for (let y = 12; y <= 16; y++) {
+    for (let x = 1; x < width - 1; x++) tiles[y][x] = C;
+  }
+  for (let x = 2; x < width - 2; x += 4) {
+    tiles[12][x] = P;
+    tiles[16][x] = P;
+  }
+
+  // Three composite delivery houses. Their different materials make the
+  // route readable instead of one large concrete grid.
+  const houses = [
+    { left: 2, right: 10, floor: F, door: 6 },
+    { left: 13, right: 21, floor: A, door: 17 },
+    { left: 24, right: 33, floor: J, door: 29 },
+  ];
+  for (const house of houses) {
+    for (let y = 20; y <= 26; y++) {
+      for (let x = house.left; x <= house.right; x++) {
+        const shell = y === 20 || y === 26 || x === house.left || x === house.right;
+        tiles[y][x] = shell ? K : house.floor;
+      }
+    }
+    tiles[20][house.door] = O;
+    for (let y = 17; y <= 19; y++) tiles[y][house.door] = P;
+  }
+
+  // Coastal landscaping and a clear southern exit path.
+  tiles[18][3] = L;
+  tiles[18][11] = T;
+  tiles[18][23] = L;
+  tiles[18][34] = T;
+  for (let y = 17; y <= 28; y++) tiles[y][18] = P;
+  for (let x = 16; x <= 20; x++) tiles[29][x] = C;
+
+  return tiles;
+};
+
+export const weedRiseMap: MapData = {
+  tiles: buildWeedRiseTiles(),
+  collisions: [...STANDARD_COLLISIONS],
+  spawns: {
+    player: { x: 7, y: 7 },
+    npcs: [
+      { id: 'rise_nolan', x: 5, y: 5, sprite: 'npc_nolan' },
+      { id: 'rise_jose', x: 21, y: 14, sprite: 'npc_jose' },
+      { id: 'rise_first_buyer', x: 6, y: 23, sprite: 'npc_generic' },
+      { id: 'rise_repeat_buyer', x: 17, y: 23, sprite: 'npc_kid' },
+      { id: 'rise_new_buyer', x: 29, y: 23, sprite: 'npc_female' },
+    ],
+  },
+  triggers: [
+    { x: 16, y: 28, action: 'scene', target: 'TransitionScene', data: { text: 'The money got normal.', subtext: 'So did looking over his shoulder.', nextScene: 'WrongCrowdScene' } },
+    { x: 17, y: 28, action: 'scene', target: 'TransitionScene', data: { text: 'The money got normal.', subtext: 'So did looking over his shoulder.', nextScene: 'WrongCrowdScene' } },
+    { x: 18, y: 28, action: 'scene', target: 'TransitionScene', data: { text: 'The money got normal.', subtext: 'So did looking over his shoulder.', nextScene: 'WrongCrowdScene' } },
+    { x: 19, y: 28, action: 'scene', target: 'TransitionScene', data: { text: 'The money got normal.', subtext: 'So did looking over his shoulder.', nextScene: 'WrongCrowdScene' } },
+    { x: 20, y: 28, action: 'scene', target: 'TransitionScene', data: { text: 'The money got normal.', subtext: 'So did looking over his shoulder.', nextScene: 'WrongCrowdScene' } },
+  ],
+  interactables: [
+    { id: 'rise_scale', x: 7, y: 4, type: 'examine', glow: true, sprite: 'item-weed-bag' },
+    { id: 'rise_phone', x: 9, y: 4, type: 'examine', glow: true, sprite: 'item-phone' },
+    { id: 'rise_bed', x: 13, y: 3, type: 'examine', glow: false, sprite: 'item-bed' },
+    { id: 'rise_mirror', x: 17, y: 3, type: 'examine', glow: false, sprite: 'item-mirror' },
+    { id: 'rise_kitchen', x: 22, y: 4, type: 'examine', glow: false, sprite: 'item-food' },
+    { id: 'rise_stash', x: 23, y: 8, type: 'examine', glow: true, sprite: 'item-money' },
+    { id: 'rise_bmw', x: 14, y: 14, type: 'examine', glow: true, sprite: 'item-keys' },
+    { id: 'rise_receipts', x: 18, y: 14, type: 'examine', glow: false, sprite: 'item-phone' },
+    { id: 'rise_overlook', x: 33, y: 18, type: 'examine', glow: false, sprite: 'item-photo' },
+    { id: 'rise_exit_note', x: 18, y: 27, type: 'examine', glow: false },
+  ],
+};
+
+// ---------------------------------------------------------------------------
+// 3. WRONG CROWD MAP — SB Frat House at Night + Buyer's Block  (40 wide x 32 tall)
 // ---------------------------------------------------------------------------
 // Same SB frat house layout from beachMap but at 3:33 AM — dark, empty.
 // JP wakes up alone, grabs product, drives across real SB streets to buyer's house.
@@ -608,8 +724,8 @@ export const jailMap: MapData = {
     ],
   },
   triggers: [
-    { x: 19, y: 30, action: 'scene', target: 'TractorScene' }, // bottom exit (chapel area)
-    { x: 20, y: 30, action: 'scene', target: 'TractorScene' },
+    { x: 19, y: 30, action: 'scene', target: 'ReleaseScene' }, // release only after the full jail arc
+    { x: 20, y: 30, action: 'scene', target: 'ReleaseScene' },
   ],
   interactables: [
     // --- Cell scratches ---
@@ -620,6 +736,7 @@ export const jailMap: MapData = {
 
     // --- JP's cell items ---
     { id: 'ch3_bed',         x: 3, y: 6,   type: 'examine', glow: true, sprite: 'item-bed' },      // BACK of JP's cell
+    { id: 'ch3_cell_door',   x: 4, y: 9,   type: 'examine', glow: true },                         // guaranteed route out
     { id: 'ch3_toilet',      x: 2, y: 6,   type: 'examine', glow: false, sprite: 'item-toilet' },  // furniture
     { id: 'ch3_book',        x: 5, y: 8,   type: 'examine', glow: true, sprite: 'item-book' },     // JP's cell
     { id: 'ch3_letter_home', x: 4, y: 6,   type: 'examine', glow: true, sprite: 'item-letter' },   // JP's cell
@@ -640,6 +757,8 @@ export const jailMap: MapData = {
     { id: 'ch3_yard',        x: 18, y: 23, type: 'examine', glow: false, sprite: 'item-ball' },     // scenery
     { id: 'ch3_birthday',    x: 30, y: 23, type: 'examine', glow: false, sprite: 'item-food' },      // yard, open area
     { id: 'ch3_faith',       x: 7, y: 22,  type: 'examine', glow: true, sprite: 'item-book' },      // quiet corner of yard
+    { id: 'ch3_yard_gate',   x: 17, y: 17, type: 'examine', glow: true },                           // guaranteed yard gate
+    { id: 'ch3_chapel_gate', x: 15, y: 26, type: 'examine', glow: true },                           // guaranteed chapel gate
 
     // --- Study corner / weight rack ---
     { id: 'ch3_tablet',      x: 34, y: 24, type: 'examine', glow: false, sprite: 'item-tablet' },   // weight rack area
@@ -713,7 +832,8 @@ export const tractorMap: MapData = {
   },
   triggers: [
     { x: 7,  y: 5,  action: 'dialogue', target: 'ch4_computer' },
-    { x: 20, y: 35, action: 'scene', target: 'TransitionScene', data: { text: 'Two months later...', subtext: 'JP is building.', nextScene: 'ComeUpScene' } },
+    { x: 19, y: 27, action: 'scene', target: 'TransitionScene', data: { text: 'After the rows came the screen.', subtext: 'The work changed. The work ethic did not.', nextScene: 'ComeUpScene' } },
+    { x: 20, y: 27, action: 'scene', target: 'TransitionScene', data: { text: 'After the rows came the screen.', subtext: 'The work changed. The work ethic did not.', nextScene: 'ComeUpScene' } },
   ],
   interactables: [
     { id: 'ch4_tractor', x: 13, y: 9, type: 'examine', glow: true, sprite: 'item-car' },

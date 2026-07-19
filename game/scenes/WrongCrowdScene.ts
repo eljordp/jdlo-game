@@ -10,6 +10,7 @@ import { GameIntelligence } from '../systems/GameIntelligence';
 import { CasinoSystem } from '../systems/CasinoSystem';
 import { DMSystem } from '../systems/DMSystem';
 import { SoundEffects } from '../systems/SoundEffects';
+import { MusicSystem } from '../systems/MusicSystem';
 
 export class WrongCrowdScene extends BaseChapterScene {
   private raidTriggered = false;
@@ -28,7 +29,7 @@ export class WrongCrowdScene extends BaseChapterScene {
 
   constructor() {
     super({ key: 'WrongCrowdScene' });
-    this.chapterTitle = 'Chapter 3: Wrong Crowd';
+    this.chapterTitle = 'Chapter 4: Wrong Crowd';
     this.nextScene = 'CourtScene';
   }
 
@@ -42,6 +43,7 @@ export class WrongCrowdScene extends BaseChapterScene {
 
   create() {
     super.create();
+    this.createSantaBarbaraAfterDark();
 
     // GameIntelligence — track player behavior
     GameIntelligence.init(this, this.player);
@@ -94,6 +96,36 @@ export class WrongCrowdScene extends BaseChapterScene {
 
     // 3:33 AM wake up cutscene at start
     this.play333Cutscene();
+  }
+
+  private createSantaBarbaraAfterDark() {
+    const tile = SCALED_TILE;
+
+    // The same coastal architecture from the earlier chapter survives at
+    // night. Familiar white stucco under sodium lights makes the turn darker
+    // than swapping to an unrelated generic crime map would.
+    this.add.rectangle(20 * tile, 0.15 * tile, 28 * tile, 14, 0x7d3028).setDepth(1.34);
+    this.add.rectangle(20 * tile, 7.5 * tile, 28 * tile, tile - 9, 0xd8cfbe).setDepth(1.32);
+    for (const x of [10, 18, 24, 31]) {
+      const cx = x * tile + tile / 2;
+      this.add.ellipse(cx, 7.15 * tile, 32, 30, 0x5c382c).setDepth(1.42);
+      this.add.rectangle(cx, 7.42 * tile, 32, 28, 0x5c382c).setDepth(1.42);
+      const porch = this.add.circle(cx, 7.85 * tile, 9, 0xf0bd59, 0.35).setDepth(1.5);
+      this.tweens.add({ targets: porch, alpha: 0.12, duration: 1700 + x * 19, yoyo: true, repeat: -1 });
+    }
+
+    // The late-night store is the only bright commercial landmark.
+    this.add.rectangle(9.5 * tile, 17.35 * tile, 8.2 * tile, 28, 0x1a443e).setDepth(1.55);
+    this.add.text(9.5 * tile, 17.35 * tile, 'OPEN 24 HOURS', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#d8f1cf',
+    }).setOrigin(0.5).setDepth(1.65);
+
+    // Buyer block: ordinary stucco house, deliberately quiet. The danger is
+    // the contrast between a normal neighborhood and what JP brought into it.
+    this.add.rectangle(28 * tile, 33.2 * tile, 9.5 * tile, 18, 0x8a392c).setDepth(1.35);
+    this.add.rectangle(28 * tile, 38.35 * tile, 9.5 * tile, 24, 0xd9d0c2).setDepth(1.32);
+    const buyerLight = this.add.circle(27.5 * tile, 37.2 * tile, 15, 0xf0c878, 0.28).setDepth(1.5);
+    this.tweens.add({ targets: buyerLight, alpha: 0.08, duration: 2100, yoyo: true, repeat: -1 });
   }
 
   private spawnUnmarkedCar() {
@@ -995,6 +1027,10 @@ export class WrongCrowdScene extends BaseChapterScene {
   private triggerRaid() {
     this.frozen = true;
 
+    // Let the room go unnaturally quiet before the raid breaks it open.
+    MusicSystem.stop();
+    SoundEffects.playHeartbeat();
+
     // THE SILENCE — 1.5 seconds of nothing before everything breaks
     // Stop all tweens on buyer (leg bounce stops)
     const buyer = this.npcs.find(n => n.id === 'ch2_buyer');
@@ -1026,6 +1062,7 @@ export class WrongCrowdScene extends BaseChapterScene {
   }
 
   private executeRaid() {
+    MusicSystem.play('raid');
     SoundEffects.playPoliceSiren();
     // --- Red/blue alternating police flashes on screen edges ---
     const redFlash = this.add.rectangle(

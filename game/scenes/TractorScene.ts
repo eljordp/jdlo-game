@@ -18,7 +18,7 @@ export class TractorScene extends BaseChapterScene {
 
   constructor() {
     super({ key: 'TractorScene' });
-    this.chapterTitle = 'Chapter 5: Caymus Vineyards';
+    this.chapterTitle = 'Chapter 6: Caymus Vineyards';
     this.nextScene = 'ComeUpScene';
     this.requiredInteractionId = 'ch4_crash';
   }
@@ -33,6 +33,7 @@ export class TractorScene extends BaseChapterScene {
 
   create() {
     super.create();
+    this.createCaymusIdentity();
 
     // GameIntelligence — track player behavior
     GameIntelligence.init(this, this.player);
@@ -50,6 +51,71 @@ export class TractorScene extends BaseChapterScene {
     this.addNavArrow(5, 3, 'Computer');
     // Exit at 8,21
     this.addNavArrow(8, 20, 'Exit');
+  }
+
+  private createCaymusIdentity() {
+    const tile = SCALED_TILE;
+
+    // Napa's dry rolling hills behind the green worksite.
+    this.add.ellipse(8 * tile, 1.7 * tile, 16 * tile, 3.4 * tile, 0xb9944e, 0.26).setDepth(0.28);
+    this.add.ellipse(27 * tile, 1.45 * tile, 23 * tile, 3.0 * tile, 0xc8a45c, 0.22).setDepth(0.28);
+
+    // Winery identity: cream stucco, dark red fascia, and a restrained mark.
+    this.add.rectangle(7 * tile, 3.45 * tile, 8 * tile, 22, 0xe8ddc8).setDepth(1.35);
+    this.add.rectangle(7 * tile, 3.22 * tile, 8.2 * tile, 11, 0x6d2523).setDepth(1.45);
+    this.add.text(7 * tile, 3.45 * tile, 'CAYMUS', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#5a1f1d',
+    }).setOrigin(0.5).setDepth(1.6);
+
+    // Barrel/work room in the outbuilding. Cylinders have hoops and cast
+    // shadows, so this no longer reads as another empty square building.
+    for (const x of [19, 20, 21]) {
+      const bx = x * tile + tile / 2;
+      const by = 4.8 * tile;
+      this.add.ellipse(bx, by + 10, 46, 18, 0x3b281b, 0.35).setDepth(1.42);
+      this.add.ellipse(bx, by, 42, 50, 0x885832).setDepth(1.5);
+      this.add.rectangle(bx, by - 12, 42, 4, 0x3f3f3d).setDepth(1.6);
+      this.add.rectangle(bx, by + 11, 42, 4, 0x3f3f3d).setDepth(1.6);
+      this.add.circle(bx, by, 3, 0x321f18).setDepth(1.62);
+    }
+
+    // Trellis wires and Cabernet clusters connect hundreds of repeated vine
+    // tiles into long agricultural rows.
+    const blocks = [{ left: 3, right: 16 }, { left: 23, right: 37 }];
+    for (const row of [12, 14, 16]) {
+      for (const block of blocks) {
+        const left = block.left * tile + tile / 2;
+        const right = block.right * tile + tile / 2;
+        this.add.rectangle((left + right) / 2, row * tile + 22, right - left, 3, 0x6c5034)
+          .setDepth(1.35);
+        for (let x = block.left; x <= block.right; x += 2) {
+          const vx = x * tile + tile / 2;
+          this.add.rectangle(vx, row * tile + 22, 5, 48, 0x5a422e).setDepth(1.38);
+          this.add.circle(vx - 8, row * tile + 12, 6, 0x54325f, 0.9).setDepth(1.52);
+          this.add.circle(vx + 6, row * tile + 17, 5, 0x68406e, 0.9).setDepth(1.52);
+        }
+      }
+    }
+
+    // Drip irrigation lines and periodic blue glints at the block edges.
+    for (const block of blocks) {
+      const left = block.left * tile + tile / 2;
+      const right = block.right * tile + tile / 2;
+      this.add.rectangle((left + right) / 2, 17.2 * tile, right - left, 4, 0x25343a, 0.9)
+        .setDepth(1.25);
+      const glint = this.add.circle(right - 15, 17.2 * tile, 5, 0x58b7cf, 0.2).setDepth(1.4);
+      this.tweens.add({ targets: glint, alpha: 0.85, duration: 1400, yoyo: true, repeat: -1 });
+    }
+
+    // Field signage helps the player read the two vineyard blocks.
+    for (const marker of [{ x: 3.2, label: 'BLOCK 4' }, { x: 23.2, label: 'CABERNET' }]) {
+      const mx = marker.x * tile;
+      const my = 11.15 * tile;
+      this.add.rectangle(mx, my, 86, 28, 0x6b4b2d).setDepth(2.2);
+      this.add.text(mx, my, marker.label, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '5px', color: '#f1dfb6',
+      }).setOrigin(0.5).setDepth(2.3);
+    }
   }
 
   protected getObjectiveHint(): string {

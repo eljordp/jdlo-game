@@ -22,7 +22,7 @@ export class OperatorScene extends BaseChapterScene {
 
   constructor() {
     super({ key: 'OperatorScene' });
-    this.chapterTitle = 'Chapter 7: Operator Mode';
+    this.chapterTitle = 'Chapter 8: Operator Mode';
     this.nextScene = 'VegasScene';
     this.requiredInteractionId = 'ch6_equal_moment';
   }
@@ -464,7 +464,7 @@ export class OperatorScene extends BaseChapterScene {
       },
       ch6_portfolio: {
         title: 'The Portfolio',
-        description: '6+ clients. Websites, AI systems, sales ops. All self-taught in 5 months.',
+        description: 'Websites, AI tools, and operating systems. Self-taught, with real work separated from demos.',
         revenue: '$10K+/mo',
       },
     };
@@ -830,9 +830,9 @@ export class OperatorScene extends BaseChapterScene {
           for (const obj of objects) { if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy(); }
           this.dialogue.show([
             { speaker: 'Narrator', text: 'Dark metallic green. Almost black in the shade. Emerald in the sun.' },
-            { speaker: 'Narrator', text: 'The car JP dreamed about while driving a tractor through grape vines.' },
+            { speaker: 'Narrator', text: 'The C8 from the saved photos is sitting in front of him now.' },
             { speaker: 'JP\'s Mind', text: 'Not a reward. A reminder.' },
-            { speaker: 'JP\'s Mind', text: 'Of what happens when you don\'t stop.' },
+            { speaker: 'JP\'s Mind', text: 'Access changes faster than stability does.' },
           ], () => { this.frozen = false; });
         });
       },
@@ -1361,21 +1361,21 @@ export class OperatorScene extends BaseChapterScene {
       alpha: 0.6,
       duration: 800,
       onComplete: () => {
-        // Line 1: "Six months ago he was on a tractor."
+        // The moment is about being taken seriously, not repeating Caymus.
         this.dialogue.show([
-          { speaker: 'Narrator', text: 'Six months ago he was on a tractor.' },
+          { speaker: 'Narrator', text: 'For once, nobody asks where he went to school.' },
         ], () => {
           // Pause 2 seconds
           this.time.delayedCall(2000, () => {
             // Line 2
             this.dialogue.show([
-              { speaker: 'Narrator', text: 'Now he sits at tables with people doing $400K a month.' },
+              { speaker: 'Narrator', text: 'They ask whether the system can handle the pressure.' },
             ], () => {
               // Pause 1.5 seconds
               this.time.delayedCall(1500, () => {
                 // Line 3
                 this.dialogue.show([
-                  { speaker: 'Narrator', text: 'And they treat him like an equal.' },
+                  { speaker: 'Narrator', text: 'Then they wait for his answer.' },
                 ], () => {
                   // Mark required done
                   this.requiredDone = true;

@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { BaseChapterScene } from './BaseChapterScene';
 import { jailMap, MapData } from '../data/maps';
 import { jailDay1Dialogue, jailDay2Dialogue, jailDay3Dialogue } from '../data/story';
-import { GAME_WIDTH, GAME_HEIGHT } from '../config';
+import { GAME_WIDTH, GAME_HEIGHT, SCALED_TILE } from '../config';
 import type { DialogueLine } from '../systems/DialogueSystem';
 import { MoodSystem } from '../systems/MoodSystem';
 import { InventorySystem } from '../systems/InventorySystem';
@@ -10,19 +10,24 @@ import { Analytics } from '../systems/Analytics';
 import { GameSettings } from '../systems/GameSettings';
 import { GameIntelligence } from '../systems/GameIntelligence';
 import { SoundEffects } from '../systems/SoundEffects';
+import { MusicSystem } from '../systems/MusicSystem';
 
 export class JailScene extends BaseChapterScene {
   private currentDay = 1;
   private battleWon: boolean | null = null; // null = not fought, true/false = outcome
+  private trainingComplete = false;
+  private bookRead = false;
+  private faithDone = false;
   private pushupDominated = false; // won by 10+
   private diceBroke = false; // went to 0 in dice
   private shirtOff = false;
   private guardPatrolTimer?: Phaser.Time.TimerEvent;
   private inmatePatrolTimers: Phaser.Time.TimerEvent[] = [];
+  private jailGateVisuals = new Map<string, Phaser.GameObjects.Container>();
 
   constructor() {
     super({ key: 'JailScene' });
-    this.chapterTitle = 'Chapter 4: Locked Up';
+    this.chapterTitle = 'Chapter 5: Locked Up';
     this.nextScene = 'ReleaseScene';
     this.requiredInteractionId = 'ch3_bed';
   }
@@ -41,10 +46,22 @@ export class JailScene extends BaseChapterScene {
   create() {
     this.currentDay = 1;
     this.battleWon = null;
+    this.trainingComplete = false;
+    this.bookRead = false;
+    this.faithDone = false;
     this.pushupDominated = false;
     this.diceBroke = false;
     this.shirtOff = false;
+    this.jailGateVisuals.clear();
     super.create();
+
+    // The shared house-sized props overwhelm a jail cell. Keep their
+    // interactions/markers, but let the jail-specific furniture carry the art.
+    for (const visual of this.interactions.getVisuals()) {
+      if (['ch3_bed', 'ch3_toilet', 'ch3_book', 'ch3_letter_home'].includes(visual.id)) {
+        visual.sprite?.setVisible(false);
+      }
+    }
 
     // GameIntelligence — track player behavior
     GameIntelligence.init(this, this.player);
@@ -59,8 +76,14 @@ export class JailScene extends BaseChapterScene {
     GameIntelligence.watch('ch3_psych_course', 35, 24);
     GameIntelligence.attachDebugPanel(this);
 
-    // Exit triggers at y=25, x=17-18
-    this.addNavArrow(17, 24, 'Freedom');
+    // The old map made barred thresholds look and behave like dead ends. These
+    // marked gates guarantee a readable route through the cell, yard, chapel,
+    // and release path even if a moving NPC temporarily occupies a corridor.
+    this.openJailRoutes();
+    this.createJailIdentity();
+    this.addNavArrow(4, 9, 'Cell door');
+    this.addNavArrow(17, 17, 'Yard');
+    this.addNavArrow(15, 26, 'Chapel');
 
     // Guard patrol — walks between guard station and cells
     this.startGuardPatrol();
@@ -70,6 +93,338 @@ export class JailScene extends BaseChapterScene {
 
     // Shirt toggle button (Day 2+)
     this.createShirtToggle();
+  }
+
+  private openJailRoutes() {
+    // Keep the marked security gates closed until the player uses them. Only
+    // the landing tiles and connecting corridors are forced open.
+    const guaranteedOpenTiles = [
+      '4,10', '4,11', '4,12',
+      '17,18',
+      '15,27',
+      '19,30', '20,30',
+    ];
+    guaranteedOpenTiles.forEach((tile) => this.collisionTiles.delete(tile));
+  }
+
+  private createJailIdentity() {
+    const tile = SCALED_TILE;
+
+    // Institutional seams keep the large concrete surfaces from reading as
+    // empty purple rooms.
+    for (const y of [3, 7, 11, 14, 16, 20, 24, 29]) {
+      this.add.rectangle(20 * tile, y * tile, 36 * tile, 3, 0x14191d, 0.42)
+        .setDepth(0.72);
+    }
+    for (const x of [7, 13, 20, 27, 32, 38]) {
+      this.add.rectangle(x * tile, 15.5 * tile, 3, 27 * tile, 0x14191d, 0.32)
+        .setDepth(0.72);
+    }
+
+    // The map's long vertical bar strips looked like giant freestanding fences.
+    // Cover those cell side walls with concrete, leaving bars only at the
+    // actual fronts and gates.
+    for (const x of [6.5, 12.5]) {
+      for (const segment of [{ y: 3.5, h: 3 }, { y: 7.5, h: 3 }, { y: 10.95, h: 2.1 }]) {
+        this.add.rectangle(x * tile, segment.y * tile, 0.9 * tile, segment.h * tile, 0x303038)
+          .setDepth(2.34).setStrokeStyle(3, 0x1d2226);
+        this.add.rectangle(x * tile, (segment.y - segment.h / 2 + 0.2) * tile, 0.62 * tile, 9, 0x151a1d)
+          .setDepth(2.36);
+      }
+    }
+
+    // Steel bunk, thin mattress, toilet/lavatory, writing shelf, storage and
+    // personal clutter in every visible cell. Everything hugs a wall so the
+    // cells stay tight and navigable.
+    const cellRooms = [
+      { left: 2, top: 2 }, { left: 8, top: 2 },
+      { left: 2, top: 6 }, { left: 8, top: 6 },
+      { left: 2, top: 10 }, { left: 8, top: 10 },
+    ];
+    for (const room of cellRooms) {
+      const bunkX = (room.left + 1.35) * tile;
+      const bunkY = (room.top + 0.65) * tile;
+      this.add.rectangle(bunkX, bunkY, 1.65 * tile, 21, 0x303b42).setDepth(1.12);
+      this.add.rectangle(bunkX, bunkY - 3, 1.48 * tile, 12, 0x899296).setDepth(1.14);
+      this.add.rectangle(bunkX - 0.78 * tile, bunkY + 15, 7, 38, 0x20282d).setDepth(1.15);
+      this.add.rectangle(bunkX + 0.78 * tile, bunkY + 15, 7, 38, 0x20282d).setDepth(1.15);
+
+      const isJpCell = room.left === 2 && room.top === 6;
+      const toiletX = (room.left + (isJpCell ? 0.55 : 3.35)) * tile;
+      const toiletY = (room.top + (isJpCell ? 1.65 : 2.25)) * tile;
+      this.add.circle(toiletX, toiletY, 15, 0xa8b3b6).setDepth(1.13);
+      this.add.circle(toiletX, toiletY, 8, 0x38464c).setDepth(1.14);
+      this.add.rectangle(toiletX, toiletY - 18, 27, 22, 0x77868b).setDepth(1.12);
+
+      // Stainless combination sink fixed above the plumbing chase.
+      this.add.rectangle(toiletX, toiletY - 40, 30, 16, 0x89979a).setDepth(1.15)
+        .setStrokeStyle(2, 0x4a565b);
+      this.add.circle(toiletX, toiletY - 40, 5, 0x303b40).setDepth(1.16);
+      this.add.rectangle(toiletX + 9, toiletY - 54, 3, 12, 0xb3bdbf).setDepth(1.16);
+
+      this.add.rectangle((room.left + 3.35) * tile, (room.top + 0.58) * tile, 48, 8, 0x47535a)
+        .setDepth(1.12);
+      this.add.rectangle((room.left + 2.35) * tile, (room.top + 2.45) * tile, 23, 13, 0xc5b08b, 0.65)
+        .setAngle((room.top + room.left) % 2 ? 7 : -8).setDepth(1.16);
+
+      // Fold-down writing surface, property bin, clothes hook and air vent.
+      const deskX = (room.left + 2.35) * tile;
+      const deskY = (room.top + 1.55) * tile;
+      this.add.rectangle(deskX, deskY, 52, 22, 0x59666b).setDepth(1.17)
+        .setStrokeStyle(3, 0x283136);
+      this.add.rectangle(deskX, deskY + 20, 6, 31, 0x30393e).setDepth(1.15);
+      this.add.rectangle(bunkX, bunkY + 28, 66, 19, 0x242c31).setDepth(1.16)
+        .setStrokeStyle(2, 0x4f5b60);
+      this.add.circle((room.left + 0.4) * tile, (room.top + 0.55) * tile, 4, 0x9ba6a8).setDepth(1.19);
+      this.add.rectangle((room.left + 0.62) * tile, (room.top + 0.46) * tile, 46, 18, 0x1b2226)
+        .setDepth(1.17).setStrokeStyle(2, 0x778489);
+      for (const ventOffset of [-15, -5, 5, 15]) {
+        this.add.rectangle((room.left + 0.62) * tile + ventOffset, (room.top + 0.46) * tile, 2, 12, 0x6f7c81)
+          .setDepth(1.18);
+      }
+
+      if (isJpCell) {
+        // Personal props line up with the usable Letter and Book interactions.
+        this.add.rectangle(4.1 * tile, 6.55 * tile, 32, 21, 0xe5dbc0).setDepth(1.22).setAngle(-4);
+        this.add.rectangle(5.0 * tile, 8.0 * tile, 34, 42, 0x31505f).setDepth(1.22)
+          .setStrokeStyle(3, 0x1b2b33).setAngle(5);
+        this.add.rectangle(5.0 * tile, 8.0 * tile, 4, 38, 0xd2b55b).setDepth(1.23).setAngle(5);
+        this.add.text(5.0 * tile, 8.0 * tile, 'THE\nCOMPOUND\nEFFECT', {
+          fontFamily: 'monospace', fontSize: '5px', color: '#e7e0bd', align: 'center',
+        }).setOrigin(0.5).setDepth(1.24).setAngle(5);
+      }
+    }
+
+    // The secure passage beside the cells needs a function, not a blank slab:
+    // intake bench, property cart, roster board and direction striping.
+    this.add.text(16.4 * tile, 2.55 * tile, 'INTAKE / TRANSPORT', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#9ca7aa',
+    }).setOrigin(0.5).setDepth(1.05);
+    this.add.rectangle(16.3 * tile, 4.2 * tile, 3.5 * tile, 22, 0x3e484d).setDepth(1.05)
+      .setStrokeStyle(3, 0x1b2226);
+    for (const x of [15.2, 16.3, 17.4]) {
+      this.add.rectangle(x * tile, 4.2 * tile + 18, 7, 30, 0x242c30).setDepth(1.04);
+    }
+    this.add.rectangle(16.3 * tile, 7.0 * tile, 2.8 * tile, 1.55 * tile, 0x252d31).setDepth(1.04)
+      .setStrokeStyle(3, 0x606c70);
+    for (const y of [6.55, 7.0, 7.45]) {
+      this.add.rectangle(16.3 * tile, y * tile, 2.35 * tile, 4, 0x788488).setDepth(1.06);
+    }
+    this.add.text(16.3 * tile, 8.1 * tile, 'PROPERTY', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '5px', color: '#899598',
+    }).setOrigin(0.5).setDepth(1.08);
+    this.add.rectangle(14.22 * tile, 9.8 * tile, 5, 3.2 * tile, 0xd4b446, 0.55).setDepth(1.04);
+    this.add.rectangle(18.78 * tile, 9.8 * tile, 5, 3.2 * tile, 0xd4b446, 0.55).setDepth(1.04);
+
+    // Jail-specific steel sliders cover the shared brown door tile.
+    for (const door of [
+      { x: 4, y: 5 }, { x: 10, y: 5 }, { x: 10, y: 9 },
+    ]) {
+      const dx = door.x * tile + tile / 2;
+      const dy = door.y * tile + tile / 2;
+      this.add.rectangle(dx, dy, 50, 58, 0x46535a).setDepth(2.46)
+        .setStrokeStyle(4, 0x1d2529);
+      this.add.rectangle(dx, dy - 12, 30, 15, 0x141a1e).setDepth(2.48);
+      for (const offset of [-10, 0, 10]) {
+        this.add.rectangle(dx + offset, dy - 12, 3, 15, 0x9aa5a8).setDepth(2.49);
+      }
+      this.add.rectangle(dx, dy + 13, 28, 5, 0x1e272b).setDepth(2.49);
+    }
+
+    // Cell numbers and cold fluorescent strips give the block a legible rhythm.
+    const cells = [
+      { x: 4, y: 5, label: 'A1' }, { x: 10, y: 5, label: 'A2' },
+      { x: 4, y: 9, label: 'A3' }, { x: 10, y: 9, label: 'A4' },
+    ];
+    for (const cell of cells) {
+      const cx = cell.x * tile + tile / 2;
+      const cy = cell.y * tile + 9;
+      this.add.rectangle(cx, cy, 30, 16, 0x1d2327).setDepth(2.1);
+      this.add.text(cx, cy, cell.label, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#b8c4c7',
+      }).setOrigin(0.5).setDepth(2.2);
+    }
+    for (const x of [3, 9, 15, 24, 33]) {
+      const light = this.add.rectangle(x * tile + tile / 2, 13.25 * tile, 82, 7, 0xdbe7df, 0.78)
+        .setDepth(1.6);
+      this.tweens.add({
+        targets: light,
+        alpha: { from: 0.55, to: 0.82 },
+        duration: 1800 + x * 33,
+        yoyo: true,
+        repeat: -1,
+      });
+    }
+
+    this.add.text(8 * tile, 1.72 * tile, 'HOUSING UNIT A', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#d4d9d6',
+    }).setOrigin(0.5).setDepth(2.3);
+    this.add.text(29.5 * tile, 1.72 * tile, 'DAYROOM', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#d4d9d6',
+    }).setOrigin(0.5).setDepth(2.3);
+    this.add.text(29.5 * tile, 11.45 * tile, 'COUNT TIME · RED LINE', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#b87362',
+    }).setOrigin(0.5).setDepth(2.3);
+
+    // Bolted steel tables and fixed stools give the dayroom a real use.
+    for (const table of [{ x: 25.2, y: 5.6 }, { x: 32.8, y: 7.3 }]) {
+      const tx = table.x * tile;
+      const ty = table.y * tile;
+      this.add.rectangle(tx, ty, 2.7 * tile, 1.12 * tile, 0x65747a).setDepth(1.32)
+        .setStrokeStyle(5, 0x283238);
+      this.add.rectangle(tx, ty, 2.42 * tile, 0.86 * tile, 0x8b989b).setDepth(1.33);
+      for (const [sx, sy] of [[-1.7, 0], [1.7, 0], [0, -1.05], [0, 1.05]]) {
+        this.add.circle(tx + sx * tile, ty + sy * tile, 17, 0x56646a).setDepth(1.34)
+          .setStrokeStyle(4, 0x222b30);
+        this.add.rectangle(tx + sx * tile, ty + sy * tile + 18, 8, 28, 0x242d31).setDepth(1.31);
+      }
+    }
+
+    // Phone bank and barred commissary window.
+    this.add.rectangle(36.8 * tile, 5.5 * tile, 18, 4.9 * tile, 0x273136).setDepth(1.34);
+    for (const y of [3.7, 5.2, 6.7, 8.2]) {
+      this.add.rectangle(36.55 * tile, y * tile, 20, 34, 0x59686d).setDepth(1.38);
+      this.add.circle(36.48 * tile, y * tile - 2, 5, 0x171d20).setDepth(1.4);
+    }
+    this.add.rectangle(28 * tile, 2.55 * tile, 4.8 * tile, 16, 0x313d42).setDepth(1.36);
+    for (let x = 25.8; x <= 30.2; x += 0.42) {
+      this.add.rectangle(x * tile, 2.55 * tile, 3, 42, 0x879398).setDepth(1.38);
+    }
+    this.add.text(28 * tile, 2.08 * tile, 'COMMISSARY', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#c4ccca',
+    }).setOrigin(0.5).setDepth(1.42);
+
+    // Cameras and warning placards sell constant supervision.
+    for (const camera of [
+      { x: 14.3, y: 2.3, angle: 22 },
+      { x: 37.1, y: 2.3, angle: -22 },
+      { x: 21.8, y: 13.35, angle: 18 },
+    ]) {
+      const cx = camera.x * tile;
+      const cy = camera.y * tile;
+      this.add.rectangle(cx, cy, 32, 15, 0x20282d).setAngle(camera.angle).setDepth(2.25);
+      this.add.circle(cx + (camera.angle > 0 ? 12 : -12), cy + 3, 5, 0xb92424).setDepth(2.28);
+    }
+    for (const sign of [
+      { x: 14.7, y: 13.35, text: 'NO CONTACT' },
+      { x: 23.5, y: 13.35, text: 'KEEP MOVING' },
+    ]) {
+      this.add.rectangle(sign.x * tile, sign.y * tile, 2.8 * tile, 26, 0xe7dfc2).setDepth(1.7)
+        .setStrokeStyle(3, 0x7b322c);
+      this.add.text(sign.x * tile, sign.y * tile, sign.text, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#6f2824',
+      }).setOrigin(0.5).setDepth(1.72);
+    }
+
+    // Guard station glass and desk silhouette.
+    this.add.rectangle(19 * tile, 14.5 * tile, 4.5 * tile, 1.45 * tile, 0x64828b, 0.28)
+      .setDepth(1.25);
+    this.add.rectangle(19 * tile, 15.35 * tile, 3.1 * tile, 18, 0x283036, 0.92)
+      .setDepth(1.4);
+    this.add.text(19 * tile, 14.2 * tile, 'CONTROL', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#9db1b6',
+    }).setOrigin(0.5).setDepth(1.8);
+
+    // Three unmistakable gate frames. Their amber lights change the doors from
+    // decorative bars into navigation landmarks.
+    const gates = [
+      { x: 4, y: 9, label: 'CELL BLOCK' },
+      { x: 17, y: 17, label: 'YARD' },
+      { x: 15, y: 26, label: 'CHAPEL' },
+    ];
+    for (const gate of gates) {
+      const gx = gate.x * tile + tile / 2;
+      const gy = gate.y * tile + tile / 2;
+      this.add.rectangle(gx - tile / 2 + 5, gy, 9, tile, 0x394249).setDepth(2.4);
+      this.add.rectangle(gx + tile / 2 - 5, gy, 9, tile, 0x394249).setDepth(2.4);
+      this.add.rectangle(gx, gy - tile / 2 + 5, tile, 9, 0x4a555c).setDepth(2.4);
+      const lamp = this.add.circle(gx + 20, gy - 20, 5, 0xe1a83a, 0.9).setDepth(2.6);
+      this.tweens.add({ targets: lamp, alpha: 0.3, duration: 650, yoyo: true, repeat: -1 });
+      this.add.text(gx, gy - 44, gate.label, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#d7c38c',
+      }).setOrigin(0.5).setDepth(2.6);
+
+      // Dark pocket covers the shared brown door/fence texture after the steel
+      // slider moves away.
+      this.add.rectangle(gx, gy, tile - 9, tile - 9, 0x10171b).setDepth(2.45);
+      const slidingGate = this.add.container(gx, gy).setDepth(2.52);
+      slidingGate.add(this.add.rectangle(0, 0, tile - 8, tile - 8, 0x172025, 0.92)
+        .setStrokeStyle(4, 0x66757b));
+      slidingGate.add(this.add.rectangle(0, -tile / 2 + 9, tile - 7, 7, 0x89979b));
+      slidingGate.add(this.add.rectangle(0, tile / 2 - 9, tile - 7, 7, 0x89979b));
+      for (const offset of [-20, -10, 0, 10, 20]) {
+        slidingGate.add(this.add.rectangle(offset, 0, 4, tile - 12, 0x9aa6aa));
+      }
+      this.jailGateVisuals.set(`${gate.x},${gate.y}`, slidingGate);
+    }
+
+    // Cover the global wooden fence material with welded prison mesh.
+    const addSecurityFence = (y: number, gapX: number) => {
+      for (let x = 2; x <= 37; x++) {
+        if (x === gapX) continue;
+        const fx = x * tile + tile / 2;
+        const fy = y * tile + tile / 2;
+        this.add.rectangle(fx, fy, tile + 2, tile, 0x151d21, 0.96).setDepth(1.5);
+        this.add.rectangle(fx, fy - 21, tile + 2, 5, 0x65747a).setDepth(1.58);
+        this.add.rectangle(fx, fy + 21, tile + 2, 5, 0x65747a).setDepth(1.58);
+        for (const offset of [-24, -12, 0, 12, 24]) {
+          this.add.rectangle(fx + offset, fy, 3, 55, 0x879499).setDepth(1.6);
+        }
+      }
+    };
+    addSecurityFence(17, 17);
+    addSecurityFence(26, 15);
+
+    this.add.text(19.5 * tile, 17.72 * tile, 'RECREATION YARD', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#b8c2c4',
+    }).setOrigin(0.5).setDepth(2.08);
+
+    // Razor-wire silhouette along the two yard fences.
+    for (const y of [17.08, 26.08]) {
+      for (let x = 2.7; x < 37; x += 0.85) {
+        this.add.ellipse(x * tile, y * tile, 46, 18, 0x000000, 0)
+          .setStrokeStyle(3, 0x8e9a9e, 0.82).setDepth(1.66);
+      }
+    }
+
+    // Cover the old crate-like exercise tiles with prison weight stations.
+    for (const station of [{ x: 5, y: 18 }, { x: 4, y: 19 }, { x: 9, y: 20 }, { x: 8, y: 21 }]) {
+      const sx = station.x * tile + tile / 2;
+      const sy = station.y * tile + tile / 2;
+      this.add.rectangle(sx, sy, 62, 62, 0x252c31).setDepth(1.7);
+      this.add.rectangle(sx, sy + 5, 48, 15, 0x4b585e).setDepth(1.76);
+      this.add.rectangle(sx, sy + 17, 7, 27, 0x20272b).setDepth(1.75);
+      this.add.rectangle(sx, sy - 17, 57, 5, 0x879397).setDepth(1.77);
+      this.add.circle(sx - 31, sy - 17, 10, 0x1c2226).setDepth(1.78);
+      this.add.circle(sx + 31, sy - 17, 10, 0x1c2226).setDepth(1.78);
+    }
+
+    // Yard court markings, pull-up station, and weights. The space now reads as
+    // an exercise yard from the camera instead of another concrete room.
+    const yardCx = 19.5 * tile;
+    const yardCy = 22 * tile;
+    this.add.rectangle(yardCx, yardCy, 17 * tile, 7 * tile, 0x000000, 0)
+      .setStrokeStyle(5, 0xbfc4ba, 0.42).setDepth(0.8);
+    this.add.circle(yardCx, yardCy, 54, 0x000000, 0)
+      .setStrokeStyle(4, 0xbfc4ba, 0.42).setDepth(0.81);
+    for (const x of [9.5, 11.7, 33.1, 35.0]) {
+      this.add.rectangle(x * tile, 24.8 * tile, 8, 54, 0x30373c).setDepth(2);
+    }
+    this.add.rectangle(10.6 * tile, 24.25 * tile, 2.2 * tile, 8, 0x465158).setDepth(2.1);
+    this.add.rectangle(34.05 * tile, 24.25 * tile, 1.9 * tile, 8, 0x465158).setDepth(2.1);
+
+    // Chapel: warm pools of light and actual pew rows visually separate the
+    // interior transformation from the violence of the block and yard.
+    for (const y of [28.2, 29.2]) {
+      for (const x of [8, 13, 25, 30]) {
+        this.add.rectangle(x * tile, y * tile, 3.3 * tile, 18, 0x5b3d28).setDepth(1.65);
+        this.add.rectangle(x * tile, y * tile - 6, 3.3 * tile, 5, 0x8b6038).setDepth(1.7);
+      }
+    }
+    this.add.circle(20 * tile, 27.6 * tile, 96, 0xf0c878, 0.07).setDepth(1.1);
+    this.add.text(20 * tile, 27.5 * tile, 'QUIET ROOM', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#d8bd79',
+    }).setOrigin(0.5).setDepth(2.2);
   }
 
   private startGuardPatrol() {
@@ -241,9 +596,17 @@ export class JailScene extends BaseChapterScene {
   }
 
   protected getObjectiveHint(): string {
-    if (this.currentDay === 1) return 'First day. Meet your cellmates.';
-    if (this.currentDay === 2) return 'Work out. Survive.';
-    if (this.currentDay === 3) return 'Read. Learn. Find your way out.';
+    if (this.currentDay === 1) {
+      return this.battleWon === null ? 'Phase I — learn the rules. The common area is east.' : 'Return to your bunk.';
+    }
+    if (this.currentDay === 2) {
+      return this.trainingComplete ? 'Phase II — return to your bunk.' : 'Phase II — train in the yard.';
+    }
+    if (this.currentDay === 3) {
+      if (!this.bookRead) return 'Phase III — read The Compound Effect.';
+      if (!this.faithDone) return 'Phase III — find the quiet corner of the yard.';
+      return 'Phase III — return to your bunk.';
+    }
     return 'Hit the bed. Time to go.';
   }
 
@@ -259,6 +622,28 @@ export class JailScene extends BaseChapterScene {
 
   protected handleInteractable(interactable: { id: string; type: string; consumed?: boolean }) {
     GameIntelligence.onInteracted(interactable.id);
+
+    if (interactable.id === 'ch3_cell_door') {
+      this.openGate('4,9', 4, 12, [
+        { speaker: 'Narrator', text: 'BUZZ.' },
+        { speaker: 'Guard', text: 'Door is open. Keep moving.' },
+      ]);
+      return;
+    }
+
+    if (interactable.id === 'ch3_yard_gate') {
+      this.openGate('17,17', 17, 18, [
+        { speaker: 'Narrator', text: 'The yard gate rattles open.' },
+      ]);
+      return;
+    }
+
+    if (interactable.id === 'ch3_chapel_gate') {
+      this.openGate('15,26', 15, 27, [
+        { speaker: 'Narrator', text: 'A quieter room waits beyond the fence.' },
+      ]);
+      return;
+    }
     if (interactable.id === 'ch3_bed') {
       this.handleBedInteraction();
       return;
@@ -339,10 +724,15 @@ export class JailScene extends BaseChapterScene {
         { speaker: 'JP\'s Mind', text: 'I\'ll do it right this time.' },
         { speaker: 'Narrator', text: 'The yard is quiet. For the first time, so is his mind.' },
       ], () => {
+        this.faithDone = true;
         MoodSystem.setMood('locked_in', 90);
         MoodSystem.changeMorale(20);
         SoundEffects.achievementUnlock();
-        this.tweens.add({ targets: dim, alpha: 0, duration: 800, onComplete: () => { dim.destroy(); this.frozen = false; } });
+        this.tweens.add({ targets: dim, alpha: 0, duration: 800, onComplete: () => {
+          dim.destroy();
+          this.frozen = false;
+          this.refreshObjectiveHint();
+        } });
       });
       return;
     }
@@ -350,22 +740,50 @@ export class JailScene extends BaseChapterScene {
     if (interactable.id === 'ch3_book') {
       Analytics.trackInteraction(interactable.id);
       this.frozen = true;
+      SoundEffects.playPageTurn();
       this.dialogue.show([
         { speaker: 'Narrator', text: 'The Compound Effect. JP\'s been reading it for two weeks.' },
         { speaker: 'Narrator', text: '"Small choices + consistency + time = massive results."' },
         { speaker: 'JP\'s Mind', text: 'If that\'s true... then everything I did before was compounding too.' },
         { speaker: 'JP\'s Mind', text: 'Bad choices. Consistently. Over time.' },
         { speaker: 'JP\'s Mind', text: 'No wonder I ended up here.' },
+        { speaker: 'JP\'s Mind', text: '"One run. Make it back. Then I\'m done."' },
+        { speaker: 'JP\'s Mind', text: 'I kept moving the finish line.' },
         { speaker: 'Narrator', text: 'He keeps reading.' },
       ], () => {
+        this.bookRead = true;
         InventorySystem.addItem('compound-effect', 1);
         MoodSystem.changeMorale(10);
         this.frozen = false;
+        this.refreshObjectiveHint();
       });
       return;
     }
 
     super.handleInteractable(interactable);
+  }
+
+  private openGate(tile: string, targetX: number, targetY: number, lines: DialogueLine[]) {
+    this.collisionTiles.delete(tile);
+    SoundEffects.playMetalGate();
+    const gateVisual = this.jailGateVisuals.get(tile);
+    if (gateVisual) {
+      this.tweens.add({
+        targets: gateVisual,
+        x: gateVisual.x - SCALED_TILE * 0.82,
+        alpha: 0.18,
+        duration: 420,
+        ease: 'Quad.easeInOut',
+      });
+    }
+    this.frozen = true;
+    this.dialogue.show(lines, () => {
+      this.player.setPosition(
+        targetX * SCALED_TILE + SCALED_TILE / 2,
+        targetY * SCALED_TILE + SCALED_TILE / 2,
+      );
+      this.frozen = false;
+    });
   }
 
   private handleBedInteraction() {
@@ -374,6 +792,14 @@ export class JailScene extends BaseChapterScene {
     const bedLines = chapterDialogue.npcs['ch3_bed'];
 
     if (this.currentDay === 1) {
+      if (this.battleWon === null) {
+        this.dialogue.show([
+          { speaker: 'JP\'s Mind', text: 'I cannot sleep yet.' },
+          { speaker: 'JP\'s Mind', text: 'The first weeks are about learning what survives in here.' },
+          { speaker: 'Narrator', text: 'Go east to the common area.' },
+        ]);
+        return;
+      }
       // Show Day 1 bed dialogue, then transition to Day 2
       if (bedLines) {
         this.dialogue.show(bedLines, () => {
@@ -389,11 +815,20 @@ export class JailScene extends BaseChapterScene {
         });
       }
     } else if (this.currentDay === 2) {
+      if (!this.trainingComplete) {
+        this.dialogue.show([
+          { speaker: 'JP\'s Mind', text: 'Not yet.' },
+          { speaker: 'JP\'s Mind', text: 'The routine has to become real first.' },
+          { speaker: 'Narrator', text: 'Train in the yard.' },
+        ]);
+        return;
+      }
       // Show Day 2 bed dialogue, then transition to Day 3
       if (bedLines) {
         this.dialogue.show(bedLines, () => {
           this.playDayTransition('6 months later...', () => {
             this.currentDay = 3;
+            MusicSystem.transitionTo('jail-reflection', 900);
             this.player.setTexture(this.getPlayerTexture());
             // Scale up more — Day 3 JP is built
             this.player.setScale(2.06);
@@ -404,6 +839,13 @@ export class JailScene extends BaseChapterScene {
         });
       }
     } else {
+      if (!this.bookRead || !this.faithDone) {
+        this.dialogue.show([
+          { speaker: 'JP\'s Mind', text: 'My body changed first. That is not enough.' },
+          { speaker: 'Narrator', text: this.bookRead ? 'Find the quiet corner in the yard.' : 'Read the book in JP\'s cell.' },
+        ]);
+        return;
+      }
       // Day 3 — show final bed dialogue, then play montage and release
       if (bedLines) {
         this.dialogue.show(bedLines, () => {
@@ -439,8 +881,9 @@ export class JailScene extends BaseChapterScene {
     const dayColors = ['#ffffff', '#f0c040', '#ffd700'];
     const dayColor = dayColors[fromDay - 1] || '#ffffff';
     const nextDayColor = dayColors[fromDay] || '#f0c040';
-    const dayLabel = `DAY ${fromDay}`;
-    const nextDayLabel = `DAY ${fromDay + 1}`;
+    const phaseLabels = ['PHASE I — SURVIVAL', 'PHASE II — DISCIPLINE', 'PHASE III — DIRECTION'];
+    const dayLabel = phaseLabels[fromDay - 1] || `PHASE ${fromDay}`;
+    const nextDayLabel = phaseLabels[fromDay] || `PHASE ${fromDay + 1}`;
 
     const bg = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000)
       .setScrollFactor(0).setDepth(200).setAlpha(0);
@@ -578,8 +1021,8 @@ export class JailScene extends BaseChapterScene {
     this.frozen = true;
 
     const steps = [
-      { day: 'Day 270', desc: '50 pushups every morning.\nReading two books a week.\nDifferent person.', hold: 1500 },
-      { day: 'Day 365', desc: "The doors open.\nJP walks out.\nNot the same kid who walked in.", hold: 2500 },
+      { day: 'MONTH 9', desc: 'Training before breakfast.\nBooks after count.\nFaith when the noise dies down.', hold: 1700 },
+      { day: 'MONTH 12', desc: "The doors open.\nThe same fire leaves with him.\nNow it has a direction.", hold: 2600 },
     ];
 
     const bg = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000)
@@ -872,6 +1315,7 @@ export class JailScene extends BaseChapterScene {
 
           // Track pushup outcome for reactive NPC dialogue
           if (diff > 10) this.pushupDominated = true;
+          this.trainingComplete = true;
 
           // Sound on result
           if (diff > 0) {
@@ -891,6 +1335,7 @@ export class JailScene extends BaseChapterScene {
               if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
             }
             this.frozen = false;
+            this.refreshObjectiveHint();
           });
         }
       },
@@ -1963,6 +2408,7 @@ export class JailScene extends BaseChapterScene {
       state = 'end';
       inputEnabled = false;
       this.battleWon = jpWon; // Track for reactive NPC dialogue
+      this.refreshObjectiveHint();
 
       // Hide menu
       for (const t of menuTexts) t.setAlpha(0);
@@ -2110,6 +2556,7 @@ export class JailScene extends BaseChapterScene {
               openBottom2.destroy();
               closeBottom.destroy();
               this.frozen = false;
+              this.refreshObjectiveHint();
             },
           });
         },

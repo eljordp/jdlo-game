@@ -71,6 +71,130 @@ export class SoundEffects {
     osc.stop(ctx.currentTime + 0.2);
   }
 
+  /** Heavy steel gate: lock buzz, rail scrape, then a low metal slam. */
+  static playMetalGate() {
+    const ctx = this.getCtx();
+    const now = ctx.currentTime;
+
+    const buzz = ctx.createOscillator();
+    const buzzGain = ctx.createGain();
+    buzz.type = 'square';
+    buzz.frequency.setValueAtTime(74, now);
+    buzz.frequency.linearRampToValueAtTime(58, now + 0.32);
+    buzzGain.gain.setValueAtTime(0.035, now);
+    buzzGain.gain.exponentialRampToValueAtTime(0.001, now + 0.34);
+    buzz.connect(buzzGain);
+    buzzGain.connect(ctx.destination);
+    buzz.start(now);
+    buzz.stop(now + 0.35);
+
+    const buffer = ctx.createBuffer(1, Math.floor(ctx.sampleRate * 0.55), ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < data.length; i++) {
+      const decay = 1 - i / data.length;
+      data[i] = (Math.random() * 2 - 1) * decay;
+    }
+    const scrape = ctx.createBufferSource();
+    const scrapeFilter = ctx.createBiquadFilter();
+    const scrapeGain = ctx.createGain();
+    scrape.buffer = buffer;
+    scrapeFilter.type = 'bandpass';
+    scrapeFilter.frequency.value = 620;
+    scrapeFilter.Q.value = 0.7;
+    scrapeGain.gain.setValueAtTime(0.001, now + 0.08);
+    scrapeGain.gain.linearRampToValueAtTime(0.065, now + 0.18);
+    scrapeGain.gain.exponentialRampToValueAtTime(0.001, now + 0.55);
+    scrape.connect(scrapeFilter);
+    scrapeFilter.connect(scrapeGain);
+    scrapeGain.connect(ctx.destination);
+    scrape.start(now + 0.08);
+    scrape.stop(now + 0.56);
+
+    const slam = ctx.createOscillator();
+    const slamGain = ctx.createGain();
+    slam.type = 'triangle';
+    slam.frequency.setValueAtTime(92, now + 0.42);
+    slam.frequency.exponentialRampToValueAtTime(38, now + 0.7);
+    slamGain.gain.setValueAtTime(0.09, now + 0.42);
+    slamGain.gain.exponentialRampToValueAtTime(0.001, now + 0.72);
+    slam.connect(slamGain);
+    slamGain.connect(ctx.destination);
+    slam.start(now + 0.42);
+    slam.stop(now + 0.74);
+  }
+
+  /** Two anxious heartbeats for danger, waiting, and pre-raid silence. */
+  static playHeartbeat() {
+    const ctx = this.getCtx();
+    const now = ctx.currentTime;
+    [0, 0.22].forEach((offset, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(i === 0 ? 64 : 58, now + offset);
+      osc.frequency.exponentialRampToValueAtTime(38, now + offset + 0.13);
+      gain.gain.setValueAtTime(i === 0 ? 0.09 : 0.07, now + offset);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + offset + 0.16);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now + offset);
+      osc.stop(now + offset + 0.18);
+    });
+  }
+
+  /** Soft paper movement for books, letters, paperwork, and reflective scenes. */
+  static playPageTurn() {
+    const ctx = this.getCtx();
+    const now = ctx.currentTime;
+    const buffer = ctx.createBuffer(1, Math.floor(ctx.sampleRate * 0.24), ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < data.length; i++) {
+      const shape = Math.sin(Math.PI * i / data.length);
+      data[i] = (Math.random() * 2 - 1) * shape;
+    }
+    const noise = ctx.createBufferSource();
+    const filter = ctx.createBiquadFilter();
+    const gain = ctx.createGain();
+    noise.buffer = buffer;
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(1500, now);
+    filter.frequency.exponentialRampToValueAtTime(650, now + 0.22);
+    filter.Q.value = 0.5;
+    gain.gain.setValueAtTime(0.001, now);
+    gain.gain.linearRampToValueAtTime(0.025, now + 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.24);
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+    noise.start(now);
+    noise.stop(now + 0.25);
+  }
+
+  /** Plastic-bag rustle for the weed rise without using a cartoon pickup chime. */
+  static playBagRustle() {
+    const ctx = this.getCtx();
+    const now = ctx.currentTime;
+    const buffer = ctx.createBuffer(1, Math.floor(ctx.sampleRate * 0.34), ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < data.length; i++) {
+      const burst = Math.sin(i / 33) > 0.55 ? 1 : 0.25;
+      data[i] = (Math.random() * 2 - 1) * burst * (1 - i / data.length);
+    }
+    const source = ctx.createBufferSource();
+    const filter = ctx.createBiquadFilter();
+    const gain = ctx.createGain();
+    source.buffer = buffer;
+    filter.type = 'highpass';
+    filter.frequency.value = 1250;
+    gain.gain.setValueAtTime(0.035, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.34);
+    source.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+    source.start(now);
+    source.stop(now + 0.35);
+  }
+
   /** Coin/cash register ding */
   static playCash() {
     const ctx = this.getCtx();

@@ -56,7 +56,7 @@ export class BeachScene extends BaseChapterScene {
   constructor() {
     super({ key: 'BeachScene' });
     this.chapterTitle = 'Chapter 2: Santa Barbara';
-    this.nextScene = 'WrongCrowdScene';
+    this.nextScene = 'WeedRiseScene';
     this.requiredInteractionId = 'ch1_smoke';
   }
 
@@ -70,6 +70,7 @@ export class BeachScene extends BaseChapterScene {
 
   create() {
     super.create();
+    this.createSantaBarbaraIdentity();
     SubstanceSystem.reset();
     this.events.on('shutdown', () => {
       PartyAI.destroy();
@@ -78,13 +79,13 @@ export class BeachScene extends BaseChapterScene {
 
     // Watch key story interactions so GameIntelligence can track misses/stucks
     GameIntelligence.init(this, this.player);
-    GameIntelligence.watch('ch1_bed',          15, 2,  true);  // required: wake K
-    GameIntelligence.watch('ch1_computer',     14, 2,  true);  // required: LUNA trade
+    GameIntelligence.watch('ch1_bed',          14, 2,  true);  // required: wake K
+    GameIntelligence.watch('ch1_computer',     21, 3,  true);  // required: LUNA collapse
     GameIntelligence.watch('ch1_phone',        20, 2);
     GameIntelligence.watch('ch1_hottub',       36, 4);
     GameIntelligence.watch('ch1_volleyball1',  17, 25);
     GameIntelligence.watch('ch1_kitchen_sesh', 28, 6);
-    GameIntelligence.watch('ch1_smoke',        10, 19, true);  // required: gate to ch3
+    GameIntelligence.watch('ch1_smoke',        10, 18, true);  // required: gate to ch3
     GameIntelligence.attachDebugPanel(this);
     // Exit triggers at south beach
     this.addNavArrow(18, 26, 'Next chapter');
@@ -216,6 +217,170 @@ export class BeachScene extends BaseChapterScene {
 
     // Update BMW position for new map layout
     // Update hot tub steam/bubble positions for new map
+  }
+
+  private createSantaBarbaraIdentity() {
+    const tile = SCALED_TILE;
+    const depth = 1.35;
+
+    // The original draft used three large, uninterrupted beige boxes. Keep
+    // the established coordinates (story beats depend on them), but zone each
+    // room like a believable home so the walkable space matches its contents.
+    const addRug = (x: number, y: number, width: number, height: number, color: number, trim: number) => {
+      this.add.rectangle(x * tile, y * tile, width * tile, height * tile, trim, 0.9)
+        .setDepth(0.31);
+      this.add.rectangle(x * tile, y * tile, width * tile - 12, height * tile - 12, color, 0.95)
+        .setDepth(0.32);
+      this.add.rectangle(x * tile, y * tile, width * tile - 28, height * tile - 28, trim, 0.18)
+        .setDepth(0.33);
+    };
+
+    addRug(6.3, 5.1, 5.3, 3.5, 0x8e5f45, 0xe0c79a);   // living room conversation zone
+    addRug(17.6, 5.2, 4.8, 3.0, 0x445e70, 0xc8b88d);  // JP and K's room
+    addRug(28.3, 6.1, 4.6, 2.2, 0xb56c3d, 0xf0d2a2);  // kitchen/dining zone
+    addRug(27.4, 14.1, 6.4, 2.3, 0x4b3568, 0xc96aa0); // Nolan's LED room
+
+    // Furniture clusters visually close the unused corners without creating
+    // invisible collision. The actual interactables stay on top and usable.
+    const addLowTable = (x: number, y: number, width: number, color = 0x70452c) => {
+      this.add.rectangle(x * tile, y * tile, width * tile, 18, color).setDepth(1.16);
+      this.add.rectangle((x - width / 2 + 0.18) * tile, y * tile + 15, 6, 24, 0x3e2a1d).setDepth(1.14);
+      this.add.rectangle((x + width / 2 - 0.18) * tile, y * tile + 15, 6, 24, 0x3e2a1d).setDepth(1.14);
+    };
+    addLowTable(6.2, 5.2, 2.1);
+    addLowTable(17.6, 5.2, 1.7, 0x594333);
+    addLowTable(29.1, 6.2, 2.5, 0x9a673d);
+
+    // The coffee/packing tables occupy real tiles; the room now has authored
+    // circulation instead of a giant empty center the player can walk through.
+    this.collisionTiles.add('6,5');
+    this.collisionTiles.add('17,5');
+    this.collisionTiles.add('29,6');
+
+    // Clothes resale / delivery prep shelf beside JP's rug. This is period
+    // detail tied to his actual mix of clothes, laptop work and street runs.
+    for (const box of [
+      { x: 15.3, y: 5.0, color: 0xb87843, label: 'SOLD' },
+      { x: 15.3, y: 5.45, color: 0x476987, label: 'SHIP' },
+    ]) {
+      this.add.rectangle(box.x * tile, box.y * tile, 48, 24, box.color).setDepth(1.17);
+      this.add.text(box.x * tile, box.y * tile, box.label, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '5px', color: '#f8e8cb',
+      }).setOrigin(0.5).setDepth(1.18);
+    }
+
+    // Warm lamps, wall art and plants make each room a composition rather
+    // than a large floor with objects around its perimeter.
+    for (const lamp of [{ x: 2.2, y: 2.2 }, { x: 10.4, y: 7.2 }, { x: 14.0, y: 7.0 }, { x: 32.4, y: 7.0 }]) {
+      this.add.circle(lamp.x * tile, lamp.y * tile, 18, 0xf4c875, 0.18).setDepth(1.05);
+      this.add.rectangle(lamp.x * tile, lamp.y * tile + 20, 5, 34, 0x5a4536).setDepth(1.08);
+      this.add.circle(lamp.x * tile, lamp.y * tile, 9, 0xffdf8b, 0.92).setDepth(1.1);
+    }
+    for (const plant of [{ x: 1.6, y: 7.4 }, { x: 21.4, y: 7.3 }, { x: 32.2, y: 2.0 }]) {
+      this.add.rectangle(plant.x * tile, plant.y * tile + 15, 22, 20, 0x9d5839).setDepth(1.08);
+      this.add.circle(plant.x * tile - 8, plant.y * tile - 2, 13, 0x3e774c).setDepth(1.1);
+      this.add.circle(plant.x * tile + 8, plant.y * tile - 6, 15, 0x4d8b57).setDepth(1.1);
+    }
+
+    // A small visual biography in JP's room: North Bay to the coast, not a
+    // generic frat-house bedroom. The examine objects below carry the detail.
+    this.add.rectangle(17.5 * tile, 1.35 * tile, 128, 34, 0x253541).setDepth(1.12);
+    this.add.text(17.5 * tile, 1.35 * tile, '707  →  805', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#f1d3a3',
+    }).setOrigin(0.5).setDepth(1.14);
+    for (const photo of [{ x: 15.6, y: 1.35, turn: -5 }, { x: 19.4, y: 1.35, turn: 6 }]) {
+      this.add.rectangle(photo.x * tile, photo.y * tile, 27, 32, 0xf5ead3)
+        .setAngle(photo.turn).setDepth(1.13);
+      this.add.rectangle(photo.x * tile, photo.y * tile - 4, 21, 18, 0x55717b)
+        .setAngle(photo.turn).setDepth(1.14);
+    }
+
+    // White stucco + clay tile roof: the coastal Spanish-revival language that
+    // makes Santa Barbara recognizable before a dialogue box names it.
+    const addClayRoof = (fromX: number, toX: number, y: number) => {
+      const width = (toX - fromX + 1) * tile;
+      const centerX = ((fromX + toX + 1) / 2) * tile;
+      this.add.rectangle(centerX, y * tile + 7, width, 14, 0x9e3f2d).setDepth(depth);
+      for (let x = fromX; x <= toX; x++) {
+        this.add.rectangle(x * tile + tile / 2, y * tile + 7, tile - 5, 5, 0xc86443)
+          .setDepth(depth + 0.04);
+        this.add.rectangle(x * tile + tile - 3, y * tile + 8, 3, 14, 0x713023)
+          .setDepth(depth + 0.05);
+      }
+    };
+
+    addClayRoof(0, 34, 0);
+    addClayRoof(21, 33, 11);
+
+    // South-facing townhouse facade and Nolan's wing.
+    this.add.rectangle(17.5 * tile, 9.5 * tile, 35 * tile, tile - 8, 0xf1e6cf)
+      .setDepth(depth);
+    this.add.rectangle(27.5 * tile, 16.5 * tile, 13 * tile, tile - 8, 0xf1e6cf)
+      .setDepth(depth);
+
+    // Recessed arched entries. Door tiles remain passable; these are facade
+    // silhouettes only, so the player sees arches without inheriting blockers.
+    for (const door of [{ x: 6, y: 9 }, { x: 18, y: 9 }, { x: 29, y: 9 }, { x: 27, y: 16 }]) {
+      const cx = door.x * tile + tile / 2;
+      const cy = door.y * tile + tile / 2;
+      this.add.ellipse(cx, cy - 8, 34, 34, 0x75452f).setDepth(depth + 0.08);
+      this.add.rectangle(cx, cy + 7, 34, 34, 0x75452f).setDepth(depth + 0.08);
+      this.add.ellipse(cx, cy - 7, 22, 24, 0xc99058).setDepth(depth + 0.09);
+      this.add.rectangle(cx, cy + 8, 22, 30, 0x9a633c).setDepth(depth + 0.09);
+    }
+
+    // Bougainvillea against the stucco. Clusters are intentionally irregular;
+    // a single repeated flower sprite would read like wallpaper.
+    const flowerClusters = [
+      { x: 1.1, y: 8.5, color: 0xd63582 },
+      { x: 33.2, y: 8.3, color: 0xeb4b7b },
+      { x: 22.0, y: 15.4, color: 0xc42c78 },
+      { x: 32.5, y: 15.2, color: 0xf05a86 },
+    ];
+    for (const cluster of flowerClusters) {
+      const bx = cluster.x * tile;
+      const by = cluster.y * tile;
+      this.add.rectangle(bx, by + 18, 5, 46, 0x416a38).setDepth(depth + 0.1);
+      const offsets = [[0, 0], [-13, 5], [11, 8], [-6, -12], [15, -9], [2, 16]];
+      offsets.forEach(([ox, oy], index) => {
+        this.add.circle(bx + ox, by + oy, 8 + (index % 2) * 2, cluster.color, 0.92)
+          .setDepth(depth + 0.12);
+      });
+    }
+
+    // Coastal paseo between the street and sand: warm stone paving, palms,
+    // benches and mission-style lamps make the beach arrival a real place.
+    this.add.rectangle(20 * tile, 22.85 * tile, 35 * tile, 1.45 * tile, 0xd8c3a0)
+      .setDepth(0.45);
+    this.add.rectangle(20 * tile, 22.2 * tile, 35 * tile, 4, 0xf3e3c6).setDepth(0.47);
+    this.add.rectangle(20 * tile, 23.5 * tile, 35 * tile, 4, 0xa98763).setDepth(0.47);
+
+    for (const x of [8, 20, 31]) {
+      const px = x * tile + tile / 2;
+      const py = 22.75 * tile;
+      this.add.rectangle(px, py, 38, 10, 0x7b4f2f).setDepth(2.2);
+      this.add.rectangle(px - 14, py + 11, 4, 16, 0x4e3828).setDepth(2.15);
+      this.add.rectangle(px + 14, py + 11, 4, 16, 0x4e3828).setDepth(2.15);
+    }
+
+    for (const x of [4, 14, 26, 36]) {
+      const px = x * tile + tile / 2;
+      const py = 22.2 * tile;
+      this.add.rectangle(px, py + 10, 5, 45, 0x3f4a45).setDepth(2);
+      this.add.circle(px, py - 14, 9, 0xf6d884, 0.85).setDepth(2.1);
+      this.add.rectangle(px, py - 14, 20, 4, 0x343e3a).setDepth(2.2);
+    }
+
+    const signX = 35.6 * tile;
+    const signY = 20.6 * tile;
+    this.add.rectangle(signX, signY, 118, 38, 0x244a52).setDepth(4);
+    this.add.rectangle(signX, signY, 110, 30, 0xf2e7d3).setDepth(4.1);
+    this.add.text(signX, signY - 5, 'SANTA BARBARA', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#9e3f2d',
+    }).setOrigin(0.5).setDepth(4.2);
+    this.add.text(signX, signY + 7, 'PACIFIC COAST', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '5px', color: '#244a52',
+    }).setOrigin(0.5).setDepth(4.2);
   }
 
   private createHotTubSteam() {
@@ -519,7 +684,7 @@ export class BeachScene extends BaseChapterScene {
     });
   }
 
-  // ─── LUNA CRYPTO TRADE (Day 1) ───────────────────────────────────
+  // ─── LUNA COLLAPSE (Day 1) ──────────────────────────────────────
   private playLunaTrade() {
     this.lunaTraded = true;
     this.frozen = true;
@@ -530,54 +695,70 @@ export class BeachScene extends BaseChapterScene {
     const screen = this.add.rectangle(cx, cy, 320, 480, 0x0a0a0a)
       .setScrollFactor(0).setDepth(300).setAlpha(0);
     const border = this.add.rectangle(cx, cy, 322, 482, 0x22ff88, 0)
+      .setStrokeStyle(2, 0x22ff88)
       .setScrollFactor(0).setDepth(299).setAlpha(0);
+    const appObjects: Phaser.GameObjects.GameObject[] = [screen, border];
 
     this.tweens.add({ targets: [screen, border], alpha: 1, duration: 400, onComplete: () => {
       // App header
-      this.add.text(cx, cy - 210, 'ROBINHOOD', {
+      appObjects.push(this.add.text(cx, cy - 210, 'ROBINHOOD', {
         fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#22ff88',
-      }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(301));
 
       // Portfolio
-      this.add.text(cx, cy - 160, 'PORTFOLIO', {
+      appObjects.push(this.add.text(cx, cy - 160, 'PORTFOLIO — 100% LUNA', {
         fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#888888',
-      }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(301));
 
-      const portfolioValue = this.add.text(cx, cy - 130, '$1,200.00', {
-        fontFamily: '"Press Start 2P", monospace', fontSize: '18px', color: '#ffffff',
+      const portfolioValue = this.add.text(cx, cy - 130, 'ALL IN', {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '18px', color: '#22ff88',
       }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
+      appObjects.push(portfolioValue);
 
       // LUNA ticker
-      this.add.text(cx - 100, cy - 80, 'LUNA', {
+      appObjects.push(this.add.text(cx - 100, cy - 80, 'LUNA', {
         fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#ffffff',
-      }).setOrigin(0, 0.5).setScrollFactor(0).setDepth(301);
+      }).setOrigin(0, 0.5).setScrollFactor(0).setDepth(301));
 
-      const lunaPrice = this.add.text(cx + 60, cy - 80, '+3,489%', {
+      const lunaPrice = this.add.text(cx + 60, cy - 80, 'GREEN', {
         fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#22ff88',
       }).setOrigin(0, 0.5).setScrollFactor(0).setDepth(301);
+      appObjects.push(lunaPrice);
+
+      appObjects.push(this.add.text(cx, cy - 25, 'FIRST TRADE', {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#888899',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(301));
+      appObjects.push(this.add.text(cx, cy + 15, 'JP moved his whole\nportfolio into one coin.', {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#ffffff',
+        align: 'center', lineSpacing: 8,
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(301));
 
       this.cameras.main.shake(300, 0.005);
 
-      this.time.delayedCall(1000, () => {
-        // Update to real value
-        portfolioValue.setText('$42,468.00');
-        portfolioValue.setColor('#22ff88');
+      this.time.delayedCall(1400, () => {
+        // The win disappears. Exact money stays private; the emotional fact is zero.
+        portfolioValue.setText('$0.00');
+        portfolioValue.setColor('#ff3333');
+        lunaPrice.setText('-99.99%');
+        lunaPrice.setColor('#ff3333');
+        border.setStrokeStyle(2, 0xff3333);
         portfolioValue.setScale(1);
         this.tweens.add({ targets: portfolioValue, scaleX: 1.2, scaleY: 1.2, duration: 150, yoyo: true, repeat: 2 });
-        this.cameras.main.shake(500, 0.012);
+        this.cameras.main.shake(900, 0.018);
 
-        this.time.delayedCall(1200, () => {
+        this.time.delayedCall(1800, () => {
           this.tweens.add({ targets: [screen, border], alpha: 0, duration: 400, onComplete: () => {
-            screen.destroy(); border.destroy();
+            appObjects.forEach((object) => object.destroy());
 
             this.dialogue.show([
-              { speaker: 'JP\'s Mind', text: 'LUNA is up 3,489%.' },
-              { speaker: 'JP\'s Mind', text: 'I put in $1,200 two weeks ago and forgot about it.' },
-              { speaker: 'JP\'s Mind', text: '$42,000.' },
+              { speaker: 'JP\'s Mind', text: 'It was my first time trading.' },
+              { speaker: 'JP\'s Mind', text: 'LUNA kept going up. I thought I understood it.' },
+              { speaker: 'Narrator', text: 'JP full-ported his whole portfolio.' },
+              { speaker: 'Narrator', text: 'Then LUNA went to zero.' },
               { speaker: 'JP\'s Mind', text: '...' },
-              { speaker: 'JP\'s Mind', text: 'FORTY. TWO. THOUSAND. DOLLARS.' },
-              { speaker: 'JP\'s Mind', text: 'I need to wake K up right now.' },
-              { speaker: 'JP\'s Mind', text: 'And then I need to call the plug.' },
+              { speaker: 'JP\'s Mind', text: 'Everything I had. Gone.' },
+              { speaker: 'JP\'s Mind', text: 'I am not starting over from zero.' },
+              { speaker: 'Narrator', text: 'His eyes move from the red screen to the phone.' },
             ], () => {
               this.frozen = false;
               // Check if K scene already done
@@ -600,15 +781,16 @@ export class BeachScene extends BaseChapterScene {
       this.dialogue.show([
         { speaker: 'Narrator', text: 'JP pulls out his phone. Calls his plug.' },
         { speaker: 'Plug', text: 'Ayy.' },
-        { speaker: 'JP', text: 'Bro I need a big one. Trash bag big.' },
-        { speaker: 'Plug', text: '...how big we talking.' },
-        { speaker: 'JP', text: 'Multiple.' },
+        { speaker: 'JP', text: 'I need one.' },
         { speaker: 'Plug', text: 'You got the bread though?' },
-        { speaker: 'JP', text: 'I just hit 40K on LUNA.' },
+        { speaker: 'JP', text: 'Not anymore.' },
+        { speaker: 'Plug', text: 'Then why are you calling me?' },
+        { speaker: 'JP', text: 'Front me. I can move it.' },
         { speaker: 'Plug', text: '...' },
-        { speaker: 'Plug', text: 'Say less. You know where I\'m at.' },
+        { speaker: 'Plug', text: 'One. Don\'t make me chase you.' },
         { speaker: 'JP', text: 'On my way.' },
-        { speaker: 'JP\'s Mind', text: 'He\'s gonna front me the whole thing. He always does.' },
+        { speaker: 'JP\'s Mind', text: 'One run. Make the money back.' },
+        { speaker: 'JP\'s Mind', text: 'Then I\'m done.' },
         { speaker: 'Narrator', text: 'Go get in the BMW.' },
       ], () => {
         this.frozen = false;
@@ -632,12 +814,12 @@ export class BeachScene extends BaseChapterScene {
       this.tweens.add({ targets: timeText, alpha: 1, duration: 600, hold: 1500, yoyo: true, onComplete: () => {
         timeText.destroy();
 
-        // JP returns — spawn trash bags in living room
+        // JP returns — the first front, before the operation grows.
         this.bagsReturned = true;
         this.player.setPosition(7 * SCALED_TILE + SCALED_TILE / 2, 5 * SCALED_TILE + SCALED_TILE / 2);
 
         // Spawn bag sprites in living room
-        const bagPositions = [{ x: 3, y: 4 }, { x: 4, y: 4 }, { x: 5, y: 4 }];
+        const bagPositions = [{ x: 4, y: 4 }];
         for (const pos of bagPositions) {
           const bag = this.add.rectangle(
             pos.x * SCALED_TILE + SCALED_TILE / 2,
@@ -656,18 +838,15 @@ export class BeachScene extends BaseChapterScene {
           black.destroy();
           this.dialogue.show([
             { speaker: 'Narrator', text: 'JP pulls up. Pops the trunk.' },
-            { speaker: 'JP', text: 'Aye everybody outside! Help me with these!' },
-            { speaker: 'Nolan', text: '...bro what is in those bags.' },
-            { speaker: 'JP', text: 'Don\'t worry about it. Just grab one.' },
+            { speaker: 'JP', text: 'Aye. Keep the door open.' },
+            { speaker: 'Nolan', text: '...what is in that bag?' },
+            { speaker: 'JP', text: 'A way back.' },
             { speaker: 'Big Bart', text: 'YOOO IS THAT—' },
             { speaker: 'JP', text: 'BART. Keep your voice down.' },
             { speaker: 'Big Bart', text: '*whisper* YOOOO IS THAT—' },
-            { speaker: 'Cooper', text: 'I\'m not asking questions. I\'m just carrying the bag.' },
-            { speaker: 'Narrator', text: 'Three trash bags. Living room floor. The boys go quiet.' },
-            { speaker: 'Narrator', text: 'Then all at once—' },
-            { speaker: 'Big Bart', text: 'LETS GOOOOOO.' },
-            { speaker: 'JP\'s Mind', text: 'Didn\'t cost me a dollar. Plug showed love.' },
-            { speaker: 'JP\'s Mind', text: 'We\'re smoking for free for the rest of the trip.' },
+            { speaker: 'Narrator', text: 'One fronted bag on the living-room floor.' },
+            { speaker: 'JP\'s Mind', text: 'It did not look like a life yet.' },
+            { speaker: 'JP\'s Mind', text: 'It looked like a way to stop being at zero.' },
           ], () => {
             this.frozen = false;
             // Spawn kitchen table sesh interactable
@@ -936,15 +1115,18 @@ export class BeachScene extends BaseChapterScene {
 
   protected getObjectiveHint(): string {
     if (this.currentDay === 1) {
-      if (!this.bedroomStayed) return 'Explore the house. Hit the bed when you\'re ready.';
+      if (!this.lunaTraded) return 'Check the market on JP\'s computer.';
+      if (!this.kGoodbyeDone) return 'Wake K before she misses orientation.';
+      if (!this.plugCalled) return 'Use the phone.';
+      if (!this.bmwLeft) return 'Get in the BMW.';
+      if (!this.bedroomStayed) return 'Explore. Hit the bed when you\'re ready.';
       return 'Head to bed. It\'s getting late.';
     }
-    // Day 2 — smoke → drink → blow → exit
+    // Day 2 — smoke and drink establish the party. Everything after is optional.
     if (!this.smokeSeshDone) return 'Party\'s going. Hit the smoke spot in the yard.';
     if (!this.drinksDone) return 'Grab a drink. Bottles are in the kitchen.';
-    if (!this.blowOffered) return 'Keep vibing. Something\'s coming...';
-    if (!this.blackedOut) return 'Things are getting out of hand.';
-    return 'Head to the beach.';
+    if (this.blackedOut) return 'Head south to the street.';
+    return 'Explore the party or head south when you\'re ready.';
   }
 
   getMapData(): MapData {
@@ -1107,9 +1289,14 @@ export class BeachScene extends BaseChapterScene {
             }
             this.frozen = false;
 
+            if (this.smokeSeshDone) {
+              this.requiredDone = true;
+              this.refreshObjectiveHint();
+            }
+
             // After drinking + girls arrive, blow gets offered (delayed)
             this.time.delayedCall(10000, () => {
-              if (this.scene.isActive() && !this.blowOffered && !this.requiredDone && this.currentDay === 2) {
+              if (this.scene.isActive() && !this.blowOffered && this.currentDay === 2) {
                 this.triggerBlowOffer();
               }
             });
@@ -1155,6 +1342,10 @@ export class BeachScene extends BaseChapterScene {
           0x204010, 0
         ).setScrollFactor(0).setDepth(7);
         this.tweens.add({ targets: greenHaze, alpha: 0.1, duration: 2000 });
+        if (this.drinksDone) {
+          this.requiredDone = true;
+          this.refreshObjectiveHint();
+        }
         this.frozen = false;
 
         // Blow comes after drinking, not smoking — hint to grab drinks
@@ -1872,7 +2063,7 @@ export class BeachScene extends BaseChapterScene {
           });
         });
       }, () => {
-        // NO — stays sober enough, but the night is still young
+        // NO — refusing never blocks the story.
         this.dialogue.show([
           { speaker: 'JP', text: 'Nah I\'m good.' },
           { speaker: '???', text: 'Suit yourself.' },
@@ -2994,7 +3185,7 @@ export class BeachScene extends BaseChapterScene {
     }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
 
     const tickers = [
-      { name: 'LUNA', change: '+3,489%', color: '#22ff88' },
+      { name: 'LUNA', change: this.lunaTraded ? '-99.99%' : 'WATCHING', color: this.lunaTraded ? '#ff4444' : '#888888' },
       { name: 'AAPL', change: '+2.3%', color: '#22ff88' },
       { name: 'TSLA', change: '-4.1%', color: '#ff4444' },
       { name: 'GME', change: '+420%', color: '#22ff88' },
@@ -3162,9 +3353,9 @@ export class BeachScene extends BaseChapterScene {
     const cy = GAME_HEIGHT / 2;
     const hasLuna = this.lunaTraded;
 
-    const cryptoVal = hasLuna ? '$42,468' : '$1,200';
-    const netWorthVal = hasLuna ? '$39,268' : '-$2,000';
-    const netColor = hasLuna ? '#22ff88' : '#ff4444';
+    const cryptoVal = hasLuna ? '$0.00' : '$1,200';
+    const netWorthVal = hasLuna ? '-$3,200' : '-$2,000';
+    const netColor = '#ff4444';
 
     const screen = this.add.rectangle(cx, cy, 320, 360, 0x0a0a0a)
       .setScrollFactor(0).setDepth(300);
@@ -3177,7 +3368,7 @@ export class BeachScene extends BaseChapterScene {
     }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
 
     const lines = [
-      { label: 'Crypto', value: cryptoVal, color: '#22ff88' },
+      { label: 'Crypto', value: cryptoVal, color: hasLuna ? '#ff4444' : '#22ff88' },
       { label: 'Cash', value: '$200', color: '#ffffff' },
       { label: 'Debt', value: '-$3,400', color: '#ff4444' },
     ];

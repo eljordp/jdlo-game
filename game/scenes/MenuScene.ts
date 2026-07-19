@@ -18,11 +18,12 @@ interface MenuItem {
 const CHAPTERS = [
   { key: 'HomeScene', label: 'Ch 1: Home', desc: 'Where it all started' },
   { key: 'BeachScene', label: 'Ch 2: Santa Barbara', desc: 'The boys, the beach, the bad ideas' },
-  { key: 'WrongCrowdScene', label: 'Ch 3: Wrong Crowd', desc: '3 AM. Nothing good happens.' },
-  { key: 'CourtScene', label: 'Ch 4: Locked Up', desc: 'Faced 13 years. Took the plea.' },
-  { key: 'TractorScene', label: 'Ch 5: Caymus Vineyards', desc: 'Honest work. Restless mind.' },
-  { key: 'ComeUpScene', label: 'Ch 6: The Come Up', desc: '$300. Then $500. Then $900.' },
-  { key: 'OperatorScene', label: 'Ch 7: Operator Mode', desc: 'They treat him like an equal now.' },
+  { key: 'WeedRiseScene', label: 'Ch 3: The Rise', desc: 'One run became a life' },
+  { key: 'WrongCrowdScene', label: 'Ch 4: Wrong Crowd', desc: '3 AM. Nothing good happens.' },
+  { key: 'CourtScene', label: 'Ch 5: Locked Up', desc: 'Faced 13 years. Took the plea.' },
+  { key: 'TractorScene', label: 'Ch 6: Caymus Vineyards', desc: 'Honest work. Restless mind.' },
+  { key: 'ComeUpScene', label: 'Ch 7: The Come Up', desc: 'Ignored, ghosted, then trusted' },
+  { key: 'OperatorScene', label: 'Ch 8: Operator Mode', desc: 'More access. More pressure.' },
 ];
 
 const SPEEDS = [1, 1.5, 2, 3];

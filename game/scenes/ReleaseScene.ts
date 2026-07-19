@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, SCALE, CHAR_SCALE } from '../config';
 import { MusicSystem } from '../systems/MusicSystem';
+import { SoundEffects } from '../systems/SoundEffects';
 
 /**
  * Cinematic release scene — walking out of jail.
@@ -29,7 +30,7 @@ export class ReleaseScene extends Phaser.Scene {
     this.footstepTimer = undefined;
     this.dustMoteTimers = [];
 
-    MusicSystem.stop();
+    MusicSystem.play('release');
     this.cameras.main.fadeIn(500, 0, 0, 0);
 
     // Cinema letterbox bars
@@ -173,6 +174,7 @@ export class ReleaseScene extends Phaser.Scene {
 
         // Bars slide open to the left
         this.time.delayedCall(2800, () => {
+          SoundEffects.playMetalGate();
           for (const bar of bars) {
             this.addTween({
               targets: bar,

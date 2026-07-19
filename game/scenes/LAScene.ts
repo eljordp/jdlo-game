@@ -753,8 +753,8 @@ export class LAScene extends Phaser.Scene {
 
         this.showTextSlow(
           [
-            '"Six months ago I was',
-            'on a tractor in Napa.',
+            '"I used to stare at the same',
+            'ceiling every morning.',
             '',
             'Now I\'m in a penthouse in LA',
             'building AI systems."',

@@ -7,6 +7,7 @@ import { MenuScene } from "@/game/scenes/MenuScene";
 import { IntroScene } from "@/game/scenes/IntroScene";
 import { HomeScene } from "@/game/scenes/HomeScene";
 import { BeachScene } from "@/game/scenes/BeachScene";
+import { WeedRiseScene } from "@/game/scenes/WeedRiseScene";
 import { WrongCrowdScene } from "@/game/scenes/WrongCrowdScene";
 import { CourtScene } from "@/game/scenes/CourtScene";
 import { JailScene } from "@/game/scenes/JailScene";
@@ -21,6 +22,7 @@ import { HomeReturnScene } from "@/game/scenes/HomeReturnScene";
 import { TransitionScene } from "@/game/scenes/TransitionScene";
 import { GAME_WIDTH, GAME_HEIGHT } from "@/game/config";
 import { MusicSystem } from "@/game/systems/MusicSystem";
+import DirectorPanel from "@/components/DirectorPanel";
 
 const SPEEDS = [
   { label: "1x", value: 1 },
@@ -172,6 +174,7 @@ export default function GameCanvas() {
         IntroScene,
         HomeScene,
         BeachScene,
+        WeedRiseScene,
         WrongCrowdScene,
         CourtScene,
         JailScene,
@@ -229,6 +232,15 @@ export default function GameCanvas() {
     setShowControls(true);
   }, [speedIndex]);
 
+  const applyDirectorSpeed = useCallback((speed: number) => {
+    virtualInput.gameSpeed = speed;
+    if (!gameRef.current) return;
+    gameRef.current.scene.scenes.forEach((scene) => {
+      if (scene.time) scene.time.timeScale = speed;
+      if (scene.tweens) scene.tweens.timeScale = speed;
+    });
+  }, []);
+
   // D-pad handlers
   const pressDir = useCallback((dir: "up" | "down" | "left" | "right") => {
     virtualInput[dir] = true;
@@ -281,63 +293,7 @@ export default function GameCanvas() {
         </button>
       </div>
 
-      {/* Chapter jump + dev controls — top left */}
-      <div className="absolute top-3 left-3 z-20 flex gap-1">
-        <select
-          onChange={(e) => {
-            const scene = e.target.value;
-            if (!scene || !gameRef.current) return;
-            const active = gameRef.current.scene.getScenes(true);
-            for (const s of active) gameRef.current.scene.stop(s.scene.key);
-            gameRef.current.scene.start(scene);
-            e.target.value = '';
-          }}
-          className="px-2 py-1.5 bg-black/70 border border-white/20 rounded text-white text-xs font-mono cursor-pointer appearance-none"
-          defaultValue=""
-        >
-          <option value="" disabled>CH</option>
-          <option value="IntroScene">Intro</option>
-          <option value="HomeScene">Ch1 Home</option>
-          <option value="BeachScene">Ch2 SB</option>
-          <option value="WrongCrowdScene">Ch3 Night</option>
-          <option value="CourtScene">Court</option>
-          <option value="JailScene">Ch4 Jail</option>
-          <option value="ReleaseScene">Release</option>
-          <option value="TractorScene">Ch5 Caymus</option>
-          <option value="ComeUpScene">Ch6 Come Up</option>
-          <option value="LAScene">LA Scene</option>
-          <option value="OperatorScene">Ch7 LA</option>
-          <option value="VegasScene">Vegas</option>
-          <option value="HomeReturnScene">Home Return</option>
-          <option value="EndScene">End</option>
-          <option value="MenuScene">Menu</option>
-        </select>
-        <button
-          onClick={() => {
-            if (!gameRef.current) return;
-            const s = gameRef.current.scene.getScenes(true)[0] as unknown as Record<string, unknown>;
-            if (s && 'currentDay' in s) {
-              const cur = s.currentDay as number;
-              (s as Record<string, unknown>).currentDay = cur >= 3 ? 1 : cur + 1;
-            }
-          }}
-          className="px-2 py-1.5 bg-black/70 border border-white/20 rounded text-white text-xs font-mono hover:bg-white/10 transition-colors cursor-pointer"
-          title="Advance day (for multi-day scenes)"
-        >
-          DAY+
-        </button>
-        <button
-          onClick={() => {
-            if (!gameRef.current) return;
-            const s = gameRef.current.scene.getScenes(true)[0] as unknown as Record<string, unknown>;
-            if (s && 'frozen' in s) (s as Record<string, unknown>).frozen = false;
-          }}
-          className="px-2 py-1.5 bg-black/70 border border-white/20 rounded text-white text-xs font-mono hover:bg-white/10 transition-colors cursor-pointer"
-          title="Unfreeze (unstick from stuck states)"
-        >
-          GO
-        </button>
-      </div>
+      <DirectorPanel gameRef={gameRef} onSpeedChange={applyDirectorSpeed} />
 
       {/* Bottom right — phone, inventory, emote buttons (always visible) */}
       <div className="absolute bottom-3 right-3 z-20 flex gap-2">

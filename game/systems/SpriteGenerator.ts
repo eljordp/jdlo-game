@@ -2636,69 +2636,46 @@ function generateTiles(scene: Phaser.Scene) {
     px(g, 13, 26, 0x787888, 4, 4);
   });
 
-  // -- Floor (32x32) — wooden planks --
+  // -- Floor (32x32) — warm limestone / porcelain --
+  // Hardwood has its own tile. Keeping this material distinct makes bathrooms,
+  // patios, and utility rooms stop looking like a second wood preset.
   makeTexture(scene, 'tile-floor', S, S, (g) => {
-    // Warm wood base
-    g.fillStyle(COLORS.floorBeige);
+    g.fillStyle(0xd8cdbb);
     g.fillRect(0, 0, S, S);
 
-    // Plank divisions (horizontal dark lines every 8px)
-    g.fillStyle(0xa89868);
-    g.fillRect(0, 7, S, 1);
-    g.fillRect(0, 15, S, 1);
-    g.fillRect(0, 23, S, 1);
-    g.fillRect(0, 31, S, 1);
+    // Broad mineral clouds. They read as material variation instead of a grid.
+    px(g, 2, 3, 0xe0d7c8, 12, 7);
+    px(g, 19, 1, 0xd1c4b2, 9, 5);
+    px(g, 7, 19, 0xe2d8c8, 14, 8);
+    px(g, 23, 21, 0xcfc2b0, 7, 6);
 
-    // Wood grain lines (subtle horizontal streaks within each plank)
-    px(g, 2, 2, 0xd4c4a0, 10, 1);
-    px(g, 16, 3, 0xd4c4a0, 8, 1);
-    px(g, 4, 10, 0xd4c4a0, 12, 1);
-    px(g, 20, 11, 0xd4c4a0, 6, 1);
-    px(g, 6, 18, 0xd4c4a0, 8, 1);
-    px(g, 18, 19, 0xd4c4a0, 10, 1);
-    px(g, 2, 26, 0xd4c4a0, 14, 1);
-    px(g, 22, 27, 0xd4c4a0, 6, 1);
-
-    // Darker grain accent lines
-    px(g, 8, 4, 0xb0a078, 6, 1);
-    px(g, 14, 12, 0xb0a078, 8, 1);
-    px(g, 4, 20, 0xb0a078, 10, 1);
-    px(g, 10, 28, 0xb0a078, 8, 1);
-
-    // Knot details (small darker circles)
-    px(g, 10, 4, 0xa09060, 2, 2);
-    px(g, 11, 5, 0x968858, 1, 1);
-    px(g, 24, 18, 0xa09060, 2, 2);
-    px(g, 25, 19, 0x968858, 1, 1);
-
-    // Left edge shadow
-    g.fillStyle(0xb0a080);
-    g.fillRect(0, 0, 1, S);
+    // Fine stone veining and small aggregate marks.
+    px(g, 3, 12, 0xc8bbaa, 8, 1);
+    px(g, 10, 13, 0xc8bbaa, 5, 1);
+    px(g, 18, 8, 0xe8dfd2, 9, 1);
+    px(g, 20, 9, 0xe8dfd2, 5, 1);
+    px(g, 4, 27, 0xc7baa8, 6, 1);
+    px(g, 27, 13, 0xbcae9c, 1, 1);
+    px(g, 15, 24, 0xeee6da, 2, 1);
   });
 
-  // -- House Wall (32x32) — clean drywall, works in ANY orientation (no directional trim) --
+  // -- House Wall (32x32) — warm painted plaster --
   makeTexture(scene, 'tile-house-wall', S, S, (g) => {
-    // Warm cream drywall base
     g.fillStyle(COLORS.houseWall);
     g.fillRect(0, 0, S, S);
 
-    // Subtle checkerboard texture (non-directional — works for N/S and W/E walls)
-    px(g, 0, 0, 0xe4dcd0, 16, 16);
-    px(g, 16, 0, 0xece4d8, 16, 16);
-    px(g, 0, 16, 0xece4d8, 16, 16);
-    px(g, 16, 16, 0xe4dcd0, 16, 16);
+    // Large low-contrast plaster patches avoid the checkerboard look.
+    px(g, 2, 3, 0xeee7dd, 13, 9);
+    px(g, 19, 2, 0xe3dbd0, 10, 7);
+    px(g, 7, 18, 0xebe3d8, 15, 10);
+    px(g, 24, 21, 0xe1d8cc, 6, 7);
 
-    // Thin border on ALL edges (reads as wall edge from any direction)
-    px(g, 0, 0, COLORS.houseWallDark, S, 1);   // top
-    px(g, 0, 31, COLORS.houseWallDark, S, 1);  // bottom
-    px(g, 0, 0, COLORS.houseWallDark, 1, S);   // left
-    px(g, 31, 0, COLORS.houseWallDark, 1, S);  // right
-
-    // Very subtle drywall texture dots (non-directional)
-    px(g, 8, 8, 0xe0d8cc, 2, 2);
-    px(g, 22, 12, 0xe0d8cc, 2, 2);
-    px(g, 12, 22, 0xe0d8cc, 2, 2);
-    px(g, 26, 26, 0xe0d8cc, 2, 2);
+    // A faint top highlight and bottom contact line give the wall thickness.
+    px(g, 0, 0, COLORS.houseWallLight, S, 2);
+    px(g, 0, 29, COLORS.houseWallDark, S, 3);
+    px(g, 5, 14, 0xdcd3c7, 1, 1);
+    px(g, 25, 11, 0xf2ece4, 2, 1);
+    px(g, 15, 25, 0xd9d0c4, 2, 1);
   });
 
   // -- Hardwood (32x32) — warm oak planks --
@@ -2894,15 +2871,6 @@ function generateTiles(scene: Phaser.Scene) {
     px(g, 2, 28, 0x464650, 1, 1);
     px(g, 20, 30, 0x464650, 1, 1);
     px(g, 30, 16, 0x464650, 1, 1);
-
-    // Expansion joints (thin scored lines forming grid)
-    g.fillStyle(0x383840);
-    g.fillRect(15, 0, 1, S);  // vertical joint
-    g.fillRect(0, 15, S, 1);  // horizontal joint
-    // Joint highlight (slight bevel)
-    g.fillStyle(0x4a4a52);
-    g.fillRect(16, 0, 1, S);
-    g.fillRect(0, 16, S, 1);
 
     // Color variation patches (slightly warmer/cooler concrete)
     px(g, 2, 2, 0x444850, 6, 4);
@@ -3381,20 +3349,25 @@ function generateTiles(scene: Phaser.Scene) {
     g.fillRect(0, S - 4, S, 1);
   });
 
-  // --- tile-carpet --- (soft beige/tan carpet for bedrooms)
+  // --- tile-carpet --- (soft cut-pile carpet for bedrooms)
   makeTexture(scene, 'tile-carpet', S, S, (g) => {
-    // Base carpet color — warm beige
-    px(g, 0, 0, 0xc8b8a0, S, S);
-    // Carpet texture — subtle fiber pattern
-    for (let y = 0; y < S; y += 2) {
-      for (let x = 0; x < S; x += 3) {
-        const shade = Math.random() > 0.5 ? 0xc4b49c : 0xccbca4;
+    px(g, 0, 0, 0xcabca8, S, S);
+
+    // Broad pile-direction patches. No tile border: carpet should read as one
+    // continuous textile across a room, not 64px carpet squares.
+    px(g, 1, 2, 0xd1c5b4, 12, 8);
+    px(g, 18, 0, 0xc4b59f, 11, 7);
+    px(g, 7, 17, 0xd0c2ae, 14, 10);
+    px(g, 23, 22, 0xc1b19b, 8, 8);
+
+    // Deterministic short fibers keep the texture stable between reloads.
+    for (let y = 1; y < S; y += 3) {
+      for (let x = (y % 5) + 1; x < S; x += 5) {
+        const shade = ((x * 13 + y * 7) % 3 === 0) ? 0xb9aa94 : 0xd7ccbb;
         px(g, x, y, shade, 1, 1);
+        if ((x + y) % 4 === 0) px(g, x + 1, y, 0xc2b39e, 1, 1);
       }
     }
-    // Slightly darker edges for tile separation
-    px(g, 0, 0, 0xb8a890, S, 1);
-    px(g, 0, 0, 0xb8a890, 1, S);
   });
 }
 
@@ -5870,48 +5843,37 @@ function generateMoreItems(scene: Phaser.Scene) {
     px(g, 6, 17, 0x804820, 6, 1);
   });
 
-  // --- item-rug --- Area rug (flat on floor)
+  // --- item-rug --- 2-tile visual area rug (flat on floor)
   makeTexture(scene, 'item-rug', TILE_SIZE, TILE_SIZE, (g) => {
-    // Gold border
-    px(g, 2, 4, 0xc0a040, 14, 10);
-    // Main body (burgundy)
-    px(g, 3, 5, 0x8a3030, 12, 8);
-    // Diamond pattern in center (lighter red)
-    px(g, 8, 7, 0xa04040, 2, 1);  // top point
-    px(g, 7, 8, 0xa04040, 4, 2);  // middle
-    px(g, 8, 10, 0xa04040, 2, 1); // bottom point
-    // Fringe at top
-    px(g, 3, 4, 0xc0a040, 1, 1);
-    px(g, 5, 4, 0xc0a040, 1, 1);
-    px(g, 7, 4, 0xc0a040, 1, 1);
-    px(g, 9, 4, 0xc0a040, 1, 1);
-    px(g, 11, 4, 0xc0a040, 1, 1);
-    px(g, 13, 4, 0xc0a040, 1, 1);
-    // Fringe at bottom
-    px(g, 3, 13, 0xc0a040, 1, 1);
-    px(g, 5, 13, 0xc0a040, 1, 1);
-    px(g, 7, 13, 0xc0a040, 1, 1);
-    px(g, 9, 13, 0xc0a040, 1, 1);
-    px(g, 11, 13, 0xc0a040, 1, 1);
-    px(g, 13, 13, 0xc0a040, 1, 1);
+    px(g, 1, 7, 0x37263f, 30, 18);       // contact shadow
+    px(g, 1, 5, 0xc69b45, 30, 18);       // woven gold border
+    px(g, 3, 7, 0x74313d, 26, 14);       // burgundy wool body
+    px(g, 5, 9, 0x8d3c48, 22, 10);       // inner field
+    px(g, 13, 10, 0xd0a44c, 6, 2);       // top diamond
+    px(g, 10, 12, 0xc39042, 12, 4);      // center diamond
+    px(g, 13, 16, 0xd0a44c, 6, 2);       // lower diamond
+    px(g, 6, 11, 0xe2bd68, 2, 6);        // side motifs
+    px(g, 24, 11, 0xe2bd68, 2, 6);
+    for (let x = 3; x < 30; x += 3) {
+      px(g, x, 4, 0xc69b45, 1, 2);
+      px(g, x, 23, 0xc69b45, 1, 2);
+    }
   });
 
   // --- item-yoga-mat --- Rolled-out yoga/exercise mat (flat on floor)
   makeTexture(scene, 'item-yoga-mat', TILE_SIZE, TILE_SIZE, (g) => {
-    // Main mat body (dark purple/blue like a real yoga mat)
-    px(g, 2, 3, 0x4a3a6a, 14, 12);
-    // Lighter center stripe (texture detail)
-    px(g, 3, 4, 0x5a4a7a, 12, 10);
+    // Full-size rolled-out mat instead of the old half-tile postage stamp.
+    px(g, 2, 6, 0x2a203c, 28, 19);       // floor shadow
+    px(g, 2, 4, 0x4a3a6a, 28, 19);
+    px(g, 4, 6, 0x5a4a7a, 24, 15);
     // Subtle grip texture dots
     for (let row = 0; row < 4; row++) {
       for (let col = 0; col < 5; col++) {
-        px(g, 4 + col * 2, 5 + row * 2, 0x6a5a8a, 1, 1);
+        px(g, 6 + col * 4, 7 + row * 3, 0x6a5a8a, 1, 1);
       }
     }
-    // Mat edge shadow (bottom)
-    px(g, 2, 14, 0x2a1a3a, 14, 1);
-    // Mat edge highlight (top)
-    px(g, 2, 3, 0x6a5a8a, 14, 1);
+    px(g, 2, 22, 0x2a1a3a, 28, 2);
+    px(g, 2, 4, 0x746493, 28, 1);
   });
 
   // --- item-hottub ---
