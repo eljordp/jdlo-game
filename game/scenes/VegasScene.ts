@@ -626,12 +626,40 @@ export class VegasScene extends Phaser.Scene {
       case 4: {
         this.makeStripClub();
         this.addDealExchange(GAME_WIDTH - 205, 420, 'DEAL MOVING', 'npc-business');
+
+        // The private room — JP's actual night. Two dancers, a velvet curtain,
+        // and the game's rule for moments like this: you don't narrate them.
+        const curtainX = GAME_WIDTH - 120;
+        this.addObj(this.add.rectangle(curtainX, 300, 90, 200, 0x6b1030).setDepth(30));
+        this.addObj(this.add.rectangle(curtainX, 195, 110, 14, 0xc9a44a).setDepth(31));
+        this.addObj(this.add.text(curtainX, 218, 'PRIVATE', {
+          fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#e8b6c8',
+        }).setOrigin(0.5).setDepth(31));
+
+        const jpClub = this.addObj(this.add.sprite(GAME_WIDTH / 2 - 60, 430, 'player-ch6', 0).setScale(CHAR_SCALE * 1.1).setDepth(40));
+        const dancer1 = this.addObj(this.add.sprite(GAME_WIDTH / 2 - 100, 425, 'npc_bikini1', 0).setScale(SCALE * 1.1).setDepth(40));
+        const dancer2 = this.addObj(this.add.sprite(GAME_WIDTH / 2 - 20, 425, 'npc_bikini2', 0).setScale(SCALE * 1.1).setDepth(40));
+        // The three of them drift toward the curtain, then it swallows them.
+        this.addTween({
+          targets: [jpClub, dancer1, dancer2],
+          x: `+=${curtainX - (GAME_WIDTH / 2 - 60)}`,
+          duration: 3400,
+          delay: 2600,
+          ease: 'Sine.easeIn',
+          onComplete: () => {
+            [jpClub, dancer1, dancer2].forEach(s => s.setAlpha(0));
+          },
+        });
+
         this.showText('SPEARMINT RHINO', 100, { size: '18px', color: '#ff4d86', delay: 250 });
         this.showText('AFTER HOURS', 132, { size: '9px', color: '#a06478', delay: 500 });
         this.showText('"One more stop." — Dan. It was never one more stop.', 150, { size: '11px', color: '#e0a8bc', delay: 850 });
-        this.showText('The night did not slow down. It changed buildings.', 200, { size: '11px', delay: 1450 });
-        this.showText('Dancers working. Owners talking. Cash, smoke, drinks—and business still moving at the table.', 255, { size: '10px', color: '#d8a6b7', delay: 2050 });
-        this.showContinue(4200);
+        this.showText('Two of them picked JP before he sat down. They were not asking.', 200, { size: '10px', color: '#e0a8bc', delay: 1600 });
+        this.showText('Dancers working. Owners talking. Cash, smoke, drinks—and business still moving at the table.', 255, { size: '10px', color: '#d8a6b7', delay: 2400 });
+        this.time.delayedCall(6200, () => {
+          this.showText('Some parts of the night stay in the room.', 320, { size: '11px', color: '#f0c040' });
+        });
+        this.showContinue(7000);
         break;
       }
       case 5: {
