@@ -41,6 +41,7 @@ export class OperatorScene extends BaseChapterScene {
   create() {
     super.create();
     this.createOperatorWorkplaces();
+    this.buildDensityPass();
 
     // GameIntelligence — track player behavior
     GameIntelligence.init(this, this.player);
@@ -201,6 +202,144 @@ export class OperatorScene extends BaseChapterScene {
       duration: 1500,
       delay: 4200,
       ease: 'Quad.easeOut',
+    });
+  }
+
+  // Density pass: the big readable layer. A room should announce its job
+  // from across the screen — zones, one commanding board, and people working.
+  private buildDensityPass() {
+    const tile = SCALED_TILE;
+    const px = (v: number) => v * tile + tile / 2;
+
+    // ── HQ floor zoning: tape lines + stencils split the gray into functions ──
+    const zones: Array<{ x: number; y: number; w: number; h: number; name: string; tint: number }> = [
+      { x: 3.5, y: 3, w: 5, h: 5.5, name: 'DEV BAY', tint: 0x2a3a55 },
+      { x: 10.5, y: 3, w: 2.5, h: 5.5, name: 'CALLS', tint: 0x3a2a45 },
+      { x: 13.5, y: 3, w: 3, h: 5.5, name: 'OPS', tint: 0x453a25 },
+    ];
+    for (const z of zones) {
+      this.add.rectangle(px(z.x + z.w / 2 - 0.5), px(z.y + z.h / 2 - 0.5), z.w * tile, z.h * tile, z.tint, 0.14)
+        .setDepth(1.8);
+      this.add.rectangle(px(z.x + z.w / 2 - 0.5), px(z.y) - tile * 0.35, z.w * tile, 3, 0xf0c040, 0.35).setDepth(1.9);
+      this.add.text(px(z.x + z.w / 2 - 0.5), px(z.y) - tile * 0.18, z.name, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#c9b878',
+      }).setOrigin(0.5).setDepth(1.9).setAlpha(0.85);
+    }
+
+    // ── THE BOARD: real clients, real statuses, readable across the room ──
+    const boardX = px(11.5);
+    const boardY = px(3.15);
+    this.add.rectangle(boardX, boardY, tile * 3.4, tile * 1.5, 0x1c2430).setDepth(2.5).setStrokeStyle(3, 0x4a5568);
+    this.add.text(boardX, boardY - tile * 0.55, 'ACTIVE WORK', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#8fa8c8',
+    }).setOrigin(0.5).setDepth(2.6);
+    const clients: Array<[string, string, number]> = [
+      ['STICKER SMITH', 'PAID', 0x40c060],
+      ['WCT', 'LIVE', 0x40c060],
+      ['DHL', 'OPS', 0xf0c040],
+      ['VACAVILLE', '+1 MORE THING', 0xe07040],
+    ];
+    clients.forEach(([name, status, color], i) => {
+      const rowY = boardY - tile * 0.32 + i * (tile * 0.29);
+      this.add.rectangle(boardX - tile * 0.6, rowY, tile * 1.9, tile * 0.22, 0x2a3444).setDepth(2.6);
+      this.add.text(boardX - tile * 1.5, rowY, name, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '5px', color: '#c8d4e4',
+      }).setOrigin(0, 0.5).setDepth(2.7);
+      const chip = this.add.rectangle(boardX + tile * 0.95, rowY, tile * 0.85, tile * 0.2, color, 0.85).setDepth(2.6);
+      this.add.text(boardX + tile * 0.95, rowY, status, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '4px', color: '#101418',
+      }).setOrigin(0.5).setDepth(2.7);
+      if (status === 'OPS') {
+        this.tweens.add({ targets: chip, alpha: 0.45, duration: 900, yoyo: true, repeat: -1 });
+      }
+    });
+
+    // ── DEV BAY: monitor wall with living glow + scrolling code flicker ──
+    for (let m = 0; m < 3; m++) {
+      const mx = px(4.4 + m * 1.2);
+      const my = px(3.2);
+      this.add.rectangle(mx, my, tile * 0.95, tile * 0.7, 0x0e1420).setDepth(2.5).setStrokeStyle(2, 0x3a4658);
+      const screen = this.add.rectangle(mx, my, tile * 0.8, tile * 0.55, [0x1c3050, 0x1c4038, 0x30263e][m], 0.9).setDepth(2.6);
+      this.tweens.add({
+        targets: screen, alpha: 0.55, duration: 700 + m * 260, yoyo: true, repeat: -1, delay: m * 300,
+      });
+      for (let l = 0; l < 3; l++) {
+        const codeLine = this.add.rectangle(mx - tile * 0.22 + l * 5, my - tile * 0.14 + l * 8, tile * (0.32 - l * 0.06), 2, 0x7ec8a0, 0.6).setDepth(2.7);
+        this.tweens.add({
+          targets: codeLine, scaleX: 0.4 + (l % 2) * 0.5, duration: 1100 + l * 380, yoyo: true, repeat: -1, delay: m * 200 + l * 150,
+        });
+      }
+    }
+
+    // ── OPS CORNER: pallet stacks + a worker who actually moves boxes ──
+    for (let s = 0; s < 3; s++) {
+      const sx = px(14.2 + (s % 2) * 0.9);
+      const sy = px(3.3 + Math.floor(s / 2) * 0.75);
+      this.add.rectangle(sx, sy, tile * 0.72, tile * 0.55, 0x8a6544).setDepth(2.5).setStrokeStyle(2, 0x5a4028);
+      this.add.rectangle(sx, sy - tile * 0.08, tile * 0.72, 3, 0xc9a44a, 0.8).setDepth(2.6);
+    }
+    const worker = this.add.sprite(px(14.5), px(5), 'npc_generic', 0).setScale(SCALE * 0.95).setDepth(3.1).setTint(0xc8b898);
+    const carried = this.add.rectangle(px(14.5), px(5) - tile * 0.4, tile * 0.4, tile * 0.3, 0x8a6544).setDepth(3.2);
+    const runWorkerLoop = () => {
+      if (!this.scene.isActive()) return;
+      carried.setVisible(true);
+      this.tweens.add({
+        targets: [worker, carried], x: `-=${tile * 3.2}`, duration: 2600, ease: 'Sine.easeInOut',
+        onComplete: () => {
+          carried.setVisible(false);
+          this.tweens.add({
+            targets: [worker, carried], x: `+=${tile * 3.2}`, duration: 2600, delay: 700, ease: 'Sine.easeInOut',
+            onComplete: () => { this.time.delayedCall(900, runWorkerLoop); },
+          });
+        },
+      });
+    };
+    runWorkerLoop();
+
+    // ── People using equipment: a dev parked at the monitor wall ──
+    const seatedDev = this.add.sprite(px(5.6), px(3.9), 'npc_elijah', 0).setScale(SCALE * 0.95).setDepth(3.0).setTint(0xd8d8e8);
+    this.tweens.add({ targets: seatedDev, y: px(3.9) - 2, duration: 1400, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+    // Keyboard clatter: a tiny paper/note hop near the dev every few seconds
+    this.time.addEvent({
+      delay: 5200, loop: true,
+      callback: () => {
+        if (!this.scene.isActive()) return;
+        const note = this.add.rectangle(px(5.6) + 14, px(3.9) - 8, 6, 6, 0xf0e8c8).setDepth(3.2);
+        this.tweens.add({ targets: note, y: px(3.9) - 24, alpha: 0, duration: 900, onComplete: () => note.destroy() });
+      },
+    });
+
+    // ── Client samples: sticker sheets + print proofs by the OPS zone ──
+    const sampleColors = [0xe05050, 0x40a0e0, 0xf0c040, 0x50c878];
+    sampleColors.forEach((c, i) => {
+      const sx = px(13.4) + (i % 2) * 14;
+      const sy = px(6.1) + Math.floor(i / 2) * 14;
+      this.add.rectangle(sx, sy, 12, 16, 0xffffff).setDepth(2.5).setAngle(-8 + i * 6);
+      this.add.rectangle(sx, sy - 2, 8, 8, c).setDepth(2.6).setAngle(-8 + i * 6);
+    });
+    this.add.text(px(13.8), px(6.7), 'PROOFS', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '5px', color: '#8a7a58',
+    }).setOrigin(0.5).setDepth(2.6);
+
+    // ── Street life: courier with a dolly crossing the main street ──
+    const courier = this.add.sprite(-tile, px(11), 'npc-business', 0).setScale(SCALE).setDepth(3.1);
+    const dolly = this.add.rectangle(-tile - tile * 0.5, px(11) + tile * 0.1, tile * 0.5, tile * 0.55, 0x9a7040).setDepth(3.05);
+    this.tweens.add({
+      targets: [courier, dolly], x: `+=${(operatorMap.tiles[0].length + 2) * tile}`,
+      duration: 26000, repeat: -1, delay: 2000,
+    });
+
+    // ── Printer at (8,6) actually prints ──
+    this.time.addEvent({
+      delay: 7000, loop: true,
+      callback: () => {
+        if (!this.scene.isActive()) return;
+        const page = this.add.rectangle(px(8), px(6) - 6, 10, 12, 0xf0f0e8).setDepth(3.2).setAlpha(0.95);
+        this.tweens.add({
+          targets: page, y: px(6) + 14, alpha: 0, duration: 1600, ease: 'Quad.easeIn',
+          onComplete: () => page.destroy(),
+        });
+      },
     });
   }
 
