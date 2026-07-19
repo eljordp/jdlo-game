@@ -203,20 +203,20 @@ export const chapter1NPCs: NPCData[] = [
     y: 5,
     sprite: 'npc_bikini1',
     dialogue: [
-      { speaker: 'Girl', text: 'You live here?' },
+      { speaker: 'Rosa', text: 'You live here?' },
       { speaker: 'JP', text: 'Yeah.' },
-      { speaker: 'Girl', text: 'This place is crazy. Who\'s throwing tonight?' },
+      { speaker: 'Rosa', text: 'Figures. I bartend two of these houses a week. Y\'all all have the same fridge.' },
       { speaker: 'JP', text: 'We always throwing.' },
-      { speaker: 'Girl', text: 'Must be nice. I wish I had a spot like this.' },
+      { speaker: 'Rosa', text: 'I know. I\'m working your party Friday. Double rate if it goes past two — I don\'t do free overtime for rich kids.' },
       { speaker: 'JP', text: '', choices: [
         { text: '"It\'s not as cool as it looks."', next: [
-          { speaker: 'Girl', text: 'Boy please. You\'re on the beach with a hot tub and cute friends.' },
-          { speaker: 'Girl', text: 'What\'s not cool about that?' },
-          { speaker: 'JP\'s Mind', text: 'She sees the highlight reel. Not the 3 AM version.' },
+          { speaker: 'Rosa', text: 'I KNOW it\'s not. I clean up after it. Last week somebody microwaved a vape.' },
+          { speaker: 'Rosa', text: 'You\'re the first one to admit it though.' },
+          { speaker: 'JP\'s Mind', text: 'She sees the 3 AM version. She mops it.' },
         ]},
         { text: '"Yeah. It\'s not bad."', next: [
-          { speaker: 'Girl', text: 'Not bad? You\'re funny. I like that.' },
-          { speaker: 'JP\'s Mind', text: 'She\'s cool. But she\'ll be gone by tomorrow. They all are.' },
+          { speaker: 'Rosa', text: 'Not bad, he says. Okay. See you Friday. Tip your bartender.' },
+          { speaker: 'JP\'s Mind', text: 'She\'ll outlast every single person at this party. She has a rate card.' },
         ]},
       ]},
     ],
