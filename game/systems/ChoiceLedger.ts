@@ -92,8 +92,14 @@ export const CHOICE_DEFS: ChoiceDef[] = [
     jpReal: 'Shared it',
     jpLine: 'JP shared. The homies kept him loaded — he ran the ramen economy.',
   },
-  // Operator-era choice slot: 'slack_dinner' was cut (JP: weak beat).
-  // Replacement pending JP's pick — candidates in the audit doc.
+  {
+    id: 'post_the_win',
+    chapter: 'Operator Mode',
+    prompt: 'The launch nobody saw',
+    options: ['Posted it', 'Kept it quiet'],
+    jpReal: 'Kept it quiet',
+    jpLine: 'JP kept most wins quiet. He\'s still learning to let them be seen.',
+  },
 ];
 
 export class ChoiceLedger {

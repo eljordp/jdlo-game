@@ -11,6 +11,7 @@ import { GameIntelligence } from '../systems/GameIntelligence';
 import { CasinoSystem } from '../systems/CasinoSystem';
 import { DMSystem } from '../systems/DMSystem';
 import { SoundEffects } from '../systems/SoundEffects';
+import { ChoiceLedger } from '../systems/ChoiceLedger';
 
 export class OperatorScene extends BaseChapterScene {
   private npcsTalkedTo = new Set<string>();
@@ -37,6 +38,7 @@ export class OperatorScene extends BaseChapterScene {
 
   create() {
     super.create();
+    this.createOperatorWorkplaces();
 
     // GameIntelligence — track player behavior
     GameIntelligence.init(this, this.player);
@@ -197,6 +199,128 @@ export class OperatorScene extends BaseChapterScene {
       duration: 1500,
       delay: 4200,
       ease: 'Quad.easeOut',
+    });
+  }
+
+  private createOperatorWorkplaces() {
+    const tile = SCALED_TILE;
+    const px = (value: number) => value * tile + tile / 2;
+    const rect = (x: number, y: number, width: number, height: number, color: number, depth = 2.05, alpha = 1) =>
+      this.add.rectangle(px(x), px(y), width * tile, height * tile, color, alpha).setDepth(depth);
+    const prop = (texture: string, x: number, y: number, scale = 0.65, tint?: number) => {
+      const sprite = this.add.sprite(px(x), px(y), texture).setScale(SCALE * scale).setDepth(3.08);
+      if (tint !== undefined) sprite.setTint(tint);
+      return sprite;
+    };
+    const label = (x: number, y: number, width: number, text: string, color: number) => {
+      this.add.rectangle(px(x), y * tile, width * tile, 26, color).setDepth(2.45);
+      this.add.text(px(x), y * tile, text, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#ffffff',
+      }).setOrigin(0.5).setDepth(2.48);
+    };
+
+    label(9.5, 2.28, 14.6, 'POMAIKA\'I  /  OFFICE KULT', 0x233f59);
+    label(24.5, 2.28, 8.6, 'CLIENT WORKSHOP', 0x4e535e);
+    label(35, 2.28, 5.6, 'CLIENT OFFICE', 0x4b3f52);
+
+    // Pomaika'i: a working operator floor—shared desks, live projects,
+    // whiteboard, printer, water station and a table where scope gets decided.
+    rect(9.5, 5.6, 12.4, 4.5, 0x26384a, 2.0);
+    rect(9.5, 5.6, 11.8, 3.9, 0x354c62, 2.02);
+    for (let x = 4.2; x <= 14.8; x += 1.1) {
+      this.add.rectangle(px(x), px(5.6), 4, 3.45 * tile, 0x82a1b7, 0.18).setDepth(2.04);
+    }
+
+    // Two workstation rows instead of tablets floating on hardwood.
+    for (const y of [4.15, 6.25]) {
+      for (const x of [5.1, 7.4, 11.7, 14.0]) {
+        this.add.rectangle(px(x), px(y), 1.7 * tile, 34, 0x553a2c).setDepth(2.5);
+        this.add.rectangle(px(x), px(y) - 12, 1.55 * tile, 7, 0x9a7655).setDepth(2.53);
+      }
+    }
+    for (const [x, y, color] of [
+      [5.1, 3.88, 0x4d8fc5], [7.4, 3.88, 0x5ca66e],
+      [11.7, 3.88, 0x7769c8], [14.0, 3.88, 0x4d9a93],
+      [5.1, 5.98, 0x5a88bd], [7.4, 5.98, 0x9b7755],
+      [11.7, 5.98, 0x6c75bd], [14.0, 5.98, 0x4c9c77],
+    ] as Array<[number, number, number]>) {
+      this.add.rectangle(px(x), px(y), 58, 36, 0x11161e).setDepth(2.72).setStrokeStyle(3, 0x424a53);
+      const glow = this.add.rectangle(px(x), px(y), 47, 25, color, 0.48).setDepth(2.74);
+      this.tweens.add({ targets: glow, alpha: 0.2, duration: 1000 + x * 57 + y * 31, yoyo: true, repeat: -1 });
+    }
+
+    // Real operational surfaces: proposal notes, delivery status and a screen
+    // showing work—not vanity revenue counters.
+    this.add.rectangle(px(10.4), 3.05 * tile, 265, 58, 0xe4e3dc).setDepth(2.43).setStrokeStyle(6, 0x635544);
+    this.add.text(px(10.4), 3.05 * tile, 'TODAY\nSHIP  •  FIX  •  FOLLOW UP', {
+      fontFamily: 'monospace', fontSize: '9px', color: '#25303b', align: 'center',
+    }).setOrigin(0.5).setDepth(2.46);
+    for (const note of [
+      { x: 3.8, y: 3.2, color: 0xe5d36e },
+      { x: 4.35, y: 3.25, color: 0x77b7d4 },
+      { x: 15.1, y: 3.2, color: 0xe08d98 },
+      { x: 15.65, y: 3.28, color: 0x85bd79 },
+    ]) {
+      this.add.rectangle(px(note.x), px(note.y), 32, 28, note.color).setDepth(2.48).setAngle((note.x % 1) * 8 - 3);
+    }
+    prop('item-storage-box', 8.2, 7.2, 0.58, 0xd4d1ca);
+    prop('item-letter', 9.0, 7.15, 0.48);
+    prop('item-bottle', 13.0, 3.5, 0.48, 0x7bb5c5);
+    prop('item-photo', 15.7, 7.2, 0.5);
+    prop('item-plant', 3.5, 7.2, 0.62);
+
+    // Client workshop: presentation screen, conference table, samples and
+    // chairs. It reads as a working session, not an empty executive suite.
+    rect(24.5, 5.5, 6.6, 4.3, 0x4b5058, 2.01);
+    rect(24.5, 5.5, 6.1, 3.8, 0x646a72, 2.03);
+    this.add.rectangle(px(24.5), 3.1 * tile, 275, 72, 0x171b20).setDepth(2.45).setStrokeStyle(5, 0x6f747a);
+    const clientDisplay = this.add.rectangle(px(24.5), 3.1 * tile, 252, 54, 0x4c78a4, 0.38).setDepth(2.47);
+    this.tweens.add({ targets: clientDisplay, alpha: 0.17, duration: 1900, yoyo: true, repeat: -1 });
+    this.add.text(px(24.5), 3.1 * tile, 'SCOPE  /  STATUS  /  NEXT', {
+      fontFamily: 'monospace', fontSize: '9px', color: '#dbe6ee',
+    }).setOrigin(0.5).setDepth(2.5);
+    rect(24.5, 5.45, 4.4, 1.05, 0x5d4031, 2.48);
+    this.add.rectangle(px(24.5), px(5.45) - 20, 4.05 * tile, 9, 0x9f7958).setDepth(2.51);
+    for (const [x, y] of [[22.4, 4.65], [24.5, 4.65], [26.6, 4.65], [22.4, 6.3], [24.5, 6.3], [26.6, 6.3]] as Array<[number, number]>) {
+      prop('item-nightstand', x, y, 0.46, 0x4b4f56);
+    }
+    prop('item-letter', 23.5, 5.3, 0.5);
+    prop('item-tablet', 25.4, 5.3, 0.52);
+    prop('item-bottle', 26.2, 5.35, 0.42, 0x7697a8);
+
+    // Smaller client office: believable scale, one desk, a waiting couch,
+    // framed work and storage. The mirror no longer hangs in an empty box.
+    rect(35, 5.0, 4.4, 2.9, 0x4a3f50, 2.01);
+    rect(35, 5.0, 4.0, 2.5, 0x65566b, 2.03);
+    this.add.rectangle(px(35), 3.15 * tile, 220, 52, 0x2a2d33).setDepth(2.44);
+    for (const [x, color] of [[33.8, 0xb78a5c], [35, 0x7fa0b4], [36.2, 0x9f728c]] as const) {
+      this.add.rectangle(px(x), 3.15 * tile, 52, 36, color, 0.55).setDepth(2.47);
+    }
+    this.add.rectangle(px(34.1), px(5.55), 2.0 * tile, 34, 0x52362b).setDepth(2.5);
+    prop('item-tablet', 34.1, 5.35, 0.52);
+    prop('item-couch', 36.2, 5.8, 0.68, 0x4b4f58);
+    prop('item-storage-box', 36.3, 4.2, 0.52, 0x7c6652);
+
+    // Preserve the entrance at 9,9 and the open circulation spines through all
+    // three offices while making the furniture physically meaningful.
+    for (const [x, y] of [
+      [5, 4], [7, 4], [12, 4], [14, 4], [5, 6], [7, 6], [12, 6], [14, 6],
+      [22, 5], [24, 5], [26, 5], [34, 5], [36, 5],
+    ] as Array<[number, number]>) {
+      this.collisionTiles.add(`${x},${y}`);
+    }
+
+    // A DHL vehicle passes the operator district, tying the warehouse work in
+    // Come Up to the later relationship without inventing a second fake office.
+    const dhlVan = this.add.sprite(-2 * tile, 11.45 * tile, 'item-truck')
+      .setScale(SCALE * 0.9).setTint(0xd8b600).setDepth(2.62).setAlpha(0.9);
+    this.tweens.add({
+      targets: dhlVan,
+      x: 42 * tile,
+      duration: 12800,
+      repeat: -1,
+      onRepeat: () => { dhlVan.x = -2 * tile; },
+      ease: 'Linear',
     });
   }
 
@@ -963,10 +1087,14 @@ export class OperatorScene extends BaseChapterScene {
                   duration: 500,
                   onComplete: () => {
                     for (const obj of objects) obj.destroy();
-                    // End with narrator line
+                    // End with narrator line, then the choice JP still wrestles with
                     this.dialogue.show([
                       { speaker: 'Narrator', text: 'The client nods. The next call starts in twenty minutes.' },
-                    ], () => { this.frozen = false; });
+                      { speaker: 'Narrator', text: 'The launch is live. It\'s genuinely good.' },
+                      { speaker: 'JP\'s Mind', text: 'Screenshot\'s already taken. Caption\'s half-written.' },
+                    ], () => {
+                      this.showPostChoice();
+                    });
                   },
                 });
               });
@@ -979,6 +1107,54 @@ export class OperatorScene extends BaseChapterScene {
   }
 
   // ─── DASHBOARD SHOWCASE ─────────────────────────────────────────────
+  // The launch nobody saw — JP's real pattern: wins stay in the drafts.
+  private showPostChoice() {
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+
+    const promptText = this.add.text(cx, cy - 35, 'Post it?', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '11px', color: '#f0c040',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(201);
+
+    const yesBg = this.add.rectangle(cx - 90, cy + 10, 150, 40, 0x30a040)
+      .setScrollFactor(0).setDepth(200).setInteractive({ useHandCursor: true });
+    const yesText = this.add.text(cx - 90, cy + 10, 'Post it', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(201);
+    const noBg = this.add.rectangle(cx + 90, cy + 10, 150, 40, 0xa03030)
+      .setScrollFactor(0).setDepth(200).setInteractive({ useHandCursor: true });
+    const noText = this.add.text(cx + 90, cy + 10, 'Keep it moving', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(201);
+
+    const spaceKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    const nKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.N);
+    const cleanup = () => {
+      promptText.destroy(); yesBg.destroy(); yesText.destroy(); noBg.destroy(); noText.destroy();
+      spaceKey.off('down', onYes); nKey.off('down', onNo);
+    };
+    const onYes = () => {
+      cleanup();
+      ChoiceLedger.record('post_the_win', 'Posted it');
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'Posted. No caption gymnastics. Just the work.' },
+        { speaker: 'JP\'s Mind', text: 'Let them see it.' },
+      ], () => { this.frozen = false; });
+    };
+    const onNo = () => {
+      cleanup();
+      ChoiceLedger.record('post_the_win', 'Kept it quiet');
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'The draft stays a draft. The phone goes face-down.' },
+        { speaker: 'JP\'s Mind', text: 'The work speaks. Eventually. To somebody.' },
+      ], () => { this.frozen = false; });
+    };
+    yesBg.on('pointerdown', onYes);
+    noBg.on('pointerdown', onNo);
+    spaceKey.on('down', onYes);
+    nKey.on('down', onNo);
+  }
+
   private playDashboardShowcase() {
     this.frozen = true;
     const objects: Phaser.GameObjects.GameObject[] = [];

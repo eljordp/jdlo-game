@@ -13,6 +13,7 @@ import { SoundEffects } from '../systems/SoundEffects';
 import { MusicSystem } from '../systems/MusicSystem';
 import { SubstanceSystem } from '../systems/SubstanceSystem';
 import { ChoiceLedger } from '../systems/ChoiceLedger';
+import { AffinitySystem } from '../systems/AffinitySystem';
 
 export class JailScene extends BaseChapterScene {
   private currentDay = 1;
@@ -596,6 +597,23 @@ export class JailScene extends BaseChapterScene {
       });
       return;
     }
+    // Friend levels have teeth in here: humiliate somebody in the yard and
+    // stay cold with him, and he presses you. JP's rule — if you don't
+    // f*** with someone in jail, eventually they want to fight.
+    if ((npcId === 'ch3_fighter1' || npcId === 'ch3_fighter2') &&
+        AffinitySystem.tier(npcId) === 'cold' && !this.frozen && this.currentDay >= 2) {
+      this.frozen = true;
+      this.dialogue.show([
+        { speaker: 'Inmate', text: 'You been walkin\' around like you run this yard.' },
+        { speaker: 'Inmate', text: 'We got a problem, Lopez.' },
+        { speaker: 'JP\'s Mind', text: 'Should\'ve kept him closer. Too late now.' },
+      ], () => {
+        this.frozen = false;
+        this.playBattleScene();
+      });
+      return;
+    }
+
     // Fighter reacts based on battle outcome
     if ((npcId === 'ch3_fighter1' || npcId === 'ch3_fighter2') && this.battleWon !== null && this.currentDay >= 2) {
       const chapterDialogue = this.getChapterDialogue();
@@ -810,16 +828,45 @@ export class JailScene extends BaseChapterScene {
     if (interactable.id === 'ch3_commissary') {
       Analytics.trackInteraction(interactable.id);
       this.frozen = true;
+      // JP ran the ramen economy: homies outside kept the books loaded.
+      // Everybody knew it — and everybody had an offer.
       this.dialogue.show([
-        { speaker: 'Narrator', text: 'Commissary window. Ramen, chips, soap, envelopes.' },
-        { speaker: 'Narrator', text: 'JP grabs a couple soups and a pen.' },
-        { speaker: 'JP\'s Mind', text: 'This is currency in here.' },
+        { speaker: 'Narrator', text: 'Commissary day. The homies outside keep the books loaded.' },
+        { speaker: 'Narrator', text: 'JP walks off with a full bag: ramen, Hot Cheetos, the works.' },
+        { speaker: 'Inmate', text: 'Lopez. Two soups for a strip of suboxone. Fair trade.' },
+        { speaker: 'JP', text: 'I\'m good bro.' },
+        { speaker: 'Inmate', text: 'K2 then. Everybody smokin\' it—' },
+        { speaker: 'JP', text: 'Bro. I\'m on a kosher diet. You think I\'m smokin\' K2?' },
+        { speaker: 'Inmate', text: '...you got any more Hot Cheetos though?' },
       ], () => {
-        InventorySystem.addItem('ramen', 2);
-        InventorySystem.addItem('stamps', 1);
-        InventorySystem.addItem('soap', 1);
-        SoundEffects.playPickup();
-        this.frozen = false;
+        this.showYesNoChoice('Share the bag?', 'Share it', 'Keep it', () => {
+          ChoiceLedger.record('commissary_share', 'Shared it');
+          AffinitySystem.adjust('ch3_mikey', 1);
+          AffinitySystem.adjust('ch3_chris', 1);
+          AffinitySystem.adjust('ch3_bird', 1);
+          this.dialogue.show([
+            { speaker: 'Narrator', text: 'Soups for Mikey. Cheetos for Chris. Bird gets first pick.' },
+            { speaker: 'Bird', text: 'This why nobody got a problem with you, Lopez.' },
+            { speaker: 'JP\'s Mind', text: 'Feed people. It comes back. Same rule as outside.' },
+          ], () => {
+            InventorySystem.addItem('ramen', 1);
+            InventorySystem.addItem('stamps', 1);
+            SoundEffects.playPickup();
+            this.frozen = false;
+          });
+        }, () => {
+          ChoiceLedger.record('commissary_share', 'Kept it');
+          this.dialogue.show([
+            { speaker: 'Narrator', text: 'The bag stays under the bunk. The block notices everything.' },
+            { speaker: 'JP\'s Mind', text: 'Mine. For now.' },
+          ], () => {
+            InventorySystem.addItem('ramen', 2);
+            InventorySystem.addItem('stamps', 1);
+            InventorySystem.addItem('soap', 1);
+            SoundEffects.playPickup();
+            this.frozen = false;
+          });
+        });
       });
       return;
     }
@@ -1472,7 +1519,11 @@ export class JailScene extends BaseChapterScene {
           objects.push(scoreResult);
 
           // Track pushup outcome for reactive NPC dialogue
-          if (diff > 10) this.pushupDominated = true;
+          if (diff > 10) {
+            this.pushupDominated = true;
+            // Public domination breeds a grudge — the yard keeps score
+            AffinitySystem.adjust('ch3_fighter1', -3);
+          }
           if (diff <= 0) MoodSystem.changeMorale(-10); // losing in the yard costs pride
           this.trainingComplete = true;
 
