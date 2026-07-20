@@ -1143,9 +1143,53 @@ export class BeachScene extends BaseChapterScene {
           duration: 2200,
           ease: 'Quad.easeOut',
           onComplete: () => {
+            // ── THE ARRIVAL: the image this choice deserves ──
+            // Road fades. A farm gate, a dark house, one porch light,
+            // and a silhouette that was waiting before he got there.
+            const arrival: Phaser.GameObjects.GameObject[] = [];
+            const fadeIn = (obj: Phaser.GameObjects.GameObject & { setAlpha: (a: number) => unknown }, alpha: number, delay: number) => {
+              obj.setAlpha(0);
+              this.tweens.add({ targets: obj, alpha, duration: 700, delay });
+              arrival.push(obj);
+              driveObjects.push(obj);
+            };
+
+            // Night sky stays; dim the road world
+            this.tweens.add({ targets: [road, shoulder, farmSign, headlight], alpha: 0.15, duration: 700 });
+            // Gravel turn-in
+            fadeIn(this.add.rectangle(cx, cy + 110, GAME_WIDTH, 190, 0x3a3228).setScrollFactor(0).setDepth(506), 1, 0);
+            // Fence line — split-rail posts across the dark
+            for (let fx = 60; fx < GAME_WIDTH; fx += 130) {
+              fadeIn(this.add.rectangle(fx, cy - 10, 10, 70, 0x4a3b28).setScrollFactor(0).setDepth(506), 0.9, 150);
+              fadeIn(this.add.rectangle(fx + 65, cy - 30, 130, 8, 0x42341f).setScrollFactor(0).setDepth(506), 0.9, 150);
+            }
+            // Open gate where the car pulls through
+            fadeIn(this.add.rectangle(cx - 130, cy - 25, 12, 95, 0x5a4630).setScrollFactor(0).setDepth(507), 1, 250);
+            fadeIn(this.add.rectangle(cx - 195, cy - 45, 120, 10, 0x5a4630).setScrollFactor(0).setDepth(507).setAngle(-24), 1, 250);
+            // Farmhouse silhouette, far right
+            fadeIn(this.add.rectangle(GAME_WIDTH - 200, cy - 95, 280, 150, 0x141019).setScrollFactor(0).setDepth(506), 1, 400);
+            fadeIn(this.add.triangle(GAME_WIDTH - 200, cy - 190, 0, 60, 150, 0, 300, 60, 0x0e0b12).setScrollFactor(0).setDepth(506).setOrigin(0.5, 0.5), 1, 400);
+            // THE PORCH LIGHT — the only warm thing out here
+            const porch = this.add.circle(GAME_WIDTH - 285, cy - 60, 7, 0xffd88a).setScrollFactor(0).setDepth(508);
+            fadeIn(porch, 1, 600);
+            const porchGlow = this.add.circle(GAME_WIDTH - 285, cy - 55, 85, 0xf2b65a, 0.13).setScrollFactor(0).setDepth(507);
+            fadeIn(porchGlow, 1, 600);
+            this.tweens.add({ targets: porchGlow, alpha: 0.07, duration: 1600, yoyo: true, repeat: -1, delay: 1300 });
+            // Her silhouette under the light, already waiting
+            fadeIn(this.add.sprite(GAME_WIDTH - 285, cy - 18, 'npc_waitress', 0).setScale(SCALE * 1.1).setTint(0x241a20).setScrollFactor(0).setDepth(508), 1, 800);
+            // The 335i parked at the gate, lights cut
+            fadeIn(this.add.sprite(cx - 40, cy + 60, 'car-bmw335i').setScale(SCALE * 1.3).setScrollFactor(0).setDepth(508), 1, 500);
+            // Dust settling in what's left of the headlights
+            for (let d = 0; d < 8; d++) {
+              const mote = this.add.circle(cx + 40 + d * 22, cy + 30 + (d % 3) * 12, 2, 0xcbb58a, 0.35).setScrollFactor(0).setDepth(507);
+              fadeIn(mote, 0.35, 700 + d * 90);
+              this.tweens.add({ targets: mote, y: mote.y - 14, alpha: 0, duration: 2400, delay: 1500 + d * 120 });
+            }
+
             this.dialogue.show([
               { speaker: 'Narrator', text: 'The 335i climbs past the city lights.' },
               { speaker: 'Narrator', text: 'Farm road. No streetlights. Nobody to explain this to.' },
+              { speaker: 'Narrator', text: 'One porch light on. She\'s already outside. She was never not going to be.' },
               { speaker: 'Nikki\'s Mom', text: this.choiceHesitated ? 'I almost called somebody else.' : 'You understand this stays between us.' },
               ...(this.choiceHesitated ? [{ speaker: 'JP', text: 'I came.' }] : []),
               ...(!this.choiceHesitated ? [{ speaker: 'JP', text: 'I got you.' }] : []),
