@@ -919,12 +919,73 @@ export class JailScene extends BaseChapterScene {
 
   // Everything in here costs. The homies keep the books loaded; the block runs on it.
   private commissaryBucks = 25;
+  private visitationSeen = false;
 
   private fmtBucks(): string {
     return '$' + this.commissaryBucks.toFixed(2);
   }
 
   protected handleInteractable(interactable: { id: string; type: string; consumed?: boolean }) {
+    // ── PHONE: 15 minutes for $3. The realest price in the building. ──
+    if (interactable.id === 'ch3_phone') {
+      this.frozen = true;
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'Phone bank. A dollar a call. The whole block\'s life runs through this receiver, one dollar at a time.' },
+        { speaker: 'JP\'s Mind', text: 'A dollar to hear a voice from outside. Books: ' + this.fmtBucks() },
+      ], () => {
+        this.showYesNoChoice('Who you calling?', 'Call Pops -$1', 'Call K -$1', () => {
+          if (this.commissaryBucks < 1) {
+            this.dialogue.show([
+              { speaker: 'JP\'s Mind', text: 'Not even three dollars on the books. Can\'t afford my own father\'s voice.' },
+              { speaker: 'JP\'s Mind', text: 'Wednesday. Everything is about Wednesday.' },
+            ], () => { this.frozen = false; });
+            return;
+          }
+          this.commissaryBucks -= 1;
+          MoodSystem.changeMorale(10);
+          AffinitySystem.adjust('ch0_pops', 1);
+          this.dialogue.show([
+            { speaker: 'Pops', text: 'Mijo.' },
+            { speaker: 'JP', text: 'Hey Pops.' },
+            { speaker: 'Pops', text: 'Your mom made tamales Sunday. I saved you some. They\'ll be freezer-burned by the time you\'re out but they\'re yours.' },
+            { speaker: 'JP', text: '...save them anyway.' },
+            { speaker: 'Narrator', text: 'The best dollar in the building.' },
+          ], () => { this.frozen = false; });
+        }, () => {
+          if (this.commissaryBucks < 1) {
+            this.dialogue.show([
+              { speaker: 'JP\'s Mind', text: 'Not even a dollar on the books. Can\'t afford anybody\'s voice today.' },
+            ], () => { this.frozen = false; });
+            return;
+          }
+          this.commissaryBucks -= 1;
+          MoodSystem.changeMorale(10);
+          this.dialogue.show([
+            { speaker: 'K', text: 'BABE. Okay so first of all your dog misses you. Second of all I miss you MORE—' },
+            { speaker: 'Narrator', text: 'She talks for the entire call without breathing. JP just holds the receiver and smiles.' },
+            { speaker: 'K', text: 'Visitation Saturday. I\'m wearing the thing. You know the thing.' },
+            { speaker: 'JP\'s Mind', text: 'I called her every single day. A dollar a day. Cheapest therapy in California.' },
+          ], () => { this.frozen = false; });
+        });
+      });
+      return;
+    }
+
+    // ── VISITATION: the glass, the phones, and K being K ──
+    if (interactable.id === 'ch3_window' && this.currentDay >= 2 && !this.visitationSeen) {
+      this.visitationSeen = true;
+      this.frozen = true;
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'Saturday. Visitation. Thick glass, two phones, thirty minutes.' },
+        { speaker: 'K', text: 'You look STRONG. Jail arms. I\'m mad about it.' },
+        { speaker: 'Narrator', text: 'She checks the guard. Checks the camera. Leans close to the glass and—' },
+        { speaker: 'Narrator', text: 'Some parts of visitation stay at visitation.' },
+        { speaker: 'JP\'s Mind', text: 'That woman is completely insane.' },
+        { speaker: 'JP\'s Mind', text: 'Thirty minutes never went so fast in my life.' },
+      ], () => { MoodSystem.changeMorale(15); this.frozen = false; });
+      return;
+    }
+
     // ── TABLET KIOSK: nothing is free in here, not even a bad movie ──
     if (interactable.id === 'ch3_tablet') {
       this.frozen = true;
@@ -1132,7 +1193,9 @@ export class JailScene extends BaseChapterScene {
       this.frozen = true;
       SoundEffects.playPageTurn();
       this.dialogue.show([
-        { speaker: 'Narrator', text: 'The Compound Effect. JP\'s been reading it for two weeks.' },
+        { speaker: 'Narrator', text: 'Package slip: AMAZON. Books can\'t come from people — only from Amazon direct. Soaked pages made them ban regular mail.' },
+      { speaker: 'JP\'s Mind', text: 'The homies figured out the loophole week one. They kept the reading list stocked the whole bid.' },
+      { speaker: 'Narrator', text: 'The Compound Effect. JP\'s been reading it for two weeks.' },
         { speaker: 'Narrator', text: '"Small choices + consistency + time = massive results."' },
         { speaker: 'JP\'s Mind', text: 'If that\'s true... then everything I did before was compounding too.' },
         { speaker: 'JP\'s Mind', text: 'Bad choices. Consistently. Over time.' },

@@ -2,6 +2,8 @@ import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, SCALE, CHAR_SCALE } from '../config';
 import { MusicSystem } from '../systems/MusicSystem';
 import { ChoiceLedger } from '../systems/ChoiceLedger';
+import { CasinoSystem } from '../systems/CasinoSystem';
+import { BalanceSystem } from '../systems/BalanceSystem';
 
 /**
  * Cinematic Vegas scene — a real trip where party access, owners, women,
@@ -757,6 +759,33 @@ export class VegasScene extends Phaser.Scene {
         this.showText('One dancer counts between sets, not after. Four more months pays off the nursing degree. She tips the DJ first.', 290, { size: '8px', color: '#b08494', delay: 3200 });
         this.time.delayedCall(6200, () => {
           this.showText('Some parts of the night stay in the room.', 320, { size: '11px', color: '#f0c040' });
+        });
+        // Dan's law: there is always one more hand. Real cards, real math, real money.
+        this.time.delayedCall(6600, () => {
+          if (!this.scene.isActive()) return;
+          const tbl = this.addObj(this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT - 130, 300, 44, 0x1f6b3a)
+            .setDepth(130).setInteractive({ useHandCursor: true }).setStrokeStyle(2, 0xd4a017));
+          const tblText = this.addObj(this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 130, 'HIT THE TABLES WITH DAN', {
+            fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#ffffff',
+          }).setOrigin(0.5).setDepth(131));
+          tbl.on('pointerdown', () => {
+            tbl.destroy(); tblText.destroy();
+            this.canAdvance = false;
+            const before = BalanceSystem.getBalance();
+            this.showText('Dan: "One hand. Maybe six. Definitely six."', GAME_HEIGHT - 170, { size: '9px', color: '#e0c890' });
+            CasinoSystem.openCasino(this, () => {
+              const net = BalanceSystem.getBalance() - before;
+              this.showText(
+                net > 0
+                  ? `Dan: "SEE?! Up $${net}. Walk away RIGHT NOW." They did not walk away right now.`
+                  : net < 0
+                    ? `Down $${Math.abs(net)}. Dan: "We don't talk about this part of the story."`
+                    : 'Broke exactly even. Dan called it "a moral victory." Nobody agreed.',
+                GAME_HEIGHT - 170, { size: '9px', color: net > 0 ? '#40c060' : '#c89090' },
+              );
+              this.showContinue(1800);
+            });
+          });
         });
         this.showContinue(7000);
         break;
