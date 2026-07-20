@@ -2677,9 +2677,25 @@ export class HomeScene extends BaseChapterScene {
     this.frozen = true;
     const objects: Phaser.GameObjects.GameObject[] = [];
     let trashed = 0;
+    let resolved = false;
 
     const cx = GAME_WIDTH / 2;
     const cy = GAME_HEIGHT / 2;
+
+    const cleanup = () => {
+      if (resolved) return;
+      resolved = true;
+      escKey.off('down', onEsc);
+      for (const obj of objects) {
+        if (obj && obj.active) {
+          this.tweens.add({
+            targets: obj, alpha: 0, duration: 250,
+            onComplete: () => { if (obj.active) (obj as Phaser.GameObjects.GameObject).destroy(); },
+          });
+        }
+      }
+      this.time.delayedCall(300, () => { this.frozen = false; });
+    };
 
     // Dark overlay
     objects.push(this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.8)
@@ -2715,7 +2731,7 @@ export class HomeScene extends BaseChapterScene {
       fontFamily: '"Press Start 2P", monospace', fontSize: '14px', color: '#c0b090',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(304));
 
-    objects.push(this.add.text(cx, cy - 168, 'Click a letter to crumple it.', {
+    objects.push(this.add.text(cx, cy - 168, 'Click all three letters to crumple them.', {
       fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#807060',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(304));
 
@@ -2896,17 +2912,7 @@ export class HomeScene extends BaseChapterScene {
               this.dialogue.show([
                 { speaker: 'JP\'s Mind', text: '$40K a year to learn what YouTube teaches for free.' },
                 { speaker: 'JP\'s Mind', text: 'Nah.' },
-              ], () => {
-                for (const obj of objects) {
-                  if (obj && obj.active) {
-                    this.tweens.add({
-                      targets: obj, alpha: 0, duration: 400,
-                      onComplete: () => { if (obj.active) (obj as Phaser.GameObjects.GameObject).destroy(); },
-                    });
-                  }
-                }
-                this.time.delayedCall(500, () => { this.frozen = false; });
-              });
+              ], cleanup);
             });
           }
         });
@@ -2915,13 +2921,7 @@ export class HomeScene extends BaseChapterScene {
 
     // ESC to close early
     const escKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
-    const onEsc = () => {
-      escKey.off('down', onEsc);
-      for (const obj of objects) {
-        if (obj && obj.active) (obj as Phaser.GameObjects.GameObject).destroy();
-      }
-      this.frozen = false;
-    };
+    const onEsc = () => cleanup();
     escKey.on('down', onEsc);
   }
 
