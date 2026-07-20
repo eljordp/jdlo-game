@@ -7,7 +7,6 @@ import { SoundEffects } from '../systems/SoundEffects';
 import { MusicSystem } from '../systems/MusicSystem';
 import { ChoiceLedger } from '../systems/ChoiceLedger';
 import { WhipMenu, type WhipDestination } from '../systems/WhipMenu';
-import { ClosetStore } from '../systems/ClosetStore';
 import { SocialSystem } from '../systems/SocialSystem';
 import { MoodSystem } from '../systems/MoodSystem';
 import { BalanceSystem } from '../systems/BalanceSystem';
@@ -481,166 +480,7 @@ export class WeedRiseScene extends BaseChapterScene {
     super.handleNPCDialogue(npcId, dialogue);
   }
 
-  private beachDateDone = false;
-  private secondDateTried = false;
-  private hikeDone = false;
-
-  private showSbCutaway(kind: 'coast' | 'lillys' | 'oku' | 'hot_springs'): () => void {
-    const objects: Array<Phaser.GameObjects.GameObject & Partial<Phaser.GameObjects.Components.Alpha> & Partial<Phaser.GameObjects.Components.ScrollFactor> & Partial<Phaser.GameObjects.Components.Depth>> = [];
-    const d = 240;
-    const cx = GAME_WIDTH / 2;
-    const cy = GAME_HEIGHT / 2;
-    const add = <T extends Phaser.GameObjects.GameObject & Partial<Phaser.GameObjects.Components.ScrollFactor> & Partial<Phaser.GameObjects.Components.Depth>>(obj: T): T => {
-      obj.setScrollFactor?.(0);
-      obj.setDepth?.(d + objects.length / 100);
-      objects.push(obj);
-      return obj;
-    };
-
-    add(this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x061018, 0.78));
-    add(this.add.rectangle(cx, cy + 145, GAME_WIDTH, 170, 0x12395a, 1));
-    for (let i = 0; i < 5; i++) {
-      add(this.add.rectangle(cx - 460 + i * 230, cy + 90 + i % 2 * 20, 150, 5, 0xdaf3ff, 0.34));
-    }
-    // Low coast silhouette: enough Santa Barbara identity without turning the
-    // cutaway into a whole extra map.
-    add(this.add.triangle(cx - 340, cy + 62, 0, 56, 140, 0, 280, 56, 0x18242a, 0.95));
-    add(this.add.triangle(cx + 385, cy + 66, 0, 62, 180, 0, 360, 62, 0x18242a, 0.95));
-    for (const palmX of [cx - 520, cx + 520]) {
-      add(this.add.rectangle(palmX, cy + 40, 8, 126, 0x3e2b1f, 1).setAngle(palmX < cx ? -4 : 4));
-      for (let i = 0; i < 5; i++) {
-        add(this.add.rectangle(palmX + (i - 2) * 12, cy - 30 + Math.abs(i - 2) * 6, 48, 7, 0x244c35, 1).setAngle((i - 2) * 18));
-      }
-    }
-    add(this.add.rectangle(cx, cy + 235, GAME_WIDTH, 86, 0xd9b06f, 1));
-
-    if (kind === 'coast' || kind === 'lillys') {
-      // Lilly's: tiny taco window, paper plates, and a bench with the Pacific doing half the work.
-      add(this.add.rectangle(cx - 260, cy + 30, 210, 120, 0xf1dfbf, 1).setStrokeStyle(4, 0x8f4d32));
-      add(this.add.rectangle(cx - 260, cy - 15, 120, 48, 0x24323a, 1).setStrokeStyle(3, 0xf0c040));
-      add(this.add.text(cx - 260, cy - 18, "LILLY'S", {
-        fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#f0c040',
-      }).setOrigin(0.5));
-      add(this.add.rectangle(cx - 90, cy + 190, 260, 18, 0x7a4a2a, 1));
-      add(this.add.rectangle(cx - 170, cy + 160, 22, 55, 0x5b3926, 1));
-      add(this.add.rectangle(cx - 10, cy + 160, 22, 55, 0x5b3926, 1));
-      for (const x of [cx - 130, cx - 70]) {
-        add(this.add.circle(x, cy + 178, 16, 0xf5e7c8, 1).setStrokeStyle(2, 0xb45f2c));
-      }
-    }
-
-    if (kind === 'coast' || kind === 'oku') {
-      // Oku: clean patio geometry, white table, warm lanterns, money on the water.
-      add(this.add.rectangle(cx + 260, cy + 25, 245, 135, 0xefe8da, 1).setStrokeStyle(4, 0x2b3d50));
-      add(this.add.rectangle(cx + 260, cy - 55, 260, 22, 0x1b2b34, 1));
-      add(this.add.text(cx + 260, cy - 58, 'OKU', {
-        fontFamily: '"Press Start 2P", monospace', fontSize: '13px', color: '#ffffff',
-      }).setOrigin(0.5));
-      for (const x of [cx + 170, cx + 260, cx + 350]) {
-        add(this.add.circle(x, cy - 8, 12, 0xffd98c, 0.78));
-        add(this.add.rectangle(x, cy + 58, 46, 34, 0xf7f1e6, 1).setStrokeStyle(2, 0xc9b98a));
-      }
-      add(this.add.rectangle(cx + 260, cy + 138, 230, 10, 0x9c6d3d, 1));
-    }
-
-    if (kind === 'hot_springs') {
-      add(this.add.rectangle(cx, cy + 20, 760, 230, 0x192a24, 1));
-      for (let i = 0; i < 9; i++) {
-        add(this.add.circle(cx - 330 + i * 82, cy + 52 + (i % 3) * 26, 44, 0x33483a, 1));
-      }
-      add(this.add.ellipse(cx, cy + 95, 340, 116, 0x5aa0a6, 0.82).setStrokeStyle(5, 0xb6f0e8));
-      for (let i = 0; i < 6; i++) {
-        const steam = add(this.add.text(cx - 115 + i * 46, cy + 38, '~', {
-          fontFamily: '"Press Start 2P", monospace', fontSize: '16px', color: '#d8f7ff',
-        }).setOrigin(0.5).setAlpha(0.36));
-        this.tweens.add({ targets: steam, y: cy + 15, alpha: 0.08, duration: 1300 + i * 120, yoyo: true, repeat: -1 });
-      }
-      add(this.add.text(cx, cy - 58, 'HOT SPRINGS TRAIL', {
-        fontFamily: '"Press Start 2P", monospace', fontSize: '12px', color: '#e8e0c8',
-      }).setOrigin(0.5));
-      add(this.add.text(cx, cy + 178, 'NO SIGNAL', {
-        fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#7fa8a0',
-      }).setOrigin(0.5));
-    }
-
-    objects.forEach((obj) => {
-      obj.setAlpha?.(0);
-      this.tweens.add({ targets: obj, alpha: 1, duration: 450 });
-    });
-
-    return () => {
-      this.tweens.add({
-        targets: objects.filter(o => o.active),
-        alpha: 0,
-        duration: 300,
-        onComplete: () => objects.forEach(o => { try { o.destroy(); } catch { /* ignore */ } }),
-      });
-    };
-  }
-
   protected handleInteractable(interactable: { id: string; type: string; consumed?: boolean }) {
-    // ── SB coast eats: same ocean, two price tags. King era can afford either. ──
-    if (interactable.id === 'rise_overlook' && this.beachDateDone && this.secondDateTried && !this.hikeDone) {
-      this.hikeDone = true;
-      this.frozen = true;
-      const closeCutaway = this.showSbCutaway('hot_springs');
-      this.dialogue.show([
-        { speaker: 'K', text: 'No restaurants. Hot Springs trail. Bring water and don\'t complain.' },
-        { speaker: 'Narrator', text: 'Montecito canyon. Forty minutes up. Phones lose signal halfway — the best feature of the whole trail.' },
-        { speaker: 'Narrator', text: 'Warm water, cold air, the whole coast laid out below.' },
-        { speaker: 'K', text: 'See? Free. Better than Oku.' },
-        { speaker: 'JP\'s Mind', text: 'She\'s right. No signal means no orders. First quiet my head\'s had in a month.' },
-        { speaker: 'JP\'s Mind', text: 'The phone found signal on the way down. Eleven missed messages. Back to it.' },
-      ], () => { closeCutaway(); AffinitySystem.adjust('ch1_gf_k', 1); this.frozen = false; });
-      return;
-    }
-
-    if (interactable.id === 'rise_overlook' && this.beachDateDone && !this.secondDateTried) {
-      this.frozen = true;
-      this.secondDateTried = true;
-      this.dialogue.show([
-        { speaker: 'JP\'s Mind', text: 'Phone full of options. Options got standards though.' },
-      ], () => {
-        this.showRouteChoice('Who you texting?', 'Lily', 'Sam', () => {
-          // Lily: boujee tier. Pretty tax is real.
-          this.dialogue.show([
-            { speaker: 'JP', text: '(text) lilly\'s run?' },
-            { speaker: 'Lily', text: '(text) that\'s cute. oku has my table. 8pm.' },
-            { speaker: 'JP\'s Mind', text: 'Lily heard \'taqueria\' and left me on read for a full minute. Boujee tax it is.' },
-          ], () => {
-            this.showRouteChoice('Oku. Lily\'s table.', 'Pay it -$100', 'Cancel', () => {
-              const closeCutaway = this.showSbCutaway('oku');
-              BalanceSystem.spend(100);
-              AffinitySystem.adjust('ch1_lily', 1);
-              this.dialogue.show([
-                { speaker: 'Narrator', text: 'She shows up twenty minutes late looking like the reason menus don\'t have prices.' },
-                { speaker: 'Lily', text: 'You can afford me tonight. Congratulations.' },
-                { speaker: 'JP\'s Mind', text: 'A hundred dollars. Worth every cent. Don\'t tell her I said that.' },
-              ], () => { closeCutaway(); this.frozen = false; });
-            }, () => {
-              this.dialogue.show([
-                { speaker: 'Lily', text: '(text) lol. call me when the budget grows up.' },
-              ], () => { this.frozen = false; });
-            });
-          });
-        }, () => {
-          // Sam: the door the life closes. No tier fixes this one.
-          this.dialogue.show([
-            { speaker: 'JP', text: '(text) dinner this week? anywhere u want' },
-            { speaker: 'Sam', text: '(text) you\'re fun. but i know what you do for money.' },
-            { speaker: 'Sam', text: '(text) study group. every night. good luck jp, i mean it.' },
-            { speaker: 'JP\'s Mind', text: 'Goodies don\'t date the plug. No amount of sushi fixes that.' },
-            { speaker: 'JP\'s Mind', text: 'She hears the clock. I\'m the clock.' },
-          ], () => { this.frozen = false; });
-        });
-      });
-      return;
-    }
-
-    if (interactable.id === 'rise_overlook' && !this.beachDateDone) {
-      this.launchStateStreet();
-      return;
-    }
     if (interactable.id === 'rise_bed' && this.ordersReady && !this.charSnuck && ChoiceLedger.get('char_sneak') === null) {
       this.playCharSneak();
       return;
@@ -709,7 +549,6 @@ export class WeedRiseScene extends BaseChapterScene {
       this.scene.launch('StateStreetScene', {
         returnScene: 'WeedRiseScene',
         onComplete: () => {
-          this.beachDateDone = true;
           this.frozen = false;
           this.cameras.main.fadeIn(450, 0, 0, 0);
           MusicSystem.transitionTo('weed-rise', 700);
@@ -851,7 +690,7 @@ export class WeedRiseScene extends BaseChapterScene {
       },
       {
         label: 'STATE STREET', sub: 'the spots. the shops. the life.',
-        onSelect: () => this.openStateStreet(),
+        onSelect: () => this.launchStateStreet(),
       },
       {
         label: 'THE POOL', sub: 'stay in with K. order in.',
@@ -863,62 +702,6 @@ export class WeedRiseScene extends BaseChapterScene {
       },
     ];
     WhipMenu.open(this, 'WHERE TO?', dests, () => { this.frozen = false; });
-  }
-
-  private openStateStreet() {
-    this.frozen = true;
-    const bal = BalanceSystem.getBalance();
-    const dests: WhipDestination[] = [
-      {
-        label: "LILLY'S TAQUERIA", sub: 'adobada. $15. everybody\'s favorite.',
-        locked: bal < 15 ? 'need $15' : undefined,
-        onSelect: () => this.playSpot('lillys'),
-      },
-      {
-        label: 'OKU', sub: 'sushi on the water. $80. the good table.',
-        locked: bal < 80 ? 'need $80' : undefined,
-        onSelect: () => this.playSpot('oku'),
-      },
-      {
-        label: 'HOT SPRINGS TRAIL', sub: 'free. no signal halfway up.',
-        onSelect: () => this.playSpot('hike'),
-      },
-      {
-        label: 'THE SHOPS', sub: 'cop drip. make the money back visible.',
-        onSelect: () => { this.frozen = true; ClosetStore.open(this, 'buy', ClosetStore.owned, () => { this.frozen = false; }); },
-      },
-    ];
-    WhipMenu.open(this, 'STATE STREET', dests, () => { this.frozen = false; });
-  }
-
-  private playSpot(spot: 'lillys' | 'oku' | 'hike') {
-    this.frozen = true;
-    if (spot === 'lillys') {
-      BalanceSystem.spend(15);
-      AffinitySystem.adjust('ch1_gf_k', 1);
-      this.dialogue.show([
-        { speaker: 'Narrator', text: "Lilly's window. Two adobada plates, one bench, the whole Pacific for free." },
-        { speaker: 'K', text: "Lilly's?? This is literally my favorite spot and you know it." },
-        { speaker: 'JP\'s Mind', text: 'Fifteen dollars. Best money I spent all month, and I spent a LOT this month.' },
-      ], () => { this.frozen = false; });
-    } else if (spot === 'oku') {
-      BalanceSystem.spend(80);
-      AffinitySystem.adjust('ch1_gf_k', 1);
-      this.dialogue.show([
-        { speaker: 'Narrator', text: 'Oku. Sand-side table. She orders like rent isn\'t real.' },
-        { speaker: 'JP', text: "Get whatever. We're good." },
-        { speaker: 'JP\'s Mind', text: 'Eighty on dinner like it\'s nothing. Because right now, it\'s nothing. Right now.' },
-      ], () => { this.frozen = false; });
-    } else {
-      AffinitySystem.adjust('ch1_gf_k', 1);
-      this.dialogue.show([
-        { speaker: 'K', text: 'No restaurants. Hot Springs trail. Bring water and don\'t complain.' },
-        { speaker: 'Narrator', text: 'Montecito canyon. Phones lose signal halfway up — the best feature of the whole trail.' },
-        { speaker: 'K', text: 'See? Free. Better than Oku.' },
-        { speaker: 'JP\'s Mind', text: 'No signal means no orders. First quiet my head\'s had in a month.' },
-        { speaker: 'JP\'s Mind', text: 'The phone found signal on the way down. Eleven missed messages. Back to it.' },
-      ], () => { this.frozen = false; });
-    }
   }
 
   // Met K in 2022 when she moved out here. Pool, hot tub, DoorDash sushi, repeat.
@@ -1070,7 +853,6 @@ export class WeedRiseScene extends BaseChapterScene {
 
   private finishDeliveryRoute(opening: DialogueLine[]) {
     this.routeCompleted = true;
-    this.interactions.consume('rise_bmw');
     this.dialogue.show([
       ...opening,
       { speaker: 'Narrator', text: 'People start calling JP before they call anyone else.' },

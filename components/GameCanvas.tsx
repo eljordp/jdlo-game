@@ -8,6 +8,7 @@ import { IntroScene } from "@/game/scenes/IntroScene";
 import { HomeScene } from "@/game/scenes/HomeScene";
 import { BeachScene } from "@/game/scenes/BeachScene";
 import { WeedRiseScene } from "@/game/scenes/WeedRiseScene";
+import { StateStreetScene } from "@/game/scenes/StateStreetScene";
 import { WrongCrowdScene } from "@/game/scenes/WrongCrowdScene";
 import { CourtScene } from "@/game/scenes/CourtScene";
 import { JailScene } from "@/game/scenes/JailScene";
@@ -200,6 +201,7 @@ export default function GameCanvas() {
         HomeScene,
         BeachScene,
         WeedRiseScene,
+        StateStreetScene,
         WrongCrowdScene,
         CourtScene,
         JailScene,
