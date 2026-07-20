@@ -1525,8 +1525,15 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     // Leave controller/touch pulses for the open overlay to consume.
     if (PauseMenu.open_) return;
 
-    // Navigation pulses only matter inside menus. Do not carry a movement
-    // tap forward and change a pause-menu tab several seconds later.
+    // Preserve one-frame movement taps before clearing menu-navigation pulses.
+    // Without this, a quick phone/controller tap can begin and end between
+    // Phaser frames: the sprite turns, but the player never takes a step.
+    const moveTapUp = virtualInput.navUpJustPressed || gamepadInput.navUpJustPressed;
+    const moveTapDown = virtualInput.navDownJustPressed || gamepadInput.navDownJustPressed;
+    const moveTapLeft = virtualInput.navLeftJustPressed || gamepadInput.navLeftJustPressed;
+    const moveTapRight = virtualInput.navRightJustPressed || gamepadInput.navRightJustPressed;
+
+    // Do not carry a movement tap forward and change a pause-menu tab later.
     virtualInput.navUpJustPressed = false;
     virtualInput.navDownJustPressed = false;
     virtualInput.navLeftJustPressed = false;
@@ -1557,10 +1564,15 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     let dx = 0;
     let dy = 0;
 
-    if (this.cursors.left.isDown || this.wasd.A.isDown || virtualInput.left || gamepadInput.left) { dx = -1; this.facing = 'left'; }
-    else if (this.cursors.right.isDown || this.wasd.D.isDown || virtualInput.right || gamepadInput.right) { dx = 1; this.facing = 'right'; }
-    else if (this.cursors.up.isDown || this.wasd.W.isDown || virtualInput.up || gamepadInput.up) { dy = -1; this.facing = 'up'; }
-    else if (this.cursors.down.isDown || this.wasd.S.isDown || virtualInput.down || gamepadInput.down) { dy = 1; this.facing = 'down'; }
+    const keyboardTapLeft = Phaser.Input.Keyboard.JustDown(this.cursors.left) || Phaser.Input.Keyboard.JustDown(this.wasd.A);
+    const keyboardTapRight = Phaser.Input.Keyboard.JustDown(this.cursors.right) || Phaser.Input.Keyboard.JustDown(this.wasd.D);
+    const keyboardTapUp = Phaser.Input.Keyboard.JustDown(this.cursors.up) || Phaser.Input.Keyboard.JustDown(this.wasd.W);
+    const keyboardTapDown = Phaser.Input.Keyboard.JustDown(this.cursors.down) || Phaser.Input.Keyboard.JustDown(this.wasd.S);
+
+    if (this.cursors.left.isDown || this.wasd.A.isDown || virtualInput.left || gamepadInput.left || moveTapLeft || keyboardTapLeft) { dx = -1; this.facing = 'left'; }
+    else if (this.cursors.right.isDown || this.wasd.D.isDown || virtualInput.right || gamepadInput.right || moveTapRight || keyboardTapRight) { dx = 1; this.facing = 'right'; }
+    else if (this.cursors.up.isDown || this.wasd.W.isDown || virtualInput.up || gamepadInput.up || moveTapUp || keyboardTapUp) { dy = -1; this.facing = 'up'; }
+    else if (this.cursors.down.isDown || this.wasd.S.isDown || virtualInput.down || gamepadInput.down || moveTapDown || keyboardTapDown) { dy = 1; this.facing = 'down'; }
 
     const frameMap = { down: 0, up: 2, left: 4, right: 6 };
     this.player.setFrame(frameMap[this.facing]);
