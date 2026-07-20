@@ -507,7 +507,7 @@ export class LAScene extends Phaser.Scene {
         this.showText('LOS ANGELES', cy - 140, { size: '28px', color: '#f0c040' });
         this.showText('Top down in a C8 Corvette.', cy - 70, { size: '14px', delay: 800 });
         this.showText(
-          'PCH at sunset. Wind in the hair.\nThe car is paid for. Next month isn\'t.\n"Enjoy it," everybody says. Still learning how.',
+          'PCH at sunset. Wind in the hair.\nHigo rides shotgun — pale ginger Irish kid,\nup big on stocks this year.\nThe car is paid for. Next month isn\'t.\n"Enjoy it," everybody says. Still learning how.',
           cy,
           { size: '12px', color: '#aaaacc', delay: 1600 }
         );
@@ -683,6 +683,7 @@ export class LAScene extends Phaser.Scene {
         }
 
         this.showText('Steak dinner. Real restaurant.\nNot the drive-thru.', cy - 180, { color: '#f0d0a0' });
+        this.showText('Lar\'s here too — first month out, him and JP moved "designer" out a duffel.\nNow Lar sells golf clubs. Legit ones. Higo trades stocks. JP builds AI.', cy - 120, { size: '9px', color: '#c8b890', delay: 400 });
         const dinnerPressure = this.deliveryOrder === 'delivery-first'
           ? 'JP slides in late. Everybody already ordered.\nThe client got the build; the steak got cold.'
           : 'JP makes the table on time.\nThe unfinished delivery vibrates beside his plate.';

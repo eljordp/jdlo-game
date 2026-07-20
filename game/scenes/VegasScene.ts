@@ -658,7 +658,8 @@ export class VegasScene extends Phaser.Scene {
         this.makeNightclub('MARQUEE', 0x22ccee);
         this.addDealExchange(GAME_WIDTH - 190, 255, 'TERMS TALKED', 'npc_female');
         this.showText('The LED wall swallowed the whole room.', 420, { size: '12px', delay: 650 });
-        this.showText('Patrick disappeared into the crowd in the first five minutes. Standard.', 465, { size: '10px', color: '#88bbcc', delay: 1300 });
+        this.showText('Patrick\'s wraparound is upstairs — espresso martinis on room service before the club even opened.', 465, { size: '9px', color: '#88bbcc', delay: 1300 });
+        this.showText('Strongest guy in the room, nicest guy in the building. Then he disappeared into the crowd. Standard.', 500, { size: '9px', color: '#88bbcc', delay: 2000 });
         this.showText('Women dancing. Owners talking numbers. Contacts changing hands between songs.', 510, { size: '10px', color: '#aaaacc', delay: 2000 });
         this.showText('JP keeps doing the math: that bottle is a month of Caymus pay. He can\'t not do the math. He probably never will.', 588, { size: '8px', color: '#88a0b8', delay: 3400 });
         this.showText('The guy filming isn\'t filming the DJ — crowd-reaction footage for a club owner in Phoenix. Everybody\'s working.', 550, { size: '8px', color: '#7a95a8', delay: 2800 });
@@ -737,7 +738,7 @@ export class VegasScene extends Phaser.Scene {
         // The whole crew watches it come up. Nobody says much.
         const jp = this.addObj(this.add.sprite(cx - 96, GAME_HEIGHT - 145, 'player-ch6', 0).setScale(CHAR_SCALE * 1.3));
         const tony = this.addObj(this.add.sprite(cx - 32, GAME_HEIGHT - 145, 'npc-friend', 0).setScale(SCALE * 1.3));
-        const patrick = this.addObj(this.add.sprite(cx + 32, GAME_HEIGHT - 145, 'npc_higo', 0).setScale(SCALE * 1.3));
+        const patrick = this.addObj(this.add.sprite(cx + 32, GAME_HEIGHT - 145, 'npc-business', 0).setScale(SCALE * 1.3).setTint(0xd8c8b8));
         const dan = this.addObj(this.add.sprite(cx + 96, GAME_HEIGHT - 145, 'npc-tech', 0).setScale(SCALE * 1.3));
         this.addTween({ targets: [jp, tony, patrick, dan], y: GAME_HEIGHT - 149, duration: 1100, yoyo: true, repeat: -1 });
         this.showText('SUNRISE', 105, { size: '18px', color: '#ffd469', delay: 250 });

@@ -173,7 +173,7 @@ export const homeMap: MapData = {
     { id: 'ch0_college',       x: 10, y: 6,  type: 'examine', glow: true, sprite: 'item-letter' },      // letters on desk
     { id: 'ch0_poster',        x: 6,  y: 3,  type: 'examine', glow: false, sprite: 'item-poster' },     // poster on wall (wall row)
     // ch0_hidden_stash removed — discovered when interacting with desk (hidden item, no visible sprite)
-    { id: 'ch0_journal',       x: 8,  y: 8,  type: 'examine', glow: true, sprite: 'item-book' },        // journal near door
+    { id: 'ch0_journal',       x: 6,  y: 8,  type: 'examine', glow: true, sprite: 'item-book' },        // journal — moved off the (8,9) doorway, was blocking the only exit
     { id: 'ch0_crypto',        x: 8,  y: 4,  type: 'examine', glow: false, sprite: 'item-phone' },      // phone on nightstand
     // Upstairs Lounge (cols 12-21, rows 4-8)
     { id: 'ch0_family_albums', x: 13, y: 4,  type: 'examine', glow: true, sprite: 'item-book' },       // photo albums on shelf (wall)

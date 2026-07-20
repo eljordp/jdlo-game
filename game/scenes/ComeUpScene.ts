@@ -23,6 +23,7 @@ export class ComeUpScene extends BaseChapterScene {
   private rejectionPlayed = false;
   private birdLetterRead = false;
   private joseTexted = false;
+  private larTexted = false;
   private bankChecked = false;
   private timePassagePlayed = false;
   private popsCallDone = false;
@@ -658,6 +659,21 @@ export class ComeUpScene extends BaseChapterScene {
           { speaker: 'Jose', text: '"proud of you gang. for real."' },
           { speaker: 'JP', text: '"Tell your mom I got her. Family rate."' },
           { speaker: 'JP\'s Mind', text: 'Jose never stopped checking on me. Even when I gave him nothing back.' },
+        ], () => {
+          this.frozen = false;
+          this.showPhoneApps();
+        });
+        return;
+      }
+      // Lar checks in on the second look — the duffel days went legit
+      if (!this.larTexted) {
+        this.larTexted = true;
+        this.frozen = true;
+        this.dialogue.show([
+          { speaker: 'Narrator', text: 'New text. Lar.' },
+          { speaker: 'Lar', text: '"bro guess who got a plug on clubs now. LEGIT clubs. golf."' },
+          { speaker: 'Lar', text: '"from duffel bags to pro shops. proud of us gang."' },
+          { speaker: 'JP\'s Mind', text: 'Everybody from the mud finding a legal hustle. Nobody planned it. Everybody did it.' },
         ], () => {
           this.frozen = false;
           this.showPhoneApps();
