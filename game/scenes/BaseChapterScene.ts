@@ -58,8 +58,6 @@ export abstract class BaseChapterScene extends Phaser.Scene {
   private speechBubbles: Map<string, Phaser.GameObjects.Text> = new Map();
   private npcIndicators: Map<string, Phaser.GameObjects.Text> = new Map();
   private talkedToNpcs: Set<string> = new Set();
-  private floorIndicatorText: Phaser.GameObjects.Text | null = null;
-
   // NPC nudge system — hints players toward missed interactables
   private nudgeTimers: Map<string, number> = new Map();
   private nudgedItems: Set<string> = new Set();
@@ -98,7 +96,6 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     this.speechBubbles = new Map();
     this.npcIndicators = new Map();
     this.talkedToNpcs = new Set();
-
     // Analytics
     Analytics.trackChapterStart(this.scene.key);
 
@@ -294,14 +291,21 @@ export abstract class BaseChapterScene extends Phaser.Scene {
   }
 
   protected showFloorIndicator(floor: string) {
-    if (!this.floorIndicatorText) {
-      this.floorIndicatorText = this.add.text(80, GAME_HEIGHT - 30, '', {
-        fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#ffffff',
-      }).setScrollFactor(0).setDepth(90).setAlpha(0);
-    }
-    this.floorIndicatorText.setText(floor);
-    this.floorIndicatorText.setAlpha(0);
-    this.tweens.add({ targets: this.floorIndicatorText, alpha: 0.4, duration: 400, hold: 2000, yoyo: true });
+    // This label only lives for one floor transition. Keeping it on the Scene
+    // instance lets Phaser restarts retain a Text object after its canvas
+    // texture has been destroyed, which crashes the next transition.
+    const indicator = this.add.text(80, GAME_HEIGHT - 30, floor, {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#ffffff',
+    }).setScrollFactor(0).setDepth(90).setAlpha(0);
+
+    this.tweens.add({
+      targets: indicator,
+      alpha: 0.4,
+      duration: 400,
+      hold: 2000,
+      yoyo: true,
+      onComplete: () => indicator.destroy(),
+    });
   }
 
   protected addNavArrow(tileX: number, tileY: number, label?: string) {
