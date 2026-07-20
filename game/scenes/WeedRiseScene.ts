@@ -390,19 +390,20 @@ export class WeedRiseScene extends BaseChapterScene {
           { speaker: 'Narrator', text: 'Buzz. Wake up. Leave. Return. Repeat.' },
         ],
         rise_mirror: [
-          { speaker: 'JP\'s Mind', text: 'New clothes. Same face.' },
-          { speaker: 'Narrator', text: 'Hauls keep coming back to the house. Bags with tags, boxes with plastic still on.' },
-          { speaker: 'JP\'s Mind', text: 'Everything\'s free when you\'re winning. That\'s what I kept telling myself.' },
-          { speaker: 'JP\'s Mind', text: 'Less sleep behind the eyes.' },
+          { speaker: 'Narrator', text: 'Hauls all over the room. Bags with tags, boxes with plastic still on.' },
+          { speaker: 'JP\'s Mind', text: 'Fit game stupid right now. New drip for me, new drip for her.' },
+          { speaker: 'JP\'s Mind', text: 'Fly fit on, bread in the pocket, phone full of huzz. I looked GOOD.' },
+          { speaker: 'JP\'s Mind', text: 'Less sleep behind the eyes though.' },
         ],
         rise_kitchen: [
           { speaker: 'Narrator', text: 'Chick-fil-A bags stacked on Taco Bell bags. DoorDash to the door every night, for JP and whoever\'s around.' },
-          { speaker: 'Narrator', text: 'Food for everybody. Drinks for everybody.' },
-          { speaker: 'Narrator', text: 'Nobody asks where any of it came from when they are eating.' },
-          { speaker: 'JP\'s Mind', text: 'It never even tasted like anything. It just felt like being somebody.' },
+          { speaker: 'Narrator', text: 'Food for everybody. Drinks for everybody. Life is catered.' },
+          { speaker: 'JP\'s Mind', text: 'Hella bread. Hella motion. People texting ME to buy. This is what winning looks like.' },
         ],
         rise_receipts: [
           { speaker: 'Narrator', text: 'Gas. Food. Clothes. Nights out. Cash disappears quietly.' },
+          { speaker: 'Narrator', text: 'Also on the books: the girlfriend\'s roommate. Twenty an hour, packing prerolls at the kitchen table.' },
+          { speaker: 'JP\'s Mind', text: 'I had PAYROLL. Twenty years old with a whole employee. Lowkey hilarious.' },
           { speaker: 'JP\'s Mind', text: 'More money coming in. Somehow still chasing it.' },
         ],
         rise_order_board: [

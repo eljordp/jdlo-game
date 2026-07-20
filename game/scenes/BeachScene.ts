@@ -925,11 +925,12 @@ export class BeachScene extends BaseChapterScene {
 
             this.dialogue.show([
               { speaker: 'JP\'s Mind', text: 'Five racks in. Half of everything I saved from work.' },
-              { speaker: 'JP\'s Mind', text: 'It ran to forty. I never took a dollar off the table.' },
+              { speaker: 'JP\'s Mind', text: 'It ran to forty. ETH. SOL. Then NFTs on top. I never took a dollar off the table.' },
               { speaker: 'JP\'s Mind', text: 'First time trading. I thought I understood it.' },
               { speaker: 'JP\'s Mind', text: 'Mom had a plan for every year of my life. This was the first one that was mine.' },
               { speaker: 'Narrator', text: 'JP moved the whole portfolio into LUNA.' },
-              { speaker: 'Narrator', text: 'Then it went to zero.' },
+              { speaker: 'Narrator', text: 'Then LUNA went to zero. The NFTs died the same week.' },
+              { speaker: 'Narrator', text: 'Everything. All at once.' },
               { speaker: 'JP\'s Mind', text: '...' },
               { speaker: 'JP\'s Mind', text: 'Everything I had. Gone.' },
               { speaker: 'JP\'s Mind', text: 'The first plan I ever picked for myself.' },
@@ -3835,6 +3836,72 @@ export class BeachScene extends BaseChapterScene {
   }
 
   // ─── PHONE APP STORE ───────────────────────────────────────────────
+  // Dash — order food to the crib and impress whoever's around.
+  private showDashApp() {
+    this.frozen = true;
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+    const objects: Phaser.GameObjects.GameObject[] = [];
+
+    objects.push(this.add.rectangle(cx, cy, 260, 380, 0xb03028)
+      .setScrollFactor(0).setDepth(300));
+    objects.push(this.add.rectangle(cx, cy - 160, 260, 60, 0x8a2018)
+      .setScrollFactor(0).setDepth(301));
+    objects.push(this.add.text(cx, cy - 160, 'DASH', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '16px', color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(302));
+    objects.push(this.add.text(cx, cy - 132, 'delivered to the door', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '5px', color: '#e8b0a8',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(302));
+
+    const items: Array<[string, number]> = [
+      ['Chick-fil-A run  $28', 28],
+      ['Taco Bell x2 bags  $22', 22],
+      ['Sushi for the beach  $54', 54],
+      ['Close', 0],
+    ];
+    items.forEach(([label, cost], i) => {
+      const y = cy - 80 + i * 54;
+      const btn = this.add.rectangle(cx, y, 220, 40, cost ? 0xd8d0c8 : 0x6a201a)
+        .setScrollFactor(0).setDepth(301).setInteractive({ useHandCursor: true });
+      const txt = this.add.text(cx, y, label, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: cost ? '#3a2018' : '#ffffff',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(302);
+      objects.push(btn, txt);
+      btn.on('pointerover', () => btn.setAlpha(0.85));
+      btn.on('pointerout', () => btn.setAlpha(1));
+      btn.on('pointerdown', () => {
+        objects.forEach(o => o.destroy());
+        if (!cost) { this.frozen = false; return; }
+        if (!BalanceSystem.spend(cost)) {
+          this.dialogue.show([
+            { speaker: 'Narrator', text: 'Card declined. The huzz will have to stay unimpressed tonight.' },
+          ], () => { this.frozen = false; });
+          return;
+        }
+        SoundEffects.playCash();
+        this.dialogue.show([
+          { speaker: 'Narrator', text: 'Order in. ETA twenty minutes that feel like five in here.' },
+        ], () => {
+          this.frozen = false;
+          this.time.delayedCall(9000, () => {
+            if (!this.scene.isActive() || this.frozen) return;
+            SoundEffects.playDoorOpen();
+            this.frozen = true;
+            this.dialogue.show([
+              { speaker: 'Narrator', text: 'Bags at the door. The kitchen crowds up out of nowhere.' },
+              { speaker: 'Girl', text: 'Wait — you ordered for EVERYBODY? Okay JP.' },
+              { speaker: 'JP\'s Mind', text: 'That reaction. That\'s the whole reason. I know that now.' },
+            ], () => {
+              MoodSystem.setMood('vibing', 30);
+              this.frozen = false;
+            });
+          });
+        });
+      });
+    });
+  }
+
   private showPhoneApps() {
     this.frozen = true;
     const cx = GAME_WIDTH / 2;
@@ -3854,9 +3921,9 @@ export class BeachScene extends BaseChapterScene {
       fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#888899',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
 
-    const apps = ['Messages', 'Weedmaps', 'Instagram', 'Casino', 'Close'];
-    const appColors = [0x2a4a2a, 0x2a4a1a, 0x3a2a4a, 0x0a3a1a, 0x333344];
-    const hoverColors = [0x3a6a3a, 0x3a6a2a, 0x5a3a6a, 0x1a5a2a, 0x555566];
+    const apps = ['Messages', 'Weedmaps', 'Dash', 'Instagram', 'Casino', 'Close'];
+    const appColors = [0x2a4a2a, 0x2a4a1a, 0x8a2a2a, 0x3a2a4a, 0x0a3a1a, 0x333344];
+    const hoverColors = [0x3a6a3a, 0x3a6a2a, 0xaa4a3a, 0x5a3a6a, 0x1a5a2a, 0x555566];
     const buttons: Phaser.GameObjects.Rectangle[] = [];
     const labels: Phaser.GameObjects.Text[] = [];
 
@@ -3877,6 +3944,7 @@ export class BeachScene extends BaseChapterScene {
         cleanup();
         if (app === 'Messages') this.showPhoneMessages();
         else if (app === 'Weedmaps') this.showPhoneWeedmaps();
+        else if (app === 'Dash') this.showDashApp();
         else if (app === 'Instagram') DMSystem.openDMs(this, (l, cb) => this.dialogue.show(l, cb), () => this.showPhoneApps());
         else if (app === 'Casino') CasinoSystem.openCasino(this, () => { this.showPhoneApps(); });
         else this.frozen = false;
