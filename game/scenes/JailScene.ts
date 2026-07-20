@@ -920,6 +920,7 @@ export class JailScene extends BaseChapterScene {
   // Everything in here costs. The homies keep the books loaded; the block runs on it.
   private commissaryBucks = 25;
   private visitationSeen = false;
+  private picsSold = false;
 
   private fmtBucks(): string {
     return '$' + this.commissaryBucks.toFixed(2);
@@ -965,6 +966,34 @@ export class JailScene extends BaseChapterScene {
             { speaker: 'Narrator', text: 'She talks for the entire call without breathing. JP just holds the receiver and smiles.' },
             { speaker: 'K', text: 'Visitation Saturday. I\'m wearing the thing. You know the thing.' },
             { speaker: 'JP\'s Mind', text: 'I called her every single day. A dollar a day. Cheapest therapy in California.' },
+          ], () => { this.frozen = false; });
+        });
+      });
+      return;
+    }
+
+    // ── MAIL CALL: photos from outside. And a business opportunity. ──
+    if (interactable.id === 'ch3_letter_home' && this.currentDay >= 2 && !this.picsSold) {
+      this.picsSold = true;
+      this.frozen = true;
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'Mail call. Printed photos — the homies send the outside in: the beach, the cars, somebody\'s backyard party.' },
+        { speaker: 'Narrator', text: 'And a few girls sent... personal portfolio pieces. Bikini series. Professional angles.' },
+        { speaker: 'Inmate', text: 'Lopez. LOPEZ. Who IS that? I got four dollars RIGHT NOW.' },
+        { speaker: 'JP\'s Mind', text: 'Everybody in here has a hustle. Mine just found me.' },
+      ], () => {
+        this.showYesNoChoice('Prints are currency.', 'Sell two prints +$8', 'Keep the collection', () => {
+          this.commissaryBucks += 8;
+          this.dialogue.show([
+            { speaker: 'Narrator', text: 'Two prints move in under a minute. Four dollars each. The market is STARVED.' },
+            { speaker: 'Inmate', text: 'She got a sister?' },
+            { speaker: 'JP', text: 'Four more dollars and I\'ll ask.' },
+            { speaker: 'JP\'s Mind', text: 'Photo distribution. In here. The hustle finds you anywhere on earth.' },
+          ], () => { this.frozen = false; });
+        }, () => {
+          this.dialogue.show([
+            { speaker: 'JP\'s Mind', text: 'Nah. Some things aren\'t inventory.' },
+            { speaker: 'JP\'s Mind', text: 'Most things are inventory. These aren\'t.' },
           ], () => { this.frozen = false; });
         });
       });
