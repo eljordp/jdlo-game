@@ -150,7 +150,7 @@ export const homeMap: MapData = {
     npcs: [
       { id: 'ch0_pops',    x: 8,  y: 21, sprite: 'npc_pops' },
       { id: 'ch0_mom',     x: 26, y: 21, sprite: 'npc_female' },
-      { id: 'ch0_sister',  x: 25, y: 5,  sprite: 'npc_sister' },  // sister upstairs in her room
+      { id: 'ch0_sister',  x: 27, y: 7,  sprite: 'npc_sister' },  // clear of the bed and vanity
       { id: 'ch0_frenchie', x: 10, y: 31, sprite: 'npc_frenchie' },
     ],
   },
@@ -180,7 +180,7 @@ export const homeMap: MapData = {
     { id: 'ch0_lounge_rug',    x: 16, y: 7,  type: 'examine', glow: false, sprite: 'item-rug' },
     // Sister's Room — UPSTAIRS (cols 23-28, rows 4-8)
     { id: 'ch0_sister_bed',    x: 24, y: 4,  type: 'examine', glow: false, sprite: 'item-bed-pink' },   // bed
-    { id: 'ch0_sister_posters', x: 27, y: 6,  type: 'examine', glow: false, sprite: 'item-photo' },      // mood board / art prints
+    { id: 'ch0_sister_posters', x: 29, y: 6,  type: 'examine', glow: false, sprite: 'item-photo' },      // mood board on the right wall
     { id: 'ch0_sister_mirror', x: 23, y: 4,  type: 'examine', glow: false, sprite: 'item-mirror' },     // mirror on wall
     { id: 'ch0_sister_nightlight', x: 28, y: 8, type: 'examine', glow: false, sprite: 'item-lamp' },    // LED lamp near door
     { id: 'ch0_shoe_rack',     x: 28, y: 5,  type: 'examine', glow: false, sprite: 'item-shoe-rack' },   // shoe rack against wall
@@ -209,7 +209,7 @@ export const homeMap: MapData = {
     { id: 'ch0_yoga_mat',      x: 19, y: 8,  type: 'examine', glow: false, sprite: 'item-yoga-mat' },   // yoga mat under weights
     { id: 'ch0_weights',       x: 19, y: 7,  type: 'examine', glow: false, sprite: 'item-weights' },    // dumbbells on mat
     // Sister art — UPSTAIRS
-    { id: 'ch0_sister_drawing_wall', x: 26, y: 4, type: 'examine', glow: false, sprite: 'item-poster' },  // art print on wall, away from bed
+    { id: 'ch0_sister_drawing_wall', x: 24, y: 3, type: 'examine', glow: false, sprite: 'item-art-print' }, // her art, not JP's poster
     // Kitchen (rows 20-22)
     { id: 'ch0_kitchen_knife',  x: 32, y: 22, type: 'examine', glow: false, sprite: 'item-knife' },     // knife block
     { id: 'ch0_cookie_jar',    x: 34, y: 22, type: 'examine', glow: false, sprite: 'item-food' },
@@ -217,7 +217,7 @@ export const homeMap: MapData = {
     { id: 'ch0_mirror',        x: 30, y: 4,  type: 'examine', glow: true, sprite: 'item-mirror' },
     { id: 'ch0_shower',        x: 32, y: 6,  type: 'examine', glow: true, sprite: 'item-shower' },  // clearly inside bathroom
     // Hallway (row 18)
-    { id: 'ch0_hallway_photo', x: 20, y: 18, type: 'examine', glow: false, sprite: 'item-photo' },      // decoration
+    { id: 'ch0_hallway_photo', x: 24, y: 19, type: 'examine', glow: false, sprite: 'item-photo' },      // wall decoration, clear of stairs
     // Living Room (left side, row 20-22)
     { id: 'ch0_tv',            x: 4,  y: 20, type: 'examine', glow: false, sprite: 'item-tv' },         // TV against wall (row 20)
     { id: 'ch0_couch',         x: 6,  y: 21, type: 'examine', glow: false, sprite: 'item-couch' },      // furniture
@@ -253,8 +253,8 @@ export const homeMap: MapData = {
 
     // Windows — on wall tiles, no floating sprite
     { id: 'ch0_window_jp',     x: 9,  y: 3,  type: 'examine', glow: false, sprite: 'item-window' },
-    { id: 'ch0_window_sister', x: 13, y: 3,  type: 'examine', glow: false, sprite: 'item-window' },
-    { id: 'ch0_window_parents',x: 22, y: 11, type: 'examine', glow: false, sprite: 'item-window' },
+    { id: 'ch0_window_sister', x: 27, y: 3,  type: 'examine', glow: false, sprite: 'item-window' },
+    { id: 'ch0_window_parents',x: 9,  y: 11, type: 'examine', glow: false, sprite: 'item-window' },
     { id: 'ch0_window_bath',   x: 34, y: 3,  type: 'examine', glow: false, sprite: 'item-window' },
     // kitchen window removed — no back wall exit anymore
   ],

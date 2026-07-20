@@ -5391,27 +5391,29 @@ function generateMoreItems(scene: Phaser.Scene) {
 
   // --- item-poster ---
   makeTexture(scene, 'item-poster', TILE_SIZE, TILE_SIZE, (g) => {
-    // Wall poster with drop shadow so it pops off the wall
-    // Shadow
-    px(g, 8, 5, 0x808080, 20, 24);
-    // Paper background (white)
-    px(g, 6, 3, 0xffffff, 20, 24);
-    // Dark border frame
-    px(g, 6, 3, 0x303030, 20, 1);   // top
-    px(g, 6, 26, 0x303030, 20, 1);  // bottom
-    px(g, 6, 3, 0x303030, 1, 24);   // left
-    px(g, 25, 3, 0x303030, 1, 24);  // right
-    // Image area (colorful — looks like a real poster)
-    px(g, 8, 5, 0x2060c0, 16, 10);  // blue image block
-    px(g, 12, 7, 0xf0c040, 8, 4);   // yellow accent
-    // Text lines below image
-    px(g, 9, 17, 0x202020, 14, 2);  // title
-    px(g, 11, 21, 0x606060, 10, 1); // subtitle
-    // Tack/pin at top center
-    px(g, 15, 2, 0xe03030, 2, 2);   // red pushpin
-    px(g, 16, 18, 0xe0b040, 1, 1);
-    // Pin at top
-    px(g, 16, 2, 0xd04040, 2, 2);
+    // JP's dark typography poster. The old blue-screen/white-body art read
+    // like an ATM bolted to the wall at game scale.
+    px(g, 8, 5, 0x9a9084, 20, 24);  // drop shadow
+    px(g, 6, 3, 0x241f1b, 20, 24);  // black frame
+    px(g, 8, 5, 0x111318, 16, 20);  // charcoal paper
+    px(g, 10, 7, 0xd8aa38, 12, 2);  // gold headline
+    px(g, 9, 11, 0xf0ece4, 14, 1);  // compact type rows
+    px(g, 10, 14, 0xd8d2c8, 12, 1);
+    px(g, 9, 17, 0xf0ece4, 14, 1);
+    px(g, 11, 21, 0xd8aa38, 10, 2); // emphasized final line
+    px(g, 7, 4, 0x5a5048, 1, 22);   // frame highlight
+  });
+
+  // --- item-art-print --- sister's colorful framed drawing
+  makeTexture(scene, 'item-art-print', TILE_SIZE, TILE_SIZE, (g) => {
+    px(g, 8, 6, 0x94877c, 18, 22);   // shadow
+    px(g, 6, 4, 0xd8c4a8, 18, 22);   // warm wood frame
+    px(g, 8, 6, 0xf7eee2, 14, 18);   // cream mat
+    px(g, 10, 8, 0x4da8a8, 10, 14);  // teal field
+    px(g, 10, 16, 0xef8b78, 10, 6);  // coral shape
+    px(g, 13, 10, 0xf3cf63, 5, 5);   // sun
+    px(g, 11, 9, 0x8fd0c8, 3, 7);    // abstract highlight
+    px(g, 19, 12, 0x71558d, 1, 8);   // purple stroke
   });
 
   // --- item-fridge ---

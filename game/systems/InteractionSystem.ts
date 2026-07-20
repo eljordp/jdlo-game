@@ -18,12 +18,23 @@ export interface Interactable {
 
 // Floor textiles and large furniture need to read as room anchors, not as
 // collectible icons. These treatments also keep rugs below every character.
-const DISPLAY_TREATMENTS: Record<string, { scaleX: number; scaleY: number; depth?: number }> = {
+const DISPLAY_TREATMENTS: Record<string, {
+  scaleX: number;
+  scaleY: number;
+  depth?: number;
+  offsetXTiles?: number;
+  offsetYTiles?: number;
+}> = {
   'item-rug': { scaleX: 2.55, scaleY: 1.8, depth: 1 },
   'item-yoga-mat': { scaleX: 2.1, scaleY: 1.3, depth: 1 },
   'item-couch': { scaleX: 1.45, scaleY: 1.12 },
-  'item-bed': { scaleX: 1.35, scaleY: 1.15 },
-  'item-bed-pink': { scaleX: 1.35, scaleY: 1.15 },
+  // Bed textures are already authored at 2x2 tiles. Their map coordinate is
+  // the top-left occupied tile, so render at native size and shift the visual
+  // center half a tile instead of inflating it into the surrounding walls.
+  'item-bed': { scaleX: 1, scaleY: 1, offsetXTiles: 0.5, offsetYTiles: 0.5 },
+  'item-bed-pink': { scaleX: 1, scaleY: 1, offsetXTiles: 0.5, offsetYTiles: 0.5 },
+  'item-bed-k': { scaleX: 1, scaleY: 1, offsetXTiles: 0.5, offsetYTiles: 0.5 },
+  'item-bed-k-open': { scaleX: 1, scaleY: 1, offsetXTiles: 0.5, offsetYTiles: 0.5 },
 };
 
 export class InteractionSystem {
@@ -162,15 +173,17 @@ export class InteractionSystem {
 
     for (const obj of interactables) {
       if (obj.sprite) {
-        // Place sprite at the center of the tile, scaled x3 like everything else
-        const worldX = obj.x * SCALED_TILE + SCALED_TILE / 2;
-        const worldY = obj.y * SCALED_TILE + SCALED_TILE / 2;
+        // Place sprite at its map tile; footprint treatments align larger art.
+        const treatment = DISPLAY_TREATMENTS[obj.sprite];
+        const worldX = obj.x * SCALED_TILE + SCALED_TILE / 2
+          + (treatment?.offsetXTiles ?? 0) * SCALED_TILE;
+        const worldY = obj.y * SCALED_TILE + SCALED_TILE / 2
+          + (treatment?.offsetYTiles ?? 0) * SCALED_TILE;
 
         const sprite = this.scene.add.sprite(worldX, worldY, obj.sprite);
         // Small items (joints, pencils, keys) render smaller than big items (tablets, bbq)
         const smallItems = ['item-joint', 'item-pencil', 'item-keys', 'item-dice'];
         const itemScale = smallItems.includes(obj.sprite) ? SCALE * 0.6 : SCALE;
-        const treatment = DISPLAY_TREATMENTS[obj.sprite];
         sprite.setScale(
           itemScale * (treatment?.scaleX ?? 1),
           itemScale * (treatment?.scaleY ?? 1),
@@ -219,7 +232,7 @@ export class InteractionSystem {
     'item-gun', 'item-bottle', 'item-food',
     'item-desk', 'item-nightstand', 'item-poster', 'item-toilet',
     'item-window', 'item-photo', 'item-bed-pink', 'item-bookshelf', 'item-yoga-mat',
-    'item-macbook', 'item-shoe-rack', 'item-makeup-stand', 'item-led-strip', 'item-closet',
+    'item-macbook', 'item-shoe-rack', 'item-makeup-stand', 'item-led-strip', 'item-closet', 'item-art-print',
     'item-shower',
   ]);
 
@@ -229,7 +242,7 @@ export class InteractionSystem {
     'item-mirror', 'item-computer', 'item-food',
     'item-desk', 'item-nightstand', 'item-poster', 'item-toilet',
     'item-window', 'item-photo', 'item-bed-pink', 'item-bookshelf', 'item-yoga-mat',
-    'item-macbook', 'item-shoe-rack', 'item-makeup-stand', 'item-led-strip', 'item-closet',
+    'item-macbook', 'item-shoe-rack', 'item-makeup-stand', 'item-led-strip', 'item-closet', 'item-art-print',
     'item-shower',
   ]);
 
