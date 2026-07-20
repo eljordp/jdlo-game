@@ -651,10 +651,10 @@ export const wrongCrowdMap: MapData = {
 
 
 // ---------------------------------------------------------------------------
-// 3. JAIL MAP — Cell + Yard + Chapel  (40 wide x 35 tall)
+// 3. JAIL MAP — Cell + Yard + Chapel + Chow  (40 wide x 40 tall)
 // ---------------------------------------------------------------------------
 // REAL jail. 6 bigger cells (4x3 interior) with Z bars, concrete hallway,
-// common area, guard station, big exercise yard, chapel/classroom at bottom.
+// common area, guard station, big exercise yard, chapel/classroom and chow hall.
 // ---------------------------------------------------------------------------
 export const jailMap: MapData = {
   tiles: [
@@ -699,11 +699,18 @@ export const jailMap: MapData = {
     [ X, X, D, D, D, D, D, D, D, D, F, F, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, F, F, D, D, D, D, D, D, D, D, X, X ], // 29
     [ X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 30
 
-    // --- OUTER WALLS (rows 31-34) ---
-    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 31
-    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 32
-    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 33
-    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 34
+    // --- CHOW HALL (rows 31-37): controlled gate, bolted tables, serving line ---
+    [ X, X, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, C, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, X, X ], // 31 chow fence (gap at col 20)
+    [ X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 32
+    [ X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 33
+    [ X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 34
+    [ X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 35
+    [ X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 36
+    [ X, X, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, D, X, X ], // 37
+
+    // --- OUTER WALLS (rows 38-39) ---
+    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 38
+    [ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X ], // 39
   ],
   collisions: STANDARD_COLLISIONS,
   spawns: {
@@ -728,10 +735,9 @@ export const jailMap: MapData = {
       { id: 'ch3_book_inmate', x: 4, y: 3, sprite: 'npc_inmate' },   // cell 1 (study inmate)
     ],
   },
-  triggers: [
-    { x: 19, y: 30, action: 'scene', target: 'ReleaseScene' }, // release only after the full jail arc
-    { x: 20, y: 30, action: 'scene', target: 'ReleaseScene' },
-  ],
+  // Release is owned by the Day 3 bed montage. A walk-on scene trigger here
+  // used to let players leave early by crossing the chapel floor.
+  triggers: [],
   interactables: [
     // --- Cell scratches ---
     { id: 'ch3_wall_1',  x: 2, y: 7,  type: 'scratch', glow: false, sprite: 'item-scratch' },   // JP's cell wall
@@ -754,7 +760,7 @@ export const jailMap: MapData = {
     // --- Common area ---
     { id: 'ch3_commissary',  x: 28, y: 4,  type: 'examine', glow: false, sprite: 'item-food' },      // commissary counter
     { id: 'ch3_fight_watch', x: 23, y: 3,  type: 'examine', glow: true, sprite: 'item-weights' },   // watching fight
-    { id: 'ch3_pbj_witness', x: 26, y: 8,  type: 'examine', glow: false, sprite: 'item-food' },      // optional: violence became background noise
+    { id: 'ch3_pbj_witness', x: 20, y: 35, type: 'examine', glow: false, sprite: 'item-food' },      // optional: violence became background noise at chow
     { id: 'ch3_dice_watch',  x: 34, y: 8,  type: 'examine', glow: true, sprite: 'item-dice' },     // watching dice
     { id: 'ch3_anger_management', x: 24, y: 8, type: 'examine', glow: false, sprite: 'item-poster' }, // wall poster — scenery
 

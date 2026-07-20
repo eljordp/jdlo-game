@@ -71,8 +71,8 @@ export class JailScene extends BaseChapterScene {
     this.jailGateVisuals.clear();
     super.create();
 
-    // The facility is already one of the largest maps in the game; the old
-    // wide camera made six cells, intake, yard, and chapel read like one small
+    // The 40x40 facility is one of the largest maps in the game; the old wide
+    // camera made six cells, intake, yard, chapel and chow read like one small
     // board. A closer jail-specific lens makes each corridor a place the
     // player has to move through and keeps later areas unknown from the bunk.
     this.cameras.main.setZoom(1.32);
@@ -92,7 +92,7 @@ export class JailScene extends BaseChapterScene {
     GameIntelligence.watch('ch3_letter_home', 4,  6);
     GameIntelligence.watch('ch3_phone',       10, 13);
     GameIntelligence.watch('ch3_fight_watch', 23, 3);
-    GameIntelligence.watch('ch3_pbj_witness', 26, 8);
+    GameIntelligence.watch('ch3_pbj_witness', 20, 35);
     GameIntelligence.watch('ch3_dice_watch',  34, 8);
     GameIntelligence.watch('ch3_pushups',     12, 19, true);  // required: minigame
     GameIntelligence.watch('ch3_faith',       7,  22, true);  // required: transformation arc
@@ -108,6 +108,7 @@ export class JailScene extends BaseChapterScene {
     this.addNavArrow(4, 9, 'COMMON AREA');
     this.addNavArrow(17, 17, 'Yard');
     this.addNavArrow(15, 26, 'Chapel');
+    this.addNavArrow(20, 31, 'Chow');
 
     // Guard patrol — walks between guard station and cells
     this.startGuardPatrol();
@@ -127,7 +128,7 @@ export class JailScene extends BaseChapterScene {
       '4,10', '4,11', '4,12',
       '17,18',
       '15,27',
-      '19,30', '20,30',
+      '20,31', '20,32',
     ];
     guaranteedOpenTiles.forEach((tile) => this.collisionTiles.delete(tile));
   }
@@ -145,7 +146,7 @@ export class JailScene extends BaseChapterScene {
 
     // Institutional seams keep the large concrete surfaces from reading as
     // empty purple rooms.
-    for (const y of [3, 7, 11, 14, 16, 20, 24, 29]) {
+    for (const y of [3, 7, 11, 14, 16, 20, 24, 29, 32, 35, 37]) {
       this.add.rectangle(20 * tile, y * tile, 36 * tile, 3, 0x14191d, 0.42)
         .setDepth(0.72);
     }
@@ -411,6 +412,7 @@ export class JailScene extends BaseChapterScene {
     };
     addSecurityFence(17, 17);
     addSecurityFence(26, 15);
+    addSecurityFence(31, 20);
 
     this.add.text(19.5 * tile, 17.72 * tile, 'RECREATION YARD', {
       fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#b8c2c4',
@@ -462,6 +464,95 @@ export class JailScene extends BaseChapterScene {
     this.add.text(20 * tile, 27.5 * tile, 'QUIET ROOM', {
       fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#d8bd79',
     }).setOrigin(0.5).setDepth(2.2);
+
+    this.createChowHall();
+  }
+
+  private createChowHall() {
+    const tile = SCALED_TILE;
+
+    this.add.text(20 * tile, 32.15 * tile, 'CHOW HALL · 12 MINUTES', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#c7cfcc',
+    }).setOrigin(0.5).setDepth(2.3);
+    this.add.text(20 * tile, 37.35 * tile, 'EAT · CLEAN · MOVE', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#827f78',
+    }).setOrigin(0.5).setDepth(2.3);
+
+    // Stainless serving line and the barred pass-through make this a jail
+    // chow hall, not another sparse multipurpose room.
+    this.add.rectangle(33.4 * tile, 33.15 * tile, 7.2 * tile, 1.15 * tile, 0x657378)
+      .setDepth(1.55).setStrokeStyle(5, 0x252e32);
+    this.add.rectangle(33.4 * tile, 32.7 * tile, 7.05 * tile, 14, 0x9aa5a6).setDepth(1.58);
+    for (let x = 30.2; x <= 36.6; x += 0.55) {
+      this.add.rectangle(x * tile, 32.25 * tile, 3, 46, 0x7f8c8f).setDepth(1.62);
+    }
+    for (const x of [31.1, 33.35, 35.6]) {
+      this.add.rectangle(x * tile, 33.0 * tile, 1.5 * tile, 19, 0xb1b8b6).setDepth(1.65)
+        .setStrokeStyle(2, 0x4b5659);
+      this.add.ellipse(x * tile, 33.0 * tile, 42, 10, 0x555e5f).setDepth(1.66);
+    }
+    this.add.text(33.4 * tile, 31.92 * tile, 'SERVING LINE', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#aeb8b7',
+    }).setOrigin(0.5).setDepth(2.05);
+
+    // Two rows of bolted tables, trays and undersized fixed stools. The aisle
+    // remains clear so the room is usable at normal movement speed.
+    for (const table of [
+      { x: 7.5, y: 34.3 }, { x: 15.5, y: 34.3 }, { x: 23.5, y: 34.3 },
+      { x: 7.5, y: 36.2 }, { x: 15.5, y: 36.2 }, { x: 23.5, y: 36.2 },
+    ]) {
+      const tx = table.x * tile;
+      const ty = table.y * tile;
+      this.add.rectangle(tx, ty, 3.25 * tile, 0.76 * tile, 0x7d898b).setDepth(1.5)
+        .setStrokeStyle(4, 0x293236);
+      this.add.rectangle(tx, ty + 20, 10, 42, 0x333d41).setDepth(1.48);
+      for (const stoolX of [-1.95, 1.95]) {
+        this.add.circle(tx + stoolX * tile, ty, 15, 0x515d61).setDepth(1.54)
+          .setStrokeStyle(3, 0x242c30);
+      }
+      for (const trayX of [-0.92, 0.92]) {
+        this.add.rectangle(tx + trayX * tile, ty - 4, 48, 25, 0xa4aaa6).setDepth(1.56)
+          .setStrokeStyle(2, 0x4d5657);
+        this.add.rectangle(tx + trayX * tile - 10, ty - 4, 15, 10, 0xc7aa70).setDepth(1.57);
+        this.add.rectangle(tx + trayX * tile + 10, ty - 4, 12, 10, 0x88815a).setDepth(1.57);
+      }
+    }
+
+    // PB&J at the center table anchors the witnessed violence beat in the
+    // place where JP actually kept eating while the block moved on.
+    this.add.rectangle(20 * tile, 35 * tile, 56, 36, 0x9ba19d).setDepth(1.58)
+      .setStrokeStyle(3, 0x424a4b);
+    this.add.rectangle(20 * tile, 35 * tile, 29, 17, 0xd7bc80).setDepth(1.61);
+    this.add.rectangle(20 * tile, 35 * tile, 18, 9, 0x7d4f35).setDepth(1.62);
+
+    // Workers and diners keep moving even when the player is only passing
+    // through. They are atmosphere, not another dialogue checklist.
+    const worker = this.add.sprite(30.4 * tile, 33.85 * tile, 'npc_inmate4', 0)
+      .setScale(1.8).setTint(0xc2c8c5).setDepth(1.9);
+    this.tweens.add({
+      targets: worker,
+      x: 36.2 * tile,
+      duration: 6200,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
+    });
+    for (const diner of [
+      { x: 6.4, y: 34.3, texture: 'npc_inmate' },
+      { x: 16.6, y: 34.3, texture: 'npc_inmate2' },
+      { x: 22.4, y: 36.2, texture: 'npc_inmate3' },
+    ]) {
+      this.add.sprite(diner.x * tile, diner.y * tile, diner.texture, 0)
+        .setScale(1.75).setDepth(1.88);
+    }
+
+    this.add.rectangle(4.2 * tile, 32.55 * tile, 2.9 * tile, 24, 0xe0dbc6).setDepth(1.8)
+      .setStrokeStyle(3, 0x7a302d);
+    this.add.text(4.2 * tile, 32.55 * tile, 'NO TALKING\nIN LINE', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '5px', color: '#6e2926', align: 'center',
+    }).setOrigin(0.5).setDepth(1.82);
+    this.add.rectangle(37.1 * tile, 32.15 * tile, 32, 15, 0x20282d).setAngle(-20).setDepth(2.2);
+    this.add.circle(36.9 * tile, 32.23 * tile, 5, 0xb92424).setDepth(2.22);
   }
 
   private startGuardPatrol() {
