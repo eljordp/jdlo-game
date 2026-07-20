@@ -2,6 +2,8 @@ import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, SCALE, CHAR_SCALE } from '../config';
 import { MusicSystem } from '../systems/MusicSystem';
 import { ChoiceLedger } from '../systems/ChoiceLedger';
+import { WhipMenu, type WhipDestination } from '../systems/WhipMenu';
+import { BalanceSystem } from '../systems/BalanceSystem';
 import { SoundEffects } from '../systems/SoundEffects';
 
 /**
@@ -114,6 +116,43 @@ export class LAScene extends Phaser.Scene {
 
   // A gameplay-only pressure choice inside the LA night. The documentary
   // spine stays fixed, but the next scenes remember what the player sacrificed.
+  // The C8, an empty LA night, and one curated menu of where it goes.
+  private openLAWhip() {
+    const bal = BalanceSystem.getBalance();
+    const dests: WhipDestination[] = [
+      {
+        label: 'MELROSE', sub: 'flagship drip. spend loud.',
+        locked: bal < 300 ? 'need $300' : undefined,
+        onSelect: () => this.playLAStop('melrose'),
+      },
+      {
+        label: 'SANTA MONICA PIER', sub: 'ferris wheel. corn dogs. normal for a night.',
+        onSelect: () => this.playLAStop('pier'),
+      },
+      {
+        label: 'IN-N-OUT', sub: '2 AM. double-double in the C8.',
+        locked: bal < 12 ? 'need $12' : undefined,
+        onSelect: () => this.playLAStop('innout'),
+      },
+    ];
+    WhipMenu.open(this, 'WHERE TO, LA?', dests, () => {
+      this.time.delayedCall(300, () => { if (this.scene.isActive()) this.showDeliveryOrderChoice(); });
+    });
+  }
+
+  private playLAStop(stop: 'melrose' | 'pier' | 'innout') {
+    if (stop === 'melrose') {
+      BalanceSystem.spend(300);
+      this.showText('Melrose. Two bags, no prices asked. The kid from Fairfield would not believe it.', GAME_HEIGHT - 190, { size: '10px', color: '#f0c040' });
+    } else if (stop === 'pier') {
+      this.showText('Santa Monica Pier. Ferris wheel, corn dog, salt air. Nobody here needs anything from him.', GAME_HEIGHT - 190, { size: '10px', color: '#8fc8ff' });
+    } else {
+      BalanceSystem.spend(12);
+      this.showText('Double-double, animal fries, half-million-dollar drive-thru line. THIS is eating.', GAME_HEIGHT - 190, { size: '10px', color: '#f0c040' });
+    }
+    this.time.delayedCall(2200, () => { if (this.scene.isActive()) this.showDeliveryOrderChoice(); });
+  }
+
   private showDeliveryOrderChoice() {
     const cx = GAME_WIDTH / 2;
     const cy = GAME_HEIGHT - 155;
@@ -513,7 +552,7 @@ export class LAScene extends Phaser.Scene {
         );
 
         this.time.delayedCall(3500, () => {
-          if (this.scene.isActive()) this.showDeliveryOrderChoice();
+          if (this.scene.isActive()) this.openLAWhip();
         });
         break;
       }
