@@ -16,6 +16,7 @@ import { DMSystem } from '../systems/DMSystem';
 import { CasinoSystem } from '../systems/CasinoSystem';
 import { SoundEffects } from '../systems/SoundEffects';
 import { ChoiceLedger } from '../systems/ChoiceLedger';
+import { ClosetStore } from '../systems/ClosetStore';
 import { GameStats } from '../systems/GameStats';
 import { AchievementSystem } from '../systems/AchievementSystem';
 
@@ -937,9 +938,18 @@ export class BeachScene extends BaseChapterScene {
               { speaker: 'JP\'s Mind', text: 'I am not starting over from zero.' },
               { speaker: 'Narrator', text: 'His eyes move from the red screen to the phone.' },
             ], () => {
-              this.frozen = false;
-              // Check if K scene already done
-              this.maybeAutoPlugCall();
+              ClosetStore.seedCrashCloset();
+              this.dialogue.show([
+                { speaker: 'JP\'s Mind', text: 'Rent\'s due. Books are empty. But the closet isn\'t.' },
+                { speaker: 'Narrator', text: 'Sp5der. BAPE. The Supreme box logo. All of it about to become grocery money.' },
+              ], () => {
+                ClosetStore.open(this, 'sell', ClosetStore.owned, () => {
+                  this.dialogue.show([
+                    { speaker: 'JP\'s Mind', text: 'Sold my whole flex for pennies on the dollar. That\'s what broke feels like.' },
+                    { speaker: 'JP\'s Mind', text: 'Never again. I\'ll make it back. All of it.' },
+                  ], () => { this.frozen = false; this.maybeAutoPlugCall(); });
+                });
+              });
             });
           }});
         });

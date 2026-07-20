@@ -7,6 +7,8 @@ import { SoundEffects } from '../systems/SoundEffects';
 import { MusicSystem } from '../systems/MusicSystem';
 import { ChoiceLedger } from '../systems/ChoiceLedger';
 import { WhipMenu, type WhipDestination } from '../systems/WhipMenu';
+import { ClosetStore } from '../systems/ClosetStore';
+import { MoodSystem } from '../systems/MoodSystem';
 import { BalanceSystem } from '../systems/BalanceSystem';
 import { AffinitySystem } from '../systems/AffinitySystem';
 
@@ -635,35 +637,7 @@ export class WeedRiseScene extends BaseChapterScene {
     }
 
     if (interactable.id === 'rise_overlook' && !this.beachDateDone) {
-      this.frozen = true;
-      const closeCoast = this.showSbCutaway('coast');
-      this.dialogue.show([
-        { speaker: 'Narrator', text: 'The coast. Taco window on the left. The sushi spot on the sand, right there on the water.' },
-        { speaker: 'JP\'s Mind', text: 'K deserves a night out. Question is which one.' },
-      ], () => {
-        this.showRouteChoice('Take K out?', 'Lilly\'s Taqueria -$15', 'Oku on the water -$80', () => {
-          closeCoast();
-          const closeCutaway = this.showSbCutaway('lillys');
-          this.beachDateDone = true;
-          BalanceSystem.spend(15);
-          this.dialogue.show([
-            { speaker: 'Narrator', text: 'Two plates, one bench, the whole Pacific for free.' },
-            { speaker: 'K', text: 'Lilly\'s?? This is literally my favorite spot and you know it.' },
-            { speaker: 'JP\'s Mind', text: 'Fifteen dollars. Best money I spent all month, and I spent a LOT of money this month.' },
-          ], () => { closeCutaway(); AffinitySystem.adjust('ch1_gf_k', 1); this.frozen = false; });
-        }, () => {
-          closeCoast();
-          const closeCutaway = this.showSbCutaway('oku');
-          this.beachDateDone = true;
-          BalanceSystem.spend(80);
-          this.dialogue.show([
-            { speaker: 'Narrator', text: 'Oku. Sand-side table. She orders like rent isn\'t real.' },
-            { speaker: 'JP', text: 'Get whatever. We\'re good.' },
-            { speaker: 'Narrator', text: 'And tonight, they are.' },
-            { speaker: 'JP\'s Mind', text: 'Eighty on dinner like it\'s nothing. The ocean made it feel normal.' },
-          ], () => { closeCutaway(); AffinitySystem.adjust('ch1_gf_k', 1); this.frozen = false; });
-        });
-      });
+      this.launchStateStreet();
       return;
     }
     if (interactable.id === 'rise_bed' && this.ordersReady && !this.charSnuck && ChoiceLedger.get('char_sneak') === null) {
@@ -722,6 +696,25 @@ export class WeedRiseScene extends BaseChapterScene {
     }
 
     super.handleInteractable(interactable);
+  }
+
+  private launchStateStreet() {
+    if (this.frozen) return;
+    this.frozen = true;
+    SoundEffects.playCarDrive();
+    this.cameras.main.fadeOut(450, 0, 0, 0);
+    this.cameras.main.once('camerafadeoutcomplete', () => {
+      this.scene.sleep();
+      this.scene.launch('StateStreetScene', {
+        returnScene: 'WeedRiseScene',
+        onComplete: () => {
+          this.beachDateDone = true;
+          this.frozen = false;
+          this.cameras.main.fadeIn(450, 0, 0, 0);
+          MusicSystem.transitionTo('weed-rise', 700);
+        },
+      });
+    });
   }
 
   // Director Mode can launch this directly for pacing and gate tests.
@@ -856,8 +849,12 @@ export class WeedRiseScene extends BaseChapterScene {
         onSelect: () => this.playDeliveryRun(),
       },
       {
-        label: 'STATE STREET', sub: 'the spots. the life.',
+        label: 'STATE STREET', sub: 'the spots. the shops. the life.',
         onSelect: () => this.openStateStreet(),
+      },
+      {
+        label: 'THE POOL', sub: 'stay in with K. order in.',
+        onSelect: () => this.playPoolNight(),
       },
     ];
     WhipMenu.open(this, 'WHERE TO?', dests, () => { this.frozen = false; });
@@ -880,6 +877,10 @@ export class WeedRiseScene extends BaseChapterScene {
       {
         label: 'HOT SPRINGS TRAIL', sub: 'free. no signal halfway up.',
         onSelect: () => this.playSpot('hike'),
+      },
+      {
+        label: 'THE SHOPS', sub: 'cop drip. make the money back visible.',
+        onSelect: () => { this.frozen = true; ClosetStore.open(this, 'buy', ClosetStore.owned, () => { this.frozen = false; }); },
       },
     ];
     WhipMenu.open(this, 'STATE STREET', dests, () => { this.frozen = false; });
@@ -913,6 +914,18 @@ export class WeedRiseScene extends BaseChapterScene {
         { speaker: 'JP\'s Mind', text: 'The phone found signal on the way down. Eleven missed messages. Back to it.' },
       ], () => { this.frozen = false; });
     }
+  }
+
+  // Met K in 2022 when she moved out here. Pool, hot tub, DoorDash sushi, repeat.
+  private playPoolNight() {
+    this.frozen = true;
+    this.dialogue.show([
+      { speaker: 'Narrator', text: 'No trip tonight. Backyard. Pool lit up blue, hot tub bubbling, K already in it.' },
+      { speaker: 'K', text: 'I already DoorDashed sushi. Two orders. Don\'t argue.' },
+      { speaker: 'JP\'s Mind', text: 'Met her in 2022 when she moved out here. This became the whole routine. Pool, hot tub, sushi to the door.' },
+      { speaker: 'Narrator', text: 'The phone keeps buzzing on the towel. For once, JP lets it.' },
+      { speaker: 'JP\'s Mind', text: 'Twenty years old with a pool, a girl, and sushi on the way. Some nights the life actually felt like the life.' },
+    ], () => { AffinitySystem.adjust('ch1_gf_k', 1); MoodSystem.setMood('vibing', 40); this.frozen = false; });
   }
 
   private playDeliveryRun() {
