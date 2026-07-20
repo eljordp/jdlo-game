@@ -513,6 +513,35 @@ export class VegasScene extends Phaser.Scene {
     }
     // Crowd on the pool deck, below the text zone
     this.addMovingCrowd(330, 12, 1.05);
+
+    // ── The money layer: this is a Vegas dayclub, not a community pool ──
+    // DJ stage at the head of the pool with a daylight LED wall
+    this.addObj(this.add.rectangle(GAME_WIDTH / 2, 258, 300, 60, 0x1a1e28).setDepth(30));
+    for (let p = 0; p < 6; p++) {
+      const panel = this.addObj(this.add.rectangle(GAME_WIDTH / 2 - 125 + p * 50, 246, 44, 26,
+        [0xff44aa, 0x22ccee, 0xf0c040][p % 3], 0.7).setDepth(31));
+      this.addTween({ targets: panel, alpha: 0.25, duration: 400 + (p % 3) * 180, yoyo: true, repeat: -1, delay: p * 90 });
+    }
+    this.addObj(this.add.sprite(GAME_WIDTH / 2, 236, 'npc_generic', 0).setScale(SCALE).setTint(0x14181f).setDepth(32));
+
+    // Bottle-service procession: staff crossing the deck with sparklers
+    const bottleGirl = this.addObj(this.add.sprite(-30, 322, 'npc_bikini2', 0).setScale(SCALE * 1.05).setDepth(36));
+    const bottle = this.addObj(this.add.rectangle(-30, 300, 8, 18, 0x2a4a2a).setDepth(37));
+    const sparkler = this.addObj(this.add.circle(-30, 288, 5, 0xfff0a0, 0.95).setDepth(38));
+    this.addTween({ targets: [bottleGirl, bottle, sparkler], x: `+=${GAME_WIDTH + 60}`, duration: 9000, repeat: -1, repeatDelay: 2500 });
+    this.addTween({ targets: sparkler, alpha: 0.3, scaleX: 1.6, scaleY: 1.6, duration: 120, yoyo: true, repeat: -1 });
+
+    // Floating daybeds in the pool — nobody swims laps at Marquee
+    for (const fx of [GAME_WIDTH / 2 - 200, GAME_WIDTH / 2 + 170]) {
+      const bed = this.addObj(this.add.rectangle(fx, GAME_HEIGHT - 130, 90, 44, 0xf5f1e8, 0.95).setDepth(34));
+      const bedTowel = this.addObj(this.add.rectangle(fx, GAME_HEIGHT - 130, 70, 26, 0xf0c040, 0.9).setDepth(35));
+      this.addTween({ targets: [bed, bedTowel], y: '+=6', angle: 2, duration: 2600, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+    }
+
+    // Gold umbrellas over the cabana row
+    for (const x of [130, 310, GAME_WIDTH - 310, GAME_WIDTH - 130]) {
+      this.addObj(this.add.triangle(x, 96, 0, 26, 42, 0, 84, 26, 0xd8a832).setOrigin(0.5, 0.5).setDepth(33));
+    }
   }
 
   private makeNightclub(name: string, color: number, chandelier = false): void {
