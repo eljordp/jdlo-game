@@ -1149,12 +1149,15 @@ export class EndScene extends Phaser.Scene {
                               });
 
                               // Final stats come after the story has had room to breathe.
-                              this.input.keyboard!.on('keydown-SPACE', () => {
+                              // SPACE (keyboard) OR tap (touch/mobile) both advance.
+                              const toStats = () => {
                                 this.cameras.main.fadeOut(1000, 0, 0, 0);
                                 this.cameras.main.once('camerafadeoutcomplete', () => {
                                   this.scene.restart({ finalStats: true });
                                 });
-                              });
+                              };
+                              this.input.keyboard!.once('keydown-SPACE', toStats);
+                              this.input.once('pointerdown', toStats);
                             });
                           },
                         });

@@ -1586,11 +1586,18 @@ export class OperatorScene extends BaseChapterScene {
     const mk = (x: number, label: string, color: number, cb: () => void) => {
       const bg = this.add.rectangle(x, cy + 10, 250, 42, color).setScrollFactor(0).setDepth(200).setInteractive({ useHandCursor: true });
       const tx = this.add.text(x, cy + 10, label, { fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#ffffff' }).setOrigin(0.5).setScrollFactor(0).setDepth(201);
-      bg.on('pointerdown', () => { objs.forEach(o => o.destroy()); cb(); });
+      bg.on('pointerdown', () => { cleanup(); cb(); });
       objs.push(bg, tx);
     };
+    const spaceKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    const nKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.N);
+    const cleanup = () => { objs.forEach(o => o.destroy()); spaceKey.off('down', onSpace); nKey.off('down', onN); };
+    const onSpace = () => { cleanup(); onA(); };
+    const onN = () => { cleanup(); onB(); };
     mk(cx - 150, a, 0x30598e, onA);
     mk(cx + 150, b, 0x8a5a30, onB);
+    spaceKey.on('down', onSpace);
+    nKey.on('down', onN);
   }
 
   // The launch nobody saw — JP's real pattern: wins stay in the drafts.

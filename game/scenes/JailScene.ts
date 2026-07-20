@@ -821,6 +821,7 @@ export class JailScene extends BaseChapterScene {
       ], () => {
         this.frozen = false;
         this.refreshObjectiveHint();
+        this.maybePlayPhaseOneRealization();
       });
     }, () => {
       this.phaseOneRelapseDone = true;
@@ -832,6 +833,7 @@ export class JailScene extends BaseChapterScene {
       ], () => {
         this.frozen = false;
         this.refreshObjectiveHint();
+        this.maybePlayPhaseOneRealization();
       });
     });
   }
@@ -906,7 +908,7 @@ export class JailScene extends BaseChapterScene {
 
   protected getObjectiveHint(): string {
     if (this.currentDay === 1) {
-      if (!this.phaseOneRelapseDone) return 'Phase I — old habits followed you inside. Find the common area.';
+      if (!this.phaseOneRelapseDone) return 'Phase I — old habits followed you inside. Head to the yard.';
       if (this.battleWon === null) return 'Phase I — trouble is waiting in the common area.';
       if (!this.phaseOneRealizationDone) return 'Phase I — listen to Bird and the inmate waiting on an appeal.';
       return 'Phase I — return to your bunk.';

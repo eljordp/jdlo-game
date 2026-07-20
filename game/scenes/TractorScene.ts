@@ -325,12 +325,19 @@ export class TractorScene extends BaseChapterScene {
       const mk = (x: number, label: string, color: number, cb: () => void) => {
         const bg = this.add.rectangle(x, cy + 10, 210, 42, color).setScrollFactor(0).setDepth(200).setInteractive({ useHandCursor: true });
         const tx = this.add.text(x, cy + 10, label, { fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#ffffff' }).setOrigin(0.5).setScrollFactor(0).setDepth(201);
-        bg.on('pointerdown', () => { pt.destroy(); bg.destroy(); tx.destroy(); all.forEach(o => o.destroy()); cb(); });
+        bg.on('pointerdown', () => { cleanup(); cb(); });
         return [bg, tx];
       };
-      const all: Phaser.GameObjects.GameObject[] = [];
+      const all: Phaser.GameObjects.GameObject[] = [pt];
+      const spaceKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+      const nKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.N);
+      const cleanup = () => { all.forEach(o => o.destroy()); spaceKey.off('down', onSpace); nKey.off('down', onN); };
+      const onSpace = () => { cleanup(); onA(); };
+      const onN = () => { cleanup(); onB(); };
       all.push(...mk(cx - 130, a, 0x30a040, onA));
       all.push(...mk(cx + 130, b, 0x8a5a30, onB));
+      spaceKey.on('down', onSpace);
+      nKey.on('down', onN);
     };
     choiceUI('Taco truck at the gate.', 'Just me -$12', 'Feed the crew -$25', () => {
       BalanceSystem.spend(12);

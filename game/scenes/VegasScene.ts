@@ -666,6 +666,14 @@ export class VegasScene extends Phaser.Scene {
       bg.on('pointerdown', () => choose(def));
       buttons.push(bg, label);
     });
+    // Keyboard/gamepad fallback: 1/2/3 pick the three owners.
+    const kb = this.input.keyboard!;
+    const keys = [
+      kb.addKey(Phaser.Input.Keyboard.KeyCodes.ONE),
+      kb.addKey(Phaser.Input.Keyboard.KeyCodes.TWO),
+      kb.addKey(Phaser.Input.Keyboard.KeyCodes.THREE),
+    ];
+    keys.forEach((k, i) => k.once('down', () => { keys.forEach(x => x.removeAllListeners()); choose(defs[i]); }));
   }
 
   private playStep() {
