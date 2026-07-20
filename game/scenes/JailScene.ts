@@ -1030,7 +1030,6 @@ export class JailScene extends BaseChapterScene {
         { speaker: 'Narrator', text: 'He closes his eyes.' },
         { speaker: 'JP\'s Mind', text: 'God, I know you can hear me.' },
         { speaker: 'JP\'s Mind', text: 'I know I messed up. Bad.' },
-        { speaker: 'JP\'s Mind', text: 'But you know I never tried to hurt anyone.' },
         { speaker: 'JP\'s Mind', text: 'I just need one more chance.' },
         { speaker: 'JP\'s Mind', text: 'I\'ll do it right this time.' },
         { speaker: 'Narrator', text: 'The yard is quiet. For the first time, so is his mind.' },

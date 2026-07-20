@@ -1049,7 +1049,7 @@ export class OperatorScene extends BaseChapterScene {
       this.frozen = true;
       this.dialogue.show([
         { speaker: 'Narrator', text: 'Steak dinner. Downtown LA. White tablecloth.' },
-        { speaker: 'Narrator', text: 'Six months ago JP was eating ramen in a cell.' },
+        { speaker: 'Narrator', text: 'Nobody in this room knows how recent the ramen was. Good.' },
         { speaker: 'Malachi', text: 'Order whatever you want. It\'s on the company.' },
         { speaker: 'JP\'s Mind', text: '"On the company." That means I built something worth paying for.' },
         { speaker: 'JP', text: 'I\'ll take the ribeye.' },

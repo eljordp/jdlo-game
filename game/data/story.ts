@@ -769,11 +769,11 @@ export const chapter6NPCs: NPCData[] = [
       { speaker: 'JP', text: 'Good. That was the point.' },
       { speaker: 'Malachi', text: 'I gotta be real with you. When I first met you I thought you were just another guy talking big.' },
       { speaker: 'JP', text: 'And now?' },
-      { speaker: 'Malachi', text: 'Now I see you operate. You turn a messy problem into something the team can use.' },
+      { speaker: 'Malachi', text: 'Now I\'m the one calling YOU. Three leads from Hawaii this morning. I dial, you build.' },
       { speaker: 'Malachi', text: 'Big meeting tomorrow. New client. You ready?', choices: [
         { text: '"Always ready."', next: [
-          { speaker: 'Malachi', text: 'That\'s why you\'re COO. Not because of a title. Because you operate.' },
-          { speaker: 'JP\'s Mind', text: 'No degree. Self-taught. The responsibility is still real.' },
+          { speaker: 'Malachi', text: 'That\'s what I tell them on the calls. My guy delivers.' },
+          { speaker: 'JP\'s Mind', text: 'My operation. His phone book.' },
         ]},
         { text: '"Send me the details. I\'ll have the proposal by morning."', next: [
           { speaker: 'Malachi', text: 'Good. Make the scope clear before you promise the build.' },
@@ -2323,7 +2323,6 @@ const ch3Day3Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'Most people don\'t make it out of this situation.' },
     { speaker: 'JP\'s Mind', text: 'I don\'t know anyone that did.' },
     { speaker: 'JP\'s Mind', text: 'I need to rededicate my life to having faith. That\'s all I got right now.' },
-    { speaker: 'JP\'s Mind', text: 'God knows I never attempted to cause harm to anyone.' },
     { speaker: 'JP\'s Mind', text: 'He knows that.' },
   ],
   ch3_anger_management: [
@@ -2859,7 +2858,7 @@ const ch6Extras: Record<string, DialogueLine[]> = {
   ],
   ch6_elevator: [
     { speaker: 'Narrator', text: 'Elevator to the 14th floor. JP\'s apartment.' },
-    { speaker: 'JP\'s Mind', text: 'From a cell to a highrise. God is good.' },
+    { speaker: 'JP\'s Mind', text: 'Water cooler small talk. Nobody here knows where he was two years ago. He likes it that way.' },
   ],
   ch6_view_city: [
     { speaker: 'Narrator', text: 'Floor-to-ceiling windows. Downtown LA spread out below.' },

@@ -3,10 +3,10 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "JDLO | The Game",
-  description: "Play through the story of Jordan Lopez — from the beach to the boardroom. A Pokemon-style RPG portfolio experience.",
+  description: "Play through the story of Jordan Lopez — Based on a true story. A Pokemon-style RPG portfolio experience.",
   openGraph: {
     title: "JDLO | The Game",
-    description: "Play through the story of Jordan Lopez — from the beach to the boardroom.",
+    description: "Play through the story of Jordan Lopez — Based on a true story.",
     url: "https://jdlo.online",
     type: "website",
   },

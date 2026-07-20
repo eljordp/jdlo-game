@@ -993,7 +993,9 @@ export class EndScene extends Phaser.Scene {
               { speaker: 'Zay', text: 'I heard what you been building. I\'m proud of you bro. For real.' },
               { speaker: 'JP', text: 'Appreciate that. Means a lot coming from you.' },
               { speaker: 'Zay', text: 'So where we going next?' },
-              { speaker: 'JP', text: 'Everywhere.' },
+              { speaker: 'JP\'s Mind', text: 'People don\'t start out bad. We just get misled when we don\'t have a reason.' },
+        { speaker: 'JP\'s Mind', text: 'I got my reason now.' },
+        { speaker: 'JP', text: 'Everywhere.' },
             ];
 
             let lineIdx = 0;
