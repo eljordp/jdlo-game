@@ -2072,7 +2072,25 @@ export class HomeScene extends BaseChapterScene {
   }
 
   // Override NPC dialogue to add reactive behaviors
+  private ivyWalked = false;
+
   protected handleNPCDialogue(npcId: string, dialogue: DialogueLine[]) {
+    // Ivy's walk: ten quiet minutes before everything changes
+    if (npcId === 'ch0_frenchie' && this.ivyFollowing && !this.ivyWalked) {
+      this.ivyWalked = true;
+      this.frozen = true;
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'Leash. Ivy loses her mind at the sight of it. Full-body wag, zero dignity.' },
+        { speaker: 'Narrator', text: 'Around the block. She stops at every third bush like it owes her news.' },
+        { speaker: 'Narrator', text: 'The block is quiet. For ten minutes, so is JP.' },
+        { speaker: 'JP\'s Mind', text: 'Whatever happens next... this part was good. This part was always good.' },
+      ], () => {
+        MoodSystem.changeMorale(10);
+        AffinitySystem.adjust('ch0_frenchie', 1);
+        this.frozen = false;
+      });
+      return;
+    }
     GameIntelligence.onNPCTalked(npcId);
 
     // Track total NPC conversations for secret NPC unlock

@@ -408,6 +408,10 @@ export class HomeReturnScene extends BaseChapterScene {
           this.playPopsReunion(npc.dialogue);
           return;
         }
+        if (npc.id === 'ch0_pops' && this.popsTalked && !this.vineyardWalked) {
+          this.playVineyardWalk();
+          return;
+        }
         if (npc.id === 'ch0_mom' && !this.momOverride) {
           this.playMomMoment();
           return;
@@ -420,6 +424,71 @@ export class HomeReturnScene extends BaseChapterScene {
   }
 
   // ── Pops reunion — emotional peak of the game ──
+  private vineyardWalked = false;
+
+  // The circle: JP pruned another man's rows at twenty an hour.
+  // His father owns rows now — planted with the tuition JP never spent.
+  private playVineyardWalk() {
+    this.frozen = true;
+    this.vineyardWalked = true;
+
+    const black = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH * 3, GAME_HEIGHT * 3, 0x000000)
+      .setAlpha(0).setDepth(400).setScrollFactor(0);
+    this.tweens.add({
+      targets: black, alpha: 1, duration: 900,
+      onComplete: () => {
+        const cx = GAME_WIDTH / 2;
+        const objs: Phaser.GameObjects.GameObject[] = [];
+        // Golden-hour sky over Napa
+        objs.push(this.add.rectangle(cx, 200, GAME_WIDTH, 400, 0xd88a4a).setDepth(401).setScrollFactor(0));
+        objs.push(this.add.rectangle(cx, 380, GAME_WIDTH, 90, 0xe8a860, 0.7).setDepth(401).setScrollFactor(0));
+        objs.push(this.add.circle(cx + 260, 300, 55, 0xffd469, 0.95).setDepth(402).setScrollFactor(0));
+        // Earth + receding vine rows
+        objs.push(this.add.rectangle(cx, 640, GAME_WIDTH, 480, 0x4a3524).setDepth(401).setScrollFactor(0));
+        for (let r = 0; r < 6; r++) {
+          const y = 460 + r * 62;
+          const w = GAME_WIDTH * (0.35 + r * 0.13);
+          objs.push(this.add.rectangle(cx, y, w, 8, 0x2f5230).setDepth(402).setScrollFactor(0));
+          for (let vx = cx - w / 2; vx < cx + w / 2; vx += 60 + r * 10) {
+            objs.push(this.add.rectangle(vx, y - 12, 5, 22, 0x5a4630).setDepth(402).setScrollFactor(0));
+          }
+        }
+        // Gate + the two of them, walking in
+        objs.push(this.add.rectangle(cx - 330, 520, 12, 110, 0x6a5238).setDepth(403).setScrollFactor(0));
+        const jp = this.add.sprite(cx - 260, 560, 'player-ch7', 0).setScale(3.4).setDepth(404).setScrollFactor(0);
+        const pops = this.add.sprite(cx - 200, 560, 'npc_pops', 0).setScale(3.4).setDepth(404).setScrollFactor(0);
+        objs.push(jp, pops);
+        this.tweens.add({ targets: [jp, pops], x: '+=180', duration: 14000, ease: 'Sine.easeInOut' });
+
+        this.dialogue.show([
+          { speaker: 'Pops', text: 'Come. Before you go. I want to show you something.' },
+          { speaker: 'Narrator', text: 'Twenty minutes north. Pops parks the truck at a gate JP has never seen.' },
+          { speaker: 'Pops', text: 'Four acres. Old zinfandel. Needs work.' },
+          { speaker: 'JP', text: 'Pops. When did you—' },
+          { speaker: 'Pops', text: 'The college money. You never spent it. So I planted it.' },
+          { speaker: 'Narrator', text: 'JP pruned another man\'s rows at twenty an hour, counting the days.' },
+          { speaker: 'Narrator', text: 'His father owns rows now.' },
+          { speaker: 'JP\'s Mind', text: 'My tuition is growing grapes.' },
+          { speaker: 'Pops', text: 'They\'re yours too, you know. Whenever you want them.' },
+          { speaker: 'JP', text: '...I know how to drive the tractor.' },
+          { speaker: 'Pops', text: 'Ha! I know you do, mijo. I know you do.' },
+          { speaker: 'Narrator', text: 'They walk the rows until the light goes.' },
+        ], () => {
+          this.tweens.add({
+            targets: black, alpha: 1, duration: 600, delay: 1200,
+            onComplete: () => {
+              objs.forEach(o => o.destroy());
+              this.tweens.add({
+                targets: black, alpha: 0, duration: 700,
+                onComplete: () => { black.destroy(); this.frozen = false; },
+              });
+            },
+          });
+        });
+      },
+    });
+  }
+
   private playPopsReunion(baseDialogue: DialogueLine[]) {
     this.frozen = true;
     MusicSystem.stop();

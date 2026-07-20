@@ -633,6 +633,8 @@ export class WeedRiseScene extends BaseChapterScene {
 
   // Director Mode can launch this directly for pacing and gate tests.
   private playWeighingRun() {
+    // Era menu: strains named like superheroes and desserts
+
     this.frozen = true;
     const cx = GAME_WIDTH / 2;
     const cy = GAME_HEIGHT / 2;
@@ -756,6 +758,7 @@ export class WeedRiseScene extends BaseChapterScene {
     SoundEffects.playDoorOpen();
 
     this.dialogue.show([
+      { speaker: 'Narrator', text: 'Tonight\'s menu on the counter: three strains named like superheroes and desserts. The customers order by vibe.' },
       { speaker: 'Narrator', text: 'Three confirmed stops. One late message keeps buzzing.' },
       { speaker: 'JP\'s Mind', text: this.orderPolicy === 'all'
         ? 'I already told everybody yes. Now I have to make the route work.'

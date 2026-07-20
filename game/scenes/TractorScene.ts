@@ -262,7 +262,28 @@ export class TractorScene extends BaseChapterScene {
   }
 
   // Juan shakes head if you looked at phone first
+  private eliseoLessonDone = false;
+  private eliseoTalkCount = 0;
+
   protected handleNPCDialogue(npcId: string, dialogue: DialogueLine[]): void {
+    // The lessons go both ways now
+    if (npcId === 'ch4_eliseo' && this.eliseoTalkCount === 1 && !this.eliseoLessonDone) {
+      this.eliseoLessonDone = true;
+      this.frozen = true;
+      this.dialogue.show([
+        { speaker: 'Eliseo', text: 'Oye güero. You taught me the bad words. Now teach me the MONEY words.' },
+        { speaker: 'JP', text: 'Okay. "Thank you for your business."' },
+        { speaker: 'Eliseo', text: '"Sank you for jour beesness."' },
+        { speaker: 'JP', text: 'Perfect. Now: "The price is the price."' },
+        { speaker: 'Eliseo', text: '"De price is de price." ...I feel powerful.' },
+        { speaker: 'JP\'s Mind', text: 'He taught me Spanish all summer. Least I can do is make him dangerous in two languages.' },
+      ], () => {
+        AffinitySystem.adjust('ch4_eliseo', 1);
+        this.frozen = false;
+      });
+      return;
+    }
+    if (npcId === 'ch4_eliseo') this.eliseoTalkCount++;
     GameIntelligence.onNPCTalked(npcId);
     if (npcId === 'ch4_coworker' && this.phoneExaminedFirst) {
       const chapterDialogue = this.getChapterDialogue();

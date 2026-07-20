@@ -992,6 +992,7 @@ export class OperatorScene extends BaseChapterScene {
 
   // --- Override handleInteractable for custom moments ---
   private laDinnerDone = false;
+  private innoutDone = false;
 
   protected handleInteractable(interactable: { id: string; type: string; consumed?: boolean }) {
     // ── LA prices. Two ways to sit in the same room. ──
@@ -1062,6 +1063,37 @@ export class OperatorScene extends BaseChapterScene {
     }
 
     // C8 Corvette — big purchase moment
+    if (interactable.id === 'ch6_corvette' && this.innoutDone) {
+      this.frozen = true;
+      this.dialogue.show([
+        { speaker: 'JP\'s Mind', text: 'The C8 still smells like grilled onions. No regrets. Zero.' },
+      ], () => { this.frozen = false; });
+      return;
+    }
+    if (interactable.id === 'ch6_corvette' && !this.innoutDone) {
+      this.innoutDone = true;
+      this.frozen = true;
+      this.dialogue.show([
+        { speaker: 'Narrator', text: '2 AM. Deliveries sent. The C8 idling in an empty lot.' },
+        { speaker: 'JP\'s Mind', text: 'There is exactly one correct move right now.' },
+      ], () => {
+        this.showPostChoiceStyle('You know what it is.', 'In-N-Out run -$12', 'Head home', () => {
+          BalanceSystem.spend(12);
+          MoodSystem.setMood('vibing', 40);
+          this.dialogue.show([
+            { speaker: 'Narrator', text: 'Double-double animal style, fries well-done, in a half-million-dollar drive-thru line at 2 AM.' },
+            { speaker: 'Narrator', text: 'The $85 spot was dinner. THIS is eating.' },
+            { speaker: 'JP\'s Mind', text: 'Twelve dollars. The C8 will smell like grilled onions for two days. Worth every single day.' },
+          ], () => { this.frozen = false; });
+        }, () => {
+          this.dialogue.show([
+            { speaker: 'JP\'s Mind', text: 'Discipline. Straight home.' },
+            { speaker: 'Narrator', text: 'He thought about the double-double the entire drive.' },
+          ], () => { this.frozen = false; });
+        });
+      });
+      return;
+    }
     if (interactable.id === 'ch6_corvette') {
       Analytics.trackInteraction(interactable.id);
       SoundEffects.moneyRain();

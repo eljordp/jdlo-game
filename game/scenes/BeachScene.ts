@@ -1547,7 +1547,35 @@ export class BeachScene extends BaseChapterScene {
   }
 
   // Override to add volleyball mini-game, BMW, and bed wake-up
+  private auxHeld = false;
+
   protected handleInteractable(interactable: { id: string; type: string; consumed?: boolean }) {
+    // ── THE AUX: ultimate party power. Use it wisely. ──
+    if (interactable.id === 'ch1_speaker' && this.currentDay === 2 && !this.auxHeld) {
+      this.auxHeld = true;
+      this.frozen = true;
+      this.dialogue.show([
+        { speaker: 'Nolan', text: 'JP! You got the aux. Do NOT embarrass this house.' },
+        { speaker: 'JP\'s Mind', text: 'The aux is a loaded weapon. Respect it.' },
+      ], () => {
+        this.showYesNoChoice('The party waits.', 'West coast classic', 'New heat', () => {
+          MoodSystem.setMood('hyped', 30);
+          this.dialogue.show([
+            { speaker: 'Narrator', text: 'First bar drops. The ENTIRE party raps it word for word. Even the guy who doesn\'t talk.' },
+            { speaker: 'Big Bart', text: 'PUT THE OGs ONNNN. THIS MAN UNDERSTANDS CULTURE.' },
+            { speaker: 'JP\'s Mind', text: 'Aux privileges: secured for life.' },
+          ], () => { this.frozen = false; });
+        }, () => {
+          MoodSystem.setMood('vibing', 30);
+          this.dialogue.show([
+            { speaker: 'Narrator', text: 'Half the room turns. "What IS this?" The other half is already Shazaming.' },
+            { speaker: 'Cooper', text: 'Run it BACK. Run it back right now.' },
+            { speaker: 'JP\'s Mind', text: 'Playing heat before it\'s heat. That\'s the whole skill.' },
+          ], () => { this.frozen = false; });
+        });
+      });
+      return;
+    }
     // Always notify GameIntelligence — one place, catches everything
     GameIntelligence.onInteracted(interactable.id);
 
