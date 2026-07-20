@@ -11,7 +11,20 @@ This is a rendered chapter-by-chapter comparison, not another source-only review
 
 The browser connection reset during two long dialogue-advance sequences. That was not a game exception. Because of that, this pass does **not** claim an exact normal-speed playtime or a single uninterrupted 1x completion. It proves rendered scene availability, key causal gates, current source paths, and production build health. A separate 1x timing run is still required for an honest length score.
 
-## Honest whole-game rating
+## Legacy heuristic rating — superseded as a scoring method
+
+The numeric tables below are preserved as a record of the July 19 comparative
+audit. They were reasoned judgments, not calibrated measurements. They did not
+use fixed anchors, blind-player evidence, or a common formula, and their
+decimal precision overstated what the evidence could support.
+
+All future ratings use [`IMPACT_RATING_RUBRIC.md`](./IMPACT_RATING_RUBRIC.md):
+whole-number scores, explicit dimension weights, evidence levels, observable
+player questions, and separate treatment for a four-second intro versus a full
+chapter. Treat the reasons and old-to-current ordering below as useful; do not
+quote the old absolute values as measured quality.
+
+### July 19 snapshot
 
 The old `6.3` assessment was fair for the pre-repair build. The game in this pass is a **7.8/10 playable documentary alpha**. Its narrative spine is closer to **8.6**, while its presentation/polish layer is closer to **7.2**. That distinction matters: the story is now coherent enough to recommend, but several scenes still look or play like a strong prototype.
 
