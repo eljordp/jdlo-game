@@ -80,25 +80,23 @@ and rounded to a whole number out of 100.
 At `E0` or `E1`, a `4` should almost never be awarded. “Proven” means someone
 outside the build process actually received the intended effect.
 
-## Intro score
+## The title card is not scored
 
-The four-second intro is a title beat, not a chapter. It should not receive
-chapter scores for gameplay, relationships or map depth. Score it only on its
-actual jobs:
+`Based on a true story.` is a four-second title card, not a chapter. It has no
+gameplay, relationship, map, causal chain or independent emotional arc to
+grade. Future scorecards list it as `UNSCORED — title card` and begin with
+Home.
 
-| Intro job | Weight | Current evidence |
-|---|---:|---|
-| Promise fidelity | 30 | `Based on a true story.` establishes the documentary contract without adding false detail |
-| Tone and mystery | 30 | Minimal presentation creates seriousness and restraint |
-| Handoff into Home | 25 | The transition must create curiosity rather than feel like an isolated splash screen |
-| Timing and presentation | 15 | Readability, duration, audio and skip behavior must feel intentional |
+Its only QA checks are binary:
 
-Current provisional intro rating: **83/100 · E1 — Rendered**.
+- exact approved sentence renders;
+- readable long enough to register;
+- transition into Home works;
+- no extra explanation or disclaimer appears.
 
-Reason: promise fidelity is proven in the implementation; tone, handoff and
-timing are strong but have not been validated with blind players. The old
-`Truth 10 / Drama 8 / Depth 8 / Clarity 10` was an internally consistent
-opinion, not a calibrated measurement.
+If blind players later say the opening lacks a hook, that creates a design
+question about adding a playable cold open. It does not justify inventing a
+numerical grade for one sentence.
 
 ## What humans will measure
 
