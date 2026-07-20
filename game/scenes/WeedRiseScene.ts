@@ -6,6 +6,7 @@ import { GAME_HEIGHT, GAME_WIDTH, SCALE, SCALED_TILE } from '../config';
 import { SoundEffects } from '../systems/SoundEffects';
 import { MusicSystem } from '../systems/MusicSystem';
 import { ChoiceLedger } from '../systems/ChoiceLedger';
+import { WhipMenu, type WhipDestination } from '../systems/WhipMenu';
 import { BalanceSystem } from '../systems/BalanceSystem';
 import { AffinitySystem } from '../systems/AffinitySystem';
 
@@ -695,15 +696,7 @@ export class WeedRiseScene extends BaseChapterScene {
     }
 
     if (interactable.id === 'rise_bmw') {
-      if (!this.ordersReady) {
-        this.dialogue.show([{ speaker: 'JP\'s Mind', text: 'No route yet. Check the phone.' }]);
-        return;
-      }
-      if (!this.routeCompleted) {
-        this.playDeliveryRun();
-        return;
-      }
-      this.dialogue.show([{ speaker: 'JP\'s Mind', text: 'Engine is still warm.' }]);
+      this.openWhip();
       return;
     }
 
@@ -853,6 +846,75 @@ export class WeedRiseScene extends BaseChapterScene {
 
   // Abstract arcade route: this dramatizes pressure without exposing real buyers
   // or turning the game into a how-to.
+  // The whip outside the house. Two lives fork right here every night.
+  private openWhip() {
+    this.frozen = true;
+    const dests: WhipDestination[] = [
+      {
+        label: 'BEACH CITY', sub: 'where the money is.',
+        locked: !this.ordersReady ? 'no route yet — check the phone' : (this.routeCompleted ? 'runs are done for tonight' : undefined),
+        onSelect: () => this.playDeliveryRun(),
+      },
+      {
+        label: 'STATE STREET', sub: 'the spots. the life.',
+        onSelect: () => this.openStateStreet(),
+      },
+    ];
+    WhipMenu.open(this, 'WHERE TO?', dests, () => { this.frozen = false; });
+  }
+
+  private openStateStreet() {
+    this.frozen = true;
+    const bal = BalanceSystem.getBalance();
+    const dests: WhipDestination[] = [
+      {
+        label: "LILLY'S TAQUERIA", sub: 'adobada. $15. everybody\'s favorite.',
+        locked: bal < 15 ? 'need $15' : undefined,
+        onSelect: () => this.playSpot('lillys'),
+      },
+      {
+        label: 'OKU', sub: 'sushi on the water. $80. the good table.',
+        locked: bal < 80 ? 'need $80' : undefined,
+        onSelect: () => this.playSpot('oku'),
+      },
+      {
+        label: 'HOT SPRINGS TRAIL', sub: 'free. no signal halfway up.',
+        onSelect: () => this.playSpot('hike'),
+      },
+    ];
+    WhipMenu.open(this, 'STATE STREET', dests, () => { this.frozen = false; });
+  }
+
+  private playSpot(spot: 'lillys' | 'oku' | 'hike') {
+    this.frozen = true;
+    if (spot === 'lillys') {
+      BalanceSystem.spend(15);
+      AffinitySystem.adjust('ch1_gf_k', 1);
+      this.dialogue.show([
+        { speaker: 'Narrator', text: "Lilly's window. Two adobada plates, one bench, the whole Pacific for free." },
+        { speaker: 'K', text: "Lilly's?? This is literally my favorite spot and you know it." },
+        { speaker: 'JP\'s Mind', text: 'Fifteen dollars. Best money I spent all month, and I spent a LOT this month.' },
+      ], () => { this.frozen = false; });
+    } else if (spot === 'oku') {
+      BalanceSystem.spend(80);
+      AffinitySystem.adjust('ch1_gf_k', 1);
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'Oku. Sand-side table. She orders like rent isn\'t real.' },
+        { speaker: 'JP', text: "Get whatever. We're good." },
+        { speaker: 'JP\'s Mind', text: 'Eighty on dinner like it\'s nothing. Because right now, it\'s nothing. Right now.' },
+      ], () => { this.frozen = false; });
+    } else {
+      AffinitySystem.adjust('ch1_gf_k', 1);
+      this.dialogue.show([
+        { speaker: 'K', text: 'No restaurants. Hot Springs trail. Bring water and don\'t complain.' },
+        { speaker: 'Narrator', text: 'Montecito canyon. Phones lose signal halfway up — the best feature of the whole trail.' },
+        { speaker: 'K', text: 'See? Free. Better than Oku.' },
+        { speaker: 'JP\'s Mind', text: 'No signal means no orders. First quiet my head\'s had in a month.' },
+        { speaker: 'JP\'s Mind', text: 'The phone found signal on the way down. Eleven missed messages. Back to it.' },
+      ], () => { this.frozen = false; });
+    }
+  }
+
   private playDeliveryRun() {
     this.frozen = true;
     SoundEffects.playDoorOpen();
