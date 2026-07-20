@@ -228,6 +228,17 @@ export default function DirectorPanel({
   const selectedTarget = targets.find((target) => `${target.type}:${target.id}` === targetRef);
   const sceneMinigames = MINIGAMES[sceneKey] ?? [];
 
+  const clearActiveDialogue = (scene: DirectorScene) => {
+    const dialogue = scene.dialogue;
+    let guard = 0;
+    while (dialogue?.isActive?.() && guard < 200) {
+      dialogue.inputCooldown = 0;
+      dialogue.advance?.();
+      guard++;
+    }
+    scene.frozen = false;
+  };
+
   const jumpScene = (nextScene: string) => {
     const game = gameRef.current;
     if (!game) return;
@@ -262,6 +273,7 @@ export default function DirectorPanel({
   const triggerTarget = () => run(`Triggered ${selectedTarget?.label ?? targetRef}`, (scene) => {
     if (!selectedTarget) throw new Error("Choose a target first");
     if (!scene.directorTriggerTarget) throw new Error("Direct target testing is unavailable in this scene");
+    clearActiveDialogue(scene);
     const didTrigger = scene.directorTriggerTarget(selectedTarget.id, selectedTarget.type);
     if (!didTrigger) throw new Error("Target is hidden, already consumed, or dialogue is still active");
   });
@@ -288,14 +300,7 @@ export default function DirectorPanel({
   });
 
   const skipDialogue = () => run("Cleared active dialogue", (scene) => {
-    const dialogue = scene.dialogue;
-    let guard = 0;
-    while (dialogue?.isActive?.() && guard < 200) {
-      dialogue.inputCooldown = 0;
-      dialogue.advance?.();
-      guard++;
-    }
-    scene.frozen = false;
+    clearActiveDialogue(scene);
   });
 
   const setSpeed = (speed: number) => {
@@ -403,6 +408,7 @@ export default function DirectorPanel({
                 <button key={minigame.method} type="button" onClick={() => run(`Launched ${minigame.label}`, (scene) => {
                   const method = scene[minigame.method];
                   if (typeof method !== "function") throw new Error(`${minigame.label} is not available in this build`);
+                  clearActiveDialogue(scene);
                   (method as () => void).call(scene);
                 })} className="director-btn">{minigame.label}</button>
               ))}

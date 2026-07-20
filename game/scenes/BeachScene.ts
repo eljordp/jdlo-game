@@ -3853,6 +3853,20 @@ export class BeachScene extends BaseChapterScene {
     objects.push(this.add.text(cx, cy - 132, 'delivered to the door', {
       fontFamily: '"Press Start 2P", monospace', fontSize: '5px', color: '#e8b0a8',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(302));
+    objects.push(this.add.text(cx, cy + 145, '[SPACE] Back', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#f2b0a8',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(302));
+
+    const spaceKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    const escKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+    const closeDash = () => {
+      spaceKey.off('down', closeDash);
+      escKey.off('down', closeDash);
+      objects.forEach(o => o.destroy());
+      this.frozen = false;
+    };
+    spaceKey.on('down', closeDash);
+    escKey.on('down', closeDash);
 
     const items: Array<[string, number]> = [
       ['Chick-fil-A run  $28', 28],
@@ -3871,6 +3885,8 @@ export class BeachScene extends BaseChapterScene {
       btn.on('pointerover', () => btn.setAlpha(0.85));
       btn.on('pointerout', () => btn.setAlpha(1));
       btn.on('pointerdown', () => {
+        spaceKey.off('down', closeDash);
+        escKey.off('down', closeDash);
         objects.forEach(o => o.destroy());
         if (!cost) { this.frozen = false; return; }
         if (!BalanceSystem.spend(cost)) {
@@ -3960,13 +3976,14 @@ export class BeachScene extends BaseChapterScene {
       labels.forEach(l => l.destroy());
     };
 
-    // Keyboard: 1-5 to pick
+    // Keyboard: 1-6 matches the visible app list.
     const keys = [
       this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ONE),
       this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.TWO),
       this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.THREE),
       this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.FOUR),
       this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.FIVE),
+      this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SIX),
     ];
     const handlers: (() => void)[] = [];
     keys.forEach((key, i) => {
@@ -3975,8 +3992,9 @@ export class BeachScene extends BaseChapterScene {
         cleanup();
         if (i === 0) this.showPhoneMessages();
         else if (i === 1) this.showPhoneWeedmaps();
-        else if (i === 2) DMSystem.openDMs(this, (l, cb) => this.dialogue.show(l, cb), () => this.showPhoneApps());
-        else if (i === 3) CasinoSystem.openCasino(this, () => { this.showPhoneApps(); });
+        else if (i === 2) this.showDashApp();
+        else if (i === 3) DMSystem.openDMs(this, (l, cb) => this.dialogue.show(l, cb), () => this.showPhoneApps());
+        else if (i === 4) CasinoSystem.openCasino(this, () => { this.showPhoneApps(); });
         else this.frozen = false;
       };
       handlers.push(handler);
