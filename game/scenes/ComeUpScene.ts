@@ -422,6 +422,7 @@ export class ComeUpScene extends BaseChapterScene {
             { speaker: 'JP', text: 'Cool. I will have it ready.' },
             { speaker: 'Narrator', text: 'Tomorrow passes. The proposal stays on seen.' },
             { speaker: 'JP\'s Mind', text: 'He still watches every story.' },
+            ...this.ghostEcho(),
           ];
         }
       });
@@ -1769,6 +1770,13 @@ export class ComeUpScene extends BaseChapterScene {
 
     // Start first line
     loadLine();
+  }
+
+  private ghostEcho(): DialogueLine[] {
+    // Kept-sending in Weed Rise-era habit carries into how he chases legit clients
+    return ChoiceLedger.get('ghost_chase') === 'Kept sending'
+      ? [{ speaker: 'JP\'s Mind', text: 'Same finger that texted buyers who ghosted now texts clients who ghost. Muscle memory. At least it\'s legal now.' }]
+      : [];
   }
 
   private playPaymentCutscene() {

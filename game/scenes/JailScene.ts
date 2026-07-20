@@ -687,6 +687,20 @@ export class JailScene extends BaseChapterScene {
 
   // NPC dialogue reacts to minigame outcomes
   protected handleNPCDialogue(npcId: string, dialogue: DialogueLine[]): void {
+    // Phase III yard rep echoes the fight choice from Phase I
+    if (npcId === 'ch3_og' && this.currentDay >= 3) {
+      const fought = ChoiceLedger.get('jail_fight') === 'Fought';
+      this.dialogue.show(fought ? [
+        { speaker: 'OG', text: 'That first week you swung on somebody. Whole block saw it.' },
+        { speaker: 'OG', text: 'Now you read books in the same yard. Nobody tests a man who did both.' },
+        { speaker: 'JP\'s Mind', text: 'The fight bought the quiet. The books kept it.' },
+      ] : [
+        { speaker: 'OG', text: 'You never threw hands once in here. Some men clocked that as soft.' },
+        { speaker: 'OG', text: 'Then they watched you not flinch at ANYTHING. That\'s the scarier kind.' },
+        { speaker: 'JP\'s Mind', text: 'Never had to swing. Turns out stillness reads louder in here.' },
+      ], () => { this.frozen = false; });
+      return;
+    }
     GameIntelligence.onNPCTalked(npcId);
     if (this.currentDay === 1 && npcId === 'ch3_smoker' && !this.phaseOneRelapseDone) {
       this.playPhaseOneRelapseChoice();

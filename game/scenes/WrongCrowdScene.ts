@@ -296,7 +296,13 @@ export class WrongCrowdScene extends BaseChapterScene {
       yoyo: true,
       onComplete: () => {
         // Bad thoughts sequence
-        const thoughts = [
+        const tookBlow = ChoiceLedger.get('party_blow') === 'Took it';
+        const thoughts = tookBlow ? [
+          { text: 'JP wakes up. Jaw still tight from the party.', delay: 0 },
+          { text: 'Third night this week he\'s seen this hour. The comedowns stopped asking permission.', delay: 1800 },
+          { text: 'Phone buzzes. It\'s the buyer.\n"You coming or not?"', delay: 3800 },
+          { text: '...fuck it.', delay: 5500 },
+        ] : [
           { text: 'JP wakes up. Can\'t sleep again.', delay: 0 },
           { text: 'Third night this week he\'s seen this hour.', delay: 1800 },
           { text: 'Phone buzzes. It\'s the buyer.\n"You coming or not?"', delay: 3800 },
