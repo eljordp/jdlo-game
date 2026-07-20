@@ -133,6 +133,20 @@ function displayId(id: string): string {
     .replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
+function targetRefFor(target: DirectorTarget): string {
+  return `${target.type}:${target.id}`;
+}
+
+function uniqueDirectorTargets(targets: DirectorTarget[]): DirectorTarget[] {
+  const seen = new Set<string>();
+  return targets.filter((target) => {
+    const ref = targetRefFor(target);
+    if (seen.has(ref)) return false;
+    seen.add(ref);
+    return true;
+  });
+}
+
 function getScene(gameRef: DirectorGameRef): DirectorScene | null {
   const scenes = gameRef.current?.scene.getScenes(true) ?? [];
   const chapter = scenes.find((scene) => "player" in scene || "chapterTitle" in scene);
@@ -184,16 +198,17 @@ export default function DirectorPanel({
       });
     }
     nextTargets.sort((a, b) => a.label.localeCompare(b.label));
+    const visibleTargets = uniqueDirectorTargets(nextTargets);
 
     setSceneKey(scene.scene.key);
     setSceneTitle(scene.chapterTitle || SCENES.find((item) => item.key === scene.scene.key)?.label || scene.scene.key);
-    setTargets(nextTargets);
+    setTargets(visibleTargets);
     setRequiredId(scene.requiredInteractionId || DEFAULT_REQUIREMENTS[scene.scene.key] || "");
     setRequiredDone(Boolean(scene.requiredDone));
     setCurrentDay(typeof scene.currentDay === "number" ? scene.currentDay : null);
-    setTargetRef((current) => current && nextTargets.some((target) => `${target.type}:${target.id}` === current)
+    setTargetRef((current) => current && visibleTargets.some((target) => targetRefFor(target) === current)
       ? current
-      : (nextTargets[0] ? `${nextTargets[0].type}:${nextTargets[0].id}` : ""));
+      : (visibleTargets[0] ? targetRefFor(visibleTargets[0]) : ""));
   }, [gameRef]);
 
   useEffect(() => {
@@ -225,7 +240,7 @@ export default function DirectorPanel({
     }, {});
   }, []);
 
-  const selectedTarget = targets.find((target) => `${target.type}:${target.id}` === targetRef);
+  const selectedTarget = targets.find((target) => targetRefFor(target) === targetRef);
   const sceneMinigames = MINIGAMES[sceneKey] ?? [];
 
   const clearActiveDialogue = (scene: DirectorScene) => {
@@ -369,7 +384,7 @@ export default function DirectorPanel({
           <label className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/45">Warp to any person or object</label>
           <select value={targetRef} onChange={(event) => { setTargetRef(event.target.value); setDialogueDraft(""); }} className="w-full rounded border border-white/15 bg-white/5 px-3 py-2 text-white outline-none">
             {targets.length === 0 && <option value="">No map targets in this scene</option>}
-            {targets.map((target) => <option key={`${target.type}:${target.id}`} value={`${target.type}:${target.id}`}>{target.label} · {target.x},{target.y}</option>)}
+            {targets.map((target) => <option key={targetRefFor(target)} value={targetRefFor(target)}>{target.label} · {target.x},{target.y}</option>)}
           </select>
           <div className="grid grid-cols-2 gap-2">
             <button type="button" disabled={!selectedTarget} onClick={teleport} className="director-btn disabled:opacity-35">Warp beside target</button>
@@ -395,7 +410,7 @@ export default function DirectorPanel({
             {requiredId && !targets.some((target) => target.id === requiredId) && (
               <option value={requiredId}>Current story gate · {displayId(requiredId)}</option>
             )}
-            {targets.map((target) => <option key={`required:${target.type}:${target.id}`} value={target.id}>{target.label}</option>)}
+            {targets.map((target) => <option key={`required:${targetRefFor(target)}`} value={target.id}>{target.label}</option>)}
           </select>
           <button type="button" onClick={() => run("QA override: marked gate complete without playing its prerequisites", (scene) => { scene.requiredDone = true; scene.refreshObjectiveHint?.(); })} className="director-btn w-full">QA OVERRIDE — MARK GATE COMPLETE</button>
         </section>

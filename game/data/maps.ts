@@ -389,7 +389,7 @@ export const beachMap: MapData = {
 
     // --- Beach (rows 24-26) ---
     { id: 'ch1_view',       x: 20, y: 26, type: 'examine', glow: false, sprite: 'item-photo' },
-    { id: 'ch1_volleyball1', x: 17, y: 25, type: 'examine', glow: true, sprite: 'item-ball' },
+    { id: 'ch1_volleyball_ball', x: 17, y: 25, type: 'examine', glow: true, sprite: 'item-ball' },
     { id: 'ch1_towels',     x: 8,  y: 24, type: 'examine', glow: false, sprite: 'item-rug' },
     { id: 'ch1_cooler',     x: 10, y: 24, type: 'examine', glow: false, sprite: 'item-storage-box' },
     { id: 'ch1_bonfire',    x: 30, y: 26, type: 'examine', glow: false, sprite: 'item-bonfire' },
@@ -1155,7 +1155,7 @@ export const operatorMap: MapData = {
     // Downtown shops
     { id: 'ch6_revenue', x: 33, y: 16, type: 'examine', glow: true, sprite: 'item-money' },
     { id: 'ch6_future', x: 30, y: 16, type: 'examine', glow: false, sprite: 'item-letter' },
-    { id: 'ch6_security', x: 10, y: 10, type: 'examine', glow: false, sprite: 'item-poster' },
+    { id: 'ch6_security_post', x: 10, y: 10, type: 'examine', glow: false, sprite: 'item-poster' },
     // Block 2
     { id: 'ch6_steak_dinner', x: 7, y: 23, type: 'examine', glow: false, sprite: 'item-food' },
     { id: 'ch6_cowork_laptop', x: 19, y: 23, type: 'examine', glow: false, sprite: 'item-tablet' },

@@ -87,7 +87,7 @@ export class BeachScene extends BaseChapterScene {
     GameIntelligence.watch('ch1_computer',     21, 3,  true);  // required: LUNA collapse
     GameIntelligence.watch('ch1_phone',        20, 2);
     GameIntelligence.watch('ch1_hottub',       36, 4);
-    GameIntelligence.watch('ch1_volleyball1',  17, 25);
+    GameIntelligence.watch('ch1_volleyball_ball',  17, 25);
     GameIntelligence.watch('ch1_kitchen_sesh', 28, 6);
     GameIntelligence.watch('ch1_smoke',        10, 18, true);  // required: gate to ch3
     GameIntelligence.attachDebugPanel(this);
@@ -1551,7 +1551,7 @@ export class BeachScene extends BaseChapterScene {
     // Always notify GameIntelligence — one place, catches everything
     GameIntelligence.onInteracted(interactable.id);
 
-    if (interactable.id === 'ch1_volleyball1') {
+    if (interactable.id === 'ch1_volleyball_ball') {
       Analytics.trackInteraction(interactable.id);
       this.playVolleyballMinigame();
       this.interactions.consume(interactable.id);

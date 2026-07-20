@@ -2720,6 +2720,10 @@ const ch6Extras: Record<string, DialogueLine[]> = {
     { speaker: 'Security', text: 'All clear. Your 2 o\'clock is here.' },
     { speaker: 'JP', text: 'Send them in.' },
   ],
+  ch6_security_post: [
+    { speaker: 'Narrator', text: 'A building notice by the lobby door. No tailgating. No unscheduled visitors.' },
+    { speaker: 'JP\'s Mind', text: 'Different kind of gatekeeping now.' },
+  ],
   // Block 2 — restaurant, coworking, luxury
   ch6_steak_dinner: [
     { speaker: 'Narrator', text: 'The same restaurant where they celebrated the first deal.' },
