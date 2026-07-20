@@ -52,6 +52,16 @@ interface Watched {
 const NEAR_RADIUS = 3; // tiles
 const FLUSH_BATCH = 50; // max signals per flush
 
+function analyticsNetworkEnabled(): boolean {
+  if (typeof window === 'undefined') return false;
+  try {
+    if (window.localStorage.getItem('jdlo_enable_local_analytics') === '1') return true;
+  } catch {
+    // If storage is unavailable, keep analytics fail-soft and conservative.
+  }
+  return window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+}
+
 export interface AdaptationLog {
   type: string;
   detail: string;
@@ -206,7 +216,9 @@ export class GameIntelligence {
       signal: b.signal, key: b.key, value: b.value,
     }));
 
-    void supabase.from('game_signals').insert(rows);
+    if (analyticsNetworkEnabled()) {
+      void supabase.from('game_signals').insert(rows).then(undefined, () => { /* fail-soft: analytics never blocks play */ });
+    }
 
     // Stop tick timer
     if (GameIntelligence.tickTimer) {
@@ -219,6 +231,8 @@ export class GameIntelligence {
   // ── Pull aggregate from Supabase ──────────────────────────────
 
   private static async pullAggregate(): Promise<void> {
+    if (!analyticsNetworkEnabled()) return;
+
     try {
       const { data } = await supabase
         .from('game_signals')
