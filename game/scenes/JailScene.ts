@@ -14,6 +14,7 @@ import { MusicSystem } from '../systems/MusicSystem';
 import { SubstanceSystem } from '../systems/SubstanceSystem';
 import { ChoiceLedger } from '../systems/ChoiceLedger';
 import { AffinitySystem } from '../systems/AffinitySystem';
+import { BalanceSystem } from '../systems/BalanceSystem';
 
 export class JailScene extends BaseChapterScene {
   private currentDay = 1;
@@ -932,7 +933,9 @@ export class JailScene extends BaseChapterScene {
   }
 
   // Everything in here costs. The homies keep the books loaded; the block runs on it.
-  private commissaryBucks = 25;
+  // What's left when they book you. You spent it all on bitches, bottles,
+  // and getting faded — so it's never much. Whatever survives follows you in.
+  private commissaryBucks = Math.min(60, Math.max(8, Math.round(BalanceSystem.getBalance() * 0.05)));
   private visitationSeen = false;
   private picsSold = false;
 

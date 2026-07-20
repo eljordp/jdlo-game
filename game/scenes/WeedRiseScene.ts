@@ -8,6 +8,7 @@ import { MusicSystem } from '../systems/MusicSystem';
 import { ChoiceLedger } from '../systems/ChoiceLedger';
 import { WhipMenu, type WhipDestination } from '../systems/WhipMenu';
 import { ClosetStore } from '../systems/ClosetStore';
+import { SocialSystem } from '../systems/SocialSystem';
 import { MoodSystem } from '../systems/MoodSystem';
 import { BalanceSystem } from '../systems/BalanceSystem';
 import { AffinitySystem } from '../systems/AffinitySystem';
@@ -856,6 +857,10 @@ export class WeedRiseScene extends BaseChapterScene {
         label: 'THE POOL', sub: 'stay in with K. order in.',
         onSelect: () => this.playPoolNight(),
       },
+      {
+        label: 'CHECK @JDLO', sub: 'post if you got motion.',
+        onSelect: () => { this.frozen = true; SocialSystem.open(this, () => { this.frozen = false; }); },
+      },
     ];
     WhipMenu.open(this, 'WHERE TO?', dests, () => { this.frozen = false; });
   }
@@ -929,6 +934,8 @@ export class WeedRiseScene extends BaseChapterScene {
   }
 
   private playDeliveryRun() {
+    SocialSystem.addMotion(35); // moving product IS the motion
+
     this.frozen = true;
     SoundEffects.playDoorOpen();
 
