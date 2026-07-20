@@ -626,6 +626,51 @@ export class OperatorScene extends BaseChapterScene {
       ease: 'Sine.easeInOut',
     });
 
+    // ── Round two: the authority layer. Scanner arch, live order wall,
+    // safety markings, a clock that ticks. A floor that runs on schedule. ──
+
+    // Scanner arch over the belt with a sweeping red laser
+    this.add.rectangle(beltX - tile * 0.05, beltY - tile * 0.62, 8, tile * 0.55, 0x8a919c).setDepth(2.66);
+    this.add.rectangle(beltX + tile * 0.55, beltY - tile * 0.62, 8, tile * 0.55, 0x8a919c).setDepth(2.66);
+    this.add.rectangle(beltX + tile * 0.25, beltY - tile * 0.9, tile * 0.75, 8, 0x8a919c).setDepth(2.66);
+    const laser = this.add.rectangle(beltX - tile * 0.02, beltY - tile * 0.35, 3, tile * 0.5, 0xff3030, 0.75).setDepth(2.67);
+    this.tweens.add({ targets: laser, x: beltX + tile * 0.52, duration: 900, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+
+    // Live order wall: label cards, amber highlight walks the queue
+    const orderCards: Phaser.GameObjects.Rectangle[] = [];
+    for (let row = 0; row < 2; row++) {
+      for (let col = 0; col < 4; col++) {
+        const card = this.add.rectangle(px(29.4 + col * 0.62), px(14.65 + row * 0.34), tile * 0.5, tile * 0.24, 0xe8e4da)
+          .setDepth(2.5).setStrokeStyle(1, 0x9a938a);
+        orderCards.push(card);
+      }
+    }
+    let liveOrder = 0;
+    this.time.addEvent({
+      delay: 4000, loop: true,
+      callback: () => {
+        if (!this.scene.isActive()) return;
+        orderCards.forEach((c, i) => c.setFillStyle(i === liveOrder ? 0xf0c040 : 0xe8e4da));
+        liveOrder = (liveOrder + 1) % orderCards.length;
+      },
+    });
+
+    // Safety hatch marks along the belt lane + dock stencil
+    for (let h = 0; h < 6; h++) {
+      this.add.rectangle(px(29.9 + h * 0.45), px(16.55), tile * 0.28, 5, 0xf0c040, 0.7).setDepth(2.46).setAngle(-45);
+    }
+    this.add.text(px(27.6), px(16.6), 'DOCK 1', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '5px', color: '#8a919c',
+    }).setOrigin(0.5).setDepth(2.5);
+
+    // Wall clock that actually ticks — floors like this run on minutes
+    this.add.circle(px(32.9), px(14.63), 10, 0xe8e4da).setDepth(2.5).setStrokeStyle(2, 0x555a63);
+    const minuteHand = this.add.rectangle(px(32.9), px(14.63) - 3, 2, 8, 0x2a2e35).setOrigin(0.5, 1).setDepth(2.52);
+    this.time.addEvent({
+      delay: 2000, loop: true,
+      callback: () => { if (this.scene.isActive()) minuteHand.angle += 30; },
+    });
+
     const dhlManager = this.npcs.find(npc => npc.id === 'ch6_dhl');
     if (dhlManager) {
       this.collisionTiles.delete('30,12');
