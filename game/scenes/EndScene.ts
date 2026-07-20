@@ -1132,7 +1132,7 @@ export class EndScene extends Phaser.Scene {
                               this.tweens.add({ targets: follow, alpha: 1, duration: 800, delay: 2000 });
 
                               // Replay hint
-                              const replayHint = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 40, 'SPACE to view stats', {
+                              const replayHint = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 40, 'SPACE / TAP to view stats', {
                                 fontFamily: '"Press Start 2P", monospace',
                                 fontSize: '9px',
                                 color: '#333355',
@@ -1150,7 +1150,12 @@ export class EndScene extends Phaser.Scene {
 
                               // Final stats come after the story has had room to breathe.
                               // SPACE (keyboard) OR tap (touch/mobile) both advance.
+                              let advancingToStats = false;
                               const toStats = () => {
+                                if (advancingToStats) return;
+                                advancingToStats = true;
+                                this.input.keyboard!.off('keydown-SPACE', toStats);
+                                this.input.off('pointerdown', toStats);
                                 this.cameras.main.fadeOut(1000, 0, 0, 0);
                                 this.cameras.main.once('camerafadeoutcomplete', () => {
                                   this.scene.restart({ finalStats: true });

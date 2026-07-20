@@ -642,7 +642,17 @@ export class VegasScene extends Phaser.Scene {
     ];
 
     const buttons: Phaser.GameObjects.GameObject[] = [];
+    const kb = this.input.keyboard!;
+    const keys = [
+      kb.addKey(Phaser.Input.Keyboard.KeyCodes.ONE),
+      kb.addKey(Phaser.Input.Keyboard.KeyCodes.TWO),
+      kb.addKey(Phaser.Input.Keyboard.KeyCodes.THREE),
+    ];
+    let choiceMade = false;
     const choose = (def: typeof defs[number]) => {
+      if (choiceMade) return;
+      choiceMade = true;
+      keys.forEach(key => key.removeAllListeners());
       for (const b of buttons) b.destroy();
       this.penthousePick = def.pick;
       this.showText(def.result, cy - 55, { size: '9px', color: def.pick === 'floor' ? '#c8b890' : '#9aa0b0' });
@@ -667,13 +677,7 @@ export class VegasScene extends Phaser.Scene {
       buttons.push(bg, label);
     });
     // Keyboard/gamepad fallback: 1/2/3 pick the three owners.
-    const kb = this.input.keyboard!;
-    const keys = [
-      kb.addKey(Phaser.Input.Keyboard.KeyCodes.ONE),
-      kb.addKey(Phaser.Input.Keyboard.KeyCodes.TWO),
-      kb.addKey(Phaser.Input.Keyboard.KeyCodes.THREE),
-    ];
-    keys.forEach((k, i) => k.once('down', () => { keys.forEach(x => x.removeAllListeners()); choose(defs[i]); }));
+    keys.forEach((key, index) => key.once('down', () => choose(defs[index])));
   }
 
   private playStep() {
