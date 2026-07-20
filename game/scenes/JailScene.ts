@@ -978,6 +978,8 @@ export class JailScene extends BaseChapterScene {
       this.frozen = true;
       this.dialogue.show([
         { speaker: 'Narrator', text: 'Mail call. Printed photos — the homies send the outside in: the beach, the cars, somebody\'s backyard party.' },
+        { speaker: 'Narrator', text: 'Group pics from the function. And a full page of printed memes — somebody PRINTED memes. On paper. With ink.' },
+        { speaker: 'Narrator', text: 'The meme page circulates the block like contraband. Grown men crying at a printout.' },
         { speaker: 'Narrator', text: 'And a few girls sent... personal portfolio pieces. Bikini series. Professional angles.' },
         { speaker: 'Inmate', text: 'Lopez. LOPEZ. Who IS that? I got four dollars RIGHT NOW.' },
         { speaker: 'JP\'s Mind', text: 'Everybody in here has a hustle. Mine just found me.' },
