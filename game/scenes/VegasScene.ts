@@ -63,6 +63,22 @@ export class VegasScene extends Phaser.Scene {
     return obj;
   }
 
+  private hasTextureFrame(textureKey: string, frame: number): boolean {
+    const texture = this.textures.get(textureKey);
+    const frames = (texture as unknown as { frames?: Record<string, unknown> } | undefined)?.frames;
+    return Boolean(frames?.[String(frame)]);
+  }
+
+  private addVegasSprite(
+    x: number,
+    y: number,
+    textureKey: string,
+    preferredFrame = 0,
+  ): Phaser.GameObjects.Sprite {
+    const frame = this.hasTextureFrame(textureKey, preferredFrame) ? preferredFrame : 0;
+    return this.add.sprite(x, y, textureKey, frame);
+  }
+
   private addTween(config: Phaser.Types.Tweens.TweenBuilderConfig): Phaser.Tweens.Tween {
     const tw = this.tweens.add(config);
     this.activeTweens.push(tw);
@@ -443,8 +459,10 @@ export class VegasScene extends Phaser.Scene {
     const textures = ['npc_generic', 'npc_female', 'npc_suit', 'npc-business', 'npc_bikini1', 'npc_bikini2'];
     for (let i = 0; i < count; i++) {
       const x = 70 + (i * (GAME_WIDTH - 140)) / Math.max(1, count - 1);
+      const texture = textures[i % textures.length];
+      const frame = i % 2 ? 4 : 0;
       const sprite = this.addObj(
-        this.add.sprite(x, y + (i % 3) * 26, textures[i % textures.length], i % 2 ? 4 : 0)
+        this.addVegasSprite(x, y + (i % 3) * 26, texture, frame)
           .setScale(SCALE * scale).setDepth(35 + (i % 3))
       );
       this.addTween({
@@ -461,8 +479,8 @@ export class VegasScene extends Phaser.Scene {
   }
 
   private addDealExchange(x: number, y: number, label: string, rightTexture = 'npc_female'): void {
-    const left = this.addObj(this.add.sprite(x - 38, y, 'npc_suit', 6).setScale(SCALE * 1.02).setDepth(72));
-    const right = this.addObj(this.add.sprite(x + 38, y, rightTexture, 4).setScale(SCALE * 1.02).setDepth(72));
+    const left = this.addObj(this.addVegasSprite(x - 38, y, 'npc_suit', 6).setScale(SCALE * 1.02).setDepth(72));
+    const right = this.addObj(this.addVegasSprite(x + 38, y, rightTexture, 4).setScale(SCALE * 1.02).setDepth(72));
     const phone = this.addObj(this.add.rectangle(x, y - 5, 13, 21, 0x9ed8ff).setStrokeStyle(3, 0x1c3040).setDepth(74));
     const tag = this.addObj(this.add.text(x, y - 48, label, {
       fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#f0c040',
@@ -657,13 +675,12 @@ export class VegasScene extends Phaser.Scene {
       case 2: {
         this.makeNightclub('MARQUEE', 0x22ccee);
         this.addDealExchange(GAME_WIDTH - 190, 255, 'TERMS TALKED', 'npc_female');
-        this.showText('The LED wall swallowed the whole room.', 420, { size: '12px', delay: 650 });
-        this.showText('Patrick\'s wraparound is upstairs — espresso martinis on room service before the club even opened.', 465, { size: '9px', color: '#88bbcc', delay: 1300 });
-        this.showText('Strongest guy in the room, nicest guy in the building. Then he disappeared into the crowd. Standard.', 500, { size: '9px', color: '#88bbcc', delay: 2000 });
-        this.showText('Women dancing. Owners talking numbers. Contacts changing hands between songs.', 510, { size: '10px', color: '#aaaacc', delay: 2000 });
-        this.showText('JP keeps doing the math: that bottle is a month of Caymus pay. He can\'t not do the math. He probably never will.', 588, { size: '8px', color: '#88a0b8', delay: 3400 });
-        this.showText('The guy filming isn\'t filming the DJ — crowd-reaction footage for a club owner in Phoenix. Everybody\'s working.', 550, { size: '8px', color: '#7a95a8', delay: 2800 });
-        this.showContinue(4300);
+        this.showText('The LED wall swallowed the whole room.', 410, { size: '12px', delay: 650 });
+        this.showText('Patrick\'s wraparound is upstairs — espresso martinis before the club even opened.', 458, { size: '8px', color: '#88bbcc', delay: 1300 });
+        this.showText('Women dancing. Owners talking numbers. Contacts changing hands between songs.', 508, { size: '9px', color: '#aaaacc', delay: 2050 });
+        this.showText('A guy films crowd reactions for a club owner in Phoenix. Everybody\'s working.', 555, { size: '8px', color: '#7a95a8', delay: 2800 });
+        this.showText('JP keeps doing the math: that bottle is a month of Caymus pay. He probably always will.', 607, { size: '8px', color: '#88a0b8', delay: 3500 });
+        this.showContinue(4500);
         break;
       }
       case 3: {
