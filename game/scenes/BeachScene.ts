@@ -924,8 +924,8 @@ export class BeachScene extends BaseChapterScene {
             appObjects.forEach((object) => object.destroy());
 
             this.dialogue.show([
-              { speaker: 'JP\'s Mind', text: 'I put in about a thousand.' },
-              { speaker: 'JP\'s Mind', text: 'It became about five. Then around forty.' },
+              { speaker: 'JP\'s Mind', text: 'Five racks in. Half of everything I saved from work.' },
+              { speaker: 'JP\'s Mind', text: 'It ran to forty. I never took a dollar off the table.' },
               { speaker: 'JP\'s Mind', text: 'First time trading. I thought I understood it.' },
               { speaker: 'JP\'s Mind', text: 'Mom had a plan for every year of my life. This was the first one that was mine.' },
               { speaker: 'Narrator', text: 'JP moved the whole portfolio into LUNA.' },

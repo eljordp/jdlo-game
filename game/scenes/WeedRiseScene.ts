@@ -391,11 +391,15 @@ export class WeedRiseScene extends BaseChapterScene {
         ],
         rise_mirror: [
           { speaker: 'JP\'s Mind', text: 'New clothes. Same face.' },
+          { speaker: 'Narrator', text: 'Hauls keep coming back to the house. Bags with tags, boxes with plastic still on.' },
+          { speaker: 'JP\'s Mind', text: 'Everything\'s free when you\'re winning. That\'s what I kept telling myself.' },
           { speaker: 'JP\'s Mind', text: 'Less sleep behind the eyes.' },
         ],
         rise_kitchen: [
+          { speaker: 'Narrator', text: 'Chick-fil-A bags stacked on Taco Bell bags. DoorDash to the door every night, for JP and whoever\'s around.' },
           { speaker: 'Narrator', text: 'Food for everybody. Drinks for everybody.' },
-          { speaker: 'Narrator', text: 'Nobody asks where the money came from when they are eating.' },
+          { speaker: 'Narrator', text: 'Nobody asks where any of it came from when they are eating.' },
+          { speaker: 'JP\'s Mind', text: 'It never even tasted like anything. It just felt like being somebody.' },
         ],
         rise_receipts: [
           { speaker: 'Narrator', text: 'Gas. Food. Clothes. Nights out. Cash disappears quietly.' },

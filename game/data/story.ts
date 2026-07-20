@@ -1380,6 +1380,11 @@ const ch1Extras: Record<string, DialogueLine[]> = {
   ],
   ch1_weed2: [
     { speaker: 'JP\'s Mind', text: 'More bags under the bed. This is the stash.' },
+    { speaker: 'Narrator', text: 'Knock at the window. A homie from two houses down, money already folded.' },
+    { speaker: 'Homie', text: 'Same as Tuesday?' },
+    { speaker: 'JP', text: 'Same as Tuesday.' },
+    { speaker: 'Narrator', text: 'Thirty seconds. Dap. Gone. No different than lending a charger.' },
+    { speaker: 'JP\'s Mind', text: 'That\'s what made it easy. It never felt like anything.' },
     { speaker: 'JP\'s Mind', text: 'If the cops kicked this door in right now... nah, don\'t think about that.' },
   ],
   ch1_weed3: [
