@@ -507,7 +507,7 @@ export class LAScene extends Phaser.Scene {
         this.showText('LOS ANGELES', cy - 140, { size: '28px', color: '#f0c040' });
         this.showText('Top down in a C8 Corvette.', cy - 70, { size: '14px', delay: 800 });
         this.showText(
-          'PCH at sunset. Wind in the hair.\nThe car is paid for.\nNext month isn\'t.',
+          'PCH at sunset. Wind in the hair.\nThe car is paid for. Next month isn\'t.\n"Enjoy it," everybody says. Still learning how.',
           cy,
           { size: '12px', color: '#aaaacc', delay: 1600 }
         );
@@ -692,7 +692,7 @@ export class LAScene extends Phaser.Scene {
           { size: '12px', delay: 800 }
         );
         this.showText(
-          '"We\'re all doing AI work now.\nEvery single one of us left\nthe old life behind."\nNobody mentions how little we slept.',
+          '"We\'re all doing AI work now.\nEvery single one of us left\nthe old life behind."\nNobody mentions how little we slept.\nNobody says what happens if we get sent back.',
           cy + 280,
           { size: '12px', color: '#aaaacc', delay: 1600 }
         );
@@ -859,8 +859,8 @@ export class LAScene extends Phaser.Scene {
         // Text
         this.showText('30th floor. Downtown LA.', 40, { size: '20px', color: '#8888cc', delay: 500 });
         const lateNightPressure = this.deliveryOrder === 'delivery-first'
-          ? 'One window still lit at 2 AM.\nThat\'s JP. Another client needs an answer by nine.'
-          : 'One window still lit at 2 AM.\nThat\'s JP. Dinner ended; the delivery did not.';
+          ? 'One window still lit at 2 AM.\nThat\'s JP. Another client needs an answer by nine.\nFrom up here you can\'t see Fairfield.\nThat\'s the point. That\'s also the problem.'
+          : 'One window still lit at 2 AM.\nThat\'s JP. Dinner ended; the delivery did not.\nFrom up here you can\'t see Fairfield.\nThat\'s the point. That\'s also the problem.';
         this.showText(
           lateNightPressure,
           GAME_HEIGHT - 200,

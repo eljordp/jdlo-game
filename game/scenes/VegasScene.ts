@@ -660,6 +660,7 @@ export class VegasScene extends Phaser.Scene {
         this.showText('The LED wall swallowed the whole room.', 420, { size: '12px', delay: 650 });
         this.showText('Patrick disappeared into the crowd in the first five minutes. Standard.', 465, { size: '10px', color: '#88bbcc', delay: 1300 });
         this.showText('Women dancing. Owners talking numbers. Contacts changing hands between songs.', 510, { size: '10px', color: '#aaaacc', delay: 2000 });
+        this.showText('JP keeps doing the math: that bottle is a month of Caymus pay. He can\'t not do the math. He probably never will.', 588, { size: '8px', color: '#88a0b8', delay: 3400 });
         this.showText('The guy filming isn\'t filming the DJ — crowd-reaction footage for a club owner in Phoenix. Everybody\'s working.', 550, { size: '8px', color: '#7a95a8', delay: 2800 });
         this.showContinue(4300);
         break;
@@ -755,7 +756,8 @@ export class VegasScene extends Phaser.Scene {
         this.showText('The point was not that JP had become one of them overnight.', 262, { size: '11px', delay: 2400 });
         this.showText('The point was that the ceiling moved again.', 315, { size: '12px', color: '#f0c040', delay: 3100 });
         this.showText('Now he knew those rooms were real.', 365, { size: '11px', color: '#d4c4d6', delay: 3800 });
-        this.showContinue(5600);
+        this.showText('The old JP would have posted every second of this weekend. The phone stayed in his pocket.', 420, { size: '9px', color: '#b8a888', delay: 4700 });
+        this.showContinue(6400);
         break;
       }
       default: {
