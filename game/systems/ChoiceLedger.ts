@@ -102,6 +102,14 @@ export const CHOICE_DEFS: ChoiceDef[] = [
     jpLine: 'JP booked it. Rent week or not — those rooms don\'t invite you twice.',
   },
   {
+    id: 'char_sneak',
+    chapter: 'Weed Rise',
+    prompt: 'Char outside the window',
+    options: ['Snuck her in', 'Too risky'],
+    jpReal: 'Snuck her in', // canon: while the packing seminar ran downstairs
+    jpLine: 'JP snuck her in. More than once. Nobody ever found out — till now.',
+  },
+  {
     id: 'jail_fight',
     chapter: 'Locked Up',
     prompt: 'Getting tested inside',

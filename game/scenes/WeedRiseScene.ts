@@ -6,6 +6,7 @@ import { GAME_HEIGHT, GAME_WIDTH, SCALE, SCALED_TILE } from '../config';
 import { SoundEffects } from '../systems/SoundEffects';
 import { MusicSystem } from '../systems/MusicSystem';
 import { ChoiceLedger } from '../systems/ChoiceLedger';
+import { BalanceSystem } from '../systems/BalanceSystem';
 
 /**
  * The missing middle of the street act.
@@ -21,6 +22,8 @@ export class WeedRiseScene extends BaseChapterScene {
   private routeCompleted = false;
   private stashHidden = false;
   private orderPolicy: 'all' | 'limit' = 'all';
+  private charSnuck = false;
+  private rentalUsed = false;
 
   constructor() {
     super({ key: 'WeedRiseScene' });
@@ -97,8 +100,26 @@ export class WeedRiseScene extends BaseChapterScene {
     }
 
     this.createTownhouseDensity();
+    this.createPackingCrew();
     this.createDeliveryNeighborhood();
     this.createRouteAtmosphere();
+  }
+
+  // The payroll, visible: K and the roommate at the table, packing.
+  private createPackingCrew() {
+    const tile = SCALED_TILE;
+    const px = (v: number) => v * tile + tile / 2;
+    const k = this.add.sprite(px(5.4), px(7.2), 'npc_k', 0).setScale(SCALE * 0.95).setDepth(3.2);
+    const roommate = this.add.sprite(px(7.2), px(7.2), 'npc_female', 0).setScale(SCALE * 0.95).setDepth(3.2).setTint(0xd8c8e8);
+    this.tweens.add({ targets: k, y: px(7.2) - 3, duration: 1200, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+    this.tweens.add({ targets: roommate, y: px(7.2) - 3, duration: 1400, yoyo: true, repeat: -1, ease: 'Sine.easeInOut', delay: 300 });
+    // Preroll trays: little white cylinders accumulating
+    for (let i = 0; i < 6; i++) {
+      this.add.rectangle(px(5.9 + (i % 3) * 0.35), px(7.75 + Math.floor(i / 3) * 0.2), 12, 4, 0xf0ead8).setDepth(3.1).setAngle(-10 + i * 4);
+    }
+    this.add.text(px(6.3), px(8.55), 'THE TABLE', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '5px', color: '#8a6a52',
+    }).setOrigin(0.5).setDepth(3.1).setAlpha(0.7);
   }
 
   private createTownhouseDensity() {
@@ -404,6 +425,8 @@ export class WeedRiseScene extends BaseChapterScene {
           { speaker: 'Narrator', text: 'Gas. Food. Clothes. Nights out. Cash disappears quietly.' },
           { speaker: 'Narrator', text: 'Also on the books: the girlfriend\'s roommate. Twenty an hour, packing prerolls at the kitchen table.' },
           { speaker: 'JP\'s Mind', text: 'I had PAYROLL. Twenty years old with a whole employee. Lowkey hilarious.' },
+          { speaker: 'Narrator', text: 'K packs too. K has never once been paid.' },
+          { speaker: 'JP\'s Mind', text: 'We got a different compensation structure.' },
           { speaker: 'JP\'s Mind', text: 'More money coming in. Somehow still chasing it.' },
         ],
         rise_order_board: [
@@ -454,6 +477,10 @@ export class WeedRiseScene extends BaseChapterScene {
   }
 
   protected handleInteractable(interactable: { id: string; type: string; consumed?: boolean }) {
+    if (interactable.id === 'rise_bed' && this.ordersReady && !this.charSnuck && ChoiceLedger.get('char_sneak') === null) {
+      this.playCharSneak();
+      return;
+    }
     if (interactable.id === 'rise_scale') {
       if (this.bagged) {
         this.dialogue.show([{ speaker: 'JP\'s Mind', text: 'Already bagged. Phone next.' }]);
@@ -646,7 +673,52 @@ export class WeedRiseScene extends BaseChapterScene {
         ? 'I already told everybody yes. Now I have to make the route work.'
         : 'Three stops was the limit. The phone does not care.' },
     ], () => {
-      this.showPaceChoice();
+      this.showVehicleChoice();
+    });
+  }
+
+  // Real practice: the 335i everybody knows, or a rental nobody looks at twice.
+  // Char. Snuck in through the window while the packing seminar ran downstairs.
+  private playCharSneak() {
+    this.frozen = true;
+    this.dialogue.show([
+      { speaker: 'Narrator', text: 'Phone buzz. Char: "outside lol"' },
+      { speaker: 'JP\'s Mind', text: 'K and the roommate are mid preroll-seminar in the kitchen.' },
+    ], () => {
+      this.showRouteChoice('Char is outside.', 'Sneak her in', 'Too risky', () => {
+        this.charSnuck = true;
+        ChoiceLedger.record('char_sneak', 'Snuck her in');
+        this.dialogue.show([
+          { speaker: 'Narrator', text: 'Window. Quiet. Shoes off.' },
+          { speaker: 'K', text: '(from the kitchen) Babe! We need more papers!' },
+          { speaker: 'JP', text: '...I\'ll grab some!' },
+          { speaker: 'Narrator', text: 'Char freezes mid-window like a raccoon in headlights.' },
+          { speaker: 'Narrator', text: 'She\'s gone by morning. Nobody ever knew.' },
+          { speaker: 'JP\'s Mind', text: 'I was living a whole soap opera in a two-bedroom.' },
+        ], () => { this.frozen = false; });
+      }, () => {
+        ChoiceLedger.record('char_sneak', 'Too risky');
+        this.dialogue.show([
+          { speaker: 'JP', text: '(texting) not tonight. house is full' },
+          { speaker: 'Narrator', text: 'Char replies with one emoji. It is not a kind one.' },
+        ], () => { this.frozen = false; });
+      });
+    });
+  }
+
+  private showVehicleChoice() {
+    this.showRouteChoice('Whose car tonight?', 'The 335i', 'Rental (-$60)', () => {
+      this.rentalUsed = false;
+      this.dialogue.show([
+        { speaker: 'JP\'s Mind', text: 'My car. My music. Everybody on the block knows the all-black already.' },
+      ], () => this.showPaceChoice());
+    }, () => {
+      this.rentalUsed = true;
+      BalanceSystem.spend(60);
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'Gray rental. Beige interior. The most invisible car in California.' },
+        { speaker: 'JP\'s Mind', text: 'Sixty bucks to look like nobody. Best money in the business.' },
+      ], () => this.showPaceChoice());
     });
   }
 
@@ -655,7 +727,7 @@ export class WeedRiseScene extends BaseChapterScene {
   private showPaceChoice() {
     this.showRouteChoice('How does JP drive tonight?', 'Speed', 'Drive normal', () => {
       // SPEED — one rearview moment, and the night gets warmer
-      try { localStorage.setItem('jdlo_heat', '1'); } catch { /* ignore */ }
+      if (!this.rentalUsed) { try { localStorage.setItem('jdlo_heat', '1'); } catch { /* ignore */ } }
       const flash = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0xff2020, 0)
         .setScrollFactor(0).setDepth(500);
       const flashBlue = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x2040ff, 0)
@@ -665,9 +737,14 @@ export class WeedRiseScene extends BaseChapterScene {
         onComplete: () => { flash.destroy(); flashBlue.destroy(); } });
       SoundEffects.playPoliceSiren();
       this.dialogue.show([
-        { speaker: 'Narrator', text: 'The 335i eats two red lights. Rearview: red and blue, one block over.' },
-        { speaker: 'JP\'s Mind', text: 'Not for me. This time.' },
-        { speaker: 'Narrator', text: 'The engine settles. The heart does not.' },
+        ...(this.rentalUsed ? [
+          { speaker: 'Narrator', text: 'The rental eats two red lights. Nobody looks. Rentals are wallpaper.' },
+          { speaker: 'JP\'s Mind', text: 'Sixty dollars well spent.' },
+        ] : [
+          { speaker: 'Narrator', text: 'The 335i eats two red lights. Rearview: red and blue, one block over.' },
+          { speaker: 'JP\'s Mind', text: 'Not for me. This time.' },
+          { speaker: 'Narrator', text: 'The engine settles. The heart does not.' },
+        ]),
       ], () => this.continueToRoute());
     }, () => {
       this.dialogue.show([

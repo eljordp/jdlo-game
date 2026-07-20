@@ -747,6 +747,37 @@ export class JailScene extends BaseChapterScene {
     }
 
     // Bird warns about dice
+    // Bird's store: everybody with a hustle sells something. Bird runs his tight.
+    if (npcId === 'ch3_bird' && this.currentDay >= 2 && !this.diceBroke) {
+      const base = this.getChapterDialogue().npcs['ch3_bird'] ?? dialogue;
+      this.dialogue.show(base, () => {
+        this.showYesNoChoice('Bird\'s store is open. Books: ' + this.fmtBucks(), 'Pressed coffee $1', 'Extra soup $2', () => {
+          if (this.commissaryBucks < 1) {
+            this.dialogue.show([{ speaker: 'Bird', text: 'Credit? In HERE? Funny.' }], () => { this.frozen = false; });
+            return;
+          }
+          this.commissaryBucks -= 1;
+          AffinitySystem.adjust('ch3_bird', 1);
+          this.dialogue.show([
+            { speaker: 'Bird', text: 'Pressed in a chip bag, brewed in a sock. Best coffee in the building.' },
+            { speaker: 'JP\'s Mind', text: 'A dollar. Everybody in here has a hustle. Just like everywhere.' },
+          ], () => { this.frozen = false; });
+        }, () => {
+          if (this.commissaryBucks < 2) {
+            this.dialogue.show([{ speaker: 'Bird', text: 'Come back Wednesday, big dawg.' }], () => { this.frozen = false; });
+            return;
+          }
+          this.commissaryBucks -= 2;
+          AffinitySystem.adjust('ch3_bird', 1);
+          this.dialogue.show([
+            { speaker: 'Bird', text: 'Store price. Markup is the whole business model, you know this.' },
+            { speaker: 'JP\'s Mind', text: 'Buying marked-up soup off the homie. Same economy as the street. Smaller shelves.' },
+          ], () => { this.frozen = false; });
+        });
+      });
+      return;
+    }
+
     if (npcId === 'ch3_bird' && this.diceBroke) {
       const chapterDialogue = this.getChapterDialogue();
       const lines = chapterDialogue.npcs['ch3_dice_broke'];
@@ -886,7 +917,46 @@ export class JailScene extends BaseChapterScene {
     return jailDay1Dialogue;
   }
 
+  // Everything in here costs. The homies keep the books loaded; the block runs on it.
+  private commissaryBucks = 25;
+
+  private fmtBucks(): string {
+    return '$' + this.commissaryBucks.toFixed(2);
+  }
+
   protected handleInteractable(interactable: { id: string; type: string; consumed?: boolean }) {
+    // ── TABLET KIOSK: nothing is free in here, not even a bad movie ──
+    if (interactable.id === 'ch3_tablet') {
+      this.frozen = true;
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'Tablet kiosk. $1.50 an hour regular. $3.00 premium — better movies, better shows, better games.' },
+        { speaker: 'JP\'s Mind', text: 'Nothing is free in here. NOTHING. Books: ' + this.fmtBucks() },
+      ], () => {
+        this.showYesNoChoice('Buy tablet time?', 'Regular $1.50', 'Premium $3.00', () => {
+          if (this.commissaryBucks < 1.5) {
+            this.dialogue.show([{ speaker: 'JP\'s Mind', text: 'Books are light. Story of half this block.' }], () => { this.frozen = false; });
+            return;
+          }
+          this.commissaryBucks -= 1.5;
+          this.dialogue.show([
+            { speaker: 'Narrator', text: 'One hour. Grainy movies, two games, a music app that skips.' },
+            { speaker: 'JP\'s Mind', text: 'Best dollar-fifty I spend all week. That\'s what in here does to a dollar-fifty.' },
+          ], () => { this.frozen = false; });
+        }, () => {
+          if (this.commissaryBucks < 3) {
+            this.dialogue.show([{ speaker: 'JP\'s Mind', text: 'Premium is for Wednesday-money. Books: ' + this.fmtBucks() }], () => { this.frozen = false; });
+            return;
+          }
+          this.commissaryBucks -= 3;
+          this.dialogue.show([
+            { speaker: 'Narrator', text: 'Premium hour. Real movies. Newer shows. Games that load.' },
+            { speaker: 'JP\'s Mind', text: 'Three dollars an hour and I feel like a Rockefeller. Perspective is a hell of a drug.' },
+          ], () => { this.frozen = false; });
+        });
+      });
+      return;
+    }
+
     GameIntelligence.onInteracted(interactable.id);
 
     if (interactable.id === 'ch3_cell_door') {
@@ -950,7 +1020,8 @@ export class JailScene extends BaseChapterScene {
       // JP ran the ramen economy: homies outside kept the books loaded.
       // Everybody knew it — and everybody had an offer.
       this.dialogue.show([
-        { speaker: 'Narrator', text: 'Commissary day. The homies outside keep the books loaded.' },
+        { speaker: 'Narrator', text: 'Wednesday. Store day. The whole week bends around Wednesday.' },
+        { speaker: 'Narrator', text: 'The homies outside keep the books loaded. Money hit Monday. Everybody knows whose hit.' },
         { speaker: 'Narrator', text: 'JP walks off with a full bag: ramen, Hot Cheetos, the works.' },
         { speaker: 'Inmate', text: 'Lopez. Two soups for a strip of suboxone. Fair trade.' },
         { speaker: 'JP', text: 'I\'m good bro.' },
@@ -1196,6 +1267,7 @@ export class JailScene extends BaseChapterScene {
    */
   private playDayTransition(text: string, callback: () => void) {
     this.frozen = true;
+    this.commissaryBucks += 20; // the homies never miss a week
     SoundEffects.playCinematicSwoosh();
 
     // Determine which day we're transitioning FROM
