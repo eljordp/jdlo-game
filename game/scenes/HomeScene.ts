@@ -16,6 +16,7 @@ import { GameStats } from '../systems/GameStats';
 import { AchievementSystem } from '../systems/AchievementSystem';
 import { BalanceSystem } from '../systems/BalanceSystem';
 import { AffinitySystem } from '../systems/AffinitySystem';
+import { virtualInput } from '../../components/GameCanvas';
 
 export class HomeScene extends BaseChapterScene {
   private interactionCount = 0;
@@ -704,14 +705,10 @@ export class HomeScene extends BaseChapterScene {
       const momTY = Math.round((mom.sprite.y - SCALED_TILE / 2) / SCALED_TILE);
       const momDist = Math.abs(momTX - tileX) + Math.abs(momTY - tileY);
       if (momDist <= 3 && momDist > 0) {
-        // Face away from player
+        // This NPC uses a single-frame texture. Flip horizontally rather than
+        // requesting nonexistent directional frames (which made Mom flicker).
         const dx = momTX - tileX;
-        const dy = momTY - tileY;
-        if (Math.abs(dx) > Math.abs(dy)) {
-          mom.sprite.setFrame(dx > 0 ? 6 : 4); // face away horizontally
-        } else {
-          mom.sprite.setFrame(dy > 0 ? 0 : 2); // face away vertically
-        }
+        if (dx !== 0) mom.sprite.setFlipX(dx < 0);
       }
     }
 
@@ -2834,7 +2831,7 @@ export class HomeScene extends BaseChapterScene {
         thisLetterParts.push(line);
       }
 
-      const dear = this.add.text(lx - lw / 2 + 18, ly + 40, 'Dear Jordan Lopez,', {
+      const dear = this.add.text(lx - lw / 2 + 18, ly + 40, 'Dear Jordan,', {
         fontFamily: '"Press Start 2P", monospace', fontSize: '6px', color: '#555555',
       }).setScrollFactor(0).setDepth(306);
       objects.push(dear);
@@ -3340,57 +3337,41 @@ export class HomeScene extends BaseChapterScene {
     const cx = GAME_WIDTH / 2;
     const cy = GAME_HEIGHT / 2;
 
-    // Phone body
-    const phoneBg = this.add.rectangle(cx, cy, 240, 340, 0x1a1a2e)
-      .setScrollFactor(0).setDepth(300);
-    const phoneBorder = this.add.rectangle(cx, cy, 242, 342, 0x555577, 0)
-      .setStrokeStyle(2, 0x555577)
+    // A real phone surface, not a developer list in a rectangle.
+    const decorations: Phaser.GameObjects.GameObject[] = [];
+    const phoneBorder = this.add.rectangle(cx, cy, 318, 470, 0x050609)
+      .setStrokeStyle(4, 0x596274)
       .setScrollFactor(0).setDepth(299);
-    // Notch
-    const notch = this.add.rectangle(cx, cy - 162, 60, 8, 0x0d0d1a)
-      .setScrollFactor(0).setDepth(301);
+    const phoneBg = this.add.rectangle(cx, cy, 302, 450, 0x0c1020)
+      .setScrollFactor(0).setDepth(300);
+    const wallpaper = this.add.rectangle(cx, cy + 4, 282, 410, 0x121a31)
+      .setScrollFactor(0).setDepth(300.2);
+    const glowA = this.add.circle(cx - 90, cy + 105, 88, 0x8a2a78, 0.18)
+      .setScrollFactor(0).setDepth(300.3);
+    const glowB = this.add.circle(cx + 95, cy - 25, 105, 0x245a92, 0.16)
+      .setScrollFactor(0).setDepth(300.3);
+    const notch = this.add.rectangle(cx, cy - 215, 82, 12, 0x050609)
+      .setScrollFactor(0).setDepth(303);
+    const statusLabel = this.add.text(cx, cy - 195, '11:42 PM       LTE  ▮▮▮', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#d7deec',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303);
+    const ownerLabel = this.add.text(cx, cy - 160, 'JP\'S PHONE', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '11px', color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(303);
+    const homeBar = this.add.rectangle(cx, cy + 214, 82, 5, 0xd8dce6, 0.65)
+      .setScrollFactor(0).setDepth(303);
+    decorations.push(phoneBorder, phoneBg, wallpaper, glowA, glowB, notch, statusLabel, ownerLabel, homeBar);
 
-    const timeLabel = this.add.text(cx, cy - 140, '11:42 PM', {
-      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#888899',
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
-
-    const apps = ['DMs', 'Casino', 'Crypto', 'Close'];
-    const appColors =  [0x3a2a4a, 0x0a3a1a, 0x1a0a2a, 0x333344];
-    const hoverColors = [0x5a3a6a, 0x1a5a2a, 0x3a1a5a, 0x555566];
-    const labelColors = ['#ffffff', '#f0c040', '#bb66ff', '#ffffff'];
+    const apps = [
+      { name: 'DMs', icon: 'DM', sub: 'Inbox', x: cx - 70, y: cy - 65 },
+      { name: 'Casino', icon: '$', sub: 'Play', x: cx + 70, y: cy - 65 },
+      { name: 'Crypto', icon: 'C', sub: 'Trade', x: cx - 70, y: cy + 70 },
+      { name: 'Close', icon: 'X', sub: 'Back', x: cx + 70, y: cy + 70 },
+    ];
+    const appColors =  [0x9a3a86, 0x157445, 0x5534a5, 0x3c4658];
+    const hoverColors = [0xc44cab, 0x20a861, 0x7651d6, 0x59657a];
     const buttons: Phaser.GameObjects.Rectangle[] = [];
     const labels: Phaser.GameObjects.Text[] = [];
-
-    apps.forEach((app, i) => {
-      const y = cy - 80 + i * 48;
-      const btn = this.add.rectangle(cx, y, 200, 36, appColors[i])
-        .setScrollFactor(0).setDepth(301).setInteractive({ useHandCursor: true });
-      const label = this.add.text(cx, y, app, {
-        fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: labelColors[i],
-      }).setOrigin(0.5).setScrollFactor(0).setDepth(302);
-
-      btn.on('pointerover', () => btn.setFillStyle(hoverColors[i]));
-      btn.on('pointerout', () => btn.setFillStyle(appColors[i]));
-
-      btn.on('pointerdown', () => {
-        cleanup();
-        if (app === 'DMs') DMSystem.openDMs(this, (l, cb) => this.dialogue.show(l, cb), () => this.showPhoneApps());
-        else if (app === 'Casino') CasinoSystem.openCasino(this, () => { this.showPhoneApps(); });
-        else if (app === 'Crypto') CasinoSystem.openCrypto(this, () => { this.showPhoneApps(); });
-        else this.frozen = false;
-      });
-
-      buttons.push(btn);
-      labels.push(label);
-    });
-
-    const cleanup = () => {
-      phoneBg.destroy(); phoneBorder.destroy(); notch.destroy(); timeLabel.destroy();
-      buttons.forEach(b => b.destroy());
-      labels.forEach(l => l.destroy());
-    };
-
-    // Keyboard: 1-4 to pick
     const keys = [
       this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ONE),
       this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.TWO),
@@ -3398,18 +3379,78 @@ export class HomeScene extends BaseChapterScene {
       this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.FOUR),
     ];
     const handlers: (() => void)[] = [];
+    const escKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+    const bKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.B);
+    let cleaned = false;
+
+    const cleanup = () => {
+      if (cleaned) return;
+      cleaned = true;
+      decorations.forEach(obj => obj.destroy());
+      buttons.forEach(b => b.destroy());
+      labels.forEach(l => l.destroy());
+      keys.forEach((key, i) => key.off('down', handlers[i]));
+      escKey.off('down', boundCloseMenu);
+      bKey.off('down', boundCloseMenu);
+      this.events.off(Phaser.Scenes.Events.PRE_UPDATE, mobileCancelHandler);
+    };
+
+    const chooseApp = (i: number) => {
+      cleanup();
+      if (i === 0) DMSystem.openDMs(this, (l, cb) => this.dialogue.show(l, cb), () => this.showPhoneApps());
+      else if (i === 1) CasinoSystem.openCasino(this, () => { this.showPhoneApps(); });
+      else if (i === 2) CasinoSystem.openCrypto(this, () => { this.showPhoneApps(); });
+      else this.frozen = false;
+    };
+
+    function closeMenu(this: HomeScene) {
+      cleanup();
+      this.frozen = false;
+    }
+    const boundCloseMenu = closeMenu.bind(this);
+
+    const mobileCancelHandler = () => {
+      if (!virtualInput.cancelJustPressed) return;
+      virtualInput.cancelJustPressed = false;
+      boundCloseMenu();
+    };
+
+    apps.forEach((app, i) => {
+      const btn = this.add.rectangle(app.x, app.y, 116, 108, appColors[i], 0.92)
+        .setStrokeStyle(2, 0xffffff, 0.14)
+        .setScrollFactor(0).setDepth(301).setInteractive({ useHandCursor: true });
+      const icon = this.add.text(app.x, app.y - 20, app.icon, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: app.icon.length > 1 ? '13px' : '20px', color: '#ffffff',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(302);
+      const label = this.add.text(app.x, app.y + 18, app.name, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#ffffff',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(302);
+      const subLabel = this.add.text(app.x, app.y + 36, `${i + 1}  ${app.sub}`, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '5px', color: '#c0c8d8',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(302);
+
+      btn.on('pointerover', () => btn.setFillStyle(hoverColors[i]));
+      btn.on('pointerout', () => btn.setFillStyle(appColors[i]));
+
+      btn.on('pointerdown', () => {
+        chooseApp(i);
+      });
+
+      buttons.push(btn);
+      labels.push(icon, label, subLabel);
+    });
+
+    // Keyboard: 1-4 to pick
     keys.forEach((key, i) => {
       const handler = () => {
-        keys.forEach((k, j) => k.off('down', handlers[j]));
-        cleanup();
-        if (i === 0) DMSystem.openDMs(this, (l, cb) => this.dialogue.show(l, cb), () => this.showPhoneApps());
-        else if (i === 1) CasinoSystem.openCasino(this, () => { this.showPhoneApps(); });
-        else if (i === 2) CasinoSystem.openCrypto(this, () => { this.showPhoneApps(); });
-        else this.frozen = false;
+        chooseApp(i);
       };
       handlers.push(handler);
       key.on('down', handler);
     });
+    escKey.on('down', boundCloseMenu);
+    bKey.on('down', boundCloseMenu);
+    this.events.on(Phaser.Scenes.Events.PRE_UPDATE, mobileCancelHandler);
   }
 
   // ─── LIFTING MINIGAME (Dumbbell Curls) ─────────────────────────

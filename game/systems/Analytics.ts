@@ -4,7 +4,14 @@
 export class Analytics {
   private static KEY = 'jdlo-game-analytics';
 
+  private static isEnabled(): boolean {
+    if (typeof window === 'undefined') return false;
+    return window.location.hostname !== 'localhost'
+      && window.location.hostname !== '127.0.0.1';
+  }
+
   static trackEvent(event: string, data?: Record<string, unknown>): void {
+    if (!this.isEnabled()) return;
     try {
       const existing = JSON.parse(localStorage.getItem(this.KEY) || '[]');
       existing.push({ event, data, timestamp: Date.now() });
@@ -35,6 +42,7 @@ export class Analytics {
   }
 
   static getChapterStats(chapter: string): { interactions: number; timeMs: number } {
+    if (!this.isEnabled()) return { interactions: 0, timeMs: 0 };
     try {
       const data = JSON.parse(localStorage.getItem(this.KEY) || '[]');
       const interactions = data.filter(
@@ -55,6 +63,7 @@ export class Analytics {
   }
 
   static getStats(): { events: number; chaptersReached: string[] } {
+    if (!this.isEnabled()) return { events: 0, chaptersReached: [] };
     try {
       const data = JSON.parse(localStorage.getItem(this.KEY) || '[]');
       const chapters = [

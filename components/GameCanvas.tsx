@@ -157,6 +157,8 @@ export default function GameCanvas() {
   const [isMobile, setIsMobile] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [controllerConnected, setControllerConnected] = useState(false);
+  const [dialogueActive, setDialogueActive] = useState(false);
+  const dialogueActiveRef = useRef(false);
 
   useEffect(() => {
     // Detect mobile/touch device
@@ -251,6 +253,15 @@ export default function GameCanvas() {
     };
 
     const pollGamepad = () => {
+      const activeDialogue = Boolean(gameRef.current?.scene.getScenes(true).some((scene) => {
+        const dialogue = (scene as unknown as { dialogue?: { isActive?: () => boolean } }).dialogue;
+        return dialogue?.isActive?.();
+      }));
+      if (activeDialogue !== dialogueActiveRef.current) {
+        dialogueActiveRef.current = activeDialogue;
+        setDialogueActive(activeDialogue);
+      }
+
       const pad = typeof navigator.getGamepads === "function"
         ? Array.from(navigator.getGamepads()).find((candidate): candidate is Gamepad => Boolean(candidate?.connected))
         : undefined;
@@ -460,7 +471,9 @@ export default function GameCanvas() {
       {isMobile && (
         <div className="portrait:hidden landscape:block">
           {/* D-Pad — bottom left, cross pattern */}
-          <div className="absolute bottom-4 left-4 z-30">
+          <div className={`absolute bottom-4 left-4 z-30 transition-opacity duration-150 ${
+            dialogueActive ? 'pointer-events-none opacity-0' : 'opacity-100'
+          }`}>
             <div className="relative" style={{ width: 156, height: 156 }}>
               {/* Center hub */}
               <div
@@ -545,10 +558,10 @@ export default function GameCanvas() {
           {/* A button — bottom right, large green circle (interact / advance dialogue) */}
           <button
             aria-label="Interact"
-            className="absolute z-30 flex items-center justify-center rounded-full active:brightness-150 transition-all"
+            className={`absolute z-30 flex items-center justify-center rounded-full active:brightness-150 transition-all ${
+              dialogueActive ? 'right-4 top-16 h-14 w-14' : 'bottom-4 right-5 h-[70px] w-[70px]'
+            }`}
             style={{
-              width: 70, height: 70,
-              bottom: 16, right: 20,
               backgroundColor: 'rgba(34, 204, 68, 0.45)',
               border: '3px solid rgba(34, 204, 68, 0.6)',
               boxShadow: '0 2px 8px rgba(34, 204, 68, 0.3), inset 0 -2px 4px rgba(0,0,0,0.3)',
@@ -564,7 +577,9 @@ export default function GameCanvas() {
           {/* B button — above-left of A, smaller red circle (cancel / back) */}
           <button
             aria-label="Back"
-            className="absolute z-30 flex items-center justify-center rounded-full active:brightness-150 transition-all"
+            className={`absolute z-30 flex items-center justify-center rounded-full active:brightness-150 transition-all ${
+              dialogueActive ? 'pointer-events-none opacity-0' : 'opacity-100'
+            }`}
             style={{
               width: 52, height: 52,
               bottom: 88, right: 80,
@@ -580,7 +595,9 @@ export default function GameCanvas() {
           {/* Phone button — top right area */}
           <button
             aria-label="Open phone"
-            className="absolute z-30 flex items-center justify-center rounded-lg active:brightness-150 transition-all"
+            className={`absolute z-30 flex items-center justify-center rounded-lg active:brightness-150 transition-all ${
+              dialogueActive ? 'pointer-events-none opacity-0' : 'opacity-100'
+            }`}
             style={{
               width: 42, height: 42,
               bottom: 148, right: 24,
@@ -599,7 +616,9 @@ export default function GameCanvas() {
           {/* Bag stays reachable on phones without crowding the A/B cluster. */}
           <button
             aria-label="Open bag"
-            className="absolute z-30 flex items-center justify-center rounded-lg active:brightness-150 transition-all"
+            className={`absolute z-30 flex items-center justify-center rounded-lg active:brightness-150 transition-all ${
+              dialogueActive ? 'pointer-events-none opacity-0' : 'opacity-100'
+            }`}
             style={{
               width: 42, height: 42,
               bottom: 148, right: 72,
@@ -618,7 +637,9 @@ export default function GameCanvas() {
           {/* Emote button — above phone */}
           <button
             aria-label="Emote"
-            className="absolute z-30 flex items-center justify-center rounded-lg active:brightness-150 transition-all"
+            className={`absolute z-30 flex items-center justify-center rounded-lg active:brightness-150 transition-all ${
+              dialogueActive ? 'pointer-events-none opacity-0' : 'opacity-100'
+            }`}
             style={{
               width: 42, height: 42,
               bottom: 196, right: 24,
@@ -637,7 +658,9 @@ export default function GameCanvas() {
           {/* Pause/menu button — reachable without a keyboard */}
           <button
             aria-label="Open menu"
-            className="absolute z-30 flex items-center justify-center rounded-lg active:brightness-150 transition-all"
+            className={`absolute z-30 flex items-center justify-center rounded-lg active:brightness-150 transition-all ${
+              dialogueActive ? 'pointer-events-none opacity-0' : 'opacity-100'
+            }`}
             style={{
               width: 54, height: 34,
               bottom: 248, right: 18,

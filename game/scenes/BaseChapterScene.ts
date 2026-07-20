@@ -355,23 +355,26 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     if (!hint) return;
 
     // Create persistent hint bar at top
-    this.objectiveHintBg = this.add.rectangle(GAME_WIDTH / 2, 16, GAME_WIDTH, 24, 0x000000, 0.5)
-      .setScrollFactor(0).setDepth(90).setAlpha(0);
+    this.objectiveHintBg = this.add.rectangle(GAME_WIDTH / 2, 28, 460, 32, 0x080b16, 0.92)
+      .setStrokeStyle(1, 0xf0c040, 0.75)
+      .setScrollFactor(0).setDepth(300).setAlpha(0);
 
-    this.objectiveHintText = this.add.text(GAME_WIDTH / 2, 16, hint, {
+    this.objectiveHintText = this.add.text(GAME_WIDTH / 2, 28, hint, {
       fontFamily: '"Press Start 2P", monospace',
       fontSize: '9px',
-      color: '#cccccc',
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(91).setAlpha(0);
+      color: '#f7f3df',
+      stroke: '#000000',
+      strokeThickness: 3,
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(301).setAlpha(0);
 
     this.lastHintString = hint;
 
-    // Fade in after chapter title
-    this.tweens.add({
-      targets: [this.objectiveHintBg, this.objectiveHintText],
-      alpha: (target: Phaser.GameObjects.GameObject) => target === this.objectiveHintBg ? 0.5 : 0.8,
-      duration: 600,
-      delay: 3500,
+    // Reveal after the chapter title. Phaser's per-target tween callback was
+    // leaving both objects nearly transparent on some canvases, which made the
+    // objective technically present but unreadable to an actual player.
+    this.time.delayedCall(3500, () => {
+      if (this.objectiveHintBg?.active) this.objectiveHintBg.setAlpha(0.92);
+      if (this.objectiveHintText?.active) this.objectiveHintText.setAlpha(1);
     });
   }
 
@@ -384,7 +387,7 @@ export abstract class BaseChapterScene extends Phaser.Scene {
       // Brief flash to draw attention
       this.objectiveHintText.setAlpha(0);
       this.objectiveHintText.setText(hint);
-      this.tweens.add({ targets: this.objectiveHintText, alpha: 0.8, duration: 400 });
+      this.tweens.add({ targets: this.objectiveHintText, alpha: 1, duration: 400 });
     }
   }
 
