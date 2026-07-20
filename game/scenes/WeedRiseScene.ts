@@ -7,6 +7,7 @@ import { SoundEffects } from '../systems/SoundEffects';
 import { MusicSystem } from '../systems/MusicSystem';
 import { ChoiceLedger } from '../systems/ChoiceLedger';
 import { BalanceSystem } from '../systems/BalanceSystem';
+import { AffinitySystem } from '../systems/AffinitySystem';
 
 /**
  * The missing middle of the street act.
@@ -476,7 +477,79 @@ export class WeedRiseScene extends BaseChapterScene {
     super.handleNPCDialogue(npcId, dialogue);
   }
 
+  private beachDateDone = false;
+  private secondDateTried = false;
+
   protected handleInteractable(interactable: { id: string; type: string; consumed?: boolean }) {
+    // ── SB coast eats: same ocean, two price tags. King era can afford either. ──
+    if (interactable.id === 'rise_overlook' && this.beachDateDone && !this.secondDateTried) {
+      this.frozen = true;
+      this.secondDateTried = true;
+      this.dialogue.show([
+        { speaker: 'JP\'s Mind', text: 'Phone full of options. Options got standards though.' },
+      ], () => {
+        this.showRouteChoice('Who you texting?', 'Lily', 'Sam', () => {
+          // Lily: boujee tier. Pretty tax is real.
+          this.dialogue.show([
+            { speaker: 'JP', text: '(text) taco window on the coast?' },
+            { speaker: 'Lily', text: '(text) that\'s cute. the sand spot has my table. 8pm.' },
+            { speaker: 'JP\'s Mind', text: 'Lily looked at the taco window like it owed her money. Boujee tax it is.' },
+          ], () => {
+            this.showRouteChoice('The sand spot. Lily\'s table.', 'Pay it -$100', 'Cancel', () => {
+              BalanceSystem.spend(100);
+              AffinitySystem.adjust('ch1_lily', 1);
+              this.dialogue.show([
+                { speaker: 'Narrator', text: 'She shows up twenty minutes late looking like the reason menus don\'t have prices.' },
+                { speaker: 'Lily', text: 'You can afford me tonight. Congratulations.' },
+                { speaker: 'JP\'s Mind', text: 'A hundred dollars. Worth every cent. Don\'t tell her I said that.' },
+              ], () => { this.frozen = false; });
+            }, () => {
+              this.dialogue.show([
+                { speaker: 'Lily', text: '(text) lol. call me when the budget grows up.' },
+              ], () => { this.frozen = false; });
+            });
+          });
+        }, () => {
+          // Sam: the door the life closes. No tier fixes this one.
+          this.dialogue.show([
+            { speaker: 'JP', text: '(text) dinner this week? anywhere u want' },
+            { speaker: 'Sam', text: '(text) you\'re fun. but i know what you do for money.' },
+            { speaker: 'Sam', text: '(text) study group. every night. good luck jp, i mean it.' },
+            { speaker: 'JP\'s Mind', text: 'Goodies don\'t date the plug. No amount of sushi fixes that.' },
+            { speaker: 'JP\'s Mind', text: 'She hears the clock. I\'m the clock.' },
+          ], () => { this.frozen = false; });
+        });
+      });
+      return;
+    }
+
+    if (interactable.id === 'rise_overlook' && !this.beachDateDone) {
+      this.frozen = true;
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'The coast. Taco window on the left. The sushi spot on the sand, right there on the water.' },
+        { speaker: 'JP\'s Mind', text: 'K deserves a night out. Question is which one.' },
+      ], () => {
+        this.showRouteChoice('Take K out?', 'Taco window -$15', 'Sushi on the sand -$80', () => {
+          this.beachDateDone = true;
+          BalanceSystem.spend(15);
+          this.dialogue.show([
+            { speaker: 'Narrator', text: 'Two plates, one bench, the whole Pacific for free.' },
+            { speaker: 'K', text: 'This is literally my favorite spot and you know it.' },
+            { speaker: 'JP\'s Mind', text: 'Fifteen dollars. Best money I spent all month, and I spent a LOT of money this month.' },
+          ], () => { AffinitySystem.adjust('ch1_gf_k', 1); this.frozen = false; });
+        }, () => {
+          this.beachDateDone = true;
+          BalanceSystem.spend(80);
+          this.dialogue.show([
+            { speaker: 'Narrator', text: 'Sushi on the sand. The good table. She orders like rent isn\'t real.' },
+            { speaker: 'JP', text: 'Get whatever. We\'re good.' },
+            { speaker: 'Narrator', text: 'And tonight, they are.' },
+            { speaker: 'JP\'s Mind', text: 'Eighty on dinner like it\'s nothing. Because right now, it\'s nothing. Right now.' },
+          ], () => { AffinitySystem.adjust('ch1_gf_k', 1); this.frozen = false; });
+        });
+      });
+      return;
+    }
     if (interactable.id === 'rise_bed' && this.ordersReady && !this.charSnuck && ChoiceLedger.get('char_sneak') === null) {
       this.playCharSneak();
       return;

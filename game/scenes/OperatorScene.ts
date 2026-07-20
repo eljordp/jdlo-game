@@ -991,7 +991,33 @@ export class OperatorScene extends BaseChapterScene {
   }
 
   // --- Override handleInteractable for custom moments ---
+  private laDinnerDone = false;
+
   protected handleInteractable(interactable: { id: string; type: string; consumed?: boolean }) {
+    // ── LA prices. Two ways to sit in the same room. ──
+    if (interactable.id === 'ch6_restaurant_menu' && !this.laDinnerDone) {
+      this.laDinnerDone = true;
+      this.frozen = true;
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'The menu in the window. $85 a plate. JP used to live on $85 a week.' },
+      ], () => {
+        this.showPostChoiceStyle('Eat here tonight?', 'Bar seat, solo -$85', 'Corner table, for two -$170', () => {
+          BalanceSystem.spend(85);
+          this.dialogue.show([
+            { speaker: 'Narrator', text: 'Bar seat. Back to the wall. Old habits keep the good view.' },
+            { speaker: 'JP\'s Mind', text: 'Eighty-five dollars and I checked the exits twice. Some math never leaves.' },
+          ], () => { this.frozen = false; });
+        }, () => {
+          BalanceSystem.spend(170);
+          this.dialogue.show([
+            { speaker: 'Narrator', text: 'Corner table. She picks the wine. JP picks the seat facing the door.' },
+            { speaker: 'JP\'s Mind', text: 'A hundred seventy on dinner, legal money, taxed and everything. Wild how normal wild feels now.' },
+          ], () => { this.frozen = false; });
+        });
+      });
+      return;
+    }
+
     GameIntelligence.onInteracted(interactable.id);
     // Client pitch presentation (big_client or client2)
     if (interactable.id === 'ch6_portfolio') {
@@ -1521,6 +1547,20 @@ export class OperatorScene extends BaseChapterScene {
   }
 
   // ─── DASHBOARD SHOWCASE ─────────────────────────────────────────────
+  private showPostChoiceStyle(prompt: string, a: string, b: string, onA: () => void, onB: () => void) {
+    const cx = GAME_WIDTH / 2; const cy = GAME_HEIGHT / 2;
+    const pt = this.add.text(cx, cy - 35, prompt, { fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#f0c040' }).setOrigin(0.5).setScrollFactor(0).setDepth(201);
+    const objs: Phaser.GameObjects.GameObject[] = [pt];
+    const mk = (x: number, label: string, color: number, cb: () => void) => {
+      const bg = this.add.rectangle(x, cy + 10, 250, 42, color).setScrollFactor(0).setDepth(200).setInteractive({ useHandCursor: true });
+      const tx = this.add.text(x, cy + 10, label, { fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#ffffff' }).setOrigin(0.5).setScrollFactor(0).setDepth(201);
+      bg.on('pointerdown', () => { objs.forEach(o => o.destroy()); cb(); });
+      objs.push(bg, tx);
+    };
+    mk(cx - 150, a, 0x30598e, onA);
+    mk(cx + 150, b, 0x8a5a30, onB);
+  }
+
   // The launch nobody saw — JP's real pattern: wins stay in the drafts.
   private showPostChoice() {
     const cx = GAME_WIDTH / 2;

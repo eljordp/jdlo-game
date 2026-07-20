@@ -1,4 +1,6 @@
 import { BaseChapterScene } from './BaseChapterScene';
+import { BalanceSystem } from '../systems/BalanceSystem';
+import { AffinitySystem } from '../systems/AffinitySystem';
 import { tractorMap, MapData } from '../data/maps';
 import { tractorDialogue } from '../data/story';
 import type { DialogueLine } from '../systems/DialogueSystem';
@@ -293,6 +295,40 @@ export class TractorScene extends BaseChapterScene {
   }
 
   // Override to add tractor mini-game and post-evolution cutscene
+  private lunchBought = false;
+
+  private showTruckChoice() {
+    const choiceUI = (prompt: string, a: string, b: string, onA: () => void, onB: () => void) => {
+      const cx = GAME_WIDTH / 2; const cy = GAME_HEIGHT / 2;
+      const pt = this.add.text(cx, cy - 35, prompt, { fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#f0c040' }).setOrigin(0.5).setScrollFactor(0).setDepth(201);
+      const mk = (x: number, label: string, color: number, cb: () => void) => {
+        const bg = this.add.rectangle(x, cy + 10, 210, 42, color).setScrollFactor(0).setDepth(200).setInteractive({ useHandCursor: true });
+        const tx = this.add.text(x, cy + 10, label, { fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#ffffff' }).setOrigin(0.5).setScrollFactor(0).setDepth(201);
+        bg.on('pointerdown', () => { pt.destroy(); bg.destroy(); tx.destroy(); all.forEach(o => o.destroy()); cb(); });
+        return [bg, tx];
+      };
+      const all: Phaser.GameObjects.GameObject[] = [];
+      all.push(...mk(cx - 130, a, 0x30a040, onA));
+      all.push(...mk(cx + 130, b, 0x8a5a30, onB));
+    };
+    choiceUI('Taco truck at the gate.', 'Just me -$12', 'Feed the crew -$25', () => {
+      BalanceSystem.spend(12);
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'Three al pastor, extra salsa, a Jarritos.' },
+        { speaker: 'JP\'s Mind', text: 'Twelve dollars off twenty-an-hour money. The math finally runs the right direction.' },
+      ], () => { this.frozen = false; });
+    }, () => {
+      BalanceSystem.spend(25);
+      AffinitySystem.adjust('ch4_coworker', 1);
+      AffinitySystem.adjust('ch4_eliseo', 1);
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'Tacos for the whole row. Juan tries to pay. JP waves it off.' },
+        { speaker: 'Eliseo', text: 'El güero got us! Okay okay!' },
+        { speaker: 'JP\'s Mind', text: 'Twenty-five dollars to feed everybody. Cheapest good mood money can buy.' },
+      ], () => { this.frozen = false; });
+    });
+  }
+
   protected handleInteractable(interactable: { id: string; type: string; consumed?: boolean }) {
     GameIntelligence.onInteracted(interactable.id);
     // Track if phone was examined before tractor
@@ -337,6 +373,16 @@ export class TractorScene extends BaseChapterScene {
       this.updateChapterGate();
       // Let the base class handle it — it uses the grounded discovery scene.
       super.handleInteractable(interactable);
+      return;
+    }
+    if (interactable.id === 'ch4_lunch' && !this.lunchBought) {
+      this.lunchBought = true;
+      this.frozen = true;
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'The taco truck posts up at the vineyard gate at noon. Worker prices.' },
+      ], () => {
+        this.showTruckChoice();
+      });
       return;
     }
     if (interactable.id === 'ch4_lunch') {
