@@ -479,9 +479,24 @@ export class WeedRiseScene extends BaseChapterScene {
 
   private beachDateDone = false;
   private secondDateTried = false;
+  private hikeDone = false;
 
   protected handleInteractable(interactable: { id: string; type: string; consumed?: boolean }) {
     // ── SB coast eats: same ocean, two price tags. King era can afford either. ──
+    if (interactable.id === 'rise_overlook' && this.beachDateDone && this.secondDateTried && !this.hikeDone) {
+      this.hikeDone = true;
+      this.frozen = true;
+      this.dialogue.show([
+        { speaker: 'K', text: 'No restaurants. Hot Springs trail. Bring water and don\'t complain.' },
+        { speaker: 'Narrator', text: 'Montecito canyon. Forty minutes up. Phones lose signal halfway — the best feature of the whole trail.' },
+        { speaker: 'Narrator', text: 'Warm water, cold air, the whole coast laid out below.' },
+        { speaker: 'K', text: 'See? Free. Better than Oku.' },
+        { speaker: 'JP\'s Mind', text: 'She\'s right. No signal means no orders. First quiet my head\'s had in a month.' },
+        { speaker: 'JP\'s Mind', text: 'The phone found signal on the way down. Eleven missed messages. Back to it.' },
+      ], () => { AffinitySystem.adjust('ch1_gf_k', 1); this.frozen = false; });
+      return;
+    }
+
     if (interactable.id === 'rise_overlook' && this.beachDateDone && !this.secondDateTried) {
       this.frozen = true;
       this.secondDateTried = true;
@@ -491,11 +506,11 @@ export class WeedRiseScene extends BaseChapterScene {
         this.showRouteChoice('Who you texting?', 'Lily', 'Sam', () => {
           // Lily: boujee tier. Pretty tax is real.
           this.dialogue.show([
-            { speaker: 'JP', text: '(text) taco window on the coast?' },
-            { speaker: 'Lily', text: '(text) that\'s cute. the sand spot has my table. 8pm.' },
-            { speaker: 'JP\'s Mind', text: 'Lily looked at the taco window like it owed her money. Boujee tax it is.' },
+            { speaker: 'JP', text: '(text) lilly\'s run?' },
+            { speaker: 'Lily', text: '(text) that\'s cute. oku has my table. 8pm.' },
+            { speaker: 'JP\'s Mind', text: 'Lily heard \'taqueria\' and left me on read for a full minute. Boujee tax it is.' },
           ], () => {
-            this.showRouteChoice('The sand spot. Lily\'s table.', 'Pay it -$100', 'Cancel', () => {
+            this.showRouteChoice('Oku. Lily\'s table.', 'Pay it -$100', 'Cancel', () => {
               BalanceSystem.spend(100);
               AffinitySystem.adjust('ch1_lily', 1);
               this.dialogue.show([
@@ -529,19 +544,19 @@ export class WeedRiseScene extends BaseChapterScene {
         { speaker: 'Narrator', text: 'The coast. Taco window on the left. The sushi spot on the sand, right there on the water.' },
         { speaker: 'JP\'s Mind', text: 'K deserves a night out. Question is which one.' },
       ], () => {
-        this.showRouteChoice('Take K out?', 'Taco window -$15', 'Sushi on the sand -$80', () => {
+        this.showRouteChoice('Take K out?', 'Lilly\'s Taqueria -$15', 'Oku on the water -$80', () => {
           this.beachDateDone = true;
           BalanceSystem.spend(15);
           this.dialogue.show([
             { speaker: 'Narrator', text: 'Two plates, one bench, the whole Pacific for free.' },
-            { speaker: 'K', text: 'This is literally my favorite spot and you know it.' },
+            { speaker: 'K', text: 'Lilly\'s?? This is literally my favorite spot and you know it.' },
             { speaker: 'JP\'s Mind', text: 'Fifteen dollars. Best money I spent all month, and I spent a LOT of money this month.' },
           ], () => { AffinitySystem.adjust('ch1_gf_k', 1); this.frozen = false; });
         }, () => {
           this.beachDateDone = true;
           BalanceSystem.spend(80);
           this.dialogue.show([
-            { speaker: 'Narrator', text: 'Sushi on the sand. The good table. She orders like rent isn\'t real.' },
+            { speaker: 'Narrator', text: 'Oku. Sand-side table. She orders like rent isn\'t real.' },
             { speaker: 'JP', text: 'Get whatever. We\'re good.' },
             { speaker: 'Narrator', text: 'And tonight, they are.' },
             { speaker: 'JP\'s Mind', text: 'Eighty on dinner like it\'s nothing. Because right now, it\'s nothing. Right now.' },
