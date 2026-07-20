@@ -302,6 +302,23 @@ export class SoundEffects {
     osc.stop(ctx.currentTime + 0.025);
   }
 
+  /** Per-character voice blip routed through the same mastered SFX output. */
+  static playVoiceBlip(frequency: number) {
+    const ctx = this.getCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(this.getOutput(ctx));
+
+    osc.type = 'square';
+    osc.frequency.value = Math.max(120, Math.min(720, frequency));
+    gain.gain.setValueAtTime(0.018, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.03);
+
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.032);
+  }
+
   /** Impact thud for minigames */
   static playImpact() {
     const ctx = this.getCtx();

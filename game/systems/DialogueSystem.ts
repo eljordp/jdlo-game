@@ -1,5 +1,6 @@
 import { GAME_WIDTH, GAME_HEIGHT, FONT_STYLE, SPEAKER_FONT_STYLE } from '../config';
 import { SoundEffects } from './SoundEffects';
+import { MusicSystem } from './MusicSystem';
 import { GameSettings } from './GameSettings';
 import { SubstanceSystem } from './SubstanceSystem';
 
@@ -15,7 +16,6 @@ export interface DialogueLine {
 }
 
 export class DialogueSystem {
-  private static blipCtx: AudioContext | null = null;
   private scene: Phaser.Scene;
   private container: Phaser.GameObjects.Container;
   private boxImage: Phaser.GameObjects.Image;
@@ -91,6 +91,7 @@ export class DialogueSystem {
     this.currentLineIndex = 0;
     this.onComplete = onComplete || null;
     this.active = true;
+    MusicSystem.setDucked(true);
     this.inputCooldown = this.scene.time.now + this.COOLDOWN_MS;
     this.container.setVisible(true);
     this.arrow.setVisible(false);
@@ -322,6 +323,7 @@ export class DialogueSystem {
 
   private hide(): void {
     this.active = false;
+    MusicSystem.setDucked(false);
     this.container.setVisible(false);
     this.clearChoiceUI();
 
@@ -388,27 +390,7 @@ export class DialogueSystem {
     // Slight random variation per character (+/- 20hz) for organic feel
     const freq = baseFreq + (Math.random() - 0.5) * 40;
 
-    // Reuse SoundEffects' AudioContext pattern
-    try {
-      if (!DialogueSystem.blipCtx) DialogueSystem.blipCtx = new AudioContext();
-      const ctx = DialogueSystem.blipCtx;
-      if (ctx.state === 'suspended') ctx.resume();
-
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-
-      osc.type = 'square';
-      osc.frequency.value = freq;
-      gain.gain.setValueAtTime(0.025, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.035);
-
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 0.035);
-    } catch {
-      // Audio not available
-    }
+    SoundEffects.playVoiceBlip(freq);
   }
 
   isActive(): boolean {
@@ -416,6 +398,7 @@ export class DialogueSystem {
   }
 
   destroy(): void {
+    MusicSystem.setDucked(false);
     this.clearChoiceUI();
     this.scene.input.keyboard!.off('keydown-UP', this.choiceUp, this);
     this.scene.input.keyboard!.off('keydown-DOWN', this.choiceDown, this);

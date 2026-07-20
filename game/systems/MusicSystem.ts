@@ -737,6 +737,7 @@ export class MusicSystem {
   private static lastTrack = '';
   private static masterGain: GainNode | null = null;
   private static compressor: DynamicsCompressorNode | null = null;
+  private static ducked = false;
   private static rhythmIntervals: Array<ReturnType<typeof setInterval>> = [];
   private static houseHatBuffer: AudioBuffer | null = null;
   // Beach-specific nodes
@@ -766,7 +767,7 @@ export class MusicSystem {
     if (!this.masterGain || !this.compressor) {
       const master = ctx.createGain();
       const compressor = ctx.createDynamicsCompressor();
-      master.gain.value = 0.92;
+      master.gain.value = this.ducked ? 0.48 : 0.92;
       compressor.threshold.value = -22;
       compressor.knee.value = 16;
       compressor.ratio.value = 3.2;
@@ -1124,6 +1125,16 @@ export class MusicSystem {
       if (ctx) this.ambientGain.gain.setTargetAtTime(this.ambientBaseGain * this.volume, ctx.currentTime, 0.025);
       else this.ambientGain.gain.value = this.ambientBaseGain * this.volume;
     }
+  }
+
+  /** Lower the score under dialogue so words remain the emotional foreground. */
+  static setDucked(ducked: boolean): void {
+    if (this.ducked === ducked) return;
+    this.ducked = ducked;
+    if (!this.masterGain || !this.ctx) return;
+    const now = this.ctx.currentTime;
+    this.masterGain.gain.cancelScheduledValues(now);
+    this.masterGain.gain.setTargetAtTime(ducked ? 0.48 : 0.92, now, ducked ? 0.08 : 0.22);
   }
 
   static toggleMute(): boolean {
