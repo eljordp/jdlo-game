@@ -32,7 +32,7 @@ export class WeedRiseScene extends BaseChapterScene {
   constructor() {
     super({ key: 'WeedRiseScene' });
     this.chapterTitle = 'Chapter 3: The Rise';
-    this.nextScene = 'WrongCrowdScene';
+    this.nextScene = 'SpiralScene';
     this.requiredInteractionId = 'rise_stash';
   }
 

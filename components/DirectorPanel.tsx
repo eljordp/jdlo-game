@@ -47,6 +47,7 @@ const SCENES = [
   { group: "Chapters", key: "BeachScene", label: "2. Santa Barbara" },
   { group: "Locations", key: "StateStreetScene", label: "Santa Barbara · State Street" },
   { group: "Chapters", key: "WeedRiseScene", label: "3. Weed Rise" },
+  { group: "Transitions", key: "SpiralScene", label: "The Spiral" },
   { group: "Chapters", key: "WrongCrowdScene", label: "4. Wrong Crowd" },
   { group: "Transitions", key: "CourtScene", label: "Court" },
   { group: "Chapters", key: "JailScene", label: "5. Locked Up" },

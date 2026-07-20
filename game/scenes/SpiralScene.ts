@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, SCALE } from '../config';
 import { MusicSystem } from '../systems/MusicSystem';
 import { SoundEffects } from '../systems/SoundEffects';
+import { gamepadInput, virtualInput } from '../../components/GameCanvas';
 
 /**
  * The Spiral. Between the money and the arrest.
@@ -52,6 +53,14 @@ export class SpiralScene extends Phaser.Scene {
     this.step++;
     this.clear();
     this.playStep();
+  }
+
+  update() {
+    if (virtualInput.actionJustPressed || gamepadInput.actionJustPressed) {
+      virtualInput.actionJustPressed = false;
+      gamepadInput.actionJustPressed = false;
+      this.advance();
+    }
   }
 
   private clear() {
@@ -121,7 +130,7 @@ export class SpiralScene extends Phaser.Scene {
           this.tween({ targets: blob, scale: 1.4, alpha: 0.06, duration: 3000 + i * 400, yoyo: true, repeat: -1 });
         }
         this.text('A LITTLE', 110, { size: '16px', color: '#e0b0d0', delay: 200 });
-        this.text('An eighth of mushrooms. Just enough.', 185, { size: '11px', color: '#d0b0d0', delay: 900 });
+        this.text('Some mushrooms. Just enough to feel warm.', 185, { size: '11px', color: '#d0b0d0', delay: 900 });
         this.text('The whole room goes warm. Everybody\'s beautiful. He loves his friends so much it aches.', 245, { size: '10px', color: '#c0a8c8', delay: 1700 });
         this.text('For a few hours nothing hurts and everything makes sense.', 315, { size: '10px', color: '#b0a0c0', delay: 2600 });
         this.fadedBar(380);
@@ -132,6 +141,7 @@ export class SpiralScene extends Phaser.Scene {
       // 2 — every day: the daily fade, roommate's channel, losing time
       case 2: {
         this.faded = 62;
+        MusicSystem.transitionTo('weed-paranoia', 1000);
         this.obj(this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x0e1410));
         // drifting smoke
         for (let i = 0; i < 6; i++) {
@@ -175,6 +185,7 @@ export class SpiralScene extends Phaser.Scene {
 
       // 5 — the crash + aftermath
       case 5: {
+        MusicSystem.stop();
         this.obj(this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x0a0808));
         this.cameras.main.shake(600, 0.02);
         SoundEffects.playImpact();
@@ -182,10 +193,10 @@ export class SpiralScene extends Phaser.Scene {
         this.tween({ targets: flash, alpha: 0.7, duration: 120, yoyo: true });
         this.text('CRUNCH.', 130, { size: '24px', color: '#c04040', delay: 400 });
         this.text('The all-black 335i folds around a pole that was not moving.', 210, { size: '11px', color: '#aaaaaa', delay: 1400 });
-        this.text('He walks away from it. He always walked away from everything.', 270, { size: '10px', color: '#9a9a9a', delay: 2400 });
-        this.text('That was the night it started to unravel. Not the fun. The consequences.', 330, { size: '10px', color: '#c0a0a0', delay: 3400 });
-        this.text('The math he never did was about to get done for him.', 385, { size: '9px', color: '#8a8a9a', delay: 4400 });
-        this.cont(5600);
+        this.text('He walks away. The car does not.', 270, { size: '10px', color: '#9a9a9a', delay: 2400 });
+        this.text('That was the night it started to unravel.', 325, { size: '10px', color: '#c0a0a0', delay: 3300 });
+        this.text('Not the fun. The consequences.', 375, { size: '10px', color: '#c0a0a0', delay: 4100 });
+        this.cont(5000);
         break;
       }
 
@@ -232,8 +243,8 @@ export class SpiralScene extends Phaser.Scene {
         drift += (Math.sin(elapsed / 500) * 0.4 + (Math.random() - 0.5) * 0.3) * driftForce;
         // steering — but laggy/weaker under faded
         const steer = 1.3 - this.faded / 140;
-        if (left.isDown) drift -= steer;
-        if (right.isDown) drift += steer;
+        if (left.isDown || virtualInput.left || gamepadInput.left) drift -= steer;
+        if (right.isDown || virtualInput.right || gamepadInput.right) drift += steer;
         car.x = cx + drift * 12;
         // edge of road
         if (Math.abs(drift) > 14 || elapsed > 6000) {
