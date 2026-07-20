@@ -51,7 +51,7 @@ export class WeedRiseScene extends BaseChapterScene {
       14 * SCALED_TILE + SCALED_TILE / 2,
       'car-bmw335i',
     ).setScale(SCALE).setDepth(6);
-    car.setTint(0xdddddd);
+    car.setTint(0x111111);
     this.collisionTiles.add('14,14');
   }
 
@@ -481,11 +481,105 @@ export class WeedRiseScene extends BaseChapterScene {
   private secondDateTried = false;
   private hikeDone = false;
 
+  private showSbCutaway(kind: 'coast' | 'lillys' | 'oku' | 'hot_springs'): () => void {
+    const objects: Array<Phaser.GameObjects.GameObject & Partial<Phaser.GameObjects.Components.Alpha> & Partial<Phaser.GameObjects.Components.ScrollFactor> & Partial<Phaser.GameObjects.Components.Depth>> = [];
+    const d = 240;
+    const cx = GAME_WIDTH / 2;
+    const cy = GAME_HEIGHT / 2;
+    const add = <T extends Phaser.GameObjects.GameObject & Partial<Phaser.GameObjects.Components.ScrollFactor> & Partial<Phaser.GameObjects.Components.Depth>>(obj: T): T => {
+      obj.setScrollFactor?.(0);
+      obj.setDepth?.(d + objects.length / 100);
+      objects.push(obj);
+      return obj;
+    };
+
+    add(this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x061018, 0.78));
+    add(this.add.rectangle(cx, cy + 145, GAME_WIDTH, 170, 0x12395a, 1));
+    for (let i = 0; i < 5; i++) {
+      add(this.add.rectangle(cx - 460 + i * 230, cy + 90 + i % 2 * 20, 150, 5, 0xdaf3ff, 0.34));
+    }
+    // Low coast silhouette: enough Santa Barbara identity without turning the
+    // cutaway into a whole extra map.
+    add(this.add.triangle(cx - 340, cy + 62, 0, 56, 140, 0, 280, 56, 0x18242a, 0.95));
+    add(this.add.triangle(cx + 385, cy + 66, 0, 62, 180, 0, 360, 62, 0x18242a, 0.95));
+    for (const palmX of [cx - 520, cx + 520]) {
+      add(this.add.rectangle(palmX, cy + 40, 8, 126, 0x3e2b1f, 1).setAngle(palmX < cx ? -4 : 4));
+      for (let i = 0; i < 5; i++) {
+        add(this.add.rectangle(palmX + (i - 2) * 12, cy - 30 + Math.abs(i - 2) * 6, 48, 7, 0x244c35, 1).setAngle((i - 2) * 18));
+      }
+    }
+    add(this.add.rectangle(cx, cy + 235, GAME_WIDTH, 86, 0xd9b06f, 1));
+
+    if (kind === 'coast' || kind === 'lillys') {
+      // Lilly's: tiny taco window, paper plates, and a bench with the Pacific doing half the work.
+      add(this.add.rectangle(cx - 260, cy + 30, 210, 120, 0xf1dfbf, 1).setStrokeStyle(4, 0x8f4d32));
+      add(this.add.rectangle(cx - 260, cy - 15, 120, 48, 0x24323a, 1).setStrokeStyle(3, 0xf0c040));
+      add(this.add.text(cx - 260, cy - 18, "LILLY'S", {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#f0c040',
+      }).setOrigin(0.5));
+      add(this.add.rectangle(cx - 90, cy + 190, 260, 18, 0x7a4a2a, 1));
+      add(this.add.rectangle(cx - 170, cy + 160, 22, 55, 0x5b3926, 1));
+      add(this.add.rectangle(cx - 10, cy + 160, 22, 55, 0x5b3926, 1));
+      for (const x of [cx - 130, cx - 70]) {
+        add(this.add.circle(x, cy + 178, 16, 0xf5e7c8, 1).setStrokeStyle(2, 0xb45f2c));
+      }
+    }
+
+    if (kind === 'coast' || kind === 'oku') {
+      // Oku: clean patio geometry, white table, warm lanterns, money on the water.
+      add(this.add.rectangle(cx + 260, cy + 25, 245, 135, 0xefe8da, 1).setStrokeStyle(4, 0x2b3d50));
+      add(this.add.rectangle(cx + 260, cy - 55, 260, 22, 0x1b2b34, 1));
+      add(this.add.text(cx + 260, cy - 58, 'OKU', {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '13px', color: '#ffffff',
+      }).setOrigin(0.5));
+      for (const x of [cx + 170, cx + 260, cx + 350]) {
+        add(this.add.circle(x, cy - 8, 12, 0xffd98c, 0.78));
+        add(this.add.rectangle(x, cy + 58, 46, 34, 0xf7f1e6, 1).setStrokeStyle(2, 0xc9b98a));
+      }
+      add(this.add.rectangle(cx + 260, cy + 138, 230, 10, 0x9c6d3d, 1));
+    }
+
+    if (kind === 'hot_springs') {
+      add(this.add.rectangle(cx, cy + 20, 760, 230, 0x192a24, 1));
+      for (let i = 0; i < 9; i++) {
+        add(this.add.circle(cx - 330 + i * 82, cy + 52 + (i % 3) * 26, 44, 0x33483a, 1));
+      }
+      add(this.add.ellipse(cx, cy + 95, 340, 116, 0x5aa0a6, 0.82).setStrokeStyle(5, 0xb6f0e8));
+      for (let i = 0; i < 6; i++) {
+        const steam = add(this.add.text(cx - 115 + i * 46, cy + 38, '~', {
+          fontFamily: '"Press Start 2P", monospace', fontSize: '16px', color: '#d8f7ff',
+        }).setOrigin(0.5).setAlpha(0.36));
+        this.tweens.add({ targets: steam, y: cy + 15, alpha: 0.08, duration: 1300 + i * 120, yoyo: true, repeat: -1 });
+      }
+      add(this.add.text(cx, cy - 58, 'HOT SPRINGS TRAIL', {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '12px', color: '#e8e0c8',
+      }).setOrigin(0.5));
+      add(this.add.text(cx, cy + 178, 'NO SIGNAL', {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#7fa8a0',
+      }).setOrigin(0.5));
+    }
+
+    objects.forEach((obj) => {
+      obj.setAlpha?.(0);
+      this.tweens.add({ targets: obj, alpha: 1, duration: 450 });
+    });
+
+    return () => {
+      this.tweens.add({
+        targets: objects.filter(o => o.active),
+        alpha: 0,
+        duration: 300,
+        onComplete: () => objects.forEach(o => { try { o.destroy(); } catch { /* ignore */ } }),
+      });
+    };
+  }
+
   protected handleInteractable(interactable: { id: string; type: string; consumed?: boolean }) {
     // ── SB coast eats: same ocean, two price tags. King era can afford either. ──
     if (interactable.id === 'rise_overlook' && this.beachDateDone && this.secondDateTried && !this.hikeDone) {
       this.hikeDone = true;
       this.frozen = true;
+      const closeCutaway = this.showSbCutaway('hot_springs');
       this.dialogue.show([
         { speaker: 'K', text: 'No restaurants. Hot Springs trail. Bring water and don\'t complain.' },
         { speaker: 'Narrator', text: 'Montecito canyon. Forty minutes up. Phones lose signal halfway — the best feature of the whole trail.' },
@@ -493,7 +587,7 @@ export class WeedRiseScene extends BaseChapterScene {
         { speaker: 'K', text: 'See? Free. Better than Oku.' },
         { speaker: 'JP\'s Mind', text: 'She\'s right. No signal means no orders. First quiet my head\'s had in a month.' },
         { speaker: 'JP\'s Mind', text: 'The phone found signal on the way down. Eleven missed messages. Back to it.' },
-      ], () => { AffinitySystem.adjust('ch1_gf_k', 1); this.frozen = false; });
+      ], () => { closeCutaway(); AffinitySystem.adjust('ch1_gf_k', 1); this.frozen = false; });
       return;
     }
 
@@ -511,13 +605,14 @@ export class WeedRiseScene extends BaseChapterScene {
             { speaker: 'JP\'s Mind', text: 'Lily heard \'taqueria\' and left me on read for a full minute. Boujee tax it is.' },
           ], () => {
             this.showRouteChoice('Oku. Lily\'s table.', 'Pay it -$100', 'Cancel', () => {
+              const closeCutaway = this.showSbCutaway('oku');
               BalanceSystem.spend(100);
               AffinitySystem.adjust('ch1_lily', 1);
               this.dialogue.show([
                 { speaker: 'Narrator', text: 'She shows up twenty minutes late looking like the reason menus don\'t have prices.' },
                 { speaker: 'Lily', text: 'You can afford me tonight. Congratulations.' },
                 { speaker: 'JP\'s Mind', text: 'A hundred dollars. Worth every cent. Don\'t tell her I said that.' },
-              ], () => { this.frozen = false; });
+              ], () => { closeCutaway(); this.frozen = false; });
             }, () => {
               this.dialogue.show([
                 { speaker: 'Lily', text: '(text) lol. call me when the budget grows up.' },
@@ -540,27 +635,32 @@ export class WeedRiseScene extends BaseChapterScene {
 
     if (interactable.id === 'rise_overlook' && !this.beachDateDone) {
       this.frozen = true;
+      const closeCoast = this.showSbCutaway('coast');
       this.dialogue.show([
         { speaker: 'Narrator', text: 'The coast. Taco window on the left. The sushi spot on the sand, right there on the water.' },
         { speaker: 'JP\'s Mind', text: 'K deserves a night out. Question is which one.' },
       ], () => {
         this.showRouteChoice('Take K out?', 'Lilly\'s Taqueria -$15', 'Oku on the water -$80', () => {
+          closeCoast();
+          const closeCutaway = this.showSbCutaway('lillys');
           this.beachDateDone = true;
           BalanceSystem.spend(15);
           this.dialogue.show([
             { speaker: 'Narrator', text: 'Two plates, one bench, the whole Pacific for free.' },
             { speaker: 'K', text: 'Lilly\'s?? This is literally my favorite spot and you know it.' },
             { speaker: 'JP\'s Mind', text: 'Fifteen dollars. Best money I spent all month, and I spent a LOT of money this month.' },
-          ], () => { AffinitySystem.adjust('ch1_gf_k', 1); this.frozen = false; });
+          ], () => { closeCutaway(); AffinitySystem.adjust('ch1_gf_k', 1); this.frozen = false; });
         }, () => {
+          closeCoast();
+          const closeCutaway = this.showSbCutaway('oku');
           this.beachDateDone = true;
           BalanceSystem.spend(80);
           this.dialogue.show([
             { speaker: 'Narrator', text: 'Oku. Sand-side table. She orders like rent isn\'t real.' },
             { speaker: 'JP', text: 'Get whatever. We\'re good.' },
             { speaker: 'Narrator', text: 'And tonight, they are.' },
-            { speaker: 'JP\'s Mind', text: 'Eighty on dinner like it\'s nothing. Because right now, it\'s nothing. Right now.' },
-          ], () => { AffinitySystem.adjust('ch1_gf_k', 1); this.frozen = false; });
+            { speaker: 'JP\'s Mind', text: 'Eighty on dinner like it\'s nothing. The ocean made it feel normal.' },
+          ], () => { closeCutaway(); AffinitySystem.adjust('ch1_gf_k', 1); this.frozen = false; });
         });
       });
       return;
