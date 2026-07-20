@@ -11,6 +11,7 @@ import { GameIntelligence } from '../systems/GameIntelligence';
 import { CasinoSystem } from '../systems/CasinoSystem';
 import { DMSystem } from '../systems/DMSystem';
 import { SoundEffects } from '../systems/SoundEffects';
+import { ChoiceLedger } from '../systems/ChoiceLedger';
 
 export class TractorScene extends BaseChapterScene {
   private phoneExaminedFirst = false;
@@ -384,7 +385,7 @@ export class TractorScene extends BaseChapterScene {
         { speaker: 'Narrator', text: 'Sun coming up over the Napa hills. Golden light on the vines.' },
         { speaker: 'JP\'s Mind', text: 'Everyone at home is still sleeping.' },
         { speaker: 'JP\'s Mind', text: 'Nobody knows I\'m here. Working. Quiet.' },
-        { speaker: 'JP\'s Mind', text: 'Maybe that\'s okay for now.' },
+        { speaker: 'JP\'s Mind', text: 'Maybe quiet is enough.' },
       ], () => { this.frozen = false; });
       return;
     }
@@ -936,6 +937,7 @@ export class TractorScene extends BaseChapterScene {
                 color: '#ffcccc',
               }).setOrigin(0.5).setScrollFactor(0).setDepth(313);
               objects.push(lookText);
+              ChoiceLedger.record('tractor_phone', 'Looked');
 
               // Tractor drifts into nearest row
               const nearestRowY = rowYPositions.reduce((a, b) =>

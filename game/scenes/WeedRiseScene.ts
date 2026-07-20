@@ -446,6 +446,13 @@ export class WeedRiseScene extends BaseChapterScene {
     return 'Explore, then take the south path when ready.';
   }
 
+  protected handleNPCDialogue(npcId: string, dialogue: DialogueLine[]): void {
+    if (npcId === 'rise_jose') {
+      ChoiceLedger.record('jose_text', 'Left it on read');
+    }
+    super.handleNPCDialogue(npcId, dialogue);
+  }
+
   protected handleInteractable(interactable: { id: string; type: string; consumed?: boolean }) {
     if (interactable.id === 'rise_scale') {
       if (this.bagged) {
@@ -499,9 +506,7 @@ export class WeedRiseScene extends BaseChapterScene {
           { speaker: 'Narrator', text: 'JP counts the return twice and hides it behind the kitchen panel.' },
           { speaker: 'Narrator', text: 'For a minute, being back at zero feels impossible.' },
           { speaker: 'Narrator', text: 'Then a car slows outside.' },
-          { speaker: 'JP\'s Mind', text: 'Probably nothing.' },
-          { speaker: 'Narrator', text: 'It keeps driving.' },
-          { speaker: 'JP\'s Mind', text: 'See? Nothing.' },
+          { speaker: 'Narrator', text: 'JP waits until the engine fades before he breathes again.' },
           { speaker: 'Narrator', text: 'That is how fear becomes routine too.' },
         ], () => this.refreshObjectiveHint());
         return;

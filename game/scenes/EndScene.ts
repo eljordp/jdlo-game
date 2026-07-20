@@ -16,9 +16,11 @@ export class EndScene extends Phaser.Scene {
     super({ key: 'EndScene' });
   }
 
-  create() {
+  create(data?: { finalStats?: boolean }) {
     MusicSystem.stop();
-    Analytics.trackGameComplete();
+    if (!data?.finalStats) {
+      Analytics.trackGameComplete();
+    }
 
     // Final stat snapshot
     GameStats.setMax('totalMoney', BalanceSystem.getBalance());
@@ -28,14 +30,18 @@ export class EndScene extends Phaser.Scene {
     AchievementSystem.check('the_whole_story');
 
     this.cameras.main.fadeIn(1500, 0, 0, 0);
-    this.showStatsScreen();
+    if (data?.finalStats) {
+      this.showStatsScreen(true);
+    } else {
+      this.showRunComparison();
+    }
   }
 
   // ═══════════════════════════════════════════════════════════════════
   //  GTA-STYLE STATS SCREEN
   // ═══════════════════════════════════════════════════════════════════
 
-  private showStatsScreen() {
+  private showStatsScreen(finalPage = false) {
     const stats = GameStats.getAll();
     const cx = GAME_WIDTH / 2;
     const d = 100; // depth base
@@ -203,8 +209,7 @@ export class EndScene extends Phaser.Scene {
     const btnY = GAME_HEIGHT - 55;
     const btnDelay = gradeDelay + 1600;
 
-    // CONTINUE button (goes to narrative end)
-    const continueBtn = this.add.text(cx, btnY, '[ CONTINUE ]', {
+    const continueBtn = this.add.text(cx, btnY, finalPage ? '[ PLAY AGAIN ]' : '[ CONTINUE ]', {
       fontFamily: '"Press Start 2P", monospace',
       fontSize: '12px',
       color: '#f0c040',
@@ -213,7 +218,10 @@ export class EndScene extends Phaser.Scene {
 
     continueBtn.on('pointerover', () => continueBtn.setColor('#ffdd66'));
     continueBtn.on('pointerout', () => continueBtn.setColor('#f0c040'));
-    continueBtn.on('pointerdown', () => this.transitionToNarrative());
+    continueBtn.on('pointerdown', () => {
+      if (finalPage) this.restartStory();
+      else this.transitionToNarrative();
+    });
 
     this.tweens.add({ targets: continueBtn, alpha: 1, duration: 800, delay: btnDelay });
     this.tweens.add({
@@ -227,7 +235,15 @@ export class EndScene extends Phaser.Scene {
 
     // SPACE to continue
     this.input.keyboard!.on('keydown-SPACE', () => {
-      this.transitionToNarrative();
+      if (finalPage) this.restartStory();
+      else this.transitionToNarrative();
+    });
+  }
+
+  private restartStory() {
+    this.cameras.main.fadeOut(1000, 0, 0, 0);
+    this.cameras.main.once('camerafadeoutcomplete', () => {
+      this.scene.start('IntroScene');
     });
   }
 
@@ -1116,7 +1132,7 @@ export class EndScene extends Phaser.Scene {
                               this.tweens.add({ targets: follow, alpha: 1, duration: 800, delay: 2000 });
 
                               // Replay hint
-                              const replayHint = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 40, 'SPACE to play again', {
+                              const replayHint = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 40, 'SPACE to view stats', {
                                 fontFamily: '"Press Start 2P", monospace',
                                 fontSize: '9px',
                                 color: '#333355',
@@ -1132,11 +1148,11 @@ export class EndScene extends Phaser.Scene {
                                 delay: 4000,
                               });
 
-                              // Re-enable replay
+                              // Final stats come after the story has had room to breathe.
                               this.input.keyboard!.on('keydown-SPACE', () => {
                                 this.cameras.main.fadeOut(1000, 0, 0, 0);
                                 this.cameras.main.once('camerafadeoutcomplete', () => {
-                                  this.scene.start('IntroScene');
+                                  this.scene.restart({ finalStats: true });
                                 });
                               });
                             });

@@ -1747,7 +1747,7 @@ const ch2Extras: Record<string, DialogueLine[]> = {
   ch2_unmarked_car: [
     { speaker: 'JP\'s Mind', text: 'Black sedan. Tinted. No plates.' },
     { speaker: 'JP\'s Mind', text: 'That car wasn\'t here last time.' },
-    { speaker: 'JP\'s Mind', text: '...probably nothing.' },
+    { speaker: 'JP\'s Mind', text: 'He tells himself to keep moving.' },
   ],
   ch2_flashback_spot: [
     { speaker: 'Narrator', text: 'This is where they used to sit. JP and Jose. After school.' },
@@ -2885,7 +2885,7 @@ const ch6Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'Hits different now.' },
   ],
   ch6_lambo: [
-    { speaker: 'Narrator', text: 'Lamborghini SVJ. Parked next to JP\'s C8. Both green.' },
+    { speaker: 'Narrator', text: 'Dan\'s Lamborghini SVJ. Parked next to JP\'s C8. Both green.' },
     { speaker: 'JP\'s Mind', text: 'His costs 4x mine. But we\'re in the same parking lot.' },
     { speaker: 'JP\'s Mind', text: 'Give me time.' },
   ],
