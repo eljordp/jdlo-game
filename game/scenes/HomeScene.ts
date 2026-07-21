@@ -312,8 +312,9 @@ export class HomeScene extends BaseChapterScene {
   }
 
   protected getObjectiveHint(): string {
-    if (this.phoneTriggered && this.requiredDone) return 'Head outside. Walk to the street.';
+    if (this.phoneTriggered && this.requiredDone) return 'You saw the vision. Hit the street — you\'re gone.';
     if (this.phoneTriggered) return 'Answer the phone.';
+    if (this.cryptoViewed) return 'You saw the vision. Say your goodbyes — you\'re not staying.';
     if (this.interactionCount >= 5) return 'Keep exploring. Something\'s about to happen.';
     if (this.interactionCount >= 2 && this.currentFloor === 'up') return 'Talk to family. Head downstairs.';
     if (this.interactionCount >= 2) return 'Talk to Pops. Explore the yard.';
@@ -1479,8 +1480,13 @@ export class HomeScene extends BaseChapterScene {
         this.cryptoViewed = true;
         this.frozen = true;
         this.dialogue.show([
-          { speaker: 'Narrator', text: 'JP\'s phone. Coinbase notification: "BTC up 4% today."' },
-          { speaker: 'JP\'s Mind', text: 'Let me check everything real quick.' },
+          { speaker: 'Narrator', text: 'JP\'s phone lights up. Three Stiiizy drops still on the schedule — house, house, house.' },
+          { speaker: 'JP\'s Mind', text: 'Delivery money. Gas money. First real money I ever made with my own hands.' },
+          { speaker: 'Narrator', text: 'Then the other app. Coinbase.' },
+          { speaker: 'Narrator', text: 'The $1,000 he parked in there weeks ago now reads $5,000.' },
+          { speaker: 'JP', text: 'No way. No WAY.' },
+          { speaker: 'JP\'s Mind', text: 'One K into five. While I was asleep. First time in my life I\'m actually SEEING money.' },
+          { speaker: 'JP\'s Mind', text: 'And just like that the ceiling doesn\'t fit anymore. That\'s the vision. I gotta go.' },
         ], () => {
           this.frozen = false;
           this.showPhoneApps();
