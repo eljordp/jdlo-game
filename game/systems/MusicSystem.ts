@@ -51,7 +51,7 @@ type LayerDef = {
 
 type TrackDef = {
   layers: LayerDef[];
-  ambience?: 'home' | 'traffic' | 'institution' | 'field' | 'room' | 'city';
+  ambience?: 'home' | 'traffic' | 'institution' | 'field' | 'room' | 'city' | 'club';
 };
 
 type AmbienceDef = {
@@ -69,6 +69,7 @@ const AMBIENCES: Record<NonNullable<TrackDef['ambience']>, AmbienceDef> = {
   field: { filterType: 'lowpass', filterFreq: 1050, filterQ: 0.25, gain: 0.0055, color: 'brown' },
   room: { filterType: 'bandpass', filterFreq: 680, filterQ: 0.5, gain: 0.0035, color: 'brown' },
   city: { filterType: 'lowpass', filterFreq: 620, filterQ: 0.4, gain: 0.0045, color: 'brown' },
+  club: { filterType: 'bandpass', filterFreq: 980, filterQ: 0.7, gain: 0.0065, color: 'brown' },
 };
 
 // ── Track definitions ─────────────────────────────────────────────────────────
@@ -617,6 +618,7 @@ const TRACKS: Record<string, TrackDef> = {
 
   // ── Vegas: original 126-BPM tech-house pulse. No licensed recording. ──
   'vegas': {
+    ambience: 'club',
     layers: [
       {
         notes: ['A1', 'A1', 'R', 'A1', 'C2', 'C2', 'R', 'E2',
@@ -1031,7 +1033,7 @@ export class MusicSystem {
       osc.stop(now + 0.21);
     };
 
-    const hat = () => {
+    const hat = (level = 0.011, decay = 0.075) => {
       if (this.currentTrack !== 'vegas' || !this.houseHatBuffer) return;
       const now = ctx.currentTime;
       const source = ctx.createBufferSource();
@@ -1040,19 +1042,45 @@ export class MusicSystem {
       source.buffer = this.houseHatBuffer;
       filter.type = 'highpass';
       filter.frequency.value = 5200;
-      gain.gain.setValueAtTime(0.011 * this.volume, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.075);
+      gain.gain.setValueAtTime(level * this.volume, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + decay);
       source.connect(filter);
       filter.connect(gain);
       gain.connect(output);
       source.start(now);
-      source.stop(now + 0.08);
+      source.stop(now + decay + 0.01);
+    };
+
+    const clap = () => {
+      if (this.currentTrack !== 'vegas') return;
+      const now = ctx.currentTime;
+      const buffer = ctx.createBuffer(1, Math.floor(ctx.sampleRate * 0.11), ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < data.length; i++) {
+        const decay = 1 - i / data.length;
+        data[i] = (Math.random() * 2 - 1) * decay * decay;
+      }
+      const source = ctx.createBufferSource();
+      const filter = ctx.createBiquadFilter();
+      const gain = ctx.createGain();
+      source.buffer = buffer;
+      filter.type = 'bandpass';
+      filter.frequency.value = 1700;
+      filter.Q.value = 0.85;
+      gain.gain.setValueAtTime(0.018 * this.volume, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.105);
+      source.connect(filter);
+      filter.connect(gain);
+      gain.connect(output);
+      source.start(now);
+      source.stop(now + 0.12);
     };
 
     let halfStep = 0;
     const tick = () => {
       if (halfStep % 2 === 0) kick();
-      else hat();
+      else hat(halfStep % 8 === 7 ? 0.016 : 0.011, halfStep % 8 === 7 ? 0.13 : 0.075);
+      if (halfStep % 4 === 2) clap();
       halfStep++;
     };
     tick();

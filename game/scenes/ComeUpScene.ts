@@ -1923,7 +1923,12 @@ export class ComeUpScene extends BaseChapterScene {
                       if (obj && obj.active) obj.destroy();
                     });
                     InventorySystem.addItem('cash', 1);
-                    this.frozen = false;
+                    // Capstone: the come-up thesis lands. Clean money > the lick.
+                    this.dialogue.show([
+                      { speaker: 'JP\'s Mind', text: 'Three hundred bucks. The old lick would\'ve paid ten times that by Friday.' },
+                      { speaker: 'JP\'s Mind', text: 'But nobody can claw this one back. No number to watch the mirror for.' },
+                      { speaker: 'JP\'s Mind', text: 'First dollar that\'s all the way mine. And this one? This one scales. LET\'S GO.' },
+                    ], () => { this.frozen = false; });
                   },
                 });
               });
