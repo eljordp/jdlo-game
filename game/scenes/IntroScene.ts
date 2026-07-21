@@ -17,13 +17,13 @@ export class IntroScene extends Phaser.Scene {
       color: '#ffffff',
     }).setOrigin(0.5).setDepth(1).setAlpha(0);
 
-    // 1 second black, then fade in text, then go to HomeScene
-    this.time.delayedCall(1000, () => {
+    // Short black, quick fade in, brief hold, out — no lingering. ~2.3s total.
+    this.time.delayedCall(350, () => {
       this.tweens.add({
         targets: text,
         alpha: 1,
-        duration: 800,
-        hold: 2500,
+        duration: 450,
+        hold: 1100,
         yoyo: true,
         onComplete: () => {
           let started = false;
