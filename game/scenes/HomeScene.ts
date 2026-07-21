@@ -320,7 +320,7 @@ export class HomeScene extends BaseChapterScene {
     if (this.interactionCount >= 5) return 'Keep exploring. Something\'s about to happen.';
     if (this.interactionCount >= 2 && this.currentFloor === 'up') return 'Talk to family. Head downstairs.';
     if (this.interactionCount >= 2) return 'Talk to Pops. Explore the yard.';
-    if (this.currentFloor === 'up') return 'Look around your room. Interact with everything.';
+    if (this.currentFloor === 'up') return 'Your phone won\'t stop buzzing on the nightstand. Check it.';
     return 'Talk to family. Check everything out.';
   }
 
@@ -563,7 +563,9 @@ export class HomeScene extends BaseChapterScene {
           this.dialogue.show([
             { speaker: 'Narrator', text: 'Good neighborhood. Good family. Good life.' },
             { speaker: 'Narrator', text: 'But the ceiling looks the same every morning.' },
-            { speaker: 'JP\'s Mind', text: 'I gotta do something different.' },
+            { speaker: 'JP\'s Mind', text: 'Comfortable is just being stuck in slow motion. Everybody here made peace with it.' },
+            { speaker: 'JP\'s Mind', text: 'Not me. Little money\'s finally moving and I can\'t sit still with it.' },
+            { speaker: 'JP\'s Mind', text: 'Something\'s about to break my way. I can feel it. Let me check my phone.' },
           ]);
         },
       });
