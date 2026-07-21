@@ -24,6 +24,7 @@ export class ComeUpScene extends BaseChapterScene {
   private birdLetterRead = false;
   private joseTexted = false;
   private larTexted = false;
+  private haterTexted = false; // the jealousy dynamic — old peer salty about the come-up
   private bankChecked = false;
   private timePassagePlayed = false;
   private popsCallDone = false;
@@ -683,6 +684,23 @@ export class ComeUpScene extends BaseChapterScene {
           { speaker: 'Lar', text: '"beats the old shit. don\'t gotta watch the mirror no more 🙏"' },
           { speaker: 'Higo', text: '"pulled a double barbacking. hands smell like bleach n lime. still up tho 🍋"' },
           { speaker: 'JP\'s Mind', text: 'Replica designer out a duffel. Higo barbacking doubles. Me on a laptop that hasn\'t made a dollar. All of it broke. None of it dirty.' },
+        ], () => {
+          this.frozen = false;
+          this.showPhoneApps();
+        });
+        return;
+      }
+      if (!this.haterTexted) {
+        this.haterTexted = true;
+        this.frozen = true;
+        this.dialogue.show([
+          { speaker: 'Narrator', text: 'One more. A number JP hasn\'t heard from since the old days.' },
+          { speaker: '???', text: 'saw your little "entrepreneur" posts lol. AI websites? that\'s the move now?' },
+          { speaker: 'JP', text: 'It\'s paying my rent. What\'s paying yours?' },
+          { speaker: '???', text: 'must be nice having rich plugs hand it to you fr. some of us gotta grind' },
+          { speaker: 'JP', text: 'Nobody handed me shit. You were right there when I had nothing. You just didn\'t move.' },
+          { speaker: '???', text: '...whatever bro. hmu when you need the real ones again.' },
+          { speaker: 'JP\'s Mind', text: 'That\'s the tell. They don\'t hate that you changed. They hate that they didn\'t.' },
         ], () => {
           this.frozen = false;
           this.showPhoneApps();
