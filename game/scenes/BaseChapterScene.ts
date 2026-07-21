@@ -43,6 +43,7 @@ export abstract class BaseChapterScene extends Phaser.Scene {
   protected isMoving = false;
   protected facing: 'down' | 'up' | 'left' | 'right' = 'down';
   protected frozen = false;
+  private ambientTimer?: Phaser.Time.TimerEvent;
   protected triggers: { x: number; y: number; action: string; target?: string; data?: Record<string, string> }[] = [];
   protected mapWidth = 0;
   protected mapHeight = 0;
@@ -257,6 +258,77 @@ export abstract class BaseChapterScene extends Phaser.Scene {
 
     // Konami code easter egg listener
     this.initKonamiCode();
+
+    // Phase 1 ambient life — NPCs mutter/emote on their own, randomized so no
+    // two playthroughs feel identical. (Phase 2 = autonomous walking, Codex.)
+    this.startAmbientLife();
+  }
+
+  // ─── AMBIENT NPC LIFE (Phase 1: no movement, just signs of a brain) ──────
+  /** Per-scene flavor for background NPC chatter. Override to customize. */
+  protected getAmbientLines(): string[] {
+    return [];
+  }
+
+  protected startAmbientLife() {
+    const scheduleNext = () => {
+      const delay = Phaser.Math.Between(2600, 5200);
+      this.ambientTimer = this.time.delayedCall(delay, () => {
+        this.doAmbientBeat();
+        scheduleNext();
+      });
+    };
+    scheduleNext();
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      if (this.ambientTimer) { this.ambientTimer.remove(); this.ambientTimer = undefined; }
+    });
+  }
+
+  private doAmbientBeat() {
+    // Never step on a cutscene, dialogue, or a frozen player.
+    if (this.frozen || (this.dialogue && this.dialogue.isActive())) return;
+    if (!this.npcs || this.npcs.length === 0) return;
+
+    const npc = this.npcs[Phaser.Math.Between(0, this.npcs.length - 1)];
+    if (!npc || !npc.sprite || !npc.sprite.active) return;
+    const sprite = npc.sprite;
+
+    // Speech bubble is a separate object — safe on any NPC.
+    const lines = this.getAmbientLines();
+    if (lines.length && Math.random() < 0.6) {
+      this.showAmbientBubble(sprite, lines[Phaser.Math.Between(0, lines.length - 1)]);
+    }
+
+    // Idle "tell" only if the NPC isn't already animating (patrol/scripted).
+    if (!this.tweens.isTweening(sprite)) {
+      if (Math.random() < 0.5) {
+        this.tweens.add({ targets: sprite, y: sprite.y - 4, duration: 220, yoyo: true, ease: 'Sine.easeInOut' });
+      } else {
+        const dir = Math.random() < 0.5 ? -1 : 1;
+        this.tweens.add({ targets: sprite, x: sprite.x + 3 * dir, angle: 2 * dir, duration: 260, yoyo: true, ease: 'Sine.easeInOut' });
+      }
+    }
+  }
+
+  private showAmbientBubble(sprite: Phaser.GameObjects.Sprite, text: string) {
+    const bubble = this.add.text(sprite.x, sprite.y - 40, text, {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '7px',
+      color: '#e8e8f0',
+      backgroundColor: '#101018',
+      padding: { x: 4, y: 3 },
+      align: 'center',
+      wordWrap: { width: 150 },
+    }).setOrigin(0.5, 1).setDepth(60).setAlpha(0);
+    this.tweens.add({
+      targets: bubble,
+      alpha: 1,
+      y: bubble.y - 6,
+      duration: 250,
+      hold: 1200,
+      yoyo: true,
+      onComplete: () => bubble.destroy(),
+    });
   }
 
   private showChapterTitle() {

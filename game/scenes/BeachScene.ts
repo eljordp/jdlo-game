@@ -1539,6 +1539,11 @@ export class BeachScene extends BaseChapterScene {
     }
   }
 
+  protected getAmbientLines(): string[] {
+    // Careless, sun-drunk, going-nowhere-fun — the life JP's itching to leave.
+    return ['beach later?', 'who\'s got the aux', 'hot tub\'s heated', 'she was asking about you', 'melrose this weekend?', 'this house is insane', 'we\'re SO up rn'];
+  }
+
   getChapterDialogue(): { intro: DialogueLine[]; npcs: Record<string, DialogueLine[]> } {
     return beachDialogue;
   }

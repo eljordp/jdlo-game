@@ -971,6 +971,11 @@ export class OperatorScene extends BaseChapterScene {
     return operatorMap;
   }
 
+  protected getAmbientLines(): string[] {
+    // Peak flex = peak envy/awe. The room reacts to JP's come-up.
+    return ['is that his C8?', 'self-taught, they said', 'must be nice fr', 'he built ALL this?', 'kid moves different', 'where\'d he even come from', 'wasn\'t he broke last year?'];
+  }
+
   getChapterDialogue(): { intro: DialogueLine[]; npcs: Record<string, DialogueLine[]> } {
     return operatorDialogue;
   }

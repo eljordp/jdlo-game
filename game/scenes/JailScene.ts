@@ -930,6 +930,11 @@ export class JailScene extends BaseChapterScene {
     return jailMap;
   }
 
+  protected getAmbientLines(): string[] {
+    // Boredom + low-grade tension: the weight of nothing, out loud.
+    return ['count time.', 'chow in ten.', 'that\'s my soup bro.', 'phone\'s tied up.', 'CO\'s watching.', 'store day wednesday.', 'who got the dice?', 'day 400 somethin.'];
+  }
+
   getChapterDialogue(): { intro: DialogueLine[]; npcs: Record<string, DialogueLine[]> } {
     if (this.currentDay === 3) return jailDay3Dialogue;
     if (this.currentDay === 2) return jailDay2Dialogue;
