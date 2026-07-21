@@ -620,6 +620,10 @@ export class WrongCrowdScene extends BaseChapterScene {
         { speaker: 'JP\'s Mind', text: 'This is what it\'s all for. This right here.' },
         { speaker: 'JP\'s Mind', text: 'Twenty thousand dollars on a desk in a frat house at 3 AM.' },
         { speaker: 'JP\'s Mind', text: 'So why does it feel like nothing?' },
+        { speaker: 'Narrator', text: 'The phone buzzes. The guy from the deal. The one who believed the story.' },
+        { speaker: '???', text: 'bro please. that was my rent AND my mom\'s. tell me it\'s coming back.' },
+        { speaker: 'JP\'s Mind', text: 'He has a name. A mom. A due date I just turned into.' },
+        { speaker: 'JP\'s Mind', text: 'I put the phone face down. That\'s the part you don\'t post. That\'s the part that stays.' },
       ], () => { this.frozen = false; });
       return;
     }

@@ -2859,6 +2859,10 @@ const ch6Extras: Record<string, DialogueLine[]> = {
     { speaker: 'Narrator', text: 'Lights everywhere. Each one is someone else grinding too.' },
     { speaker: 'JP\'s Mind', text: 'I used to look at buildings like this and wonder who lived in them.' },
     { speaker: 'JP\'s Mind', text: 'Now I know. People like me.' },
+    { speaker: 'JP\'s Mind', text: 'A year ago I\'d have called ten people to come see this.' },
+    { speaker: 'JP\'s Mind', text: 'Now half of them think I switched up. The other half just want something.' },
+    { speaker: 'JP\'s Mind', text: 'Nobody warns you the come-up is a quiet room. You get the view and lose the people who\'d get it.' },
+    { speaker: 'JP\'s Mind', text: 'Wouldn\'t trade it. But it\'s just me up here.' },
   ],
   ch6_closet: [
     { speaker: 'Narrator', text: 'JP\'s closet. Button-downs, clean sneakers, a couple suits.' },
