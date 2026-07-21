@@ -1898,8 +1898,8 @@ const ch3Day2NPCDialogue: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'It\'s not freedom but it\'s structure. And structure is all I got.' },
   ],
   ch3_fighter1: [
-    { speaker: 'Fighter', text: 'You been putting in work, new fish. I see you.' },
-    { speaker: 'Fighter', text: 'Respect.' },
+    { speaker: 'Fighter', text: 'You lift alone. Smart. In here everybody wants to be your spotter, then your partner, then your problem.' },
+    { speaker: 'Fighter', text: 'I learned that the slow way. Three bids ago.' },
   ],
   ch3_fighter2: [
     { speaker: 'Inmate', text: 'JP got quieter after the first months.' },

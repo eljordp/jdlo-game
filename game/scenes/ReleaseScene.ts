@@ -552,7 +552,7 @@ export class ReleaseScene extends Phaser.Scene {
           }
         });
 
-        this.showText('The doors opened. Faith came with him.', cy - 60, { size: '14px', color: '#4a4a5a', delay: 3500 });
+        this.showText('Faith came with him.', cy - 60, { size: '14px', color: '#4a4a5a', delay: 3500 });
 
         this.showContinue(5000);
         break;

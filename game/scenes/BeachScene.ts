@@ -1465,15 +1465,10 @@ export class BeachScene extends BaseChapterScene {
               this.time.delayedCall(400, () => {
                 this.dialogue.show([
                   { speaker: 'Narrator', text: 'Morning. The girls are gone. The house is trashed.' },
-                  { speaker: 'JP\'s Mind', text: 'Why do I feel like shit right now.' },
-                  { speaker: 'JP\'s Mind', text: 'Post-nut clarity is a different kind of prison.' },
-                  { speaker: 'JP\'s Mind', text: 'These people don\'t actually mess with me.' },
-                  { speaker: 'JP\'s Mind', text: 'They mess with the bags. The free food. The DoorDash runs at 2am.' },
+                  { speaker: 'JP\'s Mind', text: 'They don\'t mess with me. They mess with the bags, the free food, the 2am DoorDash.' },
                   { speaker: 'JP\'s Mind', text: 'I\'m just the trapper with a credit card.' },
-                  { speaker: 'JP\'s Mind', text: 'Sheltered my whole life. Never learned how to impress anybody for real.' },
-                  { speaker: 'JP\'s Mind', text: 'I didn\'t even feel good doing none of it. I was just alone, misled, and wanted to look cool.' },
-                  { speaker: 'JP\'s Mind', text: 'K texted me four times.' },
-                  { speaker: 'JP\'s Mind', text: 'I can\'t even look at my phone right now.' },
+                  { speaker: 'JP\'s Mind', text: 'Alone, misled, and wanting to look cool. That was all of it.' },
+                  { speaker: 'JP\'s Mind', text: 'K texted four times. I can\'t even look at my phone.' },
                   { speaker: 'Narrator', text: 'Walk south to the street.' },
                 ], () => { this.frozen = false; });
               });

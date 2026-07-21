@@ -2378,12 +2378,9 @@ export class HomeScene extends BaseChapterScene {
           this.dialogue.show([
             { speaker: 'Nolan', text: 'Alright listen. We got this big house near campus right?' },
             { speaker: 'Nolan', text: 'David\'s already down here. Cooper too.' },
-            { speaker: 'Nolan', text: 'Terrell and Big Bart just locked in last week.' },
-            { speaker: 'Nolan', text: 'SBCC gives you something to start with. The beach is five minutes away.' },
-            { speaker: 'Nolan', text: 'Parties every weekend. Girls everywhere.' },
-            { speaker: 'Nolan', text: 'Rent split with the boys. New city. Whole different life.' },
-            { speaker: 'JP', text: '...' },
-            { speaker: 'JP', text: 'I\'m in.' },
+            { speaker: 'Nolan', text: 'SBCC to start, beach five minutes away, rent split with the boys.' },
+            { speaker: 'Nolan', text: 'New city. Whole different life.' },
+            { speaker: 'JP', text: '...I\'m in.' },
             { speaker: 'Nolan', text: 'THAT\'S WHAT I\'M TALKING ABOUT! Pack your shit bro.' },
           ], () => {
             this.requiredDone = true;
