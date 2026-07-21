@@ -664,15 +664,25 @@ export class ComeUpScene extends BaseChapterScene {
         });
         return;
       }
-      // Lar checks in on the second look — the duffel days went legit
+      // Second look: the real come-up — AI isn't paying yet, so it's reps
+      // with Lar and Higo barbacking to survive, and the old money still has
+      // JP's number. The chapter's whole thesis is the text he doesn't send.
       if (!this.larTexted) {
         this.larTexted = true;
         this.frozen = true;
         this.dialogue.show([
+          { speaker: 'Narrator', text: 'Unknown number. JP knows the number.' },
+          { speaker: '???', text: '"heard you\'re home. same lick still open. easy money, one call. you in?"' },
+          { speaker: 'JP\'s Mind', text: 'I know exactly how to run it. My thumb just sits on the reply.' },
+          { speaker: 'JP\'s Mind', text: 'The reps barely cover rent. The computers pay even less. This fixes everything by Friday.' },
+          { speaker: 'JP', text: '"wrong number."' },
+          { speaker: 'JP\'s Mind', text: 'Nobody saw me not do it. That\'s the part that counts — the ones nobody\'s watching.' },
           { speaker: 'Narrator', text: 'New text. Lar.' },
-          { speaker: 'Lar', text: '"bro guess who got a plug on clubs now. LEGIT clubs. golf."' },
-          { speaker: 'Lar', text: '"from duffel bags to pro shops. proud of us gang."' },
-          { speaker: 'JP\'s Mind', text: 'Everybody from the mud finding a legal hustle. Nobody planned it. Everybody did it.' },
+          { speaker: 'Lar', text: '"fresh duffel of designer came in. you still movin or too deep on them computers lol"' },
+          { speaker: 'JP', text: '"Both. Rent don\'t care which one pays."' },
+          { speaker: 'Lar', text: '"beats the old shit. don\'t gotta watch the mirror no more 🙏"' },
+          { speaker: 'Higo', text: '"pulled a double barbacking. hands smell like bleach n lime. still up tho 🍋"' },
+          { speaker: 'JP\'s Mind', text: 'Replica designer out a duffel. Higo barbacking doubles. Me on a laptop that hasn\'t made a dollar. All of it broke. None of it dirty.' },
         ], () => {
           this.frozen = false;
           this.showPhoneApps();

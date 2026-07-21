@@ -2392,12 +2392,14 @@ export class JailScene extends BaseChapterScene {
     type BattleState = 'intro' | 'menu' | 'player-action' | 'enemy-action' | 'text' | 'end';
     let state: BattleState = 'intro';
     let jpHP = 100;
-    let enemyHP = 80;
+    let enemyHP = 110;
     const jpMaxHP = 100;
-    const enemyMaxHP = 80;
-    let menuIndex = 0; // 0=SWING, 1=DODGE, 2=TALK, 3=WALK AWAY
-    let dodgeActive = false;
-    let talkDebuff = false; // reduces enemy attack by 5
+    const enemyMaxHP = 110;
+    let menuIndex = 0; // 0=SWING 1=BLOCK 2=DODGE 3=TAUNT
+    let enemyTell: 'heavy' | 'fast' = 'heavy'; // Juan telegraphs; read it
+    let counterReady = false; // a correct BLOCK/DODGE opens a counter
+    let comboCount = 0; // consecutive clean counters -> finisher
+    let forceHeavyNext = false; // TAUNT bait -> predictable next tell
     let inputEnabled = false;
     let swingsLanded = 0;
     let crewIntervened = false;
@@ -2442,8 +2444,7 @@ export class JailScene extends BaseChapterScene {
           ease: 'Quad.easeOut',
           onComplete: () => {
             introBottom.destroy();
-            state = 'menu';
-            inputEnabled = true;
+            openMenu();
           },
         });
       },
@@ -2565,7 +2566,7 @@ export class JailScene extends BaseChapterScene {
       .setScrollFactor(0).setDepth(DEPTH + 10).setStrokeStyle(2, 0x404058);
     objects.push(textBoxInner);
 
-    const battleText = this.add.text(40, menuY + 30, 'An inmate steps to JP.\n"You think you\'re tough?"', {
+    const battleText = this.add.text(40, menuY + 30, 'Juan\'s still swinging on Bird. He turns and sees JP.\n"You wanna be a hero, fade?"', {
       fontFamily: FONT, fontSize: '13px', color: '#ffffff',
       wordWrap: { width: GAME_WIDTH / 2 - 80 }, lineSpacing: 8,
     }).setScrollFactor(0).setDepth(DEPTH + 11);
@@ -2581,7 +2582,7 @@ export class JailScene extends BaseChapterScene {
     objects.push(menuBoxInner);
 
     // Menu options in 2x2 grid
-    const menuOptions = ['SWING', 'DODGE', 'TALK', 'WALK AWAY'];
+    const menuOptions = ['SWING', 'BLOCK', 'DODGE', 'TAUNT'];
     const menuBaseX = GAME_WIDTH / 2 + 60;
     const menuBaseY = menuY + 50;
     const menuColGap = 260;
@@ -2744,197 +2745,171 @@ export class JailScene extends BaseChapterScene {
     };
 
     // === ENEMY TURN ===
-    const enemyTurn = () => {
-      state = 'enemy-action';
-      inputEnabled = false;
+    // === TELL + MENU: read Juan, pick the right answer ===
+    const rollTell = () => {
+      if (forceHeavyNext) { enemyTell = 'heavy'; forceHeavyNext = false; return; }
+      enemyTell = Phaser.Math.Between(0, 1) === 0 ? 'heavy' : 'fast';
+    };
 
-      if (dodgeActive) {
-        // Inmate swings and misses
-        this.tweens.add({
-          targets: enemySprite,
-          x: enemySpriteBaseX + 120,
-          duration: 200,
-          yoyo: true,
-          ease: 'Quad.easeOut',
-        });
-        dodgeActive = false;
-        showText('Inmate swings... and misses!', () => {
-          if (enemyHP <= 0) { endBattle(true); return; }
-          state = 'menu';
-          inputEnabled = true;
-          battleText.setText('What will JP do?');
-        });
-        return;
-      }
+    const openMenu = () => {
+      if (enemyHP <= 0) { endBattle(true); return; }
+      if (jpHP <= 0) { endBattle(false); return; }
+      rollTell();
+      state = 'menu';
+      inputEnabled = true;
+      menuIndex = 0;
+      updateMenu();
+      battleText.setText(
+        enemyTell === 'heavy'
+          ? 'Juan cocks back — slow and heavy.   ▸ BLOCK'
+          : 'Juan’s hands turn quick and light.   ▸ DODGE'
+      );
+    };
 
-      // Inmate attacks
-      let damage = Phaser.Math.Between(10, 20);
-      if (talkDebuff) {
-        damage = Math.max(5, damage - 5);
-      }
+    // Apply Juan’s telegraphed shot. reduction = fraction of damage that lands.
+    const juanHits = (reduction: number, flavor: string, opensCounter: boolean) => {
+      const base = enemyTell === 'heavy' ? Phaser.Math.Between(22, 30) : Phaser.Math.Between(12, 18);
+      const dmg = Math.round(base * reduction);
 
-      // Enemy lunge animation
+      const resolve = () => {
+        if (opensCounter) counterReady = true;
+        // Homie protection payoff: fed the crew + stood up = they stop a jump.
+        if (jpHP > 0 && jpHP <= 30 && !this.crewSaveUsed
+            && ChoiceLedger.get('commissary_share') === 'Shared it'
+            && swingsLanded >= 2) {
+          this.crewSaveUsed = true;
+          crewIntervened = true;
+          state = 'player-action';
+          inputEnabled = false;
+          showText('A second inmate starts in from JP’s blind side.', () => {
+            showText('Mikey grabs him. Chris and Bird fill the space.', () => {
+              showText('"He stood up. He eats with us. This ain’t a jump."', () => {
+                endBattle(true);
+              });
+            });
+          });
+          return;
+        }
+        if (jpHP <= 0) { endBattle(false); return; }
+        openMenu();
+      };
+
+      if (dmg <= 0) { showText(flavor, resolve); return; }
+
+      comboCount = 0; // taking a real hit breaks the combo
       this.tweens.add({
         targets: enemySprite,
         x: enemySpriteBaseX + 180,
         y: enemySpriteBaseY + 80,
-        duration: 250,
+        duration: 220,
         ease: 'Quad.easeIn',
         onComplete: () => {
-          // Hit JP
           flashSprite(jpSprite);
-          screenShake(damage > 15);
-          jpHP -= damage;
+          screenShake(dmg > 18);
+          jpHP = Math.max(0, jpHP - dmg);
           updateJPHP();
-
-          // Enemy returns
           this.tweens.add({
             targets: enemySprite,
             x: enemySpriteBaseX,
             y: enemySpriteBaseY,
-            duration: 300,
+            duration: 280,
             ease: 'Quad.easeOut',
           });
+          showText(flavor + '  (-' + dmg + ')', resolve);
+        },
+      });
+    };
 
-          showText(`Inmate swings! JP takes ${damage} damage!`, () => {
-            // Yard protection is earned twice: JP fed the crew and proved he
-            // would stand up for himself. They stop a jump, not a fair fade.
-            if (jpHP > 0 && jpHP <= 30 && !this.crewSaveUsed
-                && ChoiceLedger.get('commissary_share') === 'Shared it'
-                && swingsLanded >= 2) {
-              this.crewSaveUsed = true;
-              crewIntervened = true;
-              state = 'player-action';
-              inputEnabled = false;
-              showText('A second inmate starts in from JP\'s blind side.', () => {
-                showText('Mikey grabs him. Chris and Bird fill the space.', () => {
-                  showText('"He stood up. He eats with us. This ain\'t a jump."', () => {
-                    endBattle(true);
-                  });
-                });
-              });
-              return;
-            }
-            if (jpHP <= 0) { endBattle(false); return; }
-            state = 'menu';
-            inputEnabled = true;
-            battleText.setText('What will JP do?');
+    // === PLAYER MOVES ===
+    const doSwing = () => {
+      ChoiceLedger.record('jail_fight', 'Fought');
+      state = 'player-action';
+      inputEnabled = false;
+
+      let dmg = Phaser.Math.Between(12, 18);
+      let label = 'JP swings';
+      if (counterReady) {
+        dmg = Math.round(dmg * 2);
+        counterReady = false;
+        comboCount++;
+        label = 'Counter';
+      } else {
+        comboCount = 0; // no opening -> no combo, and Juan’s shot still lands
+      }
+      if (comboCount >= 3) {
+        dmg += Phaser.Math.Between(16, 22);
+        comboCount = 0;
+        label = 'COMBO FINISHER';
+      }
+
+      this.tweens.add({
+        targets: jpSprite,
+        x: jpSpriteBaseX - 180,
+        y: jpSpriteBaseY - 80,
+        duration: 220,
+        ease: 'Quad.easeIn',
+        onComplete: () => {
+          flashSprite(enemySprite);
+          screenShake(dmg > 20);
+          enemyHP = Math.max(0, enemyHP - dmg);
+          swingsLanded++;
+          updateEnemyHP();
+          this.tweens.add({
+            targets: jpSprite,
+            x: jpSpriteBaseX,
+            y: jpSpriteBaseY,
+            duration: 280,
+            ease: 'Quad.easeOut',
+          });
+          showText(label + '! (-' + dmg + ')', () => {
+            if (enemyHP <= 0) { endBattle(true); return; }
+            // A swing is not a defense — Juan lands his telegraphed shot in full.
+            juanHits(1.0, enemyTell === 'heavy' ? 'Juan’s haymaker lands' : 'Juan’s flurry catches JP', false);
           });
         },
       });
     };
 
-    // === PLAYER ACTIONS ===
-    const doSwing = () => {
-      ChoiceLedger.record('jail_fight', 'Fought');
+    const doBlock = () => {
       state = 'player-action';
       inputEnabled = false;
-      dodgeActive = false;
-
-      const damage = Phaser.Math.Between(15, 25);
-
-      // JP lunge animation
-      this.tweens.add({
-        targets: jpSprite,
-        x: jpSpriteBaseX - 180,
-        y: jpSpriteBaseY - 80,
-        duration: 250,
-        ease: 'Quad.easeIn',
-        onComplete: () => {
-          flashSprite(enemySprite);
-          screenShake(damage > 20);
-          enemyHP -= damage;
-          swingsLanded++;
-          updateEnemyHP();
-
-          // JP returns
-          this.tweens.add({
-            targets: jpSprite,
-            x: jpSpriteBaseX,
-            y: jpSpriteBaseY,
-            duration: 300,
-            ease: 'Quad.easeOut',
-          });
-
-          showText(`JP swings! Hit for ${damage} damage!`, () => {
-            if (enemyHP <= 0) { endBattle(true); return; }
-            enemyTurn();
-          });
-        },
-      });
+      this.tweens.add({ targets: jpSprite, scaleX: jpSprite.scaleX * 0.9, duration: 120, yoyo: true });
+      if (enemyTell === 'heavy') {
+        showText('JP tucks up and takes it on the arms.', () => {
+          juanHits(0.15, 'The haymaker glances off — Juan’s wide open', true);
+        });
+      } else {
+        showText('JP blocks — but the quick shots go around it.', () => {
+          juanHits(0.6, 'The flurry slips through the guard', false);
+        });
+      }
     };
 
     const doDodge = () => {
       state = 'player-action';
       inputEnabled = false;
-      dodgeActive = true;
-
-      // JP shifts sideways
-      this.tweens.add({
-        targets: jpSprite,
-        x: jpSpriteBaseX + 50,
-        duration: 200,
-        yoyo: true,
-        ease: 'Sine.easeInOut',
-      });
-
-      showText('JP braces and dodges!', () => {
-        enemyTurn();
-      });
-    };
-
-    const doTalk = () => {
-      state = 'player-action';
-      inputEnabled = false;
-      dodgeActive = false;
-
-      // Talk NEVER works in jail — you get slapped for trying
-      showText('JP: "Bro we don\'t gotta do this—"', () => {
-        showText('That gay ass shit don\'t work in here.', () => {
-          // Enemy gets a FREE hit — bitch slap
-          const slapDmg = 20;
-          jpHP = Math.max(0, jpHP - slapDmg);
-          updateJPHP();
-
-          // Slap animation
-          this.cameras.main.shake(300, 0.015);
-          const flash = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0xffffff)
-            .setScrollFactor(0).setDepth(710).setAlpha(0.4);
-          this.tweens.add({
-            targets: flash,
-            alpha: 0,
-            duration: 200,
-            onComplete: () => flash.destroy(),
-          });
-
-          showText(`Inmate slaps JP! ${slapDmg} damage!\n"I SAID DON'T TALK TO ME."`, () => {
-            if (jpHP <= 0) {
-              endBattle(false);
-            } else {
-              enemyTurn();
-            }
-          });
-        });
-      });
-    };
-
-    const doWalkAway = () => {
-      ChoiceLedger.record('jail_fight', 'Walked away');
-      state = 'player-action';
-      inputEnabled = false;
-      dodgeActive = false;
-
-      if (enemyHP > 50) {
-        showText("The inmate blocks the way.\nYou can't leave yet.", () => {
-          state = 'menu';
-          inputEnabled = true;
-          battleText.setText('What will JP do?');
+      this.tweens.add({ targets: jpSprite, x: jpSpriteBaseX + 50, duration: 180, yoyo: true, ease: 'Sine.easeInOut' });
+      if (enemyTell === 'fast') {
+        showText('JP slips the flurry clean.', () => {
+          juanHits(0, 'Nothing lands — JP’s already gone, Juan’s open', true);
         });
       } else {
-        showText('JP walks away. Not worth it.', () => {
-          endBattle(true);
+        showText('JP ducks the wrong way.', () => {
+          juanHits(0.7, 'Juan read the dodge — the haymaker follows', false);
         });
       }
+    };
+
+    const doTaunt = () => {
+      state = 'player-action';
+      inputEnabled = false;
+      showText('JP: "That all you got, barber?"', () => {
+        showText('Juan’s eyes go red. Sloppy now — but he clips JP first.', () => {
+          counterReady = true;   // bait sets up a punish
+          forceHeavyNext = true; // and a readable heavy next round
+          juanHits(0.3, 'A wild shot grazes JP', false);
+        });
+      });
     };
 
     // === END BATTLE ===
@@ -3039,7 +3014,8 @@ export class JailScene extends BaseChapterScene {
           'JP hits the ground.',
           'Guard: "BREAK IT UP!"',
           'Guard: "Both of you. Against the wall. Now."',
-          "JP's Mind: He gets up angrier than before.",
+          'They rolled JP\'s bunk that night. Commissary gone.',
+          "JP's Mind: Word travels fast in here. Everybody saw it.",
         ], () => {
           cleanupBattle();
         });
@@ -3136,9 +3112,9 @@ export class JailScene extends BaseChapterScene {
 
       switch (menuIndex) {
         case 0: doSwing(); break;
-        case 1: doDodge(); break;
-        case 2: doTalk(); break;
-        case 3: doWalkAway(); break;
+        case 1: doBlock(); break;
+        case 2: doDodge(); break;
+        case 3: doTaunt(); break;
       }
     };
 
