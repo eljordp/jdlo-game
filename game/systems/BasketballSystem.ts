@@ -73,10 +73,21 @@ export class BasketballSystem {
     let blockHandler: (() => void) | null = null;
     const timers: Phaser.Time.TimerEvent[] = [];
 
+    // Mobile has no keyboard: a screen tap routes to whichever action is live
+    // (shoot or block), skipping the EXIT button so it keeps its own tap.
+    const onTap = (_p: Phaser.Input.Pointer, over_: Phaser.GameObjects.GameObject[]) => {
+      if (over) return;
+      if (over_ && over_.indexOf(exitBtn) !== -1) return;
+      if (shotHandler) shotHandler();
+      else if (blockHandler) blockHandler();
+    };
+    scene.input.on('pointerdown', onTap);
+
     const cleanup = () => {
       over = true;
       if (shotHandler) spaceKey.off('down', shotHandler);
       if (blockHandler) spaceKey.off('down', blockHandler);
+      scene.input.off('pointerdown', onTap);
       timers.forEach(t => t.remove());
       objects.forEach(o => { scene.tweens.killTweensOf(o); o.destroy(); });
     };
@@ -114,7 +125,7 @@ export class BasketballSystem {
     const jpPossession = () => {
       if (over) return;
       possessionActive = true;
-      promptText.setText('SPACE to shoot — stop it in the green');
+      promptText.setText('SPACE / TAP to shoot — stop it in the green');
 
       const barW = 260;
       const barY = GAME_HEIGHT - 110;
@@ -166,7 +177,7 @@ export class BasketballSystem {
     const popsPossession = () => {
       if (over) return;
       possessionActive = true;
-      promptText.setText('SPACE on the "!" to block');
+      promptText.setText('SPACE / TAP on the "!" to block');
       ball.setPosition(cx - 40, groundY - 30);
 
       // Pops dribbles
