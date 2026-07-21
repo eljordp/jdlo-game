@@ -51,8 +51,10 @@ export class DialogueSystem {
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
 
-    // Build the UI — all positioned relative to container
-    const boxY = GAME_HEIGHT - 150;
+    // Build the UI — all positioned relative to container.
+    // Lifted off the very bottom edge so it clears the mobile browser bottom bar
+    // / home-indicator, which was rendering the box invisible on phones.
+    const boxY = GAME_HEIGHT - 230;
 
     this.container = scene.add.container(0, boxY);
     this.container.setDepth(1000);
