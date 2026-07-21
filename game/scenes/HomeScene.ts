@@ -3454,7 +3454,7 @@ export class HomeScene extends BaseChapterScene {
   private playLiftingMinigame() {
     const objects: Phaser.GameObjects.GameObject[] = [];
     let reps = 0;
-    let timeLeft = 20;
+    let timeLeft = 10;
     let gameOver = false;
     // Form system: pacing beats mashing. Greed tears your form.
     let formLevel = 0;
@@ -3536,7 +3536,7 @@ export class HomeScene extends BaseChapterScene {
     // Countdown timer
     const countdown = this.time.addEvent({
       delay: 1000,
-      repeat: 19,
+      repeat: 9,
       callback: () => {
         timeLeft--;
         timerText.setText(String(timeLeft));
