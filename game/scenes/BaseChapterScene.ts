@@ -99,12 +99,22 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     // Analytics
     Analytics.trackChapterStart(this.scene.key);
 
-    // Milestone celebrations
-    BalanceSystem.attachScene(this);
+    // Milestone / badge helpers should never block a chapter from booting.
+    // Production bundles have surfaced cases where an optional helper import
+    // is unavailable during the first scene handoff; the player should reach
+    // the map even if a toast system misses its scene reference.
+    try {
+      BalanceSystem?.attachScene?.(this);
+    } catch (error) {
+      console.warn('BalanceSystem attach skipped', error);
+    }
 
-    // Achievement system
-    AchievementSystem.attachScene(this);
-    AchievementSystem.resetChapterTrackers();
+    try {
+      AchievementSystem?.attachScene?.(this);
+      AchievementSystem?.resetChapterTrackers?.();
+    } catch (error) {
+      console.warn('AchievementSystem attach skipped', error);
+    }
 
     // Clean up previous nav arrows
     for (const tween of this.navArrowTweens) tween.stop();
@@ -1484,13 +1494,28 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     // speaker appear, but the actual line remains blank across every chapter.
     this.dialogue.update(_time, _delta);
 
-    // Update mood system every frame (particles, effects, timer)
-    MoodSystem.update(this, this.player);
-    SubstanceSystem.update(_delta);
+    // Update mood/substance helpers every frame. These are visual/progression
+    // helpers, not scene-critical; if a circular helper import regresses in a
+    // bundled build, do not black-screen the chapter.
+    try {
+      MoodSystem.update(this, this.player);
+    } catch (error) {
+      console.warn('MoodSystem update skipped', error);
+    }
+
+    try {
+      SubstanceSystem?.update?.(_delta);
+    } catch (error) {
+      console.warn('SubstanceSystem update skipped', error);
+    }
 
     // Achievement tracking: faded timer + money milestones
-    AchievementSystem.updateFadedTimer(_delta, MoodSystem.isFaded());
-    AchievementSystem.checkMoneyAchievements(BalanceSystem.getBalance());
+    try {
+      AchievementSystem?.updateFadedTimer?.(_delta, MoodSystem.isFaded());
+      AchievementSystem?.checkMoneyAchievements?.(BalanceSystem.getBalance());
+    } catch (error) {
+      console.warn('Achievement tracking skipped', error);
+    }
 
     // NPC nudge system — throttled to every 1s
     this.nudgeCheckAccum += _delta;
@@ -1589,7 +1614,14 @@ export abstract class BaseChapterScene extends Phaser.Scene {
     if (targetTileX < 0 || targetTileX >= this.mapWidth || targetTileY < 0 || targetTileY >= this.mapHeight) return;
 
     // Stumble check — drunk/high causes random movement interrupts
-    if (SubstanceSystem.shouldStumble()) {
+    let shouldStumble = false;
+    try {
+      shouldStumble = SubstanceSystem?.shouldStumble?.() ?? false;
+    } catch (error) {
+      console.warn('Substance stumble skipped', error);
+    }
+
+    if (shouldStumble) {
       this.isMoving = true;
       this.time.delayedCall(300, () => {
         this.isMoving = false;

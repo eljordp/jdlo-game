@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { GameIntelligence } from './GameIntelligence';
+import { SubstanceSystem } from './SubstanceSystem';
 
 // ── Mood Types ───────────────────────────────────────────────────
 
@@ -399,13 +400,11 @@ export class MoodSystem {
   // Extra visuals driven by SubstanceSystem that layer on mood effects
 
   private static updateSubstanceOverlay(scene: Phaser.Scene, player: Phaser.GameObjects.Sprite, delta: number): void {
-    // Import inline to avoid circular dependency
-    const { SubstanceSystem } = require('./SubstanceSystem');
-
-    const drunkLevel = SubstanceSystem.getDrinkLevel();
-    const highLevel = SubstanceSystem.getHighLevel();
-    const crossfaded = SubstanceSystem.isCrossfaded();
-    const postNut = SubstanceSystem.isPostNut();
+    const substance = SubstanceSystem as typeof SubstanceSystem | undefined;
+    const drunkLevel = substance?.getDrinkLevel?.() ?? 'sober';
+    const highLevel = substance?.getHighLevel?.() ?? 'sober';
+    const crossfaded = substance?.isCrossfaded?.() ?? false;
+    const postNut = substance?.isPostNut?.() ?? false;
 
     // Drunk camera tilt — screen rotates slightly back and forth
     if (drunkLevel === 'drunk' || drunkLevel === 'wasted' || drunkLevel === 'blacked_out') {

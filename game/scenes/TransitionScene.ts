@@ -83,10 +83,16 @@ export class TransitionScene extends Phaser.Scene {
           alpha: 0,
           duration: 600,
           onComplete: () => {
-            this.cameras.main.fadeOut(400, 0, 0, 0);
-            this.cameras.main.once('camerafadeoutcomplete', () => {
+            let started = false;
+            const goNext = () => {
+              if (started) return;
+              started = true;
               this.scene.start(nextScene);
-            });
+            };
+
+            this.cameras.main.fadeOut(400, 0, 0, 0);
+            this.cameras.main.once('camerafadeoutcomplete', goNext);
+            this.time.delayedCall(550, goNext);
           },
         });
       });
