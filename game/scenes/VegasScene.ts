@@ -841,11 +841,9 @@ export class VegasScene extends Phaser.Scene {
                 : 'Some became work. Others stayed Vegas talk.',
           215, { size: '9px', color: '#c8b890', delay: 1650 },
         );
-        this.showText('The point was not that JP had become one of them overnight.', 262, { size: '11px', delay: 2400 });
-        this.showText('The point was that the ceiling moved again.', 315, { size: '12px', color: '#f0c040', delay: 3100 });
-        this.showText('Now he knew those rooms were real.', 365, { size: '11px', color: '#d4c4d6', delay: 3800 });
-        this.showText('The old JP would have posted every second of this weekend. The phone stayed in his pocket.', 420, { size: '9px', color: '#b8a888', delay: 4700 });
-        this.showContinue(6400);
+        this.showText('The ceiling moved again.', 285, { size: '12px', color: '#f0c040', delay: 2600 });
+        this.showText('The old JP would have posted every second. The phone stayed in his pocket.', 345, { size: '9px', color: '#b8a888', delay: 3500 });
+        this.showContinue(5200);
         break;
       }
       default: {

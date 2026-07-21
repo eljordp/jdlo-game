@@ -377,8 +377,7 @@ export class ComeUpScene extends BaseChapterScene {
             onComplete: () => {
               // Update dialogue
               ghost.dialogue = [
-                { speaker: 'Narrator', text: 'He\'s gone. Some people just waste your time.' },
-                { speaker: 'JP\'s Mind', text: 'Learn to spot them.' },
+                { speaker: 'Narrator', text: 'He\'s gone. Same as always.' },
               ];
             },
           });
@@ -551,12 +550,11 @@ export class ComeUpScene extends BaseChapterScene {
       const birdLetter: DialogueLine[] = this.birdLetterRead ? [] : [
         { speaker: 'Narrator', text: 'Under the Red Bull can — an envelope. State-stamped. Bird.' },
         { speaker: 'Bird', text: '"Heard from Mikey you out there building. Websites and all that."' },
-        { speaker: 'Bird', text: '"Third time I watched somebody leave and come back. Don\'t be the fourth. Don\'t waste it."' },
+        { speaker: 'Bird', text: '"Don\'t be the fourth one I watch come back."' },
         ...(ChoiceLedger.get('commissary_share') === 'Shared it'
-          ? [{ speaker: 'Bird', text: '"P.S. Nobody in here shares the bag no more. Block ain\'t been the same."' }]
+          ? [{ speaker: 'Bird', text: '"P.S. Block ain\'t been the same since you shared the bag."' }]
           : []),
-        { speaker: 'JP\'s Mind', text: 'Bird\'s still in there. I\'m out here.' },
-        { speaker: 'JP\'s Mind', text: 'That\'s the whole reason to keep typing.' },
+        { speaker: 'JP\'s Mind', text: 'Bird\'s still in there. I keep typing.' },
       ];
       this.birdLetterRead = true;
       this.dialogue.show([

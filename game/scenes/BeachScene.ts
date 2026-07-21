@@ -925,28 +925,23 @@ export class BeachScene extends BaseChapterScene {
             appObjects.forEach((object) => object.destroy());
 
             this.dialogue.show([
-              { speaker: 'JP\'s Mind', text: 'Five racks in. Half of everything I saved from work.' },
-              { speaker: 'JP\'s Mind', text: 'It ran to forty. ETH. SOL. Then NFTs on top. I never took a dollar off the table.' },
+              { speaker: 'JP\'s Mind', text: 'Five racks in. It ran to forty. I never took a dollar off the table.' },
               { speaker: 'JP\'s Mind', text: 'First time trading. I thought I understood it.' },
-              { speaker: 'JP\'s Mind', text: 'Mom had a plan for every year of my life. This was the first one that was mine.' },
               { speaker: 'Narrator', text: 'JP moved the whole portfolio into LUNA.' },
-              { speaker: 'Narrator', text: 'Then LUNA went to zero. The NFTs died the same week.' },
-              { speaker: 'Narrator', text: 'Everything. All at once.' },
+              { speaker: 'Narrator', text: 'Then LUNA went to zero. The NFTs died with it.' },
               { speaker: 'JP\'s Mind', text: '...' },
               { speaker: 'JP\'s Mind', text: 'Everything I had. Gone.' },
-              { speaker: 'JP\'s Mind', text: 'The first plan I ever picked for myself.' },
               { speaker: 'JP\'s Mind', text: 'I am not starting over from zero.' },
               { speaker: 'Narrator', text: 'His eyes move from the red screen to the phone.' },
             ], () => {
               ClosetStore.seedCrashCloset();
               this.dialogue.show([
-                { speaker: 'JP\'s Mind', text: 'Rent\'s due. Books are empty. But the closet isn\'t.' },
-                { speaker: 'Narrator', text: 'Sp5der. BAPE. The Supreme box logo. All of it about to become grocery money.' },
+                { speaker: 'JP\'s Mind', text: 'Rent\'s due. Books are empty. The closet isn\'t.' },
+                { speaker: 'Narrator', text: 'Sp5der. BAPE. Supreme. Grocery money now.' },
               ], () => {
                 ClosetStore.open(this, 'sell', ClosetStore.owned, () => {
                   this.dialogue.show([
-                    { speaker: 'JP\'s Mind', text: 'Sold my whole flex for pennies on the dollar. That\'s what broke feels like.' },
-                    { speaker: 'JP\'s Mind', text: 'Never again. I\'ll make it back. All of it.' },
+                    { speaker: 'JP\'s Mind', text: 'Sold the flex for pennies. Never again.' },
                   ], () => { this.frozen = false; this.maybeAutoPlugCall(); });
                 });
               });
@@ -1197,8 +1192,7 @@ export class BeachScene extends BaseChapterScene {
             }
 
             this.dialogue.show([
-              { speaker: 'Narrator', text: 'The 335i climbs past the city lights.' },
-              { speaker: 'Narrator', text: 'Farm road. No streetlights. Nobody to explain this to.' },
+              { speaker: 'Narrator', text: 'Farm road. No streetlights.' },
               { speaker: 'Narrator', text: 'One porch light on. She\'s already outside. She was never not going to be.' },
               { speaker: 'Nikki\'s Mom', text: this.choiceHesitated ? 'I almost called somebody else.' : 'You understand this stays between us.' },
               ...(this.choiceHesitated ? [{ speaker: 'JP', text: 'I came.' }] : []),
@@ -1242,8 +1236,7 @@ export class BeachScene extends BaseChapterScene {
                     { speaker: 'JP', text: 'BART. Keep your voice down.' },
                     { speaker: 'Big Bart', text: '*whisper* YOOOO IS THAT—' },
                     { speaker: 'Narrator', text: 'One fronted bag on the living-room floor.' },
-                    { speaker: 'JP\'s Mind', text: 'It did not look like a life yet.' },
-                    { speaker: 'JP\'s Mind', text: 'It looked like a way to stop being at zero.' },
+                    { speaker: 'JP\'s Mind', text: 'Not a life yet. Just a way back.' },
                   ], () => {
                     this.frozen = false;
                     this.spawnDynamicInteractable('ch1_kitchen_sesh', 28, 6, 'item-weed-bag');
@@ -1465,9 +1458,8 @@ export class BeachScene extends BaseChapterScene {
               this.time.delayedCall(400, () => {
                 this.dialogue.show([
                   { speaker: 'Narrator', text: 'Morning. The girls are gone. The house is trashed.' },
-                  { speaker: 'JP\'s Mind', text: 'They don\'t mess with me. They mess with the bags, the free food, the 2am DoorDash.' },
-                  { speaker: 'JP\'s Mind', text: 'I\'m just the trapper with a credit card.' },
-                  { speaker: 'JP\'s Mind', text: 'Alone, misled, and wanting to look cool. That was all of it.' },
+                  { speaker: 'JP\'s Mind', text: 'They mess with the bags, the food, the 2 AM DoorDash.' },
+                  { speaker: 'JP\'s Mind', text: 'Not me. Not really.' },
                   { speaker: 'JP\'s Mind', text: 'K texted four times. I can\'t even look at my phone.' },
                   { speaker: 'Narrator', text: 'Walk south to the street.' },
                 ], () => { this.frozen = false; });

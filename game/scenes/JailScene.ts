@@ -1178,10 +1178,9 @@ export class JailScene extends BaseChapterScene {
       this.frozen = true;
       this.dialogue.show([
         { speaker: 'Narrator', text: 'JP sits on his bunk with a pen and paper.' },
-        { speaker: 'Narrator', text: 'He writes: "Hey Pops. I\'m okay. I\'m reading a lot."' },
-        { speaker: 'Narrator', text: '"Tell Mom I\'m sorry. Tell Sister I\'ll be home soon."' },
-        { speaker: 'Narrator', text: '"I\'m going to be different when I get out. I promise."' },
-        { speaker: 'JP\'s Mind', text: 'He folds it. Holds it for a minute before putting it in the envelope.' },
+        { speaker: 'Narrator', text: 'He writes: "I\'m okay. Tell Mom I\'m sorry."' },
+        { speaker: 'Narrator', text: '"I\'m going to be different when I get out."' },
+        { speaker: 'JP\'s Mind', text: 'He holds the page before sealing it.' },
       ], () => {
         InventorySystem.addItem('letter', 1);
         MoodSystem.changeMorale(10);
@@ -1210,11 +1209,9 @@ export class JailScene extends BaseChapterScene {
       this.dialogue.show([
         { speaker: 'Narrator', text: 'JP sits in the corner of the yard. Alone.' },
         { speaker: 'Narrator', text: 'He closes his eyes.' },
-        { speaker: 'JP\'s Mind', text: 'God, I know you can hear me.' },
-        { speaker: 'JP\'s Mind', text: 'I know I messed up. Bad.' },
-        { speaker: 'JP\'s Mind', text: 'I just need one more chance.' },
-        { speaker: 'JP\'s Mind', text: 'I\'ll do it right this time.' },
-        { speaker: 'Narrator', text: 'The yard is quiet. For the first time, so is his mind.' },
+        { speaker: 'JP\'s Mind', text: 'I can\'t come back here.' },
+        { speaker: 'JP\'s Mind', text: 'Not like them. Not again.' },
+        { speaker: 'Narrator', text: 'The yard is quiet. For once, so is his mind.' },
       ], () => {
         this.faithDone = true;
         MoodSystem.setMood('locked_in', 90);

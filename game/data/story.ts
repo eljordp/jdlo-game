@@ -2320,10 +2320,8 @@ const ch3Day3Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'Strong. Healthy. Clear-eyed. Ready.' },
   ],
   ch3_faith: [
-    { speaker: 'JP\'s Mind', text: 'Most people don\'t make it out of this situation.' },
-    { speaker: 'JP\'s Mind', text: 'I don\'t know anyone that did.' },
-    { speaker: 'JP\'s Mind', text: 'I need to rededicate my life to having faith. That\'s all I got right now.' },
-    { speaker: 'JP\'s Mind', text: 'He knows that.' },
+    { speaker: 'JP\'s Mind', text: 'Most people don\'t make it out different.' },
+    { speaker: 'JP\'s Mind', text: 'I have to.' },
   ],
   ch3_anger_management: [
     { speaker: 'JP\'s Mind', text: 'Anger management class. JP used to think it was bullshit.' },
@@ -2339,22 +2337,19 @@ const ch4Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'Six months ago I was in a cell. Now I\'m clearing land in Napa Valley. I\'ll take it.' },
   ],
   ch4_vines: [
-    { speaker: 'JP\'s Mind', text: 'Caymus grows some of the best Cabernet in Napa. And I\'m here mowing their lawn.' },
-    { speaker: 'JP\'s Mind', text: 'Funny thing. Pops bought his own vineyard with the college money I never spent.' },
-    { speaker: 'JP\'s Mind', text: 'My tuition is growing grapes somewhere. And I\'m out here working somebody else\'s rows.' },
-    { speaker: 'JP\'s Mind', text: 'But you know what — somebody built this vineyard from nothing too. Dirt and a vision. That\'s it.' },
+    { speaker: 'JP\'s Mind', text: 'Cabernet rows. Napa dirt. Honest work.' },
+    { speaker: 'JP\'s Mind', text: 'Pops bought his own vineyard with the college money I never spent.' },
   ],
   ch4_ai_discovery: [
-    { speaker: 'JP\'s Mind', text: 'I just typed a question into ChatGPT and it gave me a full answer. Like a person. But instant.' },
-    { speaker: 'JP\'s Mind', text: 'I asked it to explain HTML like I\'m five and it did. Then I asked it to write me a website and it DID.' },
+    { speaker: 'JP\'s Mind', text: 'I typed a question into ChatGPT. It answered like a person, but instant.' },
+    { speaker: 'JP\'s Mind', text: 'Then I asked it to write me a website.' },
     { speaker: 'Narrator', text: 'The shift ends in twenty minutes.' },
     { speaker: 'JP\'s Mind', text: 'One more question turns into ten.' },
     { speaker: 'JP\'s Mind', text: 'I do not know what this is yet. I just know I am not done.' },
   ],
   ch4_phone: [
-    { speaker: 'JP\'s Mind', text: 'Everyone else is on break scrolling Instagram. I\'m watching Wix tutorials.' },
-    { speaker: 'JP\'s Mind', text: 'They think I\'m crazy. Maybe I am. But I built my first page today. On a phone. On a lunch break. At a vineyard.' },
-    { speaker: 'JP\'s Mind', text: 'If that\'s crazy then I don\'t want to be sane.' },
+    { speaker: 'JP\'s Mind', text: 'Everyone else scrolls. I watch Wix tutorials.' },
+    { speaker: 'JP\'s Mind', text: 'First page built on a phone, on lunch, at a vineyard.' },
   ],
   ch4_sunrise: [
     { speaker: 'JP\'s Mind', text: '5:30 AM. Sun coming up over Napa Valley. This is honest.' },
@@ -2535,7 +2530,7 @@ const ch5Extras: Record<string, DialogueLine[]> = {
   ],
   ch5_dhl_showcase: [
     { speaker: 'JP\'s Mind', text: 'DHL Translator App. Built a translation tool for warehouse workers.' },
-    { speaker: 'JP\'s Mind', text: 'Serious environment. Real teams, real language gaps, real consequences when communication fails.' },
+    { speaker: 'JP\'s Mind', text: 'Real teams. Real language gaps. Real consequences.' },
   ],
   ch5_first_dollar: [
     { speaker: 'Narrator', text: 'Sticker Smith payment received.' },
@@ -2543,8 +2538,7 @@ const ch5Extras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'Now I have to make the work worth the trust.' },
   ],
   ch5_late_night: [
-    { speaker: 'JP\'s Mind', text: 'Everyone\'s asleep. I\'m shipping a client site. This is the grind they don\'t show.' },
-    { speaker: 'JP\'s Mind', text: '3 AM. Eyes burning. But the site is live. And the client doesn\'t know I just pulled an all-nighter for them.' },
+    { speaker: 'JP\'s Mind', text: '3 AM. Eyes burning. The client site goes live.' },
   ],
   ch5_review: [
     { speaker: 'Narrator', text: 'A client sends a short message: the build works.' },
@@ -2556,7 +2550,7 @@ const ch5Extras: Record<string, DialogueLine[]> = {
   ],
   ch5_dhl_building: [
     { speaker: 'JP\'s Mind', text: 'DHL warehouse. Shifts, scanners, loading lanes, and workers switching between languages.' },
-    { speaker: 'JP\'s Mind', text: 'The translator belongs here because the problem belongs here. This is operations, not a portfolio prop.' },
+    { speaker: 'JP\'s Mind', text: 'The translator belongs here because the problem belongs here.' },
   ],
   ch5_first_site: [
     { speaker: 'JP\'s Mind', text: 'One of JP\'s first websites.' },
@@ -3037,9 +3031,8 @@ const homeReturnExtras: Record<string, DialogueLine[]> = {
     { speaker: 'JP\'s Mind', text: 'Some things don\'t need to change.' },
   ],
   ch0_goodbye: [
-    { speaker: 'JP\'s Mind', text: 'Everything I built. Every 3 AM session. Every rejection. Every client.' },
-    { speaker: 'JP\'s Mind', text: 'It was all for this.' },
-    { speaker: 'JP\'s Mind', text: 'To come home and make Pops proud.' },
+    { speaker: 'JP\'s Mind', text: 'Every 3 AM. Every rejection. Every client.' },
+    { speaker: 'JP\'s Mind', text: 'All the way back home.' },
   ],
   ch0_crypto: [
     { speaker: 'JP\'s Mind', text: 'Crypto phase. That was a lifetime ago.' },

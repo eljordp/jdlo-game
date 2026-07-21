@@ -900,7 +900,7 @@ export class LAScene extends Phaser.Scene {
         this.showText('30th floor. Downtown LA.', 40, { size: '20px', color: '#8888cc', delay: 500 });
         const lateNightPressure = this.deliveryOrder === 'delivery-first'
           ? 'One window still lit at 2 AM.\nThat\'s JP. Another client needs an answer by nine.\nFrom up here you can\'t see Fairfield.\nThat\'s the point. That\'s also the problem.'
-          : 'One window still lit at 2 AM.\nThat\'s JP. Dinner ended; the delivery did not.\nFrom up here you can\'t see Fairfield.\nThat\'s the point. That\'s also the problem.';
+          : 'One window still lit at 2 AM.\nDinner ended. The delivery did not.\nFrom up here you can\'t see Fairfield.';
         this.showText(
           lateNightPressure,
           GAME_HEIGHT - 200,
