@@ -195,7 +195,8 @@ export class SpiralScene extends Phaser.Scene {
         this.text('The all-black 335i folds around a pole that was not moving.', 210, { size: '11px', color: '#aaaaaa', delay: 1400 });
         this.text('He walks away. The car does not.', 270, { size: '10px', color: '#9a9a9a', delay: 2400 });
         this.text('That was the night it started to unravel.', 325, { size: '10px', color: '#c0a0a0', delay: 3300 });
-        this.cont(4500);
+        this.text('He couldn\'t hear it yet. But the walls had already started moving in.', 372, { size: '9px', color: '#a08080', delay: 4200 });
+        this.cont(5400);
         break;
       }
 

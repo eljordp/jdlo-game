@@ -281,6 +281,11 @@ export const chapter1NPCs: NPCData[] = [
       { speaker: 'Big Bart', text: 'I already broke a chair. Don\'t tell Nolan.' },
       { speaker: 'JP', text: 'It\'s been one day, Bart.' },
       { speaker: 'Big Bart', text: 'AND IT\'S ALREADY THE BEST DAY OF MY LIFE!' },
+      { speaker: 'Big Bart', text: 'Real talk though — how you pull K AND the volleyball girl\'s asking about you?' },
+      { speaker: 'Big Bart', text: 'I been here one day and the only number I got was the pizza guy\'s.' },
+      { speaker: 'JP', text: 'You bear-hugged her first thing, Bart. Full body. No words.' },
+      { speaker: 'Big Bart', text: '...that\'s just how I say hi!' },
+      { speaker: 'JP\'s Mind', text: 'Bart\'s not jealous. Bart\'s just Bart. It\'s the ones who go quiet about it you gotta watch.' },
     ],
   },
   {
