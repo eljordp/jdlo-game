@@ -856,11 +856,64 @@ export class WeedRiseScene extends BaseChapterScene {
     this.dialogue.show([
       ...opening,
       { speaker: 'Narrator', text: 'People start calling JP before they call anyone else.' },
-      { speaker: 'JP\'s Mind', text: 'I am making it back.' },
-      { speaker: 'JP\'s Mind', text: 'So why does stopping feel harder now?' },
-    ], () => {
-      this.frozen = false;
-      this.refreshObjectiveHint();
+      { speaker: 'JP\'s Mind', text: 'The town got small. The demand didn\'t.' },
+    ], () => this.playShippingEscalation());
+  }
+
+  // Aug 2022: the local corner maxed out. The real jump was mail-order —
+  // vacuum-sealed, weighed, dropped at the USPS counter like it was legit.
+  // This is when "a hustle" quietly became "an operation." And the risk with it.
+  private playShippingEscalation() {
+    const cx = GAME_WIDTH / 2;
+    const objs: Phaser.GameObjects.GameObject[] = [];
+    const black = this.add.rectangle(cx, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0)
+      .setScrollFactor(0).setDepth(500);
+    this.tweens.add({
+      targets: black, alpha: 1, duration: 700,
+      onComplete: () => {
+        // a wall of shipping labels lighting up one by one — reach spreading
+        objs.push(this.add.text(cx, 90, 'AUGUST', { fontFamily: '"Press Start 2P", monospace', fontSize: '16px', color: '#c8b078' }).setOrigin(0.5).setScrollFactor(0).setDepth(501));
+        const states = ['TX', 'FL', 'GA', 'AZ', 'NY', 'OH', 'NC', 'IL', 'WA', 'CO', 'MI', 'PA'];
+        states.forEach((st, i) => {
+          const col = i % 4, row = Math.floor(i / 4);
+          const lx = cx - 220 + col * 150, ly = 180 + row * 70;
+          const label = this.add.rectangle(lx, ly, 120, 46, 0xf0ece0).setScrollFactor(0).setDepth(501).setAlpha(0).setStrokeStyle(2, 0x999080);
+          const barcode = this.add.rectangle(lx, ly + 12, 96, 8, 0x111111).setScrollFactor(0).setDepth(502).setAlpha(0);
+          const dest = this.add.text(lx, ly - 8, '→ ' + st, { fontFamily: '"Press Start 2P", monospace', fontSize: '9px', color: '#222' }).setOrigin(0.5).setScrollFactor(0).setDepth(502).setAlpha(0);
+          objs.push(label, barcode, dest);
+          this.tweens.add({ targets: [label, barcode, dest], alpha: 1, duration: 300, delay: 400 + i * 260 });
+        });
+        this.time.delayedCall(400 + states.length * 260 + 400, () => {
+          this.dialogue.show([
+            { speaker: 'Narrator', text: 'The corner stopped being enough. So it went in the mail.' },
+            { speaker: 'Narrator', text: 'Vacuum-sealed. Weighed. Dropped at the USPS counter like it was Christmas gifts.' },
+            { speaker: 'JP\'s Mind', text: 'Standing in line at the post office with a pack in a flat-rate box. Smiling at the clerk.' },
+            { speaker: 'Narrator', text: 'Twelve states by the end of the month. A tracking number for every one.' },
+            { speaker: 'JP\'s Mind', text: 'This is when I started making real pape. And when a hustle quietly became an operation.' },
+            { speaker: 'JP\'s Mind', text: 'Every box out the door was money. And a receipt with my handwriting on it.' },
+          ], () => {
+            this.tweens.add({
+              targets: black, alpha: 1, duration: 500, delay: 300,
+              onComplete: () => {
+                objs.forEach(o => o.destroy());
+                this.tweens.add({
+                  targets: black, alpha: 0, duration: 600,
+                  onComplete: () => {
+                    black.destroy();
+                    this.dialogue.show([
+                      { speaker: 'JP\'s Mind', text: 'I am making it back. Way past making it back.' },
+                      { speaker: 'JP\'s Mind', text: 'So why does stopping feel harder now?' },
+                    ], () => {
+                      this.frozen = false;
+                      this.refreshObjectiveHint();
+                    });
+                  },
+                });
+              },
+            });
+          });
+        });
+      },
     });
   }
 
