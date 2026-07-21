@@ -155,6 +155,7 @@ export default function GameCanvas() {
   const [speedIndex, setSpeedIndex] = useState(0);
   const [showControls, setShowControls] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  const [isPortrait, setIsPortrait] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [controllerConnected, setControllerConnected] = useState(false);
   const [dialogueActive, setDialogueActive] = useState(false);
@@ -162,15 +163,17 @@ export default function GameCanvas() {
 
   useEffect(() => {
     // Detect mobile/touch device
-    const checkMobile = () => {
+    const checkMobileLayout = () => {
       setIsMobile(
         "ontouchstart" in window ||
         navigator.maxTouchPoints > 0 ||
         window.innerWidth < 900
       );
+      setIsPortrait(window.innerHeight > window.innerWidth);
     };
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
+    checkMobileLayout();
+    window.addEventListener("resize", checkMobileLayout);
+    window.addEventListener("orientationchange", checkMobileLayout);
 
     if (gameRef.current || !containerRef.current) return;
 
@@ -236,7 +239,8 @@ export default function GameCanvas() {
 
     return () => {
       clearTimeout(timer);
-      window.removeEventListener("resize", checkMobile);
+      window.removeEventListener("resize", checkMobileLayout);
+      window.removeEventListener("orientationchange", checkMobileLayout);
       if (gameRef.current) {
         gameRef.current.destroy(true);
         gameRef.current = null;
@@ -457,8 +461,8 @@ export default function GameCanvas() {
       )}
 
       {/* Mobile: portrait rotation prompt */}
-      {isMobile && (
-        <div className="absolute inset-0 z-50 bg-black flex flex-col items-center justify-center gap-6 portrait:flex landscape:hidden">
+      {isMobile && isPortrait && (
+        <div className="absolute inset-0 z-50 bg-black flex flex-col items-center justify-center gap-6">
           <div className="text-4xl animate-bounce">📱</div>
           <p className="text-white font-mono text-sm text-center px-8">
             Rotate your phone for the best experience
@@ -468,13 +472,13 @@ export default function GameCanvas() {
       )}
 
       {/* Mobile controls — landscape overlay ON the game (DS/Pokemon style) */}
-      {isMobile && (
-        <div className="portrait:hidden landscape:block">
+      {isMobile && !isPortrait && (
+        <div className="pointer-events-none">
           {/* D-Pad — bottom left, cross pattern */}
           <div
             style={{ left: 'calc(env(safe-area-inset-left, 0px) + 14px)', bottom: 'calc(env(safe-area-inset-bottom, 0px) + 14px)' }}
             className={`absolute z-30 transition-opacity duration-150 ${
-            dialogueActive ? 'pointer-events-none opacity-0' : 'opacity-100'
+            dialogueActive ? 'pointer-events-none opacity-0' : 'pointer-events-auto opacity-100'
           }`}>
             <div className="relative" style={{ width: 156, height: 156 }}>
               {/* Center hub */}
@@ -561,7 +565,7 @@ export default function GameCanvas() {
           <button
             aria-label="Interact"
             className={`absolute z-30 flex items-center justify-center rounded-full active:brightness-150 transition-all ${
-              dialogueActive ? 'top-16 h-14 w-14' : 'h-[70px] w-[70px]'
+              dialogueActive ? 'pointer-events-auto top-16 h-14 w-14' : 'pointer-events-auto h-[70px] w-[70px]'
             }`}
             style={{
               right: dialogueActive ? 'calc(env(safe-area-inset-right, 0px) + 16px)' : 'calc(env(safe-area-inset-right, 0px) + 20px)',
@@ -582,7 +586,7 @@ export default function GameCanvas() {
           <button
             aria-label="Back"
             className={`absolute z-30 flex items-center justify-center rounded-full active:brightness-150 transition-all ${
-              dialogueActive ? 'pointer-events-none opacity-0' : 'opacity-100'
+              dialogueActive ? 'pointer-events-none opacity-0' : 'pointer-events-auto opacity-100'
             }`}
             style={{
               width: 52, height: 52,
@@ -600,7 +604,7 @@ export default function GameCanvas() {
           <button
             aria-label="Open phone"
             className={`absolute z-30 flex items-center justify-center rounded-lg active:brightness-150 transition-all ${
-              dialogueActive ? 'pointer-events-none opacity-0' : 'opacity-100'
+              dialogueActive ? 'pointer-events-none opacity-0' : 'pointer-events-auto opacity-100'
             }`}
             style={{
               width: 42, height: 42,
@@ -621,7 +625,7 @@ export default function GameCanvas() {
           <button
             aria-label="Open bag"
             className={`absolute z-30 flex items-center justify-center rounded-lg active:brightness-150 transition-all ${
-              dialogueActive ? 'pointer-events-none opacity-0' : 'opacity-100'
+              dialogueActive ? 'pointer-events-none opacity-0' : 'pointer-events-auto opacity-100'
             }`}
             style={{
               width: 42, height: 42,
@@ -642,7 +646,7 @@ export default function GameCanvas() {
           <button
             aria-label="Emote"
             className={`absolute z-30 flex items-center justify-center rounded-lg active:brightness-150 transition-all ${
-              dialogueActive ? 'pointer-events-none opacity-0' : 'opacity-100'
+              dialogueActive ? 'pointer-events-none opacity-0' : 'pointer-events-auto opacity-100'
             }`}
             style={{
               width: 42, height: 42,
@@ -663,7 +667,7 @@ export default function GameCanvas() {
           <button
             aria-label="Open menu"
             className={`absolute z-30 flex items-center justify-center rounded-lg active:brightness-150 transition-all ${
-              dialogueActive ? 'pointer-events-none opacity-0' : 'opacity-100'
+              dialogueActive ? 'pointer-events-none opacity-0' : 'pointer-events-auto opacity-100'
             }`}
             style={{
               width: 54, height: 34,
