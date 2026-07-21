@@ -992,6 +992,7 @@ export class OperatorScene extends BaseChapterScene {
 
   // --- Override handleInteractable for custom moments ---
   private laDinnerDone = false;
+  private ggNobuDone = false; // GG's Nobu night — stripper come-up, IG larp
   private innoutDone = false;
 
   protected handleInteractable(interactable: { id: string; type: string; consumed?: boolean }) {
@@ -1016,6 +1017,23 @@ export class OperatorScene extends BaseChapterScene {
           ], () => { this.frozen = false; });
         });
       });
+      return;
+    }
+
+    // ── GG's Nobu night. Two kids from the mud, larping til it's real. ──
+    if (interactable.id === 'ch6_restaurant_menu' && this.laDinnerDone && !this.ggNobuDone) {
+      this.ggNobuDone = true;
+      this.frozen = true;
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'Phone buzzes on the table. GG.' },
+        { speaker: 'GG', text: 'get dressed. Nobu tonight. I\'m driving, you\'re the content.' },
+        { speaker: 'JP', text: 'GG. A year ago you were sleeping on my floor.' },
+        { speaker: 'GG', text: 'and now I clear more in a weekend than your little degree ever will. stage name pays, baby.' },
+        { speaker: 'Narrator', text: 'Nobu. Black cod, a tab GG waves off, both phones out the whole night.' },
+        { speaker: 'GG', text: 'tag me. angle up. we came from NOTHING — let them SEE it.' },
+        { speaker: 'JP\'s Mind', text: 'Two broke kids from the mud, posted in Nobu like we belong. Half flex, half proof.' },
+        { speaker: 'JP\'s Mind', text: 'Post it enough and the larp turns real. That\'s kind of the whole game.' },
+      ], () => { this.frozen = false; });
       return;
     }
 
