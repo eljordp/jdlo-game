@@ -31,6 +31,7 @@ export class HomeScene extends BaseChapterScene {
   private ivyFollowing = false;
   private ivyGiftGiven = false;
   private popsTalkedTo = false;
+  private fishingStarted = false; // the Pops-fishing heart beat — nudge players to it
   private ivySurpriseTriggered = false;
   private ivySurpriseFollowSteps = 0;
   private momFoodSpawned = false;
@@ -315,6 +316,7 @@ export class HomeScene extends BaseChapterScene {
     if (this.phoneTriggered && this.requiredDone) return 'You saw the vision. Hit the street — you\'re gone.';
     if (this.phoneTriggered) return 'Answer the phone.';
     if (this.cryptoViewed) return 'You saw the vision. Say your goodbyes — you\'re not staying.';
+    if (this.popsTalkedTo && !this.fishingStarted) return 'Pops is itching to fish like old times. Grab a rod, meet him at the pond.';
     if (this.interactionCount >= 5) return 'Keep exploring. Something\'s about to happen.';
     if (this.interactionCount >= 2 && this.currentFloor === 'up') return 'Talk to family. Head downstairs.';
     if (this.interactionCount >= 2) return 'Talk to Pops. Explore the yard.';
@@ -964,10 +966,13 @@ export class HomeScene extends BaseChapterScene {
         this.dialogue.show([
           { speaker: 'Mom', text: 'JORDAN!' },
           { speaker: 'Mom', text: 'ARE YOU SMOKING IN MY HOUSE?!' },
-          { speaker: 'JP', text: '...' },
-          { speaker: 'Mom', text: 'I KNOW I DID NOT JUST SMELL THAT.' },
-          { speaker: 'Mom', text: 'GET OUT. Go to your room. NOW.' },
-          { speaker: 'Narrator', text: 'Mom drags JP back to his room by the ear.' },
+          { speaker: 'JP', text: 'Whatever! Whatever! I do what I want!' },
+          { speaker: 'Mom', text: 'Excuse me? WHAT did you just say to me?' },
+          { speaker: 'JP', text: 'You will respect my authoritah!' },
+          { speaker: 'Mom', text: '...' },
+          { speaker: 'JP', text: '...that came out wrong. That came out so wrong.' },
+          { speaker: 'Mom', text: 'Room. NOW.' },
+          { speaker: 'Narrator', text: 'Mom drags JP back to his room by the ear. Authoritah: not respected.' },
           { speaker: 'Narrator', text: 'Chapter restart.' },
         ], () => {
           // Full black screen
@@ -1508,6 +1513,7 @@ export class HomeScene extends BaseChapterScene {
     }
     if (interactable.id === 'ch0_fishing') {
       Analytics.trackInteraction(interactable.id);
+      this.fishingStarted = true;
       // Pops gets excited and runs to the pond!
       this.triggerPopsRunsToFishing();
       this.interactions.consume(interactable.id);
