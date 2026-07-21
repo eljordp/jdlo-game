@@ -1918,7 +1918,8 @@ function generateAllNPCs(scene: Phaser.Scene) {
   );
 
   // Ivy — tan French Bulldog. Exaggerated silhouette because at game scale
-  // "Frenchie" needs to read instantly: huge bat ears, flat muzzle, compact body.
+  // "Frenchie" needs to read instantly: square head, bat ears, flat muzzle,
+  // squat tank body, tiny legs. If she gets tall, she reads Chihuahua.
   makeTexture(scene, 'npc_frenchie', CHAR_SIZE, CHAR_SIZE, (g) => {
     const body = 0xc89458;
     const bodyDk = 0x9a6a3c;
@@ -1929,71 +1930,62 @@ function generateAllNPCs(scene: Phaser.Scene) {
     const earPink = 0xd89a8f;
     const cream = 0xf0dfbd;
 
-    // ── Compact stocky body: short, wide little tank ──
-    px(g, 10, 17, body, 12, 2);
-    px(g, 8, 19, body, 16, 3);
-    px(g, 9, 22, cream, 14, 2);  // cream chest patch
-    px(g, 10, 24, bodyDk, 12, 2);
-
-    // Stubby legs/paws tucked under the body
-    px(g, 9, 26, bodyDk, 4, 2);
-    px(g, 19, 26, bodyDk, 4, 2);
-    px(g, 9, 28, 0x2a211a, 4, 2);
-    px(g, 19, 28, 0x2a211a, 4, 2);
-
-    // ── Big flat head: wider than body, no long snout ──
-    px(g, 7, 6, bodyDk, 18, 2);
-    px(g, 6, 8, body, 20, 3);
-    px(g, 6, 11, bodyLt, 20, 2);
-    px(g, 7, 13, bodyLt, 18, 2);
-    px(g, 9, 15, body, 14, 2);
-
-    // Dark forehead/cheek mask so the face doesn't blur into generic tan dog
-    px(g, 8, 8, mask, 5, 3);
-    px(g, 19, 8, mask, 5, 3);
-
-    // Cream, flat muzzle area
-    px(g, 10, 12, cream, 12, 4);
-    px(g, 12, 15, cream, 8, 2);
-
-    // ── Giant bat ears — the Frenchie tell ──
-    // Left ear
-    px(g, 5, 0, bodyDk, 3, 1);
+    // ── Giant bat ears: wide bases, not skinny antennae ──
     px(g, 4, 1, bodyDk, 5, 1);
-    px(g, 3, 2, bodyDk, 6, 2);
-    px(g, 4, 4, bodyDk, 6, 2);
-    px(g, 5, 6, bodyDk, 5, 2);
-    px(g, 5, 2, earPink, 3, 3);
-    px(g, 6, 5, earPink, 2, 2);
+    px(g, 3, 2, bodyDk, 7, 2);
+    px(g, 4, 4, bodyDk, 7, 3);
+    px(g, 5, 7, bodyDk, 5, 2);
+    px(g, 5, 3, earPink, 3, 3);
+    px(g, 6, 6, earPink, 2, 2);
 
-    // Right ear
-    px(g, 24, 0, bodyDk, 3, 1);
     px(g, 23, 1, bodyDk, 5, 1);
-    px(g, 23, 2, bodyDk, 6, 2);
-    px(g, 22, 4, bodyDk, 6, 2);
-    px(g, 22, 6, bodyDk, 5, 2);
-    px(g, 24, 2, earPink, 3, 3);
-    px(g, 24, 5, earPink, 2, 2);
+    px(g, 22, 2, bodyDk, 7, 2);
+    px(g, 21, 4, bodyDk, 7, 3);
+    px(g, 22, 7, bodyDk, 5, 2);
+    px(g, 24, 3, earPink, 3, 3);
+    px(g, 24, 6, earPink, 2, 2);
 
-    // ── Face ──
-    // Wide-set dark eyes
+    // ── Big square head, wider than body, almost no neck ──
+    px(g, 7, 6, bodyDk, 18, 2);
+    px(g, 5, 8, body, 22, 4);
+    px(g, 5, 12, bodyLt, 22, 3);
+    px(g, 6, 15, bodyLt, 20, 2);
+    px(g, 8, 17, body, 16, 2);
+
+    // Dark mask/forehead blocks
+    px(g, 7, 9, mask, 6, 3);
+    px(g, 19, 9, mask, 6, 3);
+    px(g, 10, 8, mask, 12, 1);
+
+    // Cream flat muzzle: broad, smashed, not snouty
+    px(g, 10, 12, cream, 12, 5);
+    px(g, 12, 16, cream, 8, 2);
+
+    // Wide-set eyes
     px(g, 9, 10, eye, 3, 2);
     px(g, 20, 10, eye, 3, 2);
-    px(g, 9, 10, 0x5a4a40, 1, 1);
-    px(g, 20, 10, 0x5a4a40, 1, 1);
 
-    // Flat, wide nose and smashed-face jowls
+    // Wide nose and jowls
     px(g, 14, 13, nose, 4, 2);
     px(g, 13, 14, nose, 6, 1);
-    px(g, 12, 15, mask, 3, 1);
-    px(g, 17, 15, mask, 3, 1);
+    px(g, 11, 16, mask, 4, 1);
+    px(g, 17, 16, mask, 4, 1);
+    px(g, 15, 17, 0xd08080, 2, 1);
 
-    // Tiny tongue, because Ivy should feel happy, not scary
-    px(g, 15, 16, 0xd08080, 2, 1);
-    px(g, 15, 17, 0xc07070, 2, 1);
+    // ── Squat tank body tucked right under the head ──
+    px(g, 8, 19, body, 16, 2);
+    px(g, 6, 21, body, 20, 4);
+    px(g, 8, 25, bodyDk, 16, 2);
+    px(g, 10, 21, cream, 12, 4); // chest bib
+
+    // Stubby legs/paws — short and wide
+    px(g, 7, 27, bodyDk, 5, 2);
+    px(g, 20, 27, bodyDk, 5, 2);
+    px(g, 7, 29, 0x2a211a, 5, 1);
+    px(g, 20, 29, 0x2a211a, 5, 1);
 
     // Nearly no tail — just a nub
-    px(g, 24, 19, bodyDk, 2, 1);
+    px(g, 25, 22, bodyDk, 2, 1);
   });
 
   // Bikini Girl 1 — blue bikini, brown hair, sleepy/chill expression — 32x32

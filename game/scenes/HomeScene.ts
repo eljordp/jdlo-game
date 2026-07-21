@@ -776,9 +776,9 @@ export class HomeScene extends BaseChapterScene {
     // After 3 steps, Ivy sits and shows "..."
     if (this.ivySurpriseFollowSteps >= 3) {
       this.time.delayedCall(300, () => {
-        // Stop Ivy — she sits (frame 0 = front-facing idle)
+        // Stop Ivy — procedural texture has no numbered animation frames.
         this.tweens.killTweensOf(ivy.sprite);
-        ivy.sprite.setFrame(0);
+        ivy.sprite.setTexture('npc_frenchie');
 
         // Floating "..." text above Ivy
         const dotsText = this.add.text(
@@ -4284,7 +4284,7 @@ export class HomeScene extends BaseChapterScene {
     const ivyTexture = frenchie ? 'npc_frenchie' : this.getPlayerTexture();
     const ivyStartX = 260;
     const ivyStartY = GAME_HEIGHT / 2 + 140;
-    const ivy = this.add.sprite(ivyStartX, ivyStartY, ivyTexture, 0)
+    const ivy = this.add.sprite(ivyStartX, ivyStartY, ivyTexture)
       .setScale(4).setScrollFactor(0).setDepth(302);
     objects.push(ivy);
 
