@@ -486,17 +486,17 @@ export default function GameCanvas() {
         <div className="pointer-events-none">
           {/* D-Pad — bottom left, cross pattern */}
           <div
-            style={{ left: 'calc(env(safe-area-inset-left, 0px) + 16px)', bottom: 'calc(env(safe-area-inset-bottom, 0px) + 30px)' }}
+            style={{ left: 'calc(env(safe-area-inset-left, 0px) + 14px)', bottom: 'calc(env(safe-area-inset-bottom, 0px) + 16px)' }}
             className={`absolute z-30 transition-opacity duration-150 ${
             dialogueActive ? 'pointer-events-none opacity-0' : 'pointer-events-auto opacity-100'
           }`}>
-            <div className="relative" style={{ width: 124, height: 124 }}>
+            <div className="relative" style={{ width: 104, height: 104 }}>
               {/* Center hub */}
               <div
                 className="absolute rounded-full"
                 style={{
-                  width: 22, height: 22,
-                  left: 51, top: 51,
+                  width: 20, height: 20,
+                  left: 42, top: 42,
                   backgroundColor: '#222222',
                 }}
               />
@@ -505,8 +505,8 @@ export default function GameCanvas() {
                 aria-label="Move up"
                 className="absolute flex items-center justify-center rounded-t-xl active:brightness-150 transition-all"
                 style={{
-                  width: 48, height: 48,
-                  left: 38, top: 0,
+                  width: 42, height: 42,
+                  left: 31, top: 0,
                   backgroundColor: '#333333',
                   border: '2px solid #444444',
                 }}
@@ -522,8 +522,8 @@ export default function GameCanvas() {
                 aria-label="Move down"
                 className="absolute flex items-center justify-center rounded-b-xl active:brightness-150 transition-all"
                 style={{
-                  width: 48, height: 48,
-                  left: 38, top: 76,
+                  width: 42, height: 42,
+                  left: 31, top: 62,
                   backgroundColor: '#333333',
                   border: '2px solid #444444',
                 }}
@@ -539,8 +539,8 @@ export default function GameCanvas() {
                 aria-label="Move left"
                 className="absolute flex items-center justify-center rounded-l-xl active:brightness-150 transition-all"
                 style={{
-                  width: 48, height: 48,
-                  left: 0, top: 38,
+                  width: 42, height: 42,
+                  left: 0, top: 31,
                   backgroundColor: '#333333',
                   border: '2px solid #444444',
                 }}
@@ -556,8 +556,8 @@ export default function GameCanvas() {
                 aria-label="Move right"
                 className="absolute flex items-center justify-center rounded-r-xl active:brightness-150 transition-all"
                 style={{
-                  width: 48, height: 48,
-                  left: 76, top: 38,
+                  width: 42, height: 42,
+                  left: 62, top: 31,
                   backgroundColor: '#333333',
                   border: '2px solid #444444',
                 }}
@@ -575,11 +575,11 @@ export default function GameCanvas() {
           <button
             aria-label="Interact"
             className={`absolute z-30 flex items-center justify-center rounded-full active:brightness-150 transition-all ${
-              dialogueActive ? 'pointer-events-auto top-16 h-14 w-14' : 'pointer-events-auto h-[70px] w-[70px]'
+              dialogueActive ? 'pointer-events-auto top-14 h-12 w-12' : 'pointer-events-auto h-[58px] w-[58px]'
             }`}
             style={{
-              right: dialogueActive ? 'calc(env(safe-area-inset-right, 0px) + 16px)' : 'calc(env(safe-area-inset-right, 0px) + 20px)',
-              ...(dialogueActive ? {} : { bottom: 'calc(env(safe-area-inset-bottom, 0px) + 34px)' }),
+              right: dialogueActive ? 'calc(env(safe-area-inset-right, 0px) + 12px)' : 'calc(env(safe-area-inset-right, 0px) + 18px)',
+              ...(dialogueActive ? {} : { bottom: 'calc(env(safe-area-inset-bottom, 0px) + 24px)' }),
               backgroundColor: 'rgba(34, 204, 68, 0.45)',
               border: '3px solid rgba(34, 204, 68, 0.6)',
               boxShadow: '0 2px 8px rgba(34, 204, 68, 0.3), inset 0 -2px 4px rgba(0,0,0,0.3)',
@@ -599,8 +599,8 @@ export default function GameCanvas() {
               dialogueActive ? 'pointer-events-none opacity-0' : 'pointer-events-auto opacity-100'
             }`}
             style={{
-              width: 52, height: 52,
-              bottom: 'calc(env(safe-area-inset-bottom, 0px) + 104px)', right: 'calc(env(safe-area-inset-right, 0px) + 78px)',
+              width: 44, height: 44,
+              bottom: 'calc(env(safe-area-inset-bottom, 0px) + 86px)', right: 'calc(env(safe-area-inset-right, 0px) + 66px)',
               backgroundColor: 'rgba(204, 34, 68, 0.45)',
               border: '3px solid rgba(204, 34, 68, 0.6)',
               boxShadow: '0 2px 8px rgba(204, 34, 68, 0.3), inset 0 -2px 4px rgba(0,0,0,0.3)',
@@ -617,8 +617,8 @@ export default function GameCanvas() {
               dialogueActive ? 'pointer-events-none opacity-0' : 'pointer-events-auto opacity-100'
             }`}
             style={{
-              width: 42, height: 42,
-              bottom: 'calc(env(safe-area-inset-bottom, 0px) + 148px)', right: 'calc(env(safe-area-inset-right, 0px) + 24px)',
+              width: 36, height: 36,
+              bottom: 'calc(env(safe-area-inset-bottom, 0px) + 124px)', right: 'calc(env(safe-area-inset-right, 0px) + 18px)',
               backgroundColor: 'rgba(255,255,255,0.08)',
               border: '2px solid rgba(255,255,255,0.15)',
             }}
@@ -638,8 +638,8 @@ export default function GameCanvas() {
               dialogueActive ? 'pointer-events-none opacity-0' : 'pointer-events-auto opacity-100'
             }`}
             style={{
-              width: 42, height: 42,
-              bottom: 'calc(env(safe-area-inset-bottom, 0px) + 148px)', right: 'calc(env(safe-area-inset-right, 0px) + 72px)',
+              width: 36, height: 36,
+              bottom: 'calc(env(safe-area-inset-bottom, 0px) + 124px)', right: 'calc(env(safe-area-inset-right, 0px) + 60px)',
               backgroundColor: 'rgba(255,255,255,0.08)',
               border: '2px solid rgba(255,255,255,0.15)',
             }}
@@ -659,8 +659,8 @@ export default function GameCanvas() {
               dialogueActive ? 'pointer-events-none opacity-0' : 'pointer-events-auto opacity-100'
             }`}
             style={{
-              width: 42, height: 42,
-              bottom: 'calc(env(safe-area-inset-bottom, 0px) + 196px)', right: 'calc(env(safe-area-inset-right, 0px) + 24px)',
+              width: 36, height: 36,
+              bottom: 'calc(env(safe-area-inset-bottom, 0px) + 166px)', right: 'calc(env(safe-area-inset-right, 0px) + 18px)',
               backgroundColor: 'rgba(255,255,255,0.08)',
               border: '2px solid rgba(255,255,255,0.15)',
             }}
@@ -680,8 +680,8 @@ export default function GameCanvas() {
               dialogueActive ? 'pointer-events-none opacity-0' : 'pointer-events-auto opacity-100'
             }`}
             style={{
-              width: 54, height: 34,
-              bottom: 'calc(env(safe-area-inset-bottom, 0px) + 248px)', right: 'calc(env(safe-area-inset-right, 0px) + 18px)',
+              width: 50, height: 30,
+              bottom: 'calc(env(safe-area-inset-bottom, 0px) + 208px)', right: 'calc(env(safe-area-inset-right, 0px) + 14px)',
               backgroundColor: 'rgba(255,255,255,0.08)',
               border: '2px solid rgba(255,255,255,0.15)',
             }}

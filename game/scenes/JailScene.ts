@@ -909,7 +909,7 @@ export class JailScene extends BaseChapterScene {
   protected getObjectiveHint(): string {
     if (this.currentDay === 1) {
       if (!this.phaseOneRelapseDone) return 'Phase I — old habits followed you inside. Head to the yard.';
-      if (this.battleWon === null) return 'Phase I — trouble is waiting in the common area.';
+      if (this.battleWon === null) return 'Phase I — Juan El Loco is going off in the yard. Bird\'s in it.';
       if (!this.phaseOneRealizationDone) return 'Phase I — listen to Bird and the inmate waiting on an appeal.';
       return 'Phase I — return to your bunk.';
     }
@@ -1112,8 +1112,17 @@ export class JailScene extends BaseChapterScene {
 
     // Battle — available Day 1
     if (interactable.id === 'ch3_fight_watch' && this.currentDay === 1) {
-      this.playBattleScene();
-      this.interactions.consume(interactable.id);
+      this.frozen = true;
+      this.dialogue.show([
+        { speaker: 'Narrator', text: 'Juan El Loco is off again. Face tatted, eyes somewhere else, running his mouth at the whole tank.' },
+        { speaker: 'JP\'s Mind', text: 'That\'s my barber. Cuts the cleanest fade in here. Loses his mind by dinner.' },
+        { speaker: 'Narrator', text: 'He swings on Bird. Bird stumbles. For half a second the tank just watches.' },
+        { speaker: 'JP\'s Mind', text: 'Old habits don\'t knock. They move your feet before you decide.' },
+        { speaker: 'Narrator', text: 'JP is already moving. So is half the tank.' },
+      ], () => {
+        this.interactions.consume(interactable.id);
+        this.playBattleScene();
+      });
       return;
     }
 
@@ -2469,7 +2478,7 @@ export class JailScene extends BaseChapterScene {
     objects.push(enemyPlatform);
 
     // Enemy sprite
-    const enemySprite = this.add.sprite(enemyPlatX, enemyPlatY, 'npc_inmate3', 0)
+    const enemySprite = this.add.sprite(enemyPlatX, enemyPlatY, 'npc_inmate2', 0)
       .setScale(6).setScrollFactor(0).setDepth(DEPTH + 3);
     objects.push(enemySprite);
     const enemySpriteBaseX = enemyPlatX;
@@ -2480,7 +2489,7 @@ export class JailScene extends BaseChapterScene {
       .setScrollFactor(0).setDepth(DEPTH + 4).setStrokeStyle(3, 0x505068);
     objects.push(enemyNameBg);
 
-    const enemyName = this.add.text(130, 58, 'INMATE', {
+    const enemyName = this.add.text(130, 58, 'JUAN EL LOCO', {
       fontFamily: FONT, fontSize: '16px', color: '#ffffff',
     }).setScrollFactor(0).setDepth(DEPTH + 5);
     objects.push(enemyName);
@@ -2597,6 +2606,14 @@ export class JailScene extends BaseChapterScene {
       const text = this.add.text(x, y, menuOptions[i], {
         fontFamily: FONT, fontSize: '14px', color: i === 0 ? '#f0c040' : '#aaaacc',
       }).setScrollFactor(0).setDepth(DEPTH + 12);
+      // Mobile: each option is directly tappable (battle is otherwise keyboard-only)
+      text.setInteractive(new Phaser.Geom.Rectangle(-24, -18, 200, 52), Phaser.Geom.Rectangle.Contains);
+      text.on('pointerdown', () => {
+        if (!inputEnabled || state !== 'menu') return;
+        menuIndex = i;
+        updateMenu();
+        onConfirm();
+      });
       objects.push(text);
       menuTexts.push(text);
     }

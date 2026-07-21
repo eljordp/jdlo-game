@@ -759,7 +759,7 @@ export const jailMap: MapData = {
 
     // --- Common area ---
     { id: 'ch3_commissary',  x: 28, y: 4,  type: 'examine', glow: false, sprite: 'item-food' },      // commissary counter
-    { id: 'ch3_fight_watch', x: 23, y: 3,  type: 'examine', glow: true, sprite: 'item-weights' },   // watching fight
+    { id: 'ch3_fight_watch', x: 23, y: 3,  type: 'examine', glow: true, sprite: 'npc_inmate2' },   // Juan El Loco going off in the yard
     { id: 'ch3_pbj_witness', x: 20, y: 35, type: 'examine', glow: false, sprite: 'item-food' },      // optional: violence became background noise at chow
     { id: 'ch3_dice_watch',  x: 34, y: 8,  type: 'examine', glow: true, sprite: 'item-dice' },     // watching dice
     { id: 'ch3_anger_management', x: 24, y: 8, type: 'examine', glow: false, sprite: 'item-poster' }, // wall poster — scenery

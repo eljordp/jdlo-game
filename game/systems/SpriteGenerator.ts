@@ -1917,89 +1917,83 @@ function generateAllNPCs(scene: Phaser.Scene) {
     }
   );
 
-  // Frenchie — tan French Bulldog (top-down/front view) — 32x32
+  // Ivy — tan French Bulldog. Exaggerated silhouette because at game scale
+  // "Frenchie" needs to read instantly: huge bat ears, flat muzzle, compact body.
   makeTexture(scene, 'npc_frenchie', CHAR_SIZE, CHAR_SIZE, (g) => {
-    const body = 0xc8a070;
-    const bodyDk = 0xb08858;
-    const bodyLt = 0xd8b880;
+    const body = 0xc89458;
+    const bodyDk = 0x9a6a3c;
+    const bodyLt = 0xe0b16d;
     const nose = 0x202020;
     const eye = 0x181818;
-    const earPink = 0xd8a0a0;
-    const white = 0xf0e8d8;
+    const mask = 0x3a2a20;
+    const earPink = 0xd89a8f;
+    const cream = 0xf0dfbd;
 
-    // ── Compact stocky body (rows 16-26) ──
-    px(g, 9, 16, body, 14, 2);
-    px(g, 8, 18, body, 16, 3);
-    px(g, 8, 21, bodyLt, 16, 2);  // white chest
-    px(g, 9, 23, body, 14, 2);
-    px(g, 10, 25, bodyDk, 12, 1);
+    // ── Compact stocky body: short, wide little tank ──
+    px(g, 10, 17, body, 12, 2);
+    px(g, 8, 19, body, 16, 3);
+    px(g, 9, 22, cream, 14, 2);  // cream chest patch
+    px(g, 10, 24, bodyDk, 12, 2);
 
-    // ── Stubby legs (rows 26-30) ──
-    px(g, 9, 26, bodyDk, 4, 3);
-    px(g, 19, 26, bodyDk, 4, 3);
-    px(g, 9, 29, 0x303030, 4, 2);  // paws
-    px(g, 19, 29, 0x303030, 4, 2);
+    // Stubby legs/paws tucked under the body
+    px(g, 9, 26, bodyDk, 4, 2);
+    px(g, 19, 26, bodyDk, 4, 2);
+    px(g, 9, 28, 0x2a211a, 4, 2);
+    px(g, 19, 28, 0x2a211a, 4, 2);
 
-    // ── Head (rows 6-16) — wide, flat, square-ish ──
-    px(g, 8, 6, body, 16, 2);
-    px(g, 7, 8, body, 18, 2);
-    px(g, 7, 10, body, 18, 2);
-    px(g, 8, 12, bodyLt, 16, 2);
-    px(g, 9, 14, bodyLt, 14, 2);
-    // White muzzle area
-    px(g, 11, 12, white, 10, 4);
+    // ── Big flat head: wider than body, no long snout ──
+    px(g, 7, 6, bodyDk, 18, 2);
+    px(g, 6, 8, body, 20, 3);
+    px(g, 6, 11, bodyLt, 20, 2);
+    px(g, 7, 13, bodyLt, 18, 2);
+    px(g, 9, 15, body, 14, 2);
 
-    // ── Bat ears — TALL, NARROW, pointed tips ──
+    // Dark forehead/cheek mask so the face doesn't blur into generic tan dog
+    px(g, 8, 8, mask, 5, 3);
+    px(g, 19, 8, mask, 5, 3);
+
+    // Cream, flat muzzle area
+    px(g, 10, 12, cream, 12, 4);
+    px(g, 12, 15, cream, 8, 2);
+
+    // ── Giant bat ears — the Frenchie tell ──
     // Left ear
-    px(g, 6, 0, body, 2, 1);     // tip
-    px(g, 5, 1, body, 3, 1);
-    px(g, 4, 2, body, 4, 1);
-    px(g, 4, 3, body, 4, 1);
-    px(g, 5, 4, body, 4, 1);
-    px(g, 6, 5, body, 3, 2);
-    // Left ear pink inside
-    px(g, 6, 1, earPink, 1, 1);
-    px(g, 5, 2, earPink, 3, 1);
-    px(g, 5, 3, earPink, 3, 1);
-    px(g, 6, 4, earPink, 2, 1);
+    px(g, 5, 0, bodyDk, 3, 1);
+    px(g, 4, 1, bodyDk, 5, 1);
+    px(g, 3, 2, bodyDk, 6, 2);
+    px(g, 4, 4, bodyDk, 6, 2);
+    px(g, 5, 6, bodyDk, 5, 2);
+    px(g, 5, 2, earPink, 3, 3);
+    px(g, 6, 5, earPink, 2, 2);
 
     // Right ear
-    px(g, 24, 0, body, 2, 1);    // tip
-    px(g, 24, 1, body, 3, 1);
-    px(g, 24, 2, body, 4, 1);
-    px(g, 24, 3, body, 4, 1);
-    px(g, 23, 4, body, 4, 1);
-    px(g, 23, 5, body, 3, 2);
-    // Right ear pink inside
-    px(g, 25, 1, earPink, 1, 1);
-    px(g, 24, 2, earPink, 3, 1);
-    px(g, 24, 3, earPink, 3, 1);
-    px(g, 24, 4, earPink, 2, 1);
+    px(g, 24, 0, bodyDk, 3, 1);
+    px(g, 23, 1, bodyDk, 5, 1);
+    px(g, 23, 2, bodyDk, 6, 2);
+    px(g, 22, 4, bodyDk, 6, 2);
+    px(g, 22, 6, bodyDk, 5, 2);
+    px(g, 24, 2, earPink, 3, 3);
+    px(g, 24, 5, earPink, 2, 2);
 
     // ── Face ──
-    // Big round dark eyes
-    px(g, 9, 9, eye, 3, 2);
-    px(g, 20, 9, eye, 3, 2);
-    px(g, 9, 9, 0x404060, 1, 1);  // shine
-    px(g, 20, 9, 0x404060, 1, 1);
+    // Wide-set dark eyes
+    px(g, 9, 10, eye, 3, 2);
+    px(g, 20, 10, eye, 3, 2);
+    px(g, 9, 10, 0x5a4a40, 1, 1);
+    px(g, 20, 10, 0x5a4a40, 1, 1);
 
-    // Flat wide nose
-    px(g, 14, 12, nose, 4, 2);
-    px(g, 13, 13, nose, 6, 1);
-    // Nostrils
-    px(g, 14, 12, 0x404040, 1, 1);
-    px(g, 17, 12, 0x404040, 1, 1);
+    // Flat, wide nose and smashed-face jowls
+    px(g, 14, 13, nose, 4, 2);
+    px(g, 13, 14, nose, 6, 1);
+    px(g, 12, 15, mask, 3, 1);
+    px(g, 17, 15, mask, 3, 1);
 
-    // Mouth/jowls
-    px(g, 13, 15, bodyDk, 2, 1);
-    px(g, 17, 15, bodyDk, 2, 1);
-    // Tongue
-    px(g, 15, 15, 0xd08080, 2, 1);
-    px(g, 15, 16, 0xc07070, 2, 1);
+    // Tiny tongue, because Ivy should feel happy, not scary
+    px(g, 15, 16, 0xd08080, 2, 1);
+    px(g, 15, 17, 0xc07070, 2, 1);
 
-    // ── Stubby tail ──
-    px(g, 25, 18, bodyDk, 2, 1);
-    px(g, 26, 17, bodyDk, 1, 1);
+    // Nearly no tail — just a nub
+    px(g, 24, 19, bodyDk, 2, 1);
   });
 
   // Bikini Girl 1 — blue bikini, brown hair, sleepy/chill expression — 32x32

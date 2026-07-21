@@ -70,6 +70,8 @@ export class MenuScene extends Phaser.Scene {
   }
 
   create() {
+    const phoneLandscape = this.isPhoneLandscape();
+
     this.menuState = 'main';
     this.selectedIndex = 0;
     MusicSystem.play('menu');
@@ -137,7 +139,7 @@ export class MenuScene extends Phaser.Scene {
     // Title — fades in with slight rise
     this.titleText = this.add.text(GAME_WIDTH / 2, 395, 'JDLO', {
       fontFamily: '"Press Start 2P", monospace',
-      fontSize: '28px',
+      fontSize: phoneLandscape ? '36px' : '28px',
       color: WHITE,
     }).setOrigin(0.5).setDepth(1).setAlpha(0);
 
@@ -153,7 +155,7 @@ export class MenuScene extends Phaser.Scene {
     // Subtitle — fades in after title
     this.subtitleText = this.add.text(GAME_WIDTH / 2, 420, 'A True Story', {
       fontFamily: '"Press Start 2P", monospace',
-      fontSize: '12px',
+      fontSize: phoneLandscape ? '16px' : '12px',
       color: FADED,
     }).setOrigin(0.5).setDepth(1).setAlpha(0);
 
@@ -177,7 +179,7 @@ export class MenuScene extends Phaser.Scene {
     let tagIdx = 0;
     this.taglineText = this.add.text(GAME_WIDTH / 2, 450, '', {
       fontFamily: '"Press Start 2P", monospace',
-      fontSize: '7px',
+      fontSize: phoneLandscape ? '10px' : '7px',
       color: '#555577',
     }).setOrigin(0.5).setDepth(1).setAlpha(0);
     const tagline = this.taglineText;
@@ -201,7 +203,7 @@ export class MenuScene extends Phaser.Scene {
     // Arrow indicator (reused for all menus)
     this.arrowIndicator = this.add.text(0, 0, '\u25b6', {
       fontFamily: '"Press Start 2P", monospace',
-      fontSize: '12px',
+      fontSize: phoneLandscape ? '16px' : '12px',
       color: YELLOW,
     }).setOrigin(0.5).setDepth(2);
 
@@ -273,7 +275,7 @@ export class MenuScene extends Phaser.Scene {
       { label: 'Settings', action: () => this.buildSettings(), enabled: true },
     ];
 
-    this.renderMenu(520);
+    this.renderMenu(this.isPhoneLandscape() ? 505 : 520, this.isPhoneLandscape() ? 54 : 44);
   }
 
   private chapterDescText?: Phaser.GameObjects.Text;
@@ -420,6 +422,7 @@ export class MenuScene extends Phaser.Scene {
   }
 
   private renderMenu(startY: number, spacing = 44) {
+    const phoneLandscape = this.isPhoneLandscape();
 
     for (let i = 0; i < this.menuItems.length; i++) {
       const item = this.menuItems[i];
@@ -429,7 +432,7 @@ export class MenuScene extends Phaser.Scene {
 
       const text = this.add.text(GAME_WIDTH / 2, y, item.label, {
         fontFamily: '"Press Start 2P", monospace',
-        fontSize: '14px',
+        fontSize: phoneLandscape ? '21px' : '14px',
         color,
       }).setOrigin(0.5).setDepth(1);
 
@@ -451,7 +454,7 @@ export class MenuScene extends Phaser.Scene {
       // Phone landscape scales the whole Phaser canvas down, which makes the
       // actual text glyph hitbox too tiny to tap reliably. Give every row a
       // generous invisible hit area so "Play" behaves like a real mobile button.
-      const zone = this.add.zone(GAME_WIDTH / 2, y, 540, Math.max(42, spacing - 4))
+      const zone = this.add.zone(GAME_WIDTH / 2, y, phoneLandscape ? 720 : 540, Math.max(phoneLandscape ? 58 : 42, spacing - 4))
         .setOrigin(0.5)
         .setDepth(2)
         .setInteractive({ useHandCursor: true });
@@ -472,6 +475,12 @@ export class MenuScene extends Phaser.Scene {
     }
 
     this.updateMenuVisuals();
+  }
+
+  private isPhoneLandscape(): boolean {
+    return typeof window !== 'undefined'
+      && window.innerWidth < 900
+      && window.innerWidth > window.innerHeight;
   }
 
   private updateMenuVisuals() {

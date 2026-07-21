@@ -18,18 +18,22 @@ export class BootScene extends Phaser.Scene {
   }
 
   create() {
+    const phoneLandscape = typeof window !== 'undefined'
+      && window.innerWidth < 900
+      && window.innerWidth > window.innerHeight;
+
     // Sprite generation is intentionally procedural and can take several
     // seconds on phones. Paint a real loading frame before doing that
     // synchronous work so a slower device never looks frozen or broken.
     const title = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 12, 'LOADING THE STORY...', {
       fontFamily: 'monospace',
-      fontSize: '16px',
+      fontSize: phoneLandscape ? '26px' : '16px',
       color: '#f0c040',
       letterSpacing: 2,
     }).setOrigin(0.5);
     const detail = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 22, 'BUILDING THE WORLD', {
       fontFamily: 'monospace',
-      fontSize: '10px',
+      fontSize: phoneLandscape ? '14px' : '10px',
       color: '#777788',
       letterSpacing: 1,
     }).setOrigin(0.5);
