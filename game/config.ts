@@ -72,7 +72,7 @@ export const FONT_STYLE = {
   fontFamily: '"Press Start 2P", monospace',
   fontSize: '14px',
   color: COLORS.dialogueText,
-  wordWrap: { width: 1160, useAdvancedWrap: true },
+  wordWrap: { width: 1040, useAdvancedWrap: true },
   lineSpacing: 8,
 };
 

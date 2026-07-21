@@ -31,6 +31,9 @@ export class DialogueSystem {
   private displayedText = '';
   private charTimer = 0;
   private charDelay = 30; // ms per character
+  private holdFastKeySpace?: Phaser.Input.Keyboard.Key;
+  private holdFastKeyEnter?: Phaser.Input.Keyboard.Key;
+  private holdFastKeyShift?: Phaser.Input.Keyboard.Key;
   private isTyping = false;
   private active = false;
   private onComplete: (() => void) | null = null;
@@ -80,6 +83,10 @@ export class DialogueSystem {
     // Hide everything initially
     this.container.setVisible(false);
 
+    this.holdFastKeySpace = scene.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    this.holdFastKeyEnter = scene.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+    this.holdFastKeyShift = scene.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
+
     // No internal input handling — the scene controls when advance() is called.
     // This prevents double-firing when the scene also listens for Space/Enter.
   }
@@ -104,7 +111,7 @@ export class DialogueSystem {
     const line = this.lines[index];
     if (!line) return;
 
-    const textSpeed = Math.max(0.5, Math.min(3, GameSettings.textSpeed));
+    const textSpeed = Math.max(0.75, Math.min(3, GameSettings.textSpeed));
     this.charDelay = 30 / textSpeed;
 
     let processedText = GameSettings.censor(line.text);
@@ -342,7 +349,8 @@ export class DialogueSystem {
   update(time: number, delta: number): void {
     if (!this.active || !this.isTyping) return;
 
-    this.charTimer += delta;
+    const fastHeld = this.isFastHeld();
+    this.charTimer += delta * (fastHeld ? 6 : 1);
 
     while (this.charTimer >= this.charDelay && this.currentCharIndex < this.fullCurrentText.length) {
       this.charTimer -= this.charDelay;
@@ -352,7 +360,7 @@ export class DialogueSystem {
 
       // Dialogue blip — play on every 2nd non-space character
       const ch = this.fullCurrentText[this.currentCharIndex - 1];
-      if (ch && ch !== ' ' && this.currentCharIndex % 2 === 0) {
+      if (ch && ch !== ' ' && this.currentCharIndex % (fastHeld ? 8 : 2) === 0) {
         this.playBlip();
       }
     }
@@ -368,6 +376,19 @@ export class DialogueSystem {
         this.showArrow();
       }
     }
+  }
+
+  private isFastHeld(): boolean {
+    const maybeWindow = typeof window !== 'undefined'
+      ? window as unknown as { vi?: { action?: boolean } }
+      : undefined;
+
+    return Boolean(
+      this.holdFastKeySpace?.isDown ||
+      this.holdFastKeyEnter?.isDown ||
+      this.holdFastKeyShift?.isDown ||
+      maybeWindow?.vi?.action,
+    );
   }
 
   /** Per-character blip — pitch varies by speaker for personality */

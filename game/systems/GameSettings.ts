@@ -11,7 +11,7 @@ export class GameSettings {
     commentary: true,   // JP's inner monologue / narrator enabled
     musicVolume: 0.75,
     sfxVolume: 0.75,
-    textSpeed: 1,
+    textSpeed: 1.5,
   };
 
   private static cache: Record<string, boolean | number> | null = null;
@@ -65,7 +65,7 @@ export class GameSettings {
   static get speedRun(): boolean { return this.get('speedRun'); }
   static get musicVolume(): number { return this.getNumber('musicVolume', 0.75); }
   static get sfxVolume(): number { return this.getNumber('sfxVolume', 0.75); }
-  static get textSpeed(): number { return this.getNumber('textSpeed', 1); }
+  static get textSpeed(): number { return this.getNumber('textSpeed', 1.5); }
 
   /** Censor text for kids mode — replaces drug/adult references with funny alternatives */
   static censor(text: string): string {
