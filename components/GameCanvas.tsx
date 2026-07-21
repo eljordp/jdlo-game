@@ -471,7 +471,9 @@ export default function GameCanvas() {
       {isMobile && (
         <div className="portrait:hidden landscape:block">
           {/* D-Pad — bottom left, cross pattern */}
-          <div className={`absolute bottom-4 left-4 z-30 transition-opacity duration-150 ${
+          <div
+            style={{ left: 'calc(env(safe-area-inset-left, 0px) + 14px)', bottom: 'calc(env(safe-area-inset-bottom, 0px) + 14px)' }}
+            className={`absolute z-30 transition-opacity duration-150 ${
             dialogueActive ? 'pointer-events-none opacity-0' : 'opacity-100'
           }`}>
             <div className="relative" style={{ width: 156, height: 156 }}>
@@ -559,9 +561,11 @@ export default function GameCanvas() {
           <button
             aria-label="Interact"
             className={`absolute z-30 flex items-center justify-center rounded-full active:brightness-150 transition-all ${
-              dialogueActive ? 'right-4 top-16 h-14 w-14' : 'bottom-4 right-5 h-[70px] w-[70px]'
+              dialogueActive ? 'top-16 h-14 w-14' : 'h-[70px] w-[70px]'
             }`}
             style={{
+              right: dialogueActive ? 'calc(env(safe-area-inset-right, 0px) + 16px)' : 'calc(env(safe-area-inset-right, 0px) + 20px)',
+              ...(dialogueActive ? {} : { bottom: 'calc(env(safe-area-inset-bottom, 0px) + 16px)' }),
               backgroundColor: 'rgba(34, 204, 68, 0.45)',
               border: '3px solid rgba(34, 204, 68, 0.6)',
               boxShadow: '0 2px 8px rgba(34, 204, 68, 0.3), inset 0 -2px 4px rgba(0,0,0,0.3)',
@@ -582,7 +586,7 @@ export default function GameCanvas() {
             }`}
             style={{
               width: 52, height: 52,
-              bottom: 88, right: 80,
+              bottom: 'calc(env(safe-area-inset-bottom, 0px) + 88px)', right: 'calc(env(safe-area-inset-right, 0px) + 80px)',
               backgroundColor: 'rgba(204, 34, 68, 0.45)',
               border: '3px solid rgba(204, 34, 68, 0.6)',
               boxShadow: '0 2px 8px rgba(204, 34, 68, 0.3), inset 0 -2px 4px rgba(0,0,0,0.3)',
@@ -600,7 +604,7 @@ export default function GameCanvas() {
             }`}
             style={{
               width: 42, height: 42,
-              bottom: 148, right: 24,
+              bottom: 'calc(env(safe-area-inset-bottom, 0px) + 148px)', right: 'calc(env(safe-area-inset-right, 0px) + 24px)',
               backgroundColor: 'rgba(255,255,255,0.08)',
               border: '2px solid rgba(255,255,255,0.15)',
             }}
@@ -621,7 +625,7 @@ export default function GameCanvas() {
             }`}
             style={{
               width: 42, height: 42,
-              bottom: 148, right: 72,
+              bottom: 'calc(env(safe-area-inset-bottom, 0px) + 148px)', right: 'calc(env(safe-area-inset-right, 0px) + 72px)',
               backgroundColor: 'rgba(255,255,255,0.08)',
               border: '2px solid rgba(255,255,255,0.15)',
             }}
@@ -642,7 +646,7 @@ export default function GameCanvas() {
             }`}
             style={{
               width: 42, height: 42,
-              bottom: 196, right: 24,
+              bottom: 'calc(env(safe-area-inset-bottom, 0px) + 196px)', right: 'calc(env(safe-area-inset-right, 0px) + 24px)',
               backgroundColor: 'rgba(255,255,255,0.08)',
               border: '2px solid rgba(255,255,255,0.15)',
             }}
@@ -663,7 +667,7 @@ export default function GameCanvas() {
             }`}
             style={{
               width: 54, height: 34,
-              bottom: 248, right: 18,
+              bottom: 'calc(env(safe-area-inset-bottom, 0px) + 248px)', right: 'calc(env(safe-area-inset-right, 0px) + 18px)',
               backgroundColor: 'rgba(255,255,255,0.08)',
               border: '2px solid rgba(255,255,255,0.15)',
             }}
