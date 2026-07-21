@@ -28,6 +28,7 @@ export class JailScene extends BaseChapterScene {
   private bookRead = false;
   private faithDone = false;
   private pushupDominated = false; // won by 10+
+  private weightOfNothingSeen = false; // Day 2 routine/sameness beat plays once
   private pushupGameActive = false;
   private diceBroke = false; // went to 0 in dice
   private crewSaveUsed = false; // the crew steps in once per fight, if earned
@@ -67,6 +68,7 @@ export class JailScene extends BaseChapterScene {
     this.faithDone = false;
     this.pushupDominated = false;
     this.pushupGameActive = false;
+    this.weightOfNothingSeen = false;
     this.diceBroke = false;
     this.shirtOff = false;
     this.jailGateVisuals.clear();
@@ -1324,6 +1326,8 @@ export class JailScene extends BaseChapterScene {
             this.refreshDayDialogue();
             this.interactions.resetAll();
             if ((this as any)._updateShirtBtn) (this as any)._updateShirtBtn();
+            // The weight of nothing — the sameness that actually defines a bid
+            this.time.delayedCall(900, () => this.playWeightOfNothing());
           });
         });
       }
@@ -1790,6 +1794,23 @@ export class JailScene extends BaseChapterScene {
     offerChoices();
   }
 
+  // Day 2 "weight of nothing" — the grit of a bid isn't the fights, it's the
+  // relentless sameness. Plays once, tight, no melodrama, pivots into discipline.
+  private playWeightOfNothing() {
+    if (this.weightOfNothingSeen) return;
+    this.weightOfNothingSeen = true;
+    this.frozen = true;
+    this.dialogue.show([
+      { speaker: 'Narrator', text: '5:30. Lights slam on. Stand for count. Sit. Wait.' },
+      { speaker: 'Narrator', text: 'Chow tastes like yesterday\'s chow. Yard is the same square of sky. Phone line\'s twenty deep.' },
+      { speaker: 'Narrator', text: 'Doors that only open loud. Back to the bunk. Then 5:30 again. And again.' },
+      { speaker: 'JP\'s Mind', text: 'Nobody warns you. The hard part isn\'t the fights. It\'s the sameness. The nothing.' },
+      { speaker: 'JP\'s Mind', text: 'It rots you if you let it. So I picked a corner of the yard and started counting reps instead of days.' },
+    ], () => {
+      this.frozen = false;
+    });
+  }
+
   private playPBJWitness() {
     this.frozen = true;
 
@@ -1822,12 +1843,7 @@ export class JailScene extends BaseChapterScene {
       });
       this.time.delayedCall(420, () => {
         SoundEffects.playImpact();
-        this.dialogue.show([
-          { speaker: 'Narrator', text: 'Then shoes against concrete. A head hits the wall. The whole thing is over almost as fast as it started.' },
-          { speaker: 'Guard', text: 'KEEP THE CHOW LINE MOVING.' },
-          { speaker: 'Narrator', text: 'JP walks to the table, unwraps his PB&J, and eats.' },
-          { speaker: 'JP\'s Mind', text: 'Not mine.' },
-        ], () => {
+        const finishPBJ = () => {
           this.tweens.add({
             targets: [shade, left, right],
             alpha: 0,
@@ -1838,6 +1854,31 @@ export class JailScene extends BaseChapterScene {
               right.destroy();
               this.frozen = false;
             },
+          });
+        };
+        this.dialogue.show([
+          { speaker: 'Narrator', text: 'Shoes against concrete. A head hits the wall. It\'s already ending.' },
+          { speaker: 'Guard', text: 'KEEP THE CHOW LINE MOVING.' },
+          { speaker: 'Narrator', text: 'For half a second the whole line looks at JP. He\'s the closest one to it.' },
+        ], () => {
+          // Toughness through a choice, not narration. Minding yours is canon.
+          this.showYesNoChoice('Step in?', 'Mind yours', 'Step in', () => {
+            ChoiceLedger.record('jail_chaos', 'Minded his own');
+            this.dialogue.show([
+              { speaker: 'Narrator', text: 'JP walks to the table, unwraps his PB&J, and eats.' },
+              { speaker: 'JP\'s Mind', text: 'Not mine.' },
+              { speaker: 'Narrator', text: 'A couple heads nod. He\'s learning the only rule that keeps you whole in here.' },
+            ], finishPBJ);
+          }, () => {
+            ChoiceLedger.record('jail_chaos', 'Stepped in');
+            SoundEffects.playImpact();
+            this.cameras.main.shake(200, 0.008);
+            this.dialogue.show([
+              { speaker: 'Narrator', text: 'JP grabs an arm. It was never his arm to grab.' },
+              { speaker: 'Guard', text: 'YOU. Wall. Now.' },
+              { speaker: 'Narrator', text: 'Three go to the hole. One of them never threw a punch.' },
+              { speaker: 'JP\'s Mind', text: 'Somebody else\'s war. I just signed my name to it.' },
+            ], finishPBJ);
           });
         });
       });

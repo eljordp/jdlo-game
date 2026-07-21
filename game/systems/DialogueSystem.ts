@@ -21,6 +21,7 @@ export class DialogueSystem {
   private boxImage: Phaser.GameObjects.Image;
   private textObject: Phaser.GameObjects.Text;
   private speakerLabel: Phaser.GameObjects.Text;
+  private pacingHint: Phaser.GameObjects.Text;
   private arrow: Phaser.GameObjects.Image;
   private arrowTween: Phaser.Tweens.Tween | null = null;
 
@@ -70,6 +71,17 @@ export class DialogueSystem {
     this.speakerLabel.setScrollFactor(0);
     this.container.add(this.speakerLabel);
 
+    // Subtle pacing affordance. The game already supports press-to-complete and
+    // hold-to-fast-forward; this makes that discoverable so long scenes feel
+    // controllable instead of like the player is trapped under the typewriter.
+    this.pacingHint = scene.add.text(GAME_WIDTH - 34, 9, '', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '8px',
+      color: '#9a9aaa',
+      align: 'right',
+    }).setOrigin(1, 0).setScrollFactor(0);
+    this.container.add(this.pacingHint);
+
     // Main text
     this.textObject = scene.add.text(30, 35, '', FONT_STYLE);
     this.textObject.setScrollFactor(0);
@@ -113,15 +125,17 @@ export class DialogueSystem {
     const line = this.lines[index];
     if (!line) return;
 
-    const textSpeed = Math.max(0.75, Math.min(3, GameSettings.textSpeed));
-    this.charDelay = 30 / textSpeed;
-
     let processedText = GameSettings.censor(line.text);
     // Slur JP's dialogue when drunk/high
     if (line.speaker === 'JP' || line.speaker === 'JP\'s Mind') {
       processedText = SubstanceSystem.slurText(processedText);
     }
     this.fullCurrentText = processedText;
+
+    const textSpeed = Math.max(0.75, Math.min(3, GameSettings.textSpeed));
+    const longLineBoost = processedText.length >= 220 ? 1.65 : processedText.length >= 140 ? 1.35 : 1;
+    this.charDelay = 30 / (textSpeed * longLineBoost);
+
     this.displayedText = '';
     this.currentCharIndex = 0;
     this.charTimer = 0;
@@ -140,6 +154,7 @@ export class DialogueSystem {
 
     this.textObject.setText('');
     this.arrow.setVisible(false);
+    this.updatePacingHint();
 
     // Stop existing arrow tween
     if (this.arrowTween) {
@@ -159,6 +174,7 @@ export class DialogueSystem {
     } else {
       this.showArrow();
     }
+    this.updatePacingHint();
   }
 
   private enterChoiceMode(choices: DialogueChoice[]): void {
@@ -192,6 +208,7 @@ export class DialogueSystem {
     }
 
     this.updateChoiceHighlight();
+    this.updatePacingHint();
 
     // Listen for arrow keys to navigate choices
     this.scene.input.keyboard!.on('keydown-UP', this.choiceUp, this);
@@ -328,6 +345,15 @@ export class DialogueSystem {
       repeat: -1,
       ease: 'Sine.easeInOut',
     });
+    this.updatePacingHint();
+  }
+
+  private updatePacingHint(): void {
+    if (this.choiceMode) {
+      this.pacingHint.setText('↑↓ CHOOSE  ·  A/SPACE SELECT');
+      return;
+    }
+    this.pacingHint.setText(this.isTyping ? 'HOLD A/SPACE FAST  ·  TAP COMPLETE' : 'A/SPACE NEXT');
   }
 
   private hide(): void {

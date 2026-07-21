@@ -118,6 +118,14 @@ export const CHOICE_DEFS: ChoiceDef[] = [
     jpLine: 'Early on, JP fought. That was the old habit.',
   },
   {
+    id: 'jail_chaos',
+    chapter: 'Locked Up',
+    prompt: 'Chaos at chow',
+    options: ['Stepped in', 'Minded his own'],
+    jpReal: 'Minded his own',
+    jpLine: 'JP ate his PB&J and let it be. Inside, minding yours is how you stay whole.',
+  },
+  {
     id: 'ghost_chase',
     chapter: 'Come Up',
     prompt: 'The prospect who ghosted',
