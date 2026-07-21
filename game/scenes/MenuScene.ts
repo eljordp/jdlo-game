@@ -55,6 +55,7 @@ export class MenuScene extends Phaser.Scene {
   private selectedIndex = 0;
   private menuItems: MenuItem[] = [];
   private menuTexts: Phaser.GameObjects.Text[] = [];
+  private menuHitZones: Phaser.GameObjects.Zone[] = [];
   private arrowIndicator!: Phaser.GameObjects.Text;
   private playerSprite!: Phaser.GameObjects.Sprite;
   private titleText!: Phaser.GameObjects.Text;
@@ -246,7 +247,9 @@ export class MenuScene extends Phaser.Scene {
 
   private clearMenu() {
     for (const t of this.menuTexts) t.destroy();
+    for (const zone of this.menuHitZones) zone.destroy();
     this.menuTexts = [];
+    this.menuHitZones = [];
     this.menuItems = [];
   }
 
@@ -445,6 +448,26 @@ export class MenuScene extends Phaser.Scene {
         }
       });
 
+      // Phone landscape scales the whole Phaser canvas down, which makes the
+      // actual text glyph hitbox too tiny to tap reliably. Give every row a
+      // generous invisible hit area so "Play" behaves like a real mobile button.
+      const zone = this.add.zone(GAME_WIDTH / 2, y, 540, Math.max(42, spacing - 4))
+        .setOrigin(0.5)
+        .setDepth(2)
+        .setInteractive({ useHandCursor: true });
+      zone.on('pointerover', () => {
+        if (item.enabled) {
+          this.selectedIndex = i;
+          this.updateMenuVisuals();
+        }
+      });
+      zone.on('pointerdown', () => {
+        if (item.enabled) {
+          this.selectedIndex = i;
+          this.confirmSelection();
+        }
+      });
+      this.menuHitZones.push(zone);
       this.menuTexts.push(text);
     }
 
@@ -519,17 +542,20 @@ export class MenuScene extends Phaser.Scene {
     // A new game is a new documentary run, not a chapter restart. Keep player
     // settings and earned badges, but clear every choice, stat and secret that
     // can change this run or the ending's "YOUR RUN vs JP" comparison.
-    InventorySystem.clearAll();
-    ChoiceLedger.reset();
-    AffinitySystem.reset();
-    BalanceSystem.reset();
-    GameStats.reset();
-    MoodSystem.reset();
-    SubstanceSystem.reset();
-    DMSystem.reset();
-    CasinoSystem.reset();
-    AchievementSystem.resetRunTrackers();
-    SaveSystem.clearSave();
+    // Each reset is isolated: one throwing (e.g. a system touching audio/storage
+    // that fails on a locked-down mobile browser) must NOT abort the Play launch.
+    const safe = (fn: () => void) => { try { fn(); } catch (e) { console.warn('[startPlay reset]', e); } };
+    safe(() => InventorySystem.clearAll());
+    safe(() => ChoiceLedger.reset());
+    safe(() => AffinitySystem.reset());
+    safe(() => BalanceSystem.reset());
+    safe(() => GameStats.reset());
+    safe(() => MoodSystem.reset());
+    safe(() => SubstanceSystem.reset());
+    safe(() => DMSystem.reset());
+    safe(() => CasinoSystem.reset());
+    safe(() => AchievementSystem.resetRunTrackers());
+    safe(() => SaveSystem.clearSave());
 
     for (const key of [
       'jdlo_konami_found',
@@ -543,19 +569,24 @@ export class MenuScene extends Phaser.Scene {
       try { localStorage.removeItem(key); } catch { /* storage unavailable */ }
     }
 
+    // Robust transition: the camera event can silently fail to fire on some
+    // mobile browsers, leaving the player stuck on a black screen after Play.
+    // A guaranteed timed fallback starts the scene no matter what.
+    let started = false;
+    const go = () => { if (started) return; started = true; this.scene.start('IntroScene'); };
     this.cameras.main.fadeOut(500, 0, 0, 0);
-    this.cameras.main.once('camerafadeoutcomplete', () => {
-      this.scene.start('IntroScene');
-    });
+    this.cameras.main.once('camerafadeoutcomplete', go);
+    this.time.delayedCall(650, go);
   }
 
   private startContinue() {
     const save = SaveSystem.loadSave();
     if (save) {
+      let started = false;
+      const go = () => { if (started) return; started = true; this.scene.start(save.chapter); };
       this.cameras.main.fadeOut(500, 0, 0, 0);
-      this.cameras.main.once('camerafadeoutcomplete', () => {
-        this.scene.start(save.chapter);
-      });
+      this.cameras.main.once('camerafadeoutcomplete', go);
+      this.time.delayedCall(650, go);
     }
   }
 
