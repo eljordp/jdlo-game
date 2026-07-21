@@ -16,7 +16,7 @@ export class EndScene extends Phaser.Scene {
     super({ key: 'EndScene' });
   }
 
-  create(data?: { finalStats?: boolean }) {
+  create(data?: { finalStats?: boolean; showComparison?: boolean }) {
     MusicSystem.stop();
     if (!data?.finalStats) {
       Analytics.trackGameComplete();
@@ -32,8 +32,10 @@ export class EndScene extends Phaser.Scene {
     this.cameras.main.fadeIn(1500, 0, 0, 0);
     if (data?.finalStats) {
       this.showStatsScreen(true);
-    } else {
+    } else if (data?.showComparison) {
       this.showRunComparison();
+    } else {
+      this.showNarrativeEnd();
     }
   }
 
@@ -692,7 +694,7 @@ export class EndScene extends Phaser.Scene {
   private showRunComparison() {
     const rows = ChoiceLedger.comparison();
     if (rows.length === 0) {
-      this.showNarrativeEnd();
+      this.showStatsScreen(true);
       return;
     }
 
@@ -767,7 +769,7 @@ export class EndScene extends Phaser.Scene {
         duration: 600,
         onComplete: () => {
           objects.forEach(o => { try { o.destroy(); } catch { /* */ } });
-          this.showNarrativeEnd();
+          this.showStatsScreen(true);
         },
       });
     };
@@ -1132,7 +1134,7 @@ export class EndScene extends Phaser.Scene {
                               this.tweens.add({ targets: follow, alpha: 1, duration: 800, delay: 2000 });
 
                               // Replay hint
-                              const replayHint = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 40, 'SPACE / TAP to view stats', {
+                              const replayHint = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 40, 'SPACE / TAP to view your run', {
                                 fontFamily: '"Press Start 2P", monospace',
                                 fontSize: '9px',
                                 color: '#333355',
@@ -1158,7 +1160,7 @@ export class EndScene extends Phaser.Scene {
                                 this.input.off('pointerdown', toStats);
                                 this.cameras.main.fadeOut(1000, 0, 0, 0);
                                 this.cameras.main.once('camerafadeoutcomplete', () => {
-                                  this.scene.restart({ finalStats: true });
+                                  this.scene.restart({ showComparison: true });
                                 });
                               };
                               this.input.keyboard!.once('keydown-SPACE', toStats);

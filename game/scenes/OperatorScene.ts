@@ -964,7 +964,7 @@ export class OperatorScene extends BaseChapterScene {
     if (this.requiredDone) return 'Head south. Vegas is calling.';
     if (this.npcsTalkedTo.size >= 5) return 'Close the deal. Show the dashboard.';
     if (this.npcsTalkedTo.size >= 2) return 'Keep talking. Build the network.';
-    return 'This is LA. Make it count.';
+    return 'Run the operation. Turn proof into pressure.';
   }
 
   getMapData(): MapData {
