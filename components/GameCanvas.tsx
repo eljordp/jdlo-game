@@ -159,7 +159,17 @@ export default function GameCanvas() {
   const [isMuted, setIsMuted] = useState(false);
   const [controllerConnected, setControllerConnected] = useState(false);
   const [dialogueActive, setDialogueActive] = useState(false);
+  const [showDirector, setShowDirector] = useState(false);
   const dialogueActiveRef = useRef(false);
+
+  // Director panel is DEV-ONLY: players never see it. Access it by adding
+  // ?dev to the URL (or on localhost). Keeps it to JP + Codex.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setShowDirector(
+      params.has('dev') || params.has('director') || window.location.hostname === 'localhost'
+    );
+  }, []);
 
   useEffect(() => {
     // Detect mobile/touch device
@@ -411,7 +421,7 @@ export default function GameCanvas() {
         </button>
       </div>
 
-      {!isMobile && <DirectorPanel gameRef={gameRef} onSpeedChange={applyDirectorSpeed} />}
+      {!isMobile && showDirector && <DirectorPanel gameRef={gameRef} onSpeedChange={applyDirectorSpeed} />}
 
       {/* Desktop shortcuts. Phone gets larger dedicated touch controls below. */}
       {!isMobile && <div className="absolute bottom-3 right-3 z-20 flex gap-2">
@@ -476,17 +486,17 @@ export default function GameCanvas() {
         <div className="pointer-events-none">
           {/* D-Pad — bottom left, cross pattern */}
           <div
-            style={{ left: 'calc(env(safe-area-inset-left, 0px) + 14px)', bottom: 'calc(env(safe-area-inset-bottom, 0px) + 14px)' }}
+            style={{ left: 'calc(env(safe-area-inset-left, 0px) + 16px)', bottom: 'calc(env(safe-area-inset-bottom, 0px) + 30px)' }}
             className={`absolute z-30 transition-opacity duration-150 ${
             dialogueActive ? 'pointer-events-none opacity-0' : 'pointer-events-auto opacity-100'
           }`}>
-            <div className="relative" style={{ width: 156, height: 156 }}>
+            <div className="relative" style={{ width: 124, height: 124 }}>
               {/* Center hub */}
               <div
                 className="absolute rounded-full"
                 style={{
-                  width: 28, height: 28,
-                  left: 64, top: 64,
+                  width: 22, height: 22,
+                  left: 51, top: 51,
                   backgroundColor: '#222222',
                 }}
               />
@@ -495,8 +505,8 @@ export default function GameCanvas() {
                 aria-label="Move up"
                 className="absolute flex items-center justify-center rounded-t-xl active:brightness-150 transition-all"
                 style={{
-                  width: 60, height: 60,
-                  left: 48, top: 0,
+                  width: 48, height: 48,
+                  left: 38, top: 0,
                   backgroundColor: '#333333',
                   border: '2px solid #444444',
                 }}
@@ -512,8 +522,8 @@ export default function GameCanvas() {
                 aria-label="Move down"
                 className="absolute flex items-center justify-center rounded-b-xl active:brightness-150 transition-all"
                 style={{
-                  width: 60, height: 60,
-                  left: 48, top: 96,
+                  width: 48, height: 48,
+                  left: 38, top: 76,
                   backgroundColor: '#333333',
                   border: '2px solid #444444',
                 }}
@@ -529,8 +539,8 @@ export default function GameCanvas() {
                 aria-label="Move left"
                 className="absolute flex items-center justify-center rounded-l-xl active:brightness-150 transition-all"
                 style={{
-                  width: 60, height: 60,
-                  left: 0, top: 48,
+                  width: 48, height: 48,
+                  left: 0, top: 38,
                   backgroundColor: '#333333',
                   border: '2px solid #444444',
                 }}
@@ -546,8 +556,8 @@ export default function GameCanvas() {
                 aria-label="Move right"
                 className="absolute flex items-center justify-center rounded-r-xl active:brightness-150 transition-all"
                 style={{
-                  width: 60, height: 60,
-                  left: 96, top: 48,
+                  width: 48, height: 48,
+                  left: 76, top: 38,
                   backgroundColor: '#333333',
                   border: '2px solid #444444',
                 }}
@@ -569,7 +579,7 @@ export default function GameCanvas() {
             }`}
             style={{
               right: dialogueActive ? 'calc(env(safe-area-inset-right, 0px) + 16px)' : 'calc(env(safe-area-inset-right, 0px) + 20px)',
-              ...(dialogueActive ? {} : { bottom: 'calc(env(safe-area-inset-bottom, 0px) + 16px)' }),
+              ...(dialogueActive ? {} : { bottom: 'calc(env(safe-area-inset-bottom, 0px) + 34px)' }),
               backgroundColor: 'rgba(34, 204, 68, 0.45)',
               border: '3px solid rgba(34, 204, 68, 0.6)',
               boxShadow: '0 2px 8px rgba(34, 204, 68, 0.3), inset 0 -2px 4px rgba(0,0,0,0.3)',
@@ -590,7 +600,7 @@ export default function GameCanvas() {
             }`}
             style={{
               width: 52, height: 52,
-              bottom: 'calc(env(safe-area-inset-bottom, 0px) + 88px)', right: 'calc(env(safe-area-inset-right, 0px) + 80px)',
+              bottom: 'calc(env(safe-area-inset-bottom, 0px) + 104px)', right: 'calc(env(safe-area-inset-right, 0px) + 78px)',
               backgroundColor: 'rgba(204, 34, 68, 0.45)',
               border: '3px solid rgba(204, 34, 68, 0.6)',
               boxShadow: '0 2px 8px rgba(204, 34, 68, 0.3), inset 0 -2px 4px rgba(0,0,0,0.3)',

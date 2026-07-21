@@ -26,10 +26,16 @@ export class IntroScene extends Phaser.Scene {
         hold: 2500,
         yoyo: true,
         onComplete: () => {
-          this.cameras.main.fadeOut(500, 0, 0, 0);
-          this.cameras.main.once('camerafadeoutcomplete', () => {
+          let started = false;
+          const goHome = () => {
+            if (started) return;
+            started = true;
             this.scene.start('HomeScene');
-          });
+          };
+
+          this.cameras.main.fadeOut(500, 0, 0, 0);
+          this.cameras.main.once('camerafadeoutcomplete', goHome);
+          this.time.delayedCall(650, goHome);
         },
       });
     });
