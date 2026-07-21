@@ -76,8 +76,8 @@ export class DialogueSystem {
     // controllable instead of like the player is trapped under the typewriter.
     this.pacingHint = scene.add.text(GAME_WIDTH - 34, 9, '', {
       fontFamily: '"Press Start 2P", monospace',
-      fontSize: '8px',
-      color: '#9a9aaa',
+      fontSize: '9px',
+      color: '#c0c0ca',
       align: 'right',
     }).setOrigin(1, 0).setScrollFactor(0);
     this.container.add(this.pacingHint);

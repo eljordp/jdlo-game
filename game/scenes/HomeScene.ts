@@ -508,11 +508,11 @@ export class HomeScene extends BaseChapterScene {
 
   private playNarratorLines(overlay: Phaser.GameObjects.Rectangle) {
     const lines = [
-      { text: 'Fairfield. Suisun. Napa.', hold: 1800 },
-      { text: 'Different North Bay addresses. Same search for home.', hold: 2200 },
-      { text: 'Same room. Same walls. Same ceiling.', hold: 2000 },
-      { text: 'Jordan had everything going for him.', hold: 2000 },
-      { text: 'Then he left.', hold: 1500 },
+      { text: 'Fairfield. Suisun. Napa.', hold: 1250 },
+      { text: 'Different North Bay addresses. Same search for home.', hold: 1550 },
+      { text: 'Same room. Same walls. Same ceiling.', hold: 1350 },
+      { text: 'Jordan had everything going for him.', hold: 1350 },
+      { text: 'Then he left.', hold: 1000 },
     ];
 
     let delay = 200; // small initial pause after title fades
