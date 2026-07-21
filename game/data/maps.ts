@@ -498,11 +498,11 @@ export const weedRiseMap: MapData = {
     ],
   },
   triggers: [
-    { x: 16, y: 28, action: 'scene', target: 'TransitionScene', data: { text: 'The money got normal.', subtext: 'So did looking over his shoulder.', nextScene: 'WrongCrowdScene' } },
-    { x: 17, y: 28, action: 'scene', target: 'TransitionScene', data: { text: 'The money got normal.', subtext: 'So did looking over his shoulder.', nextScene: 'WrongCrowdScene' } },
-    { x: 18, y: 28, action: 'scene', target: 'TransitionScene', data: { text: 'The money got normal.', subtext: 'So did looking over his shoulder.', nextScene: 'WrongCrowdScene' } },
-    { x: 19, y: 28, action: 'scene', target: 'TransitionScene', data: { text: 'The money got normal.', subtext: 'So did looking over his shoulder.', nextScene: 'WrongCrowdScene' } },
-    { x: 20, y: 28, action: 'scene', target: 'TransitionScene', data: { text: 'The money got normal.', subtext: 'So did looking over his shoulder.', nextScene: 'WrongCrowdScene' } },
+    { x: 16, y: 28, action: 'scene', target: 'TransitionScene', data: { text: 'The money got normal.', subtext: 'Then the life around it started coming apart.', nextScene: 'SpiralScene' } },
+    { x: 17, y: 28, action: 'scene', target: 'TransitionScene', data: { text: 'The money got normal.', subtext: 'Then the life around it started coming apart.', nextScene: 'SpiralScene' } },
+    { x: 18, y: 28, action: 'scene', target: 'TransitionScene', data: { text: 'The money got normal.', subtext: 'Then the life around it started coming apart.', nextScene: 'SpiralScene' } },
+    { x: 19, y: 28, action: 'scene', target: 'TransitionScene', data: { text: 'The money got normal.', subtext: 'Then the life around it started coming apart.', nextScene: 'SpiralScene' } },
+    { x: 20, y: 28, action: 'scene', target: 'TransitionScene', data: { text: 'The money got normal.', subtext: 'Then the life around it started coming apart.', nextScene: 'SpiralScene' } },
   ],
   interactables: [
     { id: 'rise_scale', x: 7, y: 4, type: 'examine', glow: true, sprite: 'item-weed-bag' },
